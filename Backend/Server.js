@@ -1,7 +1,12 @@
 require('dotenv').config();
 
 const express = require("express");
-const adminRoutes = require('./Routes/AdminController');
+const adminRoutes = require('./Routes/AdminRoutes');
+const productsRoutes = require('./Routes/ProductsRoutes');
+const governorRoutes = require('./Routes/GovernorRoutes');
+const activityCategoriesRoute = require('./Routes/ActivityCategoryRoutes');
+const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
+
 const mongoose = require('mongoose'); 
 mongoose.set('strictQuery', false); // disable strict query 
 
@@ -13,6 +18,12 @@ app.use(express.json()) //checks if the request contains data and passes that da
 
 // routes
 app.use('/Admin',adminRoutes);
+app.use('/Products',productsRoutes);
+app.use('/Governor', governorRoutes)
+app.use('/ActivityCategories', activityCategoriesRoute)
+app.use('/PrefrenceTag', PrefrenceTagRoute)
+
+
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
