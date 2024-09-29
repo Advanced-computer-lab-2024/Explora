@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Register = () => {
+const TouristRegister = () => {
     const [formData, setFormData] = useState({
         email: '',
         username: '',
@@ -10,15 +10,48 @@ const Register = () => {
         jobStatus: ''
     });
 
+    const [dobEntered, setDobEntered] = useState(false); // To track if DOB has been entered
+    const [ageError, setAgeError] = useState(''); // To store age validation error
+
     const handleChange = (e) => {
         const { name, value } = e.target;
+
+        if (name === 'dob') {
+            const today = new Date();
+            const dob = new Date(value);
+            const age = today.getFullYear() - dob.getFullYear();
+            const monthDifference = today.getMonth() - dob.getMonth();
+
+            // Adjust for month and day difference
+            if (
+                monthDifference < 0 ||
+                (monthDifference === 0 && today.getDate() < dob.getDate())
+            ) {
+                age--;
+            }
+
+            // Validate age (user must be at least 18)
+            if (age < 18) {
+                setAgeError('You must be at least 18 years old to book on this website.');
+            } else {
+                setAgeError('');
+                setDobEntered(true); // Disable DOB field once entered
+            }
+        }
+
         setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Logic for form submission goes here
-        console.log(formData);
+
+        if (ageError) {
+            alert(ageError); // Display age error if any
+            return;
+        }
+
+        // Add form submission logic here
+        console.log('Form Data Submitted: ', formData);
     };
 
     return (
@@ -75,8 +108,11 @@ const Register = () => {
                     value={formData.dob} 
                     onChange={handleChange} 
                     required 
+                    disabled={dobEntered} // Disable field once DOB is entered
                 />
             </div>
+
+            {ageError && <p style={{ color: 'red' }}>{ageError}</p>} {/* Display age validation error */}
 
             <div>
                 <label>Job/Student Status:</label>
@@ -97,5 +133,4 @@ const Register = () => {
     );
 };
 
-export default Register;
-
+export default TouristRegister;
