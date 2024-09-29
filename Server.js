@@ -8,6 +8,7 @@ const activityCategoriesRoute = require('./Backend/Routes/ActivityCategoryRoutes
 const PrefrenceTagRoute = require('./Backend/Routes/PrefrenceTagRoute');
 const profileRoutes = require('./Backend/Routes/tour_guide_profile');
 const itineraryRoutes = require('./Backend/Routes/tour_guide_itinerary');
+const activityRoutes = require('./Backend/Routes/tour_guide_activites');
 
 const mongoose = require('mongoose'); 
 mongoose.set('strictQuery', false); // disable strict query 
@@ -26,6 +27,7 @@ app.use('/ActivityCategories', activityCategoriesRoute)
 app.use('/PrefrenceTag', PrefrenceTagRoute)
 app.use('/Tour_Guide_Profile', profileRoutes); 
 app.use('/Tour_Guide_Itinerary', itineraryRoutes); 
+app.use('/Tour_Guide_Activites', activityRoutes); 
 
 
 

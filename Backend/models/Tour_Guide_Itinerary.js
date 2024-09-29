@@ -14,39 +14,4 @@ const ItinerarySchema = new Schema({
   accessibility: { type: Boolean, default: false }, // e.g., wheelchair access
   pickupLocation: { type: String },
   dropoffLocation: { type: String }
-});
-
-// Define the booking schema
-const bookingSchema = new Schema({
-  itineraryId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Itinerary',
-    required: true // This field is required and references the Itinerary model
-  },
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Assuming you have a User model
-    required: true // This field is required and references the User model
-  },
-  bookingDate: {
-    type: Date,
-    default: Date.now // Set to the current date and time by default
-  },
-  numberOfPeople: {
-    type: Number,
-    required: true // This field indicates how many people are booked
-  },
-  specialRequests: {
-    type: String,
-    trim: true // Optional field for any special requests by the user
-  },
-  status: {
-    type: String,
-    enum: ['confirmed', 'pending', 'canceled'], // Possible statuses for a booking
-    default: 'pending' // Default status set to 'pending'
-  }
-}, { timestamps: true }); // Automatically add createdAt and updatedAt fields
-
-
-module.exports = mongoose.model('Booking', bookingSchema);
-module.exports = mongoose.model('Itinerary', ItinerarySchema);
+});module.exports = mongoose.model('Itinerary', ItinerarySchema);

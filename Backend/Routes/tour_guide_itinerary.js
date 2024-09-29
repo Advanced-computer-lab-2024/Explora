@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
-const Booking = require('../models/Tour_Guide_Itinerary');
+const Booking = require('../models/Booking');
 
 // Create a new itinerary
 router.post('/', async (req, res) => {
