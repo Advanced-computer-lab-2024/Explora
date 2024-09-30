@@ -8,9 +8,9 @@ const { createTourist, getTourist, updateTourist } = require('../controllers/tou
 router.post('/create', createTourist);
 
 // Route for getting a tourist by email
-router.get('/:email', getTourist);
+router.get('/:get', getTourist);
 
 // Route for updating a tourist
-router.put('/:email', updateTourist);
+router.put('/:update', updateTourist);
 
 module.exports = router;
