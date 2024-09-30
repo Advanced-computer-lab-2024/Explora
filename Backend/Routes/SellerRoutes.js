@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { createSellerProfile, getSellerProfile, updateSellerProfile } = require('../controllers/SellerController');
 
-// Route for creating seller profile
-router.post('/profile', createSellerProfile);
+const { 
+    createSellerProfile, 
+    getSellerProfile, 
+    updateSellerProfile 
+} = require('../controllers/SellerController');
 
-// Route for reading seller profile
-router.get('/profile', getSellerProfile);
-
-// Route for updating seller profile
-router.put('/profile', updateSellerProfile);
+router.post('/create', createSellerProfile); // Create a seller profile
+router.get('/:id', getSellerProfile);        // Get seller profile by ID
+router.put('/:id', updateSellerProfile);     // Update seller profile by ID
 
 module.exports = router;

@@ -1,22 +1,11 @@
-const mongoose = require('mongoose');
-const User = require('./User');  // Assuming User model is in the same models folder
+const mongoose = require("mongoose");
 
 const sellerSchema = new mongoose.Schema({
-    sellerName: { 
-        type: String, 
-        required: true 
-    },
-    sellerDescription: { 
-        type: String, 
-        required: true 
-    },
-    isSellerAccepted: {
-        type: Boolean,
-        default: false  // Only set to true after admin approval
-    }
+    name: { type: String, required: true },
+    description: { type: String, required: true },
+    acceptedAsSeller: { type: Boolean, default: false } // Track if the seller is accepted
 });
 
-// Using Mongoose Discriminator to extend the User model
-const Seller = User.discriminator('Seller', sellerSchema);
+const Seller = mongoose.model('Seller', sellerSchema);
 
 module.exports = Seller;

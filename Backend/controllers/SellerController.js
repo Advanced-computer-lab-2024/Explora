@@ -1,60 +1,25 @@
-// sellerController.js
+const Seller = require('../models/Seller');
 
-const User = require('../models/User'); // assuming this is the User model
-
+// Create a new seller profile
 const createSellerProfile = async (req, res) => {
-    // Simulate userId for now
-    const { userId, sellerName, sellerDescription } = req.body;
-
     try {
-        const seller = await User.findById(userId);
-
-        if (!seller) {
-            return res.status(404).json({ message: 'Seller not found' });
-        }
-
-        seller.sellerName = sellerName;
-        seller.sellerDescription = sellerDescription;
+        const { name, description } = req.body;
+        const seller = new Seller({ name, description });
         await seller.save();
-
         res.status(201).json(seller);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
     }
 };
 
+// Read seller profile by ID
 const getSellerProfile = async (req, res) => {
-    const { userId } = req.body; // simulate userId for now
-
     try {
-        const seller = await User.findById(userId);
-
-        if (!seller) {
-            return res.status(404).json({ message: 'Seller not found' });
-        }
-
-        res.status(200).json({
-            sellerName: seller.sellerName,
-            sellerDescription: seller.sellerDescription,
-        });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-
-const updateSellerProfile = async (req, res) => {
-    const { userId, sellerName, sellerDescription } = req.body;
-
-    try {
-        const seller = await User.findById(userId);
-
-        if (!seller) {
-            return res.status(404).json({ message: 'Seller not found' });
-        }
-
-        seller.sellerName = sellerName || seller.sellerName;
-        seller.sellerDescription = sellerDescription || seller.sellerDescription;
-        await seller.save();
+        const sellerId = req.params.id;
+        const seller = await Seller.findById(sellerId);
+        
+        if (!seller) return res.status(404).json({ message: "Seller not found" });
+        if (!seller.acceptedAsSeller) return res.status(403).json({ message: "Seller not accepted" });
 
         res.status(200).json(seller);
     } catch (error) {
@@ -62,8 +27,57 @@ const updateSellerProfile = async (req, res) => {
     }
 };
 
+// Update seller profile by ID
+const updateSellerProfile = async (req, res) => {
+    try {
+        const sellerId = req.params.id;
+        const seller = await Seller.findById(sellerId);
+
+        if (!seller) return res.status(404).json({ message: "Seller not found" });
+        if (!seller.acceptedAsSeller) return res.status(403).json({ message: "Seller not accepted" });
+
+        const { name, description } = req.body;
+        seller.name = name || seller.name;
+        seller.description = description || seller.description;
+
+        await seller.save();
+        res.status(200).json(seller);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+const Seller = require('../models/Seller');
+
+// Accept or reject a seller
+const updateSellerStatus = async (req, res) => {
+    try {
+        const sellerId = req.params.id;
+        const { status } = req.body; // 'accept' or 'reject'
+
+        const seller = await Seller.findById(sellerId);
+        if (!seller) return res.status(404).json({ message: "Seller not found" });
+
+        if (status === 'accept') {
+            seller.acceptedAsSeller = true;
+        } else if (status === 'reject') {
+            seller.acceptedAsSeller = false;
+        } else {
+            return res.status(400).json({ message: "Invalid status, use 'accept' or 'reject'" });
+        }
+
+        await seller.save();
+        res.status(200).json({ message: `Seller has been ${status}ed`, seller });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+
 module.exports = {
     createSellerProfile,
     getSellerProfile,
-    updateSellerProfile
+    updateSellerProfile,
+    updateSellerStatus
 };
