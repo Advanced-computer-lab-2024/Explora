@@ -4,6 +4,16 @@ const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 const Booking = require('../models/Booking');
 
+// GET all itineraries
+router.get('/', async (req, res) => {
+    try {
+        const itineraries = await Itinerary.find();
+        res.json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // Create a new itinerary
 router.post('/', async (req, res) => {
   const {
@@ -43,16 +53,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Get all itineraries
-router.get('/', async (req, res) => {
-  try {
-    const itineraries = await Itinerary.find();
-    res.json(itineraries);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server error');
-  }
-});
+
 
 // Get an itinerary by ID
 router.get('/:id', async (req, res) => {
@@ -131,6 +132,26 @@ router.delete('/:id', async (req, res) => {
     console.error('Error deleting itinerary:', error);
     res.status(500).send('Server error');
   }
+});
+
+// GET itineraries containing "museum" activities
+router.get('/museums', async (req, res) => {
+  try {
+      const itineraries = await Itinerary.find({ tags: 'museum' });
+      res.json(itineraries);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+// GET itineraries containing "historical" activities
+router.get('/historical', async (req, res) => {
+    try {
+        const itineraries = await Itinerary.find({ tags: 'historical' });
+        res.json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
 

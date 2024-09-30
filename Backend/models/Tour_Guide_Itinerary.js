@@ -9,9 +9,12 @@ const ItinerarySchema = new Schema({
   duration: { type: Number, required: true }, // in hours
   language: { type: String, required: true },
   price: { type: Number, required: true },
-  availableDates: [{ type: Date, requisred: true }],
+  availableDates: [{ type: Date, required: true }],
   availableTimes: [{ type: String, required: true }], // e.g., "09:00 AM"
   accessibility: { type: Boolean, default: false }, // e.g., wheelchair access
   pickupLocation: { type: String },
-  dropoffLocation: { type: String }
-});module.exports = mongoose.model('Itinerary', ItinerarySchema);
+  dropoffLocation: { type: String },
+  tags: [{ type: String }] // Ensure this field is present
+});
+
+module.exports = mongoose.model('Itinerary', ItinerarySchema);

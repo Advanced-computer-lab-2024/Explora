@@ -1,66 +1,98 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
-const TouristItinerary = require('../models/Tour_Guide_Activites'); 
+const Activity = require('../models/Tour_Guide_Activites');
 
-// Create a tourist itinerary
+// GET all activities
+router.get('/', async (req, res) => {
+    try {
+        const activity = await Activity.find();
+        res.json(activity);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Create a tourist activity
 router.post('/', async (req, res) => {
   try {
-    const itinerary = new TouristItinerary(req.body);
-    await itinerary.save();
-    res.status(201).json(itinerary);
+    const activity = new Activity(req.body);
+    await activity.save();
+    res.status(201).json(activity);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Read all tourist itineraries
+// Read all tourist activity
 router.get('/', async (req, res) => {
   try {
-    const itineraries = await TouristItinerary.find();
-    res.status(200).json(itineraries);
+    const activity = await Activity.find();
+    res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Read a specific tourist itinerary by ID
+// GET activities tagged with "historical place"
+router.get('/historical', async (req, res) => {
+  try {
+      const historicalActivities = await Activity.find({ tags: 'historical' });
+      res.status(200).json(historicalActivities);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+// GET activities tagged with "museum"
+router.get('/museum', async (req, res) => {
+  try {
+      const museumActivities = await Activity.find({ tags: 'museum' });
+      res.status(200).json(museumActivities);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+});
+
+// Read a specific tourist activity by ID and populate activities
 router.get('/:id', async (req, res) => {
   try {
-    const itinerary = await TouristItinerary.findById(req.params.id);
-    if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerary not found' });
+    const activity = await Activity.findById(req.params.id).populate('activities');
+    if (!activity) {
+      return res.status(404).json({ error: 'activity not found' });
     }
-    res.status(200).json(itinerary);
+    res.status(200).json(activity);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Update a tourist itinerary by ID
+// Update a tourist activity by ID
 router.put('/:id', async (req, res) => {
   try {
-    const itinerary = await TouristItinerary.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerary not found' });
+    const activity = await Activity.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
+    if (!activity) {
+      return res.status(404).json({ error: 'activity not found' });
     }
-    res.status(200).json(itinerary);
+    res.status(200).json(activity);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// Delete a tourist itinerary by ID
+// Delete a tourist activity by ID
 router.delete('/:id', async (req, res) => {
   try {
-    const itinerary = await TouristItinerary.findByIdAndDelete(req.params.id);
-    if (!itinerary) {
-      return res.status(404).json({ error: 'Itinerary not found' });
+    const activity = await Activity.findByIdAndDelete(req.params.id);
+    if (!activity) {
+      return res.status(404).json({ error: 'activity not found' });
     }
     res.status(204).send(); // No content to send back
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
+
 
 module.exports = router;
