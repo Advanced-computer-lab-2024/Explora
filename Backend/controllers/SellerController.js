@@ -46,7 +46,7 @@ const updateSellerProfile = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
-const Seller = require('../models/Seller');
+
 
 // Accept or reject a seller
 const updateSellerStatus = async (req, res) => {
