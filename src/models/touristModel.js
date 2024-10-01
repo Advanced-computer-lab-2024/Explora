@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 // Define the nested schema for the wallet
-const walletType = new mongoose.Schema({
-  name: { type: String, required: true },
-  cardNumber: { type: Number, required: true },
-  cvv: { type: Number, required: true },
-  expiryDate: { type: Date, required: true } // fixed the typo
-});
+// const walletType = new mongoose.Schema({
+//   name: { type: String, required: true },
+//   cardNumber: { type: Number, required: true },
+//   cvv: { type: Number, required: true },
+//   expiryDate: { type: Date, required: true } // fixed the typo
+// });
 
 // Define the main tourist schema
 const touristSchema = new Schema({
@@ -40,8 +40,7 @@ const touristSchema = new Schema({
     required: true,
   },
   wallet: {
-    type: walletType,
-    required: true
+    type: Number
   }
 }, { timestamps: true });
 
