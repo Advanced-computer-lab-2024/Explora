@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
-const Booking = require('../models/Booking');
+
 
 // GET all itineraries
 router.get('/', async (req, res) => {
@@ -27,7 +27,9 @@ router.post('/', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
-    dropoffLocation
+    dropoffLocation, 
+    hasBookings, 
+    tags
   } = req.body;
 
   try {
@@ -42,7 +44,9 @@ router.post('/', async (req, res) => {
       availableTimes,
       accessibility,
       pickupLocation,
-      dropoffLocation
+      dropoffLocation,
+      hasBookings, 
+      tags
     });
 
     await newItinerary.save();
@@ -82,7 +86,9 @@ router.put('/:id', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
-    dropoffLocation
+    dropoffLocation,
+    hasBookings, 
+    tags
   } = req.body;
 
   try {
@@ -102,7 +108,8 @@ router.put('/:id', async (req, res) => {
     itinerary.accessibility = accessibility !== undefined ? accessibility : itinerary.accessibility;
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
-
+    itinerary.hasBookings = hasBookings || itinerary.hasBookings;
+    itinerary.tags = tags || itinerary.tags;
     await itinerary.save();
     res.json(itinerary);
   } catch (error) {
@@ -114,25 +121,26 @@ router.put('/:id', async (req, res) => {
 // Delete an itinerary
 router.delete('/:id', async (req, res) => {
   try {
+    // Find the itinerary by ID
     const itinerary = await Itinerary.findById(req.params.id);
     if (!itinerary) {
       return res.status(404).json({ msg: 'Itinerary not found' });
     }
 
-    // Check if there are any bookings associated with this itinerary
-    const existingBookings = await Booking.find({ itineraryId: req.params.id });
-    if (existingBookings.length > 0) {
+    // Check if the itinerary has bookings using the 'hasBookings' field
+    if (itinerary.hasBookings) {
       return res.status(400).json({ msg: 'Cannot delete itinerary with existing bookings' });
     }
 
-    // Use findByIdAndDelete instead of remove
+    // If no bookings, delete the itinerary
     await Itinerary.findByIdAndDelete(req.params.id);
-    res.json({ msg: 'Itinerary removed' });
+    res.json({ msg: 'Itinerary removed successfully' });
   } catch (error) {
     console.error('Error deleting itinerary:', error);
     res.status(500).send('Server error');
   }
 });
+
 
 // GET itineraries containing "museum" activities
 router.get('/museums', async (req, res) => {
