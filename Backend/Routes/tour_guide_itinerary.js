@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
+const Activityy = require('../models/Activityy'); 
+const PlacesModel = require('../models/PlacesModel');
 
 
 // GET all itineraries
@@ -28,11 +30,23 @@ router.post('/', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation, 
-    hasBookings, 
-    tags
+    hasBookings
   } = req.body;
 
+
   try {
+    // Check if all activities exist
+    const activitiesExist = await Activityy.find({ name: { $in: activities } });
+    if (activitiesExist.length !== activities.length) {
+      return res.status(400).json({ msg: 'One or more activities do not exist ' });
+    }
+
+    // Check if all locations exist
+    const locationsExist = await PlacesModel.find({ name: { $in: locations } });
+    if (locationsExist.length !== locations.length) {
+      return res.status(400).json({ msg: 'One or more locations do not exist ' });
+    }
+
     const newItinerary = new Itinerary({
       activities,
       locations,
@@ -45,8 +59,7 @@ router.post('/', async (req, res) => {
       accessibility,
       pickupLocation,
       dropoffLocation,
-      hasBookings, 
-      tags
+      hasBookings
     });
 
     await newItinerary.save();
@@ -87,8 +100,7 @@ router.put('/:id', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation,
-    hasBookings, 
-    tags
+    hasBookings
   } = req.body;
 
   try {
@@ -109,7 +121,7 @@ router.put('/:id', async (req, res) => {
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
-    itinerary.tags = tags || itinerary.tags;
+
     await itinerary.save();
     res.json(itinerary);
   } catch (error) {
@@ -139,28 +151,6 @@ router.delete('/:id', async (req, res) => {
     console.error('Error deleting itinerary:', error);
     res.status(500).send('Server error');
   }
-});
-
-
-// GET itineraries containing "museum" activities
-router.get('/museums', async (req, res) => {
-  try {
-      const itineraries = await Itinerary.find({ tags: 'museum' });
-      res.json(itineraries);
-  } catch (error) {
-      res.status(500).json({ message: error.message });
-  }
-});
-
-// GET itineraries containing "historical" activities
-router.get('/historical', async (req, res) => {
-    try {
-        const itineraries = await Itinerary.find({ tags: 'historical' });
-        res.json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-
+})
+;
 module.exports = router;

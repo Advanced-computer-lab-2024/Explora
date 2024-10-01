@@ -14,8 +14,7 @@ const ItinerarySchema = new Schema({
   accessibility: { type: Boolean, default: false }, // e.g., wheelchair access
   pickupLocation: { type: String },
   dropoffLocation: { type: String },
-  hasBookings: { type: Boolean, default: false }, // Track if bookings are made
-  tags: [{ type: String }] // Ensure this field is present
+  hasBookings: { type: Boolean, default: false } // Track if bookings are made
 });
 
 module.exports = mongoose.model('Itinerary', ItinerarySchema);
