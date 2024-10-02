@@ -26,6 +26,27 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get all upcoming itineraries
+// Get all upcoming activities
+router.get('/upcoming', async (req, res) => {
+    const today = new Date(); // Get today's date
+
+    try {
+        // Find activities where the date is greater than or equal to today
+        const upcomingActivities = await Activity.find({ date: { $gte: today } });
+
+        if (upcomingActivities.length === 0) {
+            return res.status(404).json({ message: 'No upcoming activities found.' });
+        }
+
+        return res.status(200).json(upcomingActivities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+  
+
 // Update an activity
 router.put('/:id', async (req, res) => {
     try {

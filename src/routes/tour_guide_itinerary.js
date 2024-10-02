@@ -14,6 +14,22 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/tag/:tag', async (req, res) => {
+  const { tag } = req.params;
+
+  try {
+      const itineraries = await Itinerary.find({ tags: tag });
+
+      if (itineraries.length === 0) {
+          return res.status(404).json({ message: 'No itineraries found with the specified tag.' });
+      }
+
+      return res.status(200).json(itineraries);
+  } catch (error) {
+      return res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 // Create a new itinerary
 router.post('/', async (req, res) => {
   const {

@@ -14,6 +14,10 @@ const activitySchema = new Schema({
     type: String,
     required: true,
   },
+  rating: {
+    type: Number,
+    required: true,
+  },
   location: {
     type: String,
     required: true,  // You can save Google Maps location as a string
