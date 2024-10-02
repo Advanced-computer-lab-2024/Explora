@@ -9,8 +9,27 @@ const createMuseum = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+//this is the method in requirement 37
 
 
+const getByTag = async (req, res) => {
+    const { tagType, tagValue } = req.params;
+
+    try {
+        const museums = await Museum.find({
+            'tags.type': tagType, // Matches the type of the tag
+            'tags.historicalPeriod': tagValue // Matches the historical period
+        });
+
+        if (museums.length === 0) {
+            return res.status(404).json({ message: 'No museums found with the specified tag.' });
+        }
+
+        return res.status(200).json(museums);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
 
 const getAllMuseums = async (req, res) => {
     try {
@@ -92,7 +111,7 @@ const getTicketPrice = async (req, res) => {
 
 
 module.exports = {
-
+    getByTag,
     createMuseum,
     getAllMuseums, 
     getMuseumByName, 

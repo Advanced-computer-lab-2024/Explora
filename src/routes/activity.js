@@ -46,4 +46,55 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Get activities by tag
+router.get('/tag/:tag', async (req, res) => {
+    const { tag } = req.params;
+
+    try {
+        const activities = await Activity.find({ tags: tag });
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'No activities found with the specified tag.' });
+        }
+
+        return res.status(200).json(activities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Get activities by name
+router.get('/name/:name', async (req, res) => {
+    const { name } = req.params;
+
+    try {
+        const activities = await Activity.find({ name: { $regex: name, $options: 'i' } });
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'No activities found with the specified name.' });
+        }
+
+        return res.status(200).json(activities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Get activities by category
+router.get('/category/:category', async (req, res) => {
+    const { category } = req.params;
+
+    try {
+        const activities = await Activity.find({ category });
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'No activities found in the specified category.' });
+        }
+
+        return res.status(200).json(activities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 module.exports = router;

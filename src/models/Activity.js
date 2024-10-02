@@ -1,15 +1,44 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const activitySchema = new mongoose.Schema({
-    name: String,
-    date: String,
-    time: String,
-    location: String,  // Save Google Maps location as a string or coordinates
-    price: String,     // You can save as String or Number based on range
-    category: String,
-    tags: [String],
-    specialDiscounts: String,
-    bookingOpen: Boolean
-});
+const activitySchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  time: {
+    type: String,
+    required: true,
+  },
+  location: {
+    type: String,
+    required: true,  // You can save Google Maps location as a string
+  },
+  price: {
+    type: Number,   // Price as a Number for arithmetic operations
+    required: true,
+  },
+  category: {
+    type: String,   // E.g., 'museum', 'historical place', 'activity', etc.
+    required: true,
+  },
+  tags: {
+    type: [String], // Array of tags for additional filtering
+    default: [],
+  },
+  specialDiscounts: {
+    type: String,
+    default: null,  // Optional field
+  },
+  bookingOpen: {
+    type: Boolean,
+    default: true,  // Optional field with default value
+  },
+}, { timestamps: true });
 
-module.exports = mongoose.model('Activity', activitySchema);
+const Activity = mongoose.model('Activity', activitySchema);
+module.exports = Activity;
