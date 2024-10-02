@@ -1,3 +1,4 @@
+/* General body styles */
 body {
     font-family: Arial, sans-serif;
     background-color: #f8f8f8;
@@ -5,14 +6,28 @@ body {
     padding: 20px;
 }
 
+/* Header styling */
+header {
+    background-color: #333;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
 h1 {
-    color: #333;
+    font-size: 2.5rem;
+    color: #fff;
 }
 
+/* Headings styling */
 h2 {
+    font-size: 2rem;
     color: #666;
+    margin-top: 40px;
+    margin-bottom: 20px;
 }
 
+/* Form styling */
 form {
     margin-bottom: 20px;
     padding: 10px;
@@ -29,6 +44,7 @@ input, textarea {
     border-radius: 4px;
 }
 
+/* Button styling */
 button {
     padding: 10px 15px;
     background-color: #28a745;
@@ -42,6 +58,12 @@ button:hover {
     background-color: #218838;
 }
 
+/* Main container styling */
+main {
+    padding: 20px;
+}
+
+/* List and item styling */
 ul {
     list-style-type: none;
     padding: 0;
@@ -53,4 +75,16 @@ li {
     border: 1px solid #ddd;
     border-radius: 4px;
     background: white;
+    text-align: left;
+}
+
+/* Styling individual museum or activity entries */
+li h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+li ul {
+    margin-top: 10px;
 }
