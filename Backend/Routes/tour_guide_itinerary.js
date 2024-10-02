@@ -30,13 +30,14 @@ router.post('/', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation, 
-    hasBookings
+    hasBookings, 
+    tags
   } = req.body;
 
 
   try {
     // Check if all activities exist
-    const activitiesExist = await Activityy.find({ name: { $in: activities } });
+    const activitiesExist = await Activity.find({ name: { $in: activities } });
     if (activitiesExist.length !== activities.length) {
       return res.status(400).json({ msg: 'One or more activities do not exist ' });
     }
@@ -59,7 +60,8 @@ router.post('/', async (req, res) => {
       accessibility,
       pickupLocation,
       dropoffLocation,
-      hasBookings
+      hasBookings, 
+      tags
     });
 
     await newItinerary.save();
@@ -100,7 +102,8 @@ router.put('/:id', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation,
-    hasBookings
+    hasBookings, 
+    tags
   } = req.body;
 
   try {
@@ -121,7 +124,7 @@ router.put('/:id', async (req, res) => {
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
-
+    itinerary.tags = tags || itinerary.tags;
     await itinerary.save();
     res.json(itinerary);
   } catch (error) {

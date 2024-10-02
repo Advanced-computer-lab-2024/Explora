@@ -6,8 +6,8 @@ const Activity = require('../models/Tour_Guide_Activites');
 // GET all activities
 router.get('/', async (req, res) => {
     try {
-        const activities = await Activity.find();
-        res.json(activities);
+        const activity = await Activity.find();
+        res.json(activity);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -32,8 +32,8 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-})
-;
+});
+
 // Read a specific tourist activity by ID and populate activities
 router.get('/:id', async (req, res) => {
   try {
