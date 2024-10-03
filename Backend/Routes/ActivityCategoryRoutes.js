@@ -17,6 +17,6 @@ router.get("/", readActivityCategories);
 router.put("/", updateActivityCategory);
 
 // DELETE - Delete a category
-router.delete("/:type", deleteActivityCategory);
+router.delete("/:activityType", deleteActivityCategory);
 
 module.exports = router;

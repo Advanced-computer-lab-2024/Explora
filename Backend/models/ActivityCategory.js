@@ -6,11 +6,9 @@ const  ActivityCategorySchema = new Schema({
 
     activityType: {
         type: String,
+        undefined: true,
         required: true
-    },
-    description: {
-        type: String,
-        required: false 
     }
 })
 module.exports = mongoose.model('ActivityCategory', ActivityCategorySchema);
+
