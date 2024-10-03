@@ -25,6 +25,7 @@ const readActivityCategories = async (req, res) => {
     }
 };
 
+
 // Update a specific activity category
 const updateActivityCategory = async (req, res) => {
     const { activityType, description } = req.body; // Data from body instead of params

@@ -1,16 +1,18 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
+const {generateToken} = require('../middleware/AuthMiddleware');
+
 
 
 // delete admin account 
 const deleteAdminAccount = async (req, res) => {
     const {username} = req.params
-    const admin = await User.findOneAndDelete({Username: username, role: 'Admin' });
+    const admin = await User.findOneAndDelete({username: username});
     if(!admin){
-        return res.status(404).json({msg: 'Admin not found'});
+        return res.status(404).json({msg: 'User not found'});
     }
-    res.json({msg: 'Admin deleted successfully' , admin});
+    res.json({msg: 'User deleted successfully' , admin});
 }
 //delete admin account using id 
 /* const deleteAdminAccount = async (req, res) => {
@@ -36,9 +38,15 @@ const createAdminAccount = async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            role: 'Admin'
+            role: 'Admin',
         });
-        res.status(200).json(newAdmin);
+        res.status(200).json({
+            _id: newAdmin.id,
+            username: newAdmin.username,
+            email: newAdmin.email,
+            role: newAdmin.role,
+            token: generateToken(newAdmin.id)
+        });
     }
     catch (err) {
         res.status(400).json({msg: err.message});
