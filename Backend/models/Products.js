@@ -22,7 +22,7 @@ const productSchema = new Schema({
     },
     seller: { 
         type: Schema.Types.ObjectId, 
-        ref: 'User',  // reference to User model in UserRoutes.js
+        ref: 'User',
         required:true 
     },  
     
