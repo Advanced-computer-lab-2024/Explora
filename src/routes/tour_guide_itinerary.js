@@ -26,7 +26,7 @@ router.get('/tag/:tag', async (req, res) => {
 
       return res.status(200).json(itineraries);
   } catch (error) {
-      return res.status(500).json({ message: 'Server error', error: error.message });
+      return res.status(500).json({ message: 'Server tag error', error: error.message });
   }
 });
 
@@ -69,7 +69,7 @@ router.post('/', async (req, res) => {
     res.json(newItinerary);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server error');
+    res.status(500).send('Server create error');
   }
 });
 
@@ -85,7 +85,7 @@ router.get('/:id', async (req, res) => {
     res.json(itinerary);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server error');
+    res.status(500).send(error.message);
   }
 });
 
@@ -130,7 +130,7 @@ router.put('/:id', async (req, res) => {
     res.json(itinerary);
   } catch (error) {
     console.error(error);
-    res.status(500).send('Server error');
+    res.status(500).send('Server updatebyid error');
   }
 });
 
@@ -153,7 +153,7 @@ router.delete('/:id', async (req, res) => {
     res.json({ msg: 'Itinerary removed successfully' });
   } catch (error) {
     console.error('Error deleting itinerary:', error);
-    res.status(500).send('Server error');
+    res.status(500).send('Server delete error');
   }
 });
 
@@ -177,6 +177,44 @@ router.get('/historical', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
+// Filter itineraries based on price, date, tags, and language
+router.get('/filter', async (req, res) => {
+  const { price, date, tags, language } = req.query;
+  
+  // Build the filter object based on available query parameters
+  let filter = {};
+if (price) {
+  filter.price = { $lte: price }; // Price less than or equal to the provided value
+}
+
+// Check if the date is provided and filter accordingly
+if (date) {
+  filter.availableDates = { $in: [new Date(date)] };  // Filter by specific date
+}
+
+// Check if tags are provided and filter accordingly
+if (tags) {
+  filter.tags = { $in: tags.split(',') };  // Filter by tags (e.g., "museum,historical")
+}
+
+// Check if language is provided and filter accordingly
+if (language) {
+  filter.language = language;  // Filter by language
+}
+
+try {
+  // Query the database with the filter object
+  const itineraries = await Itinerary.find(filter);
+  
+  // Return the filtered itineraries
+  res.json(itineraries);  
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ message: "Error occurred while filtering itineraries." });
+}
+});
+
 
 
 module.exports = router;

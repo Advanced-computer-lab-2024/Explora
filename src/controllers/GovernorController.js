@@ -9,6 +9,7 @@ const createMuseum = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 };
+
 //this is the method in requirement 37
 
 
