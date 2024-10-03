@@ -1,0 +1,66 @@
+/* Styling the select dropdown */
+.styled-select {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f988ff;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    appearance: none; /* Removes default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.styled-select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Optional hover effect on options */
+.styled-select option:hover {
+    background-color: #f988ff;
+}
+
+
+/* Style the input fields */
+input[type="text"],
+input[type="email"],
+input[type="date"],
+select {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f988ff;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+    margin-bottom: 15px;
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Button styling */
+button {
+    padding: 10px 15px;
+    background-color: #f988ff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
