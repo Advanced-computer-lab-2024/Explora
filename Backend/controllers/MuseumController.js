@@ -1,4 +1,4 @@
-const Museum = require("../models/Governor");
+const Museum = require("../models/Museum");
 
 // Method to create a new museum
 const createMuseum = async (req, res) => {

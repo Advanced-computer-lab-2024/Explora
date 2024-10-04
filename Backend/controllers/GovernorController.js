@@ -2,6 +2,7 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 
+
 // add a new tourism governor account
 
 const addTourismGovernorAccount = async (req, res) => {

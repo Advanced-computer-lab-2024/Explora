@@ -9,7 +9,7 @@ const {
     getMuseumByName,
     filterMuseums,
     deleteMuseumByName
-} = require("../controllers/GovernorController");
+} = require("../controllers/MuseumController");
 
 
 router.get('/museums/filter', filterMuseums);
