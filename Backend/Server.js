@@ -16,7 +16,7 @@ app.use(express.json()) //checks if the request contains data and passes that da
 
 // routes
 app.use('/Governor', governorRoutes)
-app.use('/api/seller', sellerRoutes);
+app.use('/Seller', sellerRoutes);
 
 
 

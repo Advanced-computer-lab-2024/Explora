@@ -1,11 +1,23 @@
-const mongoose = require("mongoose");
+// models/Seller.js
+const mongoose = require('mongoose');
+const User = require('./User');  // Import the base User model
 
-const sellerSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    acceptedAsSeller: { type: Boolean, default: false } // Track if the seller is accepted
+// Seller-specific fields
+const SellerSchema = new mongoose.Schema({
+    description: {
+        type: String,
+        trim: true
+    },
+    products: {
+        type: [String], // Array of product names (strings)
+    },
+    isAccepted: {
+        type: Boolean,
+        default: false  // For testing, default is false
+    }
 });
 
-const Seller = mongoose.model('Seller', sellerSchema);
+// Create the Seller model as a discriminator of User
+const Seller = User.discriminator('Seller', SellerSchema);
 
 module.exports = Seller;
