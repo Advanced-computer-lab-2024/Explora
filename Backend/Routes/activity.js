@@ -4,7 +4,7 @@
 const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
-const ActivityCategory = require('../../src/models/ActivityCategory'); // Import your ActivityCategory model
+const ActivityCategory = require('../models/ActivityCategory'); // Import your ActivityCategory model
 
 
 // Create an activity
