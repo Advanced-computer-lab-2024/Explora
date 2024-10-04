@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
+const Schema = mongoose.Schema
 
 const userSchema = new Schema({
     username: {
@@ -11,8 +11,8 @@ const userSchema = new Schema({
     email: { 
         type: String, 
         required: true, 
-        unique: true 
-    },
+        unique: true },
+    
     password: {
         type: String,
         required: true
@@ -20,9 +20,9 @@ const userSchema = new Schema({
     role: { 
         type: String,
         enum: ['Tourist','Seller','Tour Guide','Advertiser','Tourism Governor', 'Admin'],
-        required: true 
-    }
-}, 
-       { discriminatorKey: 'role', timestamps: true });
+        required: true },
+    }, {discriminatorKey: 'role', timestamps: true });
 
-module.exports = mongoose.model('User', userSchema);
+    const User = mongoose.model('User', userSchema);
+
+    module.exports = User;
