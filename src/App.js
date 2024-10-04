@@ -2,31 +2,34 @@
 import React, { useState } from 'react';
 import MuseumForm from './components/MuseumForm';
 import MuseumList from './components/MuseumList';
-import MyActivities from './components/MyActivities';
-import './index.css';
+import ProductForm from './components/ProductForm';
+import ProductCard from './components/ProductCard';
 
 function App() {
     const [museums, setMuseums] = useState([]);
+    const [products, setProducts] = useState([]);
 
+    // Handle adding museums
     const handleAddMuseum = (newMuseum) => {
         setMuseums([...museums, newMuseum]);
     };
 
-    return (
-        <div className="App">
-            <header>
-                <h1>Tourism Governor Dashboard</h1>
-            </header>
-            <main>
-                {/* Museum management */}
-                <h2>Add and Manage Museums</h2>
-                <MuseumForm onSubmit={handleAddMuseum} />
-                <MuseumList museums={museums} />
+    // Handle adding products
+    const handleAddProduct = (newProduct) => {
+        setProducts([...products, newProduct]);
+    };
 
-                {/* Created Activities section */}
-                <h2>My Created Activities</h2>
-                <MyActivities />
-            </main>
+    return (
+        <div>
+            <h1>Tourism Governor</h1>
+
+            <h2>Manage Museums</h2>
+            <MuseumForm onSubmit={handleAddMuseum} />
+            <MuseumList museums={museums} />
+
+            <h2>Available Products</h2>
+            <ProductForm onSubmit={handleAddProduct} />
+            <ProductCard products={products} />
         </div>
     );
 }
