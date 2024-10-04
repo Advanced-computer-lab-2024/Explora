@@ -2,24 +2,19 @@
 
 const express = require('express');
 const router = express.Router();
-const { createTourist, getTourist, updateTourist } = require('../controllers/touristController');
-
+const { createTourist, getTourist, updateTourist, allTourists } = require('../controllers/touristController');
+const Tourist = require('../models/touristModel');
 
 // Route for getting a tourist by email
 router.get('/:get', getTourist);
+router.get('/', allTourists);
 
 // Route for updating a tourist
 router.put('/:update', updateTourist);
 
 // Register new tourist
-router.post('/register', async (req, res) => {
-    const { email, username, password, mobileNumber, nationality, dob, occupation } = req.body;
-
-    // Check if the email already exists
-    const existingTourist = await Tourist.findOne({ email });
-    if (existingTourist) {
-        return res.status(400).json({ error: 'Email is already in use' });
-    }
+router.post('/register', createTourist) ;
+    
 
     // Hash password before saving to the database
     // const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,13 +29,8 @@ router.post('/register', async (req, res) => {
     //     occupation
     // });
 
-    try {
-        await newTourist.save();
-        res.status(201).json({ message: 'Registration successful!' });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+    
+
 
 // Prevent DOB updates
 router.put('/update/:id', async (req, res) => {

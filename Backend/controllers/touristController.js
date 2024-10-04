@@ -15,13 +15,34 @@ const getTourist = async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 };
+const allTourists = async (req, res) => {
+    try {
+        const tourist = await touristModel.find({ });
+
+        if (!tourist) {
+            return res.status(404).json({ message: "Tourist not found" });
+        }
+
+        res.status(200).json(tourist);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 // Create a new tourist
 const createTourist = async (req, res) => {
     try {
         const { email, username, password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
 
-        const newTourist = new touristModel({
+        const existingTourist = await touristModel.findOne({ email });
+        if (existingTourist) {
+            return res.status(400).json({ message: "Tourist with the same email already exists" });
+        }
+        const existingUsername = await touristModel.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({ message: "Tourist with the same username already exists" });
+        }
+        const newTourist = await touristModel.create({
             email,
             username,
             password,
@@ -30,10 +51,10 @@ const createTourist = async (req, res) => {
             dateOfBirth,
             job,
             wallet,
+            role: 'Tourist'
         });
 
-        const savedTourist = await newTourist.save();
-        res.status(201).json(savedTourist);
+        res.status(201).json(newTourist);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -60,4 +81,4 @@ const updateTourist = async (req, res) => {
     }
 };
 
-module.exports = { getTourist, updateTourist, createTourist };
+module.exports = { getTourist, updateTourist, createTourist, allTourists };
