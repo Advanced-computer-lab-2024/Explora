@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
+const Museum = require("../models/Governor");
 
 // add a new tourism governor account
 
@@ -49,9 +50,6 @@ const museumSchema = new mongoose.Schema({
         student: { type: Number, required: true }
     }
 });
-
-
-
 
 const Museum = mongoose.model('Museum', museumSchema);
 
@@ -139,14 +137,6 @@ const getTicketPrice = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
-
-
 module.exports = {
     addTourismGovernorAccount,
     getAllGovernors,
@@ -156,5 +146,5 @@ module.exports = {
     updateMuseumByName, // Ensure this function exists
     deleteMuseumByName, // Ensure this function exists
     getTicketPrice // Make sure this function is defined
-    
+  
 };
