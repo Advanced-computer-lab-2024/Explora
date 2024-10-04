@@ -15,6 +15,7 @@ const {
     deleteMuseumByName
 } = require("../controllers/GovernorController");
 
+
 router.post("/", addTourismGovernorAccount);
 router.get("/", getAllGovernors);
 router.post('/museums', createMuseum);
