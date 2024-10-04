@@ -8,8 +8,12 @@ const registerUser = async (req, res) => {
 
     try {
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+        const existingEmail = await User.findOne({ email });
+        if (existingEmail) {
             return res.status(400).json({ error: 'Email already exists' });
         }
 
@@ -21,10 +25,20 @@ const registerUser = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+// view all users 
+const viewUsers = async (req, res) => {
+        try {
+            const user = await User.find({});
+            res.status(200).json(user);
+        } catch (err) {
+            res.status(500).json({msg: err.message});
+        }
+}
 
 // Additional user controller functions can be defined here...
 
 module.exports = {
     registerUser,
+    viewUsers
     // Add other controller methods like loginUser, getUserProfile, etc.
 };
