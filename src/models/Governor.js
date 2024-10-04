@@ -11,17 +11,7 @@ const museumSchema = new mongoose.Schema({
         foreigner: { type: Number, required: true },
         student: { type: Number, required: true }
     },
-    tags: {
-        type: { 
-            type: String, 
-            enum: ['Monuments', 'Museums', 'Religious Sites', 'Palaces/Castles'], 
-            required: true 
-        },
-        historicalPeriod: { 
-            type: String, 
-            required: true 
-        }
-    }
+    tags: [{ type: String }]
 });
 
 
