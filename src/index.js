@@ -8,6 +8,7 @@ const profileRoutes = require('./routes/profileRouter'); // Adjust the path as n
 const GovernorRoutes = require('./routes/GovernorRoutes'); // Adjust the path as needed
 const acitivityRoutes = require('./routes/activity'); // Adjust the path as needed
 const tour_guide_itineraryRoutes = require('./routes/tour_guide_itinerary'); // Adjust the path as needed
+const userRoute = require('./routes/userRoute'); // Adjust the path as necessary
 
 const app = express();
 
@@ -20,7 +21,7 @@ app.use('/api/profiles', profileRoutes);   // For managing profiles
 app.use('/api/Governor', GovernorRoutes);   // For managing profiles
 app.use('/api/activity', acitivityRoutes);   // For managing profiles
 app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For managing profiles
-
+app.use('/api/user', userRoute);
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI + 'ExploraDB') // Include your database name

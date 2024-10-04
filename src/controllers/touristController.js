@@ -1,11 +1,10 @@
 const touristModel = require('../models/touristModel');
-const { default: mongoose } = require('mongoose');
 
 // Get a tourist by email
 const getTourist = async (req, res) => {
     try {
         const { email } = req.params;
-        const tourist = await touristModel.findOne({ email: email });
+        const tourist = await touristModel.findOne({ email });
 
         if (!tourist) {
             return res.status(404).json({ message: "Tourist not found" });
@@ -30,7 +29,7 @@ const createTourist = async (req, res) => {
             nationality,
             dateOfBirth,
             job,
-            wallet
+            wallet,
         });
 
         const savedTourist = await newTourist.save();
@@ -46,9 +45,9 @@ const updateTourist = async (req, res) => {
         const { password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
 
         const updatedTourist = await touristModel.findOneAndUpdate(
-            { email: req.params.email },  // Find by email
+            { email: req.params.email },
             { password, mobileNumber, nationality, dateOfBirth, job, wallet },
-            { new: true, runValidators: true }  // Return the updated document
+            { new: true, runValidators: true }
         );
 
         if (!updatedTourist) {

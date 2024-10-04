@@ -1,49 +1,35 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-
-// Define the nested schema for the wallet
-// const walletType = new mongoose.Schema({
-//   name: { type: String, required: true },
-//   cardNumber: { type: Number, required: true },
-//   cvv: { type: Number, required: true },
-//   expiryDate: { type: Date, required: true } // fixed the typo
-// });
+const User = require('./User'); // Ensure correct import path
 
 // Define the main tourist schema
-const touristSchema = new Schema({
-  email: {
-    type: String,
-    required: true,
+const touristSchema = new mongoose.Schema(
+  {
+    mobileNumber: {
+      type: String, // Changed to String to accommodate various formats (e.g., international)
+      required: true,
+    },
+    nationality: {
+      type: String,
+      required: true,
+    },
+    dateOfBirth: {
+      type: Date,
+      required: true,
+    },
+    job: {
+      type: String,
+      required: true,
+    },
+    wallet: {
+      type: Number,
+      default: 0, // Optional: Initialize wallet with a default value
+    },
   },
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  mobileNumber: {
-    type: Number,
-    required: true,
-  },
-  nationality: {
-    type: String,
-    required: true,
-  },
-  dateOfBirth: {
-    type: Date,
-    required: true,
-  },
-  job: {
-    type: String,
-    required: true,
-  },
-  wallet: {
-    type: Number
-  }
-}, { timestamps: true });
+  { timestamps: true }
+);
+
+// Use the discriminator method to create a Tourist model
+const Tourist = User.discriminator('Tourist', touristSchema);
 
 // Export the model
-const Tourist = mongoose.model('Tourist', touristSchema);
-module.exports = Tourist; 
+module.exports = Tourist;
