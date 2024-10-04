@@ -15,6 +15,7 @@ const touristSchema = new mongoose.Schema(
     dateOfBirth: {
       type: Date,
       required: true,
+      immutable: true
     },
     job: {
       type: String,
@@ -27,6 +28,12 @@ const touristSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+// Virtual field to calculate age
+touristSchema.virtual('age').get(function() {
+  const currentDate = moment();
+  const birthDate = moment(this.dob);
+  return currentDate.diff(birthDate, 'years');
+});
 
 // Use the discriminator method to create a Tourist model
 const Tourist = User.discriminator('Tourist', touristSchema);

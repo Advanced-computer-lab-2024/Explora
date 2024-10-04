@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { ImMagicWand } = require('react-icons/im');
 
 const Schema = mongoose.Schema;
 
@@ -6,7 +7,8 @@ const userSchema = new Schema({
     username: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        Immutable: true
     },
     email: { 
         type: String, 
