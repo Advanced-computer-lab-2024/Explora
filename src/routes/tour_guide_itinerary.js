@@ -27,7 +27,38 @@ router.get('/upcoming', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+// Search itineraries by name and tag
+router.get('/search', async (req, res) => {
+  const { name, tags } = req.query;
 
+  // Build the filter object based on query parameters
+  let filter = {};
+
+  // If name is provided, use a case-insensitive partial match for the name field
+  if (name) {
+    filter.name = { $regex: name, $options: 'i' }; // 'i' for case-insensitive
+  }
+
+  // If tags are provided, search for itineraries containing any of the provided tags
+  if (tags) {
+    filter.tags = { $in: tags.split(',') }; // Split comma-separated tags into an array
+  }
+
+  try {
+    const itineraries = await Itinerary.find(filter);
+
+    // If no itineraries are found
+    if (itineraries.length === 0) {
+      return res.status(404).json({ message: 'No itineraries found with the specified name or tags.' });
+    }
+
+    // Return the filtered itineraries
+    res.json(itineraries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error occurred while searching itineraries.' });
+  }
+});
 // GET all itineraries
 router.get('/', async (req, res) => {
     try {
@@ -67,6 +98,7 @@ router.post('/', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
+    name,
     dropoffLocation, 
     hasBookings, 
     tags
@@ -84,6 +116,7 @@ router.post('/', async (req, res) => {
       availableTimes,
       accessibility,
       pickupLocation,
+      name,
       dropoffLocation,
       hasBookings, 
       tags
@@ -161,6 +194,7 @@ router.put('/:id', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
+    name,
     dropoffLocation,
     hasBookings, 
     tags
@@ -182,6 +216,7 @@ router.put('/:id', async (req, res) => {
     itinerary.availableTimes = availableTimes || itinerary.availableTimes;
     itinerary.accessibility = accessibility !== undefined ? accessibility : itinerary.accessibility;
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
+    itinerary.name = name || itinerary.name;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
     itinerary.tags = tags || itinerary.tags;

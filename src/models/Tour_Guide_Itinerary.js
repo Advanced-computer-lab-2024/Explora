@@ -13,6 +13,7 @@ const ItinerarySchema = new Schema({
   availableTimes: [{ type: String, required: true }], // e.g., "09:00 AM"
   accessibility: { type: Boolean, default: false }, // e.g., wheelchair access
   pickupLocation: { type: String },
+  name: { type: String },
   dropoffLocation: { type: String },
   hasBookings: { type: Boolean, default: false }, // Track if bookings are made
   tags: [{ type: String }] // Ensure this field is present
