@@ -12,10 +12,11 @@ const sellerRoutes = require('./Routes/SellerRoutes');
 
 const activityCategoriesRoute = require('./Routes/ActivityCategoryRoutes');
 const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
-const touristRoutes = require('./Routes/touristRouter'); // Route for tourists
-const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjust the path as needed
-const acitivityRoutes = require('./Routes/activity'); // Adjust the path as needed
-const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
+const touristRoutes = require('./Routes/touristRouter'); 
+const MuseumRoutes = require('./Routes/MuseumRoutes'); 
+const acitivityRoutes = require('./Routes/activity'); 
+const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); 
+const userRoutes = require('./Routes/userRoute');
 
 
 
@@ -42,6 +43,7 @@ app.use('/api/tourists', touristRoutes);   // For managing tourists
 app.use('/api/Governor', MuseumRoutes);   // For managing profiles
 app.use('/api/activity', acitivityRoutes);   // For managing profiles
 app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For managing profiles
+app.use('/users', userRoutes); 
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

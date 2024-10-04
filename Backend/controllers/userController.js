@@ -1,10 +1,13 @@
 // controllers/userController.js
 
 const User = require('../models/User');
+const Seller = require('../models/Seller');
+const TourGuide = require('../models/Tour_Guide_Profile');
+const Advertiser = require('../models/Advertiser');
 
 // Register a new user
 const registerUser = async (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { username, email, password, role, companyName, website, hotline , mobile, yearsOfExperience} = req.body;
 
     try {
         // Check if user already exists
@@ -16,11 +19,22 @@ const registerUser = async (req, res) => {
         if (existingEmail) {
             return res.status(400).json({ error: 'Email already exists' });
         }
-
         // Create new user
-        const newUser = new User({ username, email, password, role });
+        let newUser;
+        if (role == "Seller"){
+             newUser = new Seller({ username, email, password, role });
+        }
+        else if (role == "TourGuide"){
+             newUser = new TourGuide({ username, email, password, role, mobile, yearsOfExperience});
+        }
+        else if (role == "Advertiser"){
+             newUser = new Advertiser({ username, email, password, role, companyName, website, hotline });
+        }
+        else{
+             newUser = new User({ username, email, password, role });
+        }
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully!' });
+        res.status(201).json({ message: 'User registered successfully!' , user: newUser });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

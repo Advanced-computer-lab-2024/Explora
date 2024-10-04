@@ -7,12 +7,17 @@ const {generateToken} = require('../middleware/AuthMiddleware');
 
 // delete admin account 
 const deleteAdminAccount = async (req, res) => {
+    try{
     const {username} = req.params
     const admin = await User.findOneAndDelete({username: username});
     if(!admin){
         return res.status(404).json({msg: 'User not found'});
     }
     res.json({msg: 'User deleted successfully' , admin});
+}
+catch(err){
+    res.status(500).json({msg: err.message});
+}
 }
 //delete admin account using id 
 /* const deleteAdminAccount = async (req, res) => {

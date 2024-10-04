@@ -5,7 +5,8 @@ const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
 const ActivityCategory = require('../models/ActivityCategory'); // Import your ActivityCategory model
-
+const PrefrenceTag = require('../models/PrefrenceTag');
+const mongoose = require('mongoose');
 
 // Create an activity
 router.post('/create/:categoryName', async (req, res) => {
@@ -16,12 +17,23 @@ router.post('/create/:categoryName', async (req, res) => {
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
     try {
+        const activity = Activity.findOne({name,date, time, location})
+        if (activity){
+            return res.status(400).json({ message: 'Activity already exists.' });
+        }
         // Find the category by name
-        const category = await ActivityCategory.findOne({ category: categoryName });
+        const category = await ActivityCategory.findOne({ activityType: categoryName });
 
         // If the category is not found, return an error
         if (!category) {
             return res.status(404).json({ message: 'Category not found.' });
+        }
+
+        const prefTags = await PrefrenceTag.find({ tag: { $in: tags } });
+
+
+        if (prefTags.length !== tags.length) {
+            return res.status(400).json({ message: 'One or more tags are invalid.' });
         }
 
         // Create a new activity instance
@@ -32,13 +44,12 @@ router.post('/create/:categoryName', async (req, res) => {
             rating,
             location,
             price,
-            category: category._id, // Use the found category's ObjectId
-            tags,
+            category: category._id,
+            tags: prefTags.map(tag => tag._id), 
             specialDiscounts,
             bookingOpen,
         });
 
-        // Save the activity to the database
         const savedActivity = await newActivity.save();
         res.status(201).json(savedActivity);
     } catch (err) {
@@ -55,8 +66,12 @@ router.get('/filter', async (req, res) => {
 
     // Check if tag is provided and add it to the filter
     if (tag) {
-        filter.tags = tag;  // Direct match for the tag
-    }
+        const prefTag = await PrefrenceTag.findOne({ tag });
+        if (prefTag) {
+            filter.tags = prefTag._id; // Filter by tag ObjectId
+        } else {
+            return res.status(404).json({ message: 'Tag not found.' });
+        }    }
 
     // Check if name is provided and add it to the filter
     if (name) {
@@ -65,12 +80,15 @@ router.get('/filter', async (req, res) => {
 
     // Check if category is provided and add it to the filter
     if (category) {
-        filter.category = category;  // Direct match for the category
+        const foundCategory = await ActivityCategory.findOne({ activityType: category });
+        if (!foundCategory) {
+            return res.status(404).json({ message: 'Category not found.' });
+        } 
+        filter.category = foundCategory._id;
     }
-
     try {
         // Query the database with the filter object
-        const activities = await Activity.find(filter);
+        const activities = await Activity.find(filter).populate('tags');
 
         if (activities.length === 0) {
             return res.status(404).json({ message: 'No activities found with the specified criteria.' });

@@ -21,7 +21,7 @@ const userSchema = new Schema({
     },
     role: { 
         type: String,
-        enum: ['Tourist','Seller','Tour Guide','Advertiser','Tourism Governor', 'Admin'],
+        enum: ['Tourist','Seller','TourGuide','Advertiser','TourismGovernor', 'Admin'],
         required: true 
     }
 }, 

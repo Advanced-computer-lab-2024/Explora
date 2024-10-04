@@ -32,7 +32,11 @@ const activitySchema = new Schema({
     required: true,
   },
   tags: {
-    type: [String], // Array of tags for additional filtering
+    type: 
+    [{
+      type: mongoose.Schema.Types.ObjectId,   // Reference the PrefrenceTag model
+      ref: 'PrefrenceTag'
+    }], 
     default: [],
   },
   specialDiscounts: {
