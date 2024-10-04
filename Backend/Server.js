@@ -1,6 +1,10 @@
 require('dotenv').config();
 
+
 const express = require("express");
+const path = require('path');
+const cors = require('cors');
+
 const adminRoutes = require('./Routes/AdminRoutes');
 const productsRoutes = require('./Routes/ProductsRoutes');
 const governorRoutes = require('./Routes/GovernorRoutes');
@@ -13,8 +17,10 @@ mongoose.set('strictQuery', false); // disable strict query
 //express application
 const app = express();
 
+
 //middleware
 app.use(express.json()) //checks if the request contains data and passes that data to the request object
+app.use(cors());
 
 // routes
 app.use('/Admin',adminRoutes);
@@ -22,6 +28,7 @@ app.use('/Products',productsRoutes);
 app.use('/Governor', governorRoutes)
 app.use('/ActivityCategories', activityCategoriesRoute)
 app.use('/PrefrenceTag', PrefrenceTagRoute)
+app.use('/uploads', express.static(path.join(__dirname, '../images')));
 
 
 
