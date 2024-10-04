@@ -3,11 +3,10 @@ const mongoose = require("mongoose");
 
 // Create a new ActivityCategory
 const createActivityCategory = async (req, res) => {
-    const { activityType, description } = req.body;  // Data from body instead of params
+    const { activityType } = req.body;  
     try {
         const newActivityCategory = await ActivityCategory.create({
-            activityType,
-            description
+            activityType
         });
         res.status(200).json(newActivityCategory);
     } catch (err) {
@@ -18,20 +17,21 @@ const createActivityCategory = async (req, res) => {
 // Read all activity categories
 const readActivityCategories = async (req, res) => {
     try {
-        const activityCategories = await ActivityCategory.find({});
+        const activityCategories = await ActivityCategory.find();
         res.status(200).json(activityCategories);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };
 
+
 // Update a specific activity category
 const updateActivityCategory = async (req, res) => {
-    const { activityType, description } = req.body; // Data from body instead of params
+    const { oldActivityType, newActivityType } = req.body;
     try {
         const activityCategory = await ActivityCategory.findOneAndUpdate(
-            { activityType: activityType },
-            { description: description },
+            { activityType: oldActivityType }, 
+            { $set: { activityType: newActivityType } },
             { new: true }
         );
         if (!activityCategory) {
@@ -45,9 +45,9 @@ const updateActivityCategory = async (req, res) => {
 
 // Delete a specific activity category
 const deleteActivityCategory = async (req, res) => {
-    const { activityType } = req.body; // Expect activityType in body
+    const { activityType } = req.params;
     try {
-        const activityCategory = await ActivityCategory.findOneAndDelete({ activityType: activityType });
+        const activityCategory = await ActivityCategory.findOneAndDelete({ activityType });
         if (!activityCategory) {
             return res.status(404).json({ message: "Activity category not found." });
         }

@@ -21,14 +21,15 @@ const productSchema = new Schema({
         required: true
     },
     seller: { 
-        type: Schema.Types.ObjectId, 
-        ref: 'User',  // reference to User model in UserRoutes.js
-        required:true 
-    },  
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true 
+    }, 
+  
     
     quantity: {
         type: Number,
-        required: false
+        required: true
     },
 
     reviews: {
@@ -47,7 +48,12 @@ const productSchema = new Schema({
                 min: 1,
                 max: 5
             }
-        }]
+        }],
+        required: false
+    },
+    averageRating: {
+        type: Number,
+        default: 0
     }
 
 

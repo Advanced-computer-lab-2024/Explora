@@ -3,7 +3,7 @@ const router = express.Router();
 const{
     deleteAdminAccount,
     createAdminAccount,
-    getAllAdminAccounts     
+    getAllAdminAccounts    
 } = require("../controllers/AdminController");
 
 router.delete("/:username",deleteAdminAccount)
