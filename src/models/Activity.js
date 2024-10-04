@@ -27,7 +27,8 @@ const activitySchema = new Schema({
     required: true,
   },
   category: {
-    type: String,   // E.g., 'museum', 'historical place', 'activity', etc.
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'ActivityCategory',
     required: true,
   },
   tags: {

@@ -4,11 +4,41 @@
 const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
+const ActivityCategory = require('../models/ActivityCategory'); // Import your ActivityCategory model
+
 
 // Create an activity
-router.post('/create', async (req, res) => {
-    const newActivity = new Activity(req.body);
+router.post('/create/:categoryName', async (req, res) => {
+    // Extract the category name from request parameters
+    const { categoryName } = req.params;
+
+    // Extract other activity details from the request body
+    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
+
     try {
+        // Find the category by name
+        const category = await ActivityCategory.findOne({ category: categoryName });
+
+        // If the category is not found, return an error
+        if (!category) {
+            return res.status(404).json({ message: 'Category not found.' });
+        }
+
+        // Create a new activity instance
+        const newActivity = new Activity({
+            name,
+            date,
+            time,
+            rating,
+            location,
+            price,
+            category: category._id, // Use the found category's ObjectId
+            tags,
+            specialDiscounts,
+            bookingOpen,
+        });
+
+        // Save the activity to the database
         const savedActivity = await newActivity.save();
         res.status(201).json(savedActivity);
     } catch (err) {
