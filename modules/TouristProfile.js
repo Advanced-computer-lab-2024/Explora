@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import './TouristProfile.css';
+import { Link } from 'react-router-dom';
+//import './TouristProfile.css';
 
 const TouristProfile = () => {
   // State to store the profile data
@@ -36,7 +37,7 @@ const TouristProfile = () => {
   };
 
   return (
-    <div>
+    <div> 
       <h2>Tourist Profile</h2>
       <form onSubmit={handleSubmit}>
         {/* Email Field */}
@@ -322,8 +323,20 @@ const TouristProfile = () => {
         </button>
         
       </form>
-    </div>
+      <Link to="/SearchPageHeader">
+          <button style={buttonStyle}>Search Page</button>
+      </Link>
+     </div>
   );
+};
+// Add some basic button styling
+const buttonStyle = {
+    margin: '0 10px',
+    padding: '10px 20px',
+    fontSize: '16px',
+    cursor: 'pointer',
+    borderRadius: '5px',
+    border: '1px solid #ccc',
 };
 
 export default TouristProfile;
