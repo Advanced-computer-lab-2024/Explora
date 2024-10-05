@@ -38,6 +38,7 @@ const activitySchema = new Schema({
       ref: 'PrefrenceTag'
     }], 
     default: [],
+  
   },
   specialDiscounts: {
     type: String,

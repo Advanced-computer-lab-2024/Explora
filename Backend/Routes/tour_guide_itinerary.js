@@ -3,6 +3,49 @@ const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 
+
+// Sort itineraries by price (high to low or low to high)
+router.get('/sortprice', async (req, res) => {
+  const { order } = req.query; // 'high' for descending, 'low' for ascending
+  
+  // Set sort order based on the 'order' query parameter
+  let sortOrder = order === 'high' ? -1 : 1; // -1 for descending, 1 for ascending
+
+  try {
+    const sortedItineraries = await Itinerary.find().sort({ price: sortOrder });
+
+    if (sortedItineraries.length === 0) {
+      return res.status(404).json({ message: 'No itineraries found for sorting by price.' });
+    }
+
+    res.status(200).json(sortedItineraries);
+  } catch (error) {
+    console.error('Error sorting itineraries by price:', error);
+    res.status(500).json({ message: 'Server error while sorting by price', error: error.message });
+  }
+});
+
+// Sort itineraries by rating (high to low or low to high)
+router.get('/sortrate', async (req, res) => {
+  const { order } = req.query; // 'high' for descending, 'low' for ascending
+  
+  // Set sort order based on the 'order' query parameter
+  let sortOrder = order === 'high' ? -1 : 1; // -1 for descending, 1 for ascending
+
+  try {
+    const sortedItineraries = await Itinerary.find().sort({ rating: sortOrder });
+
+    if (sortedItineraries.length === 0) {
+      return res.status(404).json({ message: 'No itineraries found for sorting by rating.' });
+    }
+
+    res.status(200).json(sortedItineraries);
+  } catch (error) {
+    console.error('Error sorting itineraries by rating:', error);
+    res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
+  }
+});
+
 // get all upcoming itineraries
 router.get('/upcoming', async (req, res) => {
   try {
@@ -196,6 +239,7 @@ router.put('/:id', async (req, res) => {
     pickupLocation,
     name,
     dropoffLocation,
+    rating,
     hasBookings, 
     tags
   } = req.body;
@@ -218,6 +262,7 @@ router.put('/:id', async (req, res) => {
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
     itinerary.name = name || itinerary.name;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
+    itinerary.rating = rating || itinerary.rating;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
     itinerary.tags = tags || itinerary.tags;
     await itinerary.save();
@@ -271,6 +316,7 @@ router.get('/historical', async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
+
 
 // Filter itineraries based on price, date, tags, and language
 

@@ -15,6 +15,7 @@ const ItinerarySchema = new Schema({
   pickupLocation: { type: String },
   name: { type: String },
   dropoffLocation: { type: String },
+  rating: { type: Number, required: true },
   hasBookings: { type: Boolean, default: false }, // Track if bookings are made
   tags: [{ type: String }] // Ensure this field is present
 });

@@ -12,6 +12,7 @@ const mongoose = require('mongoose');
 router.post('/create/:categoryName', async (req, res) => {
     // Extract the category name from request parameters
     const { categoryName } = req.params;
+
     // Extract other activity details from the request body
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
@@ -167,6 +168,93 @@ router.get('/tag/:tag', async (req, res) => {
     }
 });
 
+// Filter activities by price, date, category, and rating
+router.get('/search', async (req, res) => {
+    const { price, date, category, rating } = req.query;
+
+    // Build the filter object based on available query parameters
+    let filter = {};
+
+    // Check if price is provided and add it to the filter
+    if (price) {
+        filter.price = { $lte: price };  // Less than or equal to the provided price
+    }
+
+    // Check if date is provided and add it to the filter
+    if (date) {
+        filter.date = { $gte: new Date(date) };  // Greater than or equal to the provided date
+    }
+
+    // Check if category is provided and add it to the filter
+    if (category) {
+        filter.category = category;  // Direct match for the category
+    }
+
+    // Check if rating is provided and add it to the filter
+    if (rating) {
+        filter.rating = { $gte: rating };  // Greater than or equal to the provided rating
+    }
+
+    try {
+        // Query the database with the filter object
+        const activities = await Activity.find(filter);
+
+        if (activities.length === 0) {
+            return res.status(404).json({ message: 'No activities found with the specified criteria.' });
+        }
+
+        return res.status(200).json(activities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+// Sort activities by price (low to high or high to low)
+router.get('/sortprice', async (req, res) => {
+    const { order } = req.query;  // Get the order (either 'low' or 'high')
+    
+    let sortOption = {};
+    
+    // Set the sorting order based on the query parameter
+    if (order === 'low') {
+        sortOption.price = 1; // Ascending order
+    } else if (order === 'high') {
+        sortOption.price = -1; // Descending order
+    } else {
+        return res.status(400).json({ message: 'Invalid sort order. Use "low" or "high".' });
+    }
+
+    try {
+        // Query the database and sort the activities by price
+        const sortedActivities = await Activity.find().sort(sortOption);
+        res.status(200).json(sortedActivities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+// Sort activities by rating (low to high or high to low)
+router.get('/sortrate', async (req, res) => {
+    const { order } = req.query;  // Get the order (either 'low' or 'high')
+
+    let sortOption = {};
+
+    // Set the sorting order based on the query parameter
+    if (order === 'low') {
+        sortOption.rating = 1; // Ascending order
+    } else if (order === 'high') {
+        sortOption.rating = -1; // Descending order
+    } else {
+        return res.status(400).json({ message: 'Invalid sort order. Use "low" or "high".' });
+    }
+
+    try {
+        // Query the database and sort the activities by rating
+        const sortedActivities = await Activity.find().sort(sortOption);
+        res.status(200).json(sortedActivities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
 
 
 module.exports = router;

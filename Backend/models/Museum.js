@@ -11,6 +11,8 @@ const museumSchema = new mongoose.Schema({
         foreigner: { type: Number, required: true },
         student: { type: Number, required: true }
     },
+    //budget: { type: Number, required: true },
+    //ratings: { type: Number, required: true }
     tags: [{ type: String }]
 });
 
