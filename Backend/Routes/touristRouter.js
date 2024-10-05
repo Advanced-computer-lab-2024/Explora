@@ -6,11 +6,11 @@ const { createTourist, getTourist, updateTourist, allTourists } = require('../co
 const Tourist = require('../models/touristModel');
 
 // Route for getting a tourist by email
-router.get('/:get', getTourist);
+router.get('/:email', getTourist);
 router.get('/', allTourists);
 
 // Route for updating a tourist
-router.put('/:update', updateTourist);
+router.put('/update', updateTourist);
 
 // Register new tourist
 router.post('/register', createTourist) ;
