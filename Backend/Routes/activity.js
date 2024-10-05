@@ -12,13 +12,12 @@ const mongoose = require('mongoose');
 router.post('/create/:categoryName', async (req, res) => {
     // Extract the category name from request parameters
     const { categoryName } = req.params;
-
     // Extract other activity details from the request body
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
     try {
-        const activity = Activity.findOne({name,date, time, location})
-        if (activity){
+        const activity = await Activity.findOne({ name, date, time, location });
+        if (activity) {
             return res.status(400).json({ message: 'Activity already exists.' });
         }
         // Find the category by name
@@ -103,8 +102,8 @@ router.get('/filter', async (req, res) => {
 // Read all activities
 router.get('/', async (req, res) => {
     try {
-        const activities = await Activity.find();
-        res.status(200).json(activities);
+    const activities = await Activity.find().populate('category', 'activityType').populate('tags', 'tag').select('-createdAt -updatedAt');
+    res.status(200).json(activities);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
