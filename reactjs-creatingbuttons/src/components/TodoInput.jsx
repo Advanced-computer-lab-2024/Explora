@@ -21,20 +21,6 @@ export default function TodoInput() {
 
       <button
         style={{ width: '220px', height: '60px', margin: '10px' }}
-        onClick={() => navigate('/update-profile')}
-      >
-        Update Profile
-      </button>
-
-      <button
-        style={{ width: '220px', height: '60px', margin: '10px' }}
-        onClick={() => navigate('/view-profile')} 
-      >
-        View Profile
-      </button>
-
-      <button
-        style={{ width: '220px', height: '60px', margin: '10px' }}
         onClick={() => navigate('/tour-guide-itinerary')}
       >
         Tour Guide Itinerary

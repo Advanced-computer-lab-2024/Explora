@@ -106,6 +106,12 @@ export default function ProfileView() {
                 />
               </td>
             </tr>
+            <tr>
+              <td>IsAccepted</td>
+              <td>
+            <span>{profile.IsAccepted ? "Accepted" : "Not Accepted"}</span> {/* Display based on the boolean value */}
+          </td>
+        </tr>
           </tbody>
         </table>
         <button type="submit">Update Profile</button>

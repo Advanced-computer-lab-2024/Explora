@@ -105,7 +105,7 @@ router.get('/search', async (req, res) => {
 // GET all itineraries
 router.get('/', async (req, res) => {
     try {
-        const itineraries = await Itinerary.find();
+        const itineraries = await Itinerary.find({ user: req.user.id });
         res.json(itineraries);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -237,9 +237,8 @@ router.put('/:id', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
-    name,
     dropoffLocation,
-    rating,
+    name,
     hasBookings, 
     tags
   } = req.body;
@@ -262,7 +261,6 @@ router.put('/:id', async (req, res) => {
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
     itinerary.name = name || itinerary.name;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
-    itinerary.rating = rating || itinerary.rating;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
     itinerary.tags = tags || itinerary.tags;
     await itinerary.save();

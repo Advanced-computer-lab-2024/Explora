@@ -1,23 +1,29 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
-const ItinerarySchema = new Schema({
-  activities: [{ type: String, required: true }],
-  locations: [{ type: String, required: true }],
-  timeline: [{ type: String, required: true }], // e.g., "9:00 AM - Visit Museum"
-  duration: { type: Number, required: true }, // in hours
+const itinerarySchema = new mongoose.Schema({
+  activities: [{
+    duration: { type: Number, required: true }, // Duration in minutes
+    date: { type: Date, required: true },
+    time: { type: String, required: true }
+  }],
+  locations: { type: String, required: true },
+  timeline: { type: String, required: true },
+  duration: { type: Number, required: true }, // Duration in days or appropriate unit
   language: { type: String, required: true },
   price: { type: Number, required: true },
-  availableDates: [{ type: Date, required: true }],
-  availableTimes: [{ type: String, required: true }], // e.g., "09:00 AM"
-  accessibility: { type: Boolean, default: false }, // e.g., wheelchair access
-  pickupLocation: { type: String },
-  name: { type: String },
-  dropoffLocation: { type: String },
-  rating: { type: Number, required: true },
-  hasBookings: { type: Boolean, default: false }, // Track if bookings are made
-  tags: [{ type: String }] // Ensure this field is present
+  availableDates: { type: [Date], required: true },
+  availableTimes: { type: [String], required: true },
+  accessibility:{ type: Boolean, default: false }, 
+  pickupLocation: { type: String, required: true },
+  name: { type: String, required: false },
+  dropoffLocation: { type: String, required: true },
+  hasBookings: {
+    type: Boolean,
+    default: false, // Default to false, can be updated when accepted as a guide
+  },
+  tags: { type: [String], required: false },
 });
 
-module.exports = mongoose.model('Itinerary', ItinerarySchema);
+const Itinerary = mongoose.model('Itinerary', itinerarySchema);
+
+module.exports = Itinerary;

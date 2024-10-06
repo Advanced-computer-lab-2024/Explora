@@ -41,7 +41,7 @@ import CompanyProfile from"./components/CompanyProfile";
 import ActivityManager from './components/ActivityManager.jsx';
 import Sellerhome from './components/Sellerhome';
 import UpdateSeller from './components/UpdateSeller';
-
+import ItineraryList from './components/ItineraryList';
 import CompanyUpdateForm from './components/CompanyUpdateForm.jsx';
 import CreateSeller from './components/CreateSeller.jsx';
 import ProfileDetailsPage from './components/ProfileDetailsPage';
@@ -55,6 +55,8 @@ import ProductListTourist from './components/ProductListTourist.jsx';
 import CreateProfile from './components/Createprofile.jsx';
 import UpdateProfile from './components/UpdateProfile.jsx';
 import ProfileView from './components/ProfileView.jsx'; // Update the import
+import ItineraryView from './components/ItineraryView.jsx'; 
+
 
 
 function App() {
@@ -85,7 +87,9 @@ function App() {
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
         <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
         <Route path="/create-itinerary" element={<CreateItinerary />} />
+        <Route path="/itinerary-view/:id" element={<ItineraryView />} />
         <Route path="/read-itinerary" element={<ReadItinerary />} />
+        <Route path="/itinerariesList" element={<ItineraryList />} />
         <Route path="/update-itinerary" element={<UpdateItinerary />} />
         <Route path="/delete-itinerary" element={<DeleteItinerary />} />
         <Route path="/tourist-itinerary" element={<TouristItinerary />} />
