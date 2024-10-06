@@ -61,14 +61,16 @@ export default function ActivityForm({ addActivity, currentActivity, isEditing, 
       <input type="date" name="date" value={formData.date} onChange={handleChange} required />
       <input type="time" name="time" value={formData.time} onChange={handleChange} required />
       <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="Location" required />
-      <input type="text" name="price" value={formData.price} onChange={handleChange} placeholder="Price or Price Range" required />
+      <input type="text" name="price" value={formData.price} onChange={handleChange} placeholder="Price" required />
       <input type="text" name="category" value={formData.category} onChange={handleChange} placeholder="Category" required />
       <input type="text" name="tags" value={formData.tags} onChange={handleChange} placeholder="Tags" />
       <input type="text" name="discount" value={formData.discount} onChange={handleChange} placeholder="Special Discounts" />
-      <label>
+
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <label style={{ marginRight: '5px' }}>Booking Open</label>
         <input type="checkbox" name="isBookingOpen" checked={formData.isBookingOpen} onChange={handleChange} />
-        Booking Open
-      </label>
+      </div>
+
       <button type="submit">{isEditing ? 'Update' : 'Add'} Activity</button>
     </form>
   );

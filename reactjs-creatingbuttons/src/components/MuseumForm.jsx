@@ -11,14 +11,14 @@ function MuseumForm({ onSubmit }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const newMuseum = { 
-            name, 
-            description, 
-            location, 
-            openingHours, 
-            ticketPrice, 
+        const newMuseum = {
+            name,
+            description,
+            location,
+            openingHours,
+            ticketPrice,
             type,
-            historicalPeriod // Add this line
+            historicalPeriod,
         };
         onSubmit(newMuseum);
         // Reset form fields
@@ -28,7 +28,7 @@ function MuseumForm({ onSubmit }) {
         setOpeningHours('');
         setTicketPrice({ foreigner: '', native: '', student: '' });
         setType('Monuments');
-        setHistoricalPeriod(''); // Reset historical period
+        setHistoricalPeriod('');
     };
 
     return (

@@ -15,8 +15,14 @@ const CompanyProfilePage = () => {
 <div> 
 <Link to="/profile">
 <button type="button">View profiles</button></Link></div> 
+<div>
+    <Link to ="/company-update">
+    <button type = 'button'> Update my Profile</button> </Link>
+</div>
+<button> View Activities </button>
 </form>
 </div>
+
 </header>
     );
 };

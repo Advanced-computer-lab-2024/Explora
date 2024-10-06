@@ -30,6 +30,7 @@ export default function ActivityManager() {
   };
 
   return (
+    <header>
     <div>
       <h1>Activity Manager</h1>
       <ActivityForm
@@ -44,5 +45,6 @@ export default function ActivityManager() {
         deleteActivity={deleteActivity}
       />
     </div>
+    </header>
   );
 }

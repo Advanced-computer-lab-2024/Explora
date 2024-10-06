@@ -1,7 +1,28 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const DeleteItinerary = () => {
-  return <div>Delete Itinerary Page</div>;
+  const navigate = useNavigate();
+
+  const handleDeleteItinerary = () => {
+    navigate('/delete-itinerary');
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+      <button 
+        style={{ width: '200px', height: '50px', fontSize: '16px' }}
+      >
+        View Itineraries
+      </button>
+      <button 
+        onClick={handleDeleteItinerary} 
+        style={{ width: '200px', height: '50px', fontSize: '16px' }}
+      >
+        Delete Itinerary
+      </button>
+    </div>
+  );
 };
 
 export default DeleteItinerary;
