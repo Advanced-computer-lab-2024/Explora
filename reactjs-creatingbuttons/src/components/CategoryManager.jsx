@@ -40,6 +40,7 @@ export default function CategoryManager() {
   };
 
   return (
+    <header>
     <div>
       <h1>Activity Categories</h1>
       <CategoryForm
@@ -54,5 +55,6 @@ export default function CategoryManager() {
         deleteCategory={deleteCategory}
       />
     </div>
+    </header>
   );
 }

@@ -44,6 +44,17 @@ import CompanyProfile from"./components/CompanyProfile";
 import ActivityManager from './components/ActivityManager.jsx';
 import Sellerhome from './components/Sellerhome';
 import UpdateSeller from './components/UpdateSeller';
+import CompanyUpdateForm from './components/CompanyUpdateForm.jsx';
+import CreateSeller from './components/CreateSeller.jsx';
+import ProfileDetailsPage from './components/ProfileDetailsPage';
+import SearchPageHeader from './components/SearchPageHeader';
+import SiteSearchPage from './components/SiteSearchPage'; // Your search components
+import ActivitySearchPage from './components/ActivitySearchPage';
+import ItinerarySearchPage from './components/ItinerarySearchPage';
+import UpcomingActivities from './components/UpcomingActivities';
+import UpcomingItineraries from './components/UpcomingItineraries';
+import ProductListTourist from './components/ProductListTourist.jsx';
+
 function App() {
 
   return (
@@ -81,7 +92,7 @@ function App() {
         <Route path="/update-itinerary-tourist" element={<UpdateItineraryTourist />} />
         <Route path="/delete-itinerary-tourist" element={<DeleteItineraryTourist />} />
         <Route path="/tourist-home" element={<Touristhome />} /> {/* Correct route for Touristhome */}
-        <Route path="/tourist-profile" element={<TouristProfile />} />  {/* Route for TouristProfile */}
+        <Route path="/tourist-profile" element={<TouristProfile />} /> {/* Route for TouristProfile */}
         <Route path="/tourist-search" element={<TouristSearch />} />  {/* Route for TouristSearch */}
         <Route path="/company" element={<CompanyProfilePage/>} />
         <Route path="/profileform" element={<CompanyProfileForm/>} />
@@ -89,8 +100,17 @@ function App() {
         <Route path="/amanager" element={<ActivityManager/>} />
         <Route path="/seller-home" element={<Sellerhome />} />
         <Route path="/update-seller" element={<UpdateSeller />} />
-
-
+        <Route path="/company-update" element={<CompanyUpdateForm />} />
+        <Route path="/create-seller" element={<CreateSeller />} /> {/* Route for CreateSeller */}
+        <Route path="/ProfileDetailsPage" element={<ProfileDetailsPage/>}/>
+        <Route path="/SearchPageHeader" element={<SearchPageHeader/>} />
+        <Route path="/SiteSearchPage" element={<SiteSearchPage/>} />
+        <Route path="/ActivitySearchPage" element={<ActivitySearchPage/>} />
+        <Route path="/ItinerarySearchPage" element={<ItinerarySearchPage/>} />
+        <Route path="/UpcomingActivities" element={<UpcomingActivities/>} />
+        <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
+        <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
+        <Route path="product-list-tourist" element={<ProductListTourist/>} />
         
 
         </Routes>
@@ -100,5 +120,6 @@ function App() {
 }
 
 export default App;
+
 
 

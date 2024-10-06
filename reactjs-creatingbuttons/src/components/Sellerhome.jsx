@@ -6,11 +6,15 @@ export default function Sellerhome() {
 
   return (
     <header>
-    <div>
-      <h1>Seller Home</h1>
-      <button onClick={() => navigate('/update-seller')}>Update my profile</button>
-      <button onClick={() => navigate('/product-list')}>View Products</button>
-    </div>
+      <div>
+        <h1>Seller Home</h1>
+
+        {/* Add navigation to CreateSeller component */}
+        <button onClick={() => navigate('/create-seller')}>Create Profile</button>
+        <button>View Profiles</button>
+        <button onClick={() => navigate('/update-seller')}>Update my profile</button>
+        <button onClick={() => navigate('/product-list')}>View Products</button>
+      </div>
     </header>
   );
 }
