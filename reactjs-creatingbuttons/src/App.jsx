@@ -19,9 +19,6 @@ import SignupAdvertiser from './components/SignupAdvertiser';
 import SignupSeller from './components/SignupSeller';
 import Advertiser from './components/Advertiser';
 import TodoInput from './components/TodoInput.jsx';
-import CreateProfile from './components/Createprofile.jsx';
-import UpdateProfile from './components/UpdateProfile.jsx';
-import ViewProfile from './components/ViewProfile.jsx';
 import TourGuideItinerary from './components/TourGuideItinerary.jsx';  
 import CreateItinerary from './components/CreateItinerary.jsx'; 
 import ReadItinerary from './components/ReadItinerary.jsx';  
@@ -44,6 +41,7 @@ import CompanyProfile from"./components/CompanyProfile";
 import ActivityManager from './components/ActivityManager.jsx';
 import Sellerhome from './components/Sellerhome';
 import UpdateSeller from './components/UpdateSeller';
+
 import CompanyUpdateForm from './components/CompanyUpdateForm.jsx';
 import CreateSeller from './components/CreateSeller.jsx';
 import ProfileDetailsPage from './components/ProfileDetailsPage';
@@ -54,6 +52,10 @@ import ItinerarySearchPage from './components/ItinerarySearchPage';
 import UpcomingActivities from './components/UpcomingActivities';
 import UpcomingItineraries from './components/UpcomingItineraries';
 import ProductListTourist from './components/ProductListTourist.jsx';
+import CreateProfile from './components/Createprofile.jsx';
+import UpdateProfile from './components/UpdateProfile.jsx';
+import ProfileView from './components/ProfileView.jsx'; // Update the import
+
 
 function App() {
 
@@ -79,8 +81,8 @@ function App() {
           <Route path="/signupseller" element={<SignupSeller />} />
           <Route path="/advertiser" element={<Advertiser />} />
           <Route path="/create-profile" element={<CreateProfile />} />
-        <Route path="/update-profile" element={<UpdateProfile />} />
-        <Route path="/view-profile" element={<ViewProfile />} />
+          <Route path="/view-profile/:id" element={<ProfileView />} />
+          <Route path="/update-profile/:id" element={<UpdateProfile />} />
         <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
         <Route path="/create-itinerary" element={<CreateItinerary />} />
         <Route path="/read-itinerary" element={<ReadItinerary />} />
