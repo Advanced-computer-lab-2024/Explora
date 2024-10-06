@@ -9,7 +9,6 @@ const adminRoutes = require('./Routes/AdminRoutes');
 const productsRoutes = require('./Routes/ProductsRoutes');
 const governorRoutes = require('./Routes/GovernorRoutes');
 const sellerRoutes = require('./Routes/SellerRoutes');
-
 const activityCategoriesRoute = require('./Routes/ActivityCategoryRoutes');
 const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
 const touristRoutes = require('./Routes/touristRouter'); // Route for tourists

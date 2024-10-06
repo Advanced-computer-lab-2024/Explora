@@ -14,7 +14,7 @@ router.post('/', async (req, res) => {
       name,
       mobile,
       yearsOfExperience,
-      previousWork,
+      previousWork
     });
     await newProfile.save();
     res.json(newProfile);
@@ -36,28 +36,46 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Update profile
-router.put('/:id', async (req, res) => {
-  const { name, mobile, yearsOfExperience, previousWork, isAccepted} = req.body;
+// Get all profiles
+router.get('/', async (req, res) => {
   try {
-    let profile = await Profile.findById(req.params.id);
-    if (!profile) {
-      return res.status(404).json({ msg: 'Profile not found' });
-    }
-
-    profile.name = name || profile.name;
-    profile.mobile = mobile || profile.mobile;
-    profile.yearsOfExperience = yearsOfExperience || profile.yearsOfExperience;
-    profile.previousWork = previousWork || profile.previousWork;
-    profile.isAccepted = isAccepted !== undefined ? isAccepted : profile.isAccepted;    
-    
-    await profile.save();
-    res.json(profile);
+    const profiles = await Profile.find(); // Fetch all profiles
+    res.json(profiles);
   } catch (error) {
     console.error(error); // Log the error for debugging
     res.status(500).send('Server error');
   }
 });
 
-module.exports = router; 
+// Update profile
+router.put('/me/:id', async (req, res) => {
+  const { email, password, name, mobile, yearsOfExperience, previousWork } = req.body;
+  const userId = req.params.id; // Get userId from the URL
 
+  try {
+    const profile = await Profile.findById(userId);
+    if (!profile) {
+      console.log('Profile not found with ID:', userId); // Debug log
+      return res.status(404).json({ msg: 'Profile not found' });
+    }
+
+    // Update fields as needed
+    if (email) profile.email = email;
+    if (password) profile.password = await hashPassword(password);
+    if (name) profile.name = name;
+    if (mobile) profile.mobile = mobile;
+    if (yearsOfExperience) profile.yearsOfExperience = yearsOfExperience;
+    if (previousWork) profile.previousWork = previousWork;
+
+    await profile.save();
+    res.json(profile);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
+
+module.exports = router;
