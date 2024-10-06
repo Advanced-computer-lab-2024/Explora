@@ -23,6 +23,6 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
     default: false, // Default to false, can be updated when accepted as a guide
   }
 });
-const TourGuide = User.discriminator('TourGuide', Tour_Guide_ProfileSchema);
+const TourGuide = User.discriminator('TourGuide', Tour_Guide_Profile_ProfileSchema);
 
 module.exports = TourGuide;
