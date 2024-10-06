@@ -141,11 +141,20 @@ const searchProducts = async (req, res) => {
 
 // sort product by rating 
 const sortProducts = async (req, res) => {
+    const { order } = req.query; 
+    let sortOrder = order === 'high' ? -1 : 1; 
+  
     try {
-        const products = await Product.find().sort({ averageRating: -1 });
-        res.status(200).json(products);
-    } catch (err) {
-        res.status(500).json({ msg: err.message });
+      const sortedproducts = await Product.find().sort({ rating: sortOrder });
+  
+      if (sortedproducts.length === 0) {
+        return res.status(404).json({ message: 'No products found for sorting by rating.' });
+      }
+  
+      res.status(200).json(sortedproducts);
+    } catch (error) {
+      console.error('Error sorting products by rating:', error);
+      res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
     }
     
 };
