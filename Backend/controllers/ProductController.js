@@ -141,7 +141,32 @@ const searchProducts = async (req, res) => {
 
 // sort product by rating 
 const sortProducts = async (req, res) => {
+    try {
+        const products = await Product.find().sort({ averageRating: -1 });
+        res.status(200).json(products);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
     
+};
+const addReview = async (req, res) => {
+    const { id } = req.params;
+    const { user, comment, rating } = req.body;
+
+    try {
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ msg: 'Product not found' });
+
+        product.reviews.push({ user, comment, rating });
+        
+        // Recalculate and update the average rating
+        product.averageRating = product.calculateAverageRating();
+        await product.save();
+
+        res.status(200).json(product);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
 };
 
 
@@ -153,5 +178,6 @@ module.exports = {
     searchProducts,
     filteredProducts,
     sortProducts,
-    updateProduct
+    updateProduct,
+    addReview
 };
