@@ -5,20 +5,22 @@ const Profile = require('../models/Tour_Guide_Profile');
 
 // Create profile
 router.post('/', async (req, res) => {
-  const { name, mobile, yearsOfExperience, previousWork, isAccepted} = req.body;
+  const { username, email, password,name, mobile, yearsOfExperience, previousWork} = req.body;
   try {
     const newProfile = new Profile({
+      username,
+      email,
+      password,
       name,
       mobile,
       yearsOfExperience,
       previousWork,
-      isAccepted,
     });
     await newProfile.save();
     res.json(newProfile);
   } catch (error) {
-    res.status(500).send('Server error');
-  }
+    console.error('Error creating profile:', error);  // Log the error
+    res.status(500).send('Server error');  }
 });
 
 // Get profile by ID

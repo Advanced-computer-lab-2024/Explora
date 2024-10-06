@@ -2,6 +2,10 @@ const mongoose = require('mongoose');
 const User = require('./User');
 
 const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
+  name:{
+    type: String,
+    required: true
+  },
   mobile: {
     type: String,
     required: true,
