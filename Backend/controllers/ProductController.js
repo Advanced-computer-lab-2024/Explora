@@ -141,7 +141,41 @@ const searchProducts = async (req, res) => {
 
 // sort product by rating 
 const sortProducts = async (req, res) => {
+    const { order } = req.query; 
+    let sortOrder = order === 'high' ? -1 : 1; 
+  
+    try {
+      const sortedproducts = await Product.find().sort({ rating: sortOrder });
+  
+      if (sortedproducts.length === 0) {
+        return res.status(404).json({ message: 'No products found for sorting by rating.' });
+      }
+  
+      res.status(200).json(sortedproducts);
+    } catch (error) {
+      console.error('Error sorting products by rating:', error);
+      res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
+    }
     
+};
+const addReview = async (req, res) => {
+    const { id } = req.params;
+    const { user, comment, rating } = req.body;
+
+    try {
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ msg: 'Product not found' });
+
+        product.reviews.push({ user, comment, rating });
+        
+        // Recalculate and update the average rating
+        product.averageRating = product.calculateAverageRating();
+        await product.save();
+
+        res.status(200).json(product);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
 };
 
 
@@ -153,5 +187,6 @@ module.exports = {
     searchProducts,
     filteredProducts,
     sortProducts,
-    updateProduct
+    updateProduct,
+    addReview
 };

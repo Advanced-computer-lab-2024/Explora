@@ -9,7 +9,8 @@ const{
     searchProducts,
     filteredProducts,
     sortProducts,
-    updateProduct
+    updateProduct,
+    addReview
 } = require("../controllers/ProductController");
 
 router.post('/upload', upload.single('file'), createProduct);
@@ -19,6 +20,8 @@ router.get('/search/:name', searchProducts);
 router.get('/filterByPrice', filteredProducts)
 router.get('/sortByRating', sortProducts)
 router.put('/updateProduct/:id',updateProduct )
+router.get('/productByName/:name', productsByName)
+router.put('/addReview/:id', addReview); // Route for adding a review to a product
 
 
 
