@@ -1,0 +1,63 @@
+/* Container Styling */
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Title Styling */
+  .profile-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* No Profiles Styling */
+  .no-profiles {
+    text-align: center;
+    color: #999;
+    font-size: 18px;
+  }
+  
+  /* Profile List Styling */
+  .profile-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  /* Profile Card Styling */
+  .profile-card {
+    background-color: white;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+  }
+  
+  .profile-card:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Company Name Styling */
+  .company-name {
+    font-size: 20px;
+    color: #007bff;
+    margin-bottom: 10px;
+  }
+  
+  /* General Text Styling */
+  .profile-card p {
+    margin: 5px 0;
+    color: #555;
+  }
+  
+  /* Strong Text Styling */
+  .profile-card p strong {
+    color: #333;
+  }
+  

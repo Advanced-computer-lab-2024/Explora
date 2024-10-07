@@ -1,24 +1,44 @@
-import React from 'react';
-//import './CompanyProfile.css';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import './CompanyProfile.css'; // Import the CSS file
 
-const CompanyProfile = ({ profileData, onEdit }) => {
-  if (!profileData) {
-    return <p>No profile available. Please create a profile.</p>;
-  }
+const CompanyProfile = () => {
+  const [advertisers, setAdvertisers] = useState([]);
+
+  useEffect(() => {
+    const fetchAdvertisers = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/advertisers');
+        setAdvertisers(response.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchAdvertisers();
+  }, []);
 
   return (
-    <div className="company-profile-wrapper">
-      <div className="company-banner">
-        <h1>{profileData.name}</h1>
-        <p>{profileData.profileDescription}</p>
-      </div>
-      <div className="company-details">
-        <p><strong>Website:</strong> <a href={profileData.website} target="_blank" rel="noopener noreferrer">{profileData.website}</a></p>
-        <p><strong>Hotline:</strong> {profileData.hotline}</p>
-      </div>
-      <button onClick={onEdit}>Edit Profile</button>
+    <div className="profile-container">
+      <h2 className="profile-title">Advertisers Profiles List</h2>
+      {advertisers.length === 0 ? (
+        <p className="no-profiles">No profiles found.</p>
+      ) : (
+        <ul className="profile-list">
+          {advertisers.map((advertiser) => (
+            <li key={advertiser._id} className="profile-card">
+              <h3 className="company-name">{advertiser.companyName}</h3>
+              <p><strong>Website:</strong> {advertiser.website || 'N/A'}</p>
+              <p><strong>Hotline:</strong> {advertiser.hotline || 'N/A'}</p>
+              <p><strong>Profile Description:</strong> {advertiser.profile || 'N/A'}</p>
+              <p><strong>Username:</strong> {advertiser.username}</p>
+              <p><strong>Email:</strong> {advertiser.email}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
 
 export default CompanyProfile;
+
