@@ -100,6 +100,7 @@ export default function CreateItinerary() {
       <label htmlFor="numActivities" style={{ fontSize: '18px', marginBottom: '10px' }}>
         Choose the number of activities:
       </label>
+      \\\\\
       <input
         type="number"
         id="numActivities"

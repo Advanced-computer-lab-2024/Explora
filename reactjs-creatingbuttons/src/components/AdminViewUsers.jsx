@@ -3,6 +3,7 @@ import DataTable from 'react-data-table-component';
 import axios from 'axios';
 import { MdDelete } from 'react-icons/md'; // Importing delete icon from react-icons
 
+
 const UsersTable = () => {
   const [users, setUsers] = useState([]); // Move useState inside the component
 
