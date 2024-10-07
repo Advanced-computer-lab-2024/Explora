@@ -49,10 +49,24 @@ const viewUsers = async (req, res) => {
         }
 }
 
+const getUserid = async (req, res) => {
+    try {
+        const username = req.params.username
+      const user = await User.findOne({ username });
+      if (!user) {
+        return res.status(404).send({ msg: 'User not found' });
+      }
+      res.send({ _id: user._id }); // Send back the user's ObjectId
+    } catch (error) {
+      res.status(500).send({ msg: 'Error fetching user', error });
+    }
+}
+
 // Additional user controller functions can be defined here...
 
 module.exports = {
     registerUser,
-    viewUsers
+    viewUsers,
+    getUserid
     // Add other controller methods like loginUser, getUserProfile, etc.
 };

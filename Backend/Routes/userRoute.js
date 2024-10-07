@@ -1,7 +1,7 @@
 // routes/user.js
 
 const express = require('express');
-const { registerUser, viewUsers } = require('../controllers/userController'); // Import the controller
+const { registerUser, viewUsers, getUserid} = require('../controllers/userController'); // Import the controller
 
 const router = express.Router();
 
@@ -9,6 +9,7 @@ const router = express.Router();
 router.post('/register', registerUser);
 router.get('/', viewUsers)
 
+router.get('/:username', getUserid)
 // Additional user routes can go here...
 
 module.exports = router;
