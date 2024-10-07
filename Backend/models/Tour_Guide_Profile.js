@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
 const User = require('./User');
 
-const Tour_Guide_ProfileSchema = new mongoose.Schema({
+const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true 
+},
   name:{
     type: String,
     required: true
@@ -23,6 +28,6 @@ const Tour_Guide_ProfileSchema = new mongoose.Schema({
     default: false, // Default to false, can be updated when accepted as a guide
   }
 });
-const TourGuide = User.discriminator('TourGuide', Tour_Guide_ProfileSchema);
+const TourGuide = User.discriminator('TourGuide', Tour_Guide_Profile_ProfileSchema);
 
 module.exports = TourGuide;

@@ -5,7 +5,7 @@ const Profile = require('../models/Tour_Guide_Profile');
 
 // Create profile
 router.post('/', async (req, res) => {
-  const { username, email, password, name, mobile, yearsOfExperience, previousWork} = req.body;
+  const { username, email, password,name, mobile, yearsOfExperience, previousWork} = req.body;
   try {
     const newProfile = new Profile({
       username,
@@ -19,8 +19,8 @@ router.post('/', async (req, res) => {
     await newProfile.save();
     res.json(newProfile);
   } catch (error) {
-    res.status(500).send('Server error');
-  }
+    console.error('Error creating profile:', error);  // Log the error
+    res.status(500).send('Server error');  }
 });
 
 // Get profile by ID
@@ -49,28 +49,38 @@ router.get('/', async (req, res) => {
 
 // Update profile
 router.put('/me/:id', async (req, res) => {
-  const { email, password, name, mobile, yearsOfExperience, previousWork } = req.body;
-  const userId = req.params.id; // Get userId from the URL
+  const { email, password, name, mobile, yearsOfExperience, previousWork, isAccepted } = req.body;
 
   try {
-    const profile = await Profile.findById(userId);
-    if (!profile) {
-      console.log('Profile not found with ID:', userId); // Debug log
-      return res.status(404).json({ msg: 'Profile not found' });
+    let profile;
+
+    // Check if the ID is 'me', and handle it accordingly
+    if (req.params.id === 'me') {
+      // Assuming req.user is populated after authentication
+      profile = await Profile.findById(req.user._id);
+      if (!profile) {
+        return res.status(404).json({ msg: 'Profile not found' });
+      }
+    } else {
+      profile = await Profile.findById(req.params.id);
+      if (!profile) {
+        return res.status(404).json({ msg: 'Profile not found' });
+      }
     }
 
-    // Update fields as needed
-    if (email) profile.email = email;
-    if (password) profile.password = await hashPassword(password);
-    if (name) profile.name = name;
-    if (mobile) profile.mobile = mobile;
-    if (yearsOfExperience) profile.yearsOfExperience = yearsOfExperience;
-    if (previousWork) profile.previousWork = previousWork;
+    // Update the profile fields
+    profile.email = email || profile.email;
+    profile.password = password || profile.password;
+    profile.name = name || profile.name;
+    profile.mobile = mobile || profile.mobile;
+    profile.yearsOfExperience = yearsOfExperience || profile.yearsOfExperience;
+    profile.previousWork = previousWork || profile.previousWork;
+    profile.isAccepted = isAccepted !== undefined ? isAccepted : profile.isAccepted;
 
     await profile.save();
     res.json(profile);
   } catch (error) {
-    console.error(error);
+    console.error(error); // Log the error for debugging
     res.status(500).send('Server error');
   }
 });

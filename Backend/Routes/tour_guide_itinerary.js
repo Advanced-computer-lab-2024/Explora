@@ -2,6 +2,22 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
+const jwt = require('jsonwebtoken');
+
+
+// Middleware to verify JWT and get the user from token
+const auth = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.user; // assuming your payload contains user info
+    next();
+  } catch (err) {
+    res.status(401).json({ msg: 'Token is not valid' });
+  }
+};
 
 
 // Sort itineraries by price (high to low or low to high)
@@ -102,15 +118,19 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Error occurred while searching itineraries.' });
   }
 });
-// GET all itineraries
-router.get('/', async (req, res) => {
-    try {
-        const itineraries = await Itinerary.find();
-        res.json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+//-----------------
+// Get all itineraries for a specific user
+router.get('/me', async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find({ user: req.user }); // Adjust the query based on your schema
+    res.json(itineraries);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
 });
+
+
 
 router.get('/tag/:tag', async (req, res) => {
   const { tag } = req.params;
@@ -223,6 +243,15 @@ router.get('/:id', async (req, res) => {
     res.status(500).send(error.message);
   }
 });
+// GET all itineraries
+router.get('/', async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find();
+    res.json(itineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 // Update an itinerary
 router.put('/:id', async (req, res) => {
@@ -237,9 +266,8 @@ router.put('/:id', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
-    name,
     dropoffLocation,
-    rating,
+    name,
     hasBookings, 
     tags
   } = req.body;
@@ -262,7 +290,6 @@ router.put('/:id', async (req, res) => {
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
     itinerary.name = name || itinerary.name;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
-    itinerary.rating = rating || itinerary.rating;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
     itinerary.tags = tags || itinerary.tags;
     await itinerary.save();

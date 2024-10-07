@@ -1,15 +1,21 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function CreateItinerary() {
+  const navigate = useNavigate();
   const [numActivities, setNumActivities] = useState(0);
   const [activities, setActivities] = useState([]);
   const [locations, setLocations] = useState('');
   const [timeline, setTimeline] = useState('');
+  const [duration, setDuration] = useState('');
   const [language, setLanguage] = useState('');
   const [price, setPrice] = useState('');
+  const [availableDates, setAvailableDates] = useState(['']);
+  const [availableTimes, setAvailableTimes] = useState(['']);
+  const [accessibility, setAccessibility] = useState(false);
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
-  const [accessibility, setAccessibility] = useState('');
 
   const handleNumActivitiesChange = (e) => {
     const value = parseInt(e.target.value) || 0;
@@ -23,34 +29,78 @@ export default function CreateItinerary() {
   };
 
   const handleActivityChange = (index, field, value) => {
-    const updatedActivities = activities.map((activity, i) => 
+    const updatedActivities = activities.map((activity, i) =>
       i === index ? { ...activity, [field]: value } : activity
     );
     setActivities(updatedActivities);
   };
 
-  const handleSubmit = (e) => {
+  const handleAddDate = () => {
+    setAvailableDates([...availableDates, '']);
+  };
+
+  const handleRemoveDate = (index) => {
+    const newDates = availableDates.filter((_, i) => i !== index);
+    setAvailableDates(newDates);
+  };
+
+  const handleDateChange = (index, value) => {
+    const updatedDates = availableDates.map((date, i) =>
+      i === index ? value : date
+    );
+    setAvailableDates(updatedDates);
+  };
+
+  const handleAddTime = () => {
+    setAvailableTimes([...availableTimes, '']);
+  };
+
+  const handleRemoveTime = (index) => {
+    const newTimes = availableTimes.filter((_, i) => i !== index);
+    setAvailableTimes(newTimes);
+  };
+
+  const handleTimeChange = (index, value) => {
+    const updatedTimes = availableTimes.map((time, i) =>
+      i === index ? value : time
+    );
+    setAvailableTimes(updatedTimes);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const itineraryData = { 
       activities, 
       locations, 
       timeline, 
+      duration,
       language, 
       price, 
+      availableDates,
+      availableTimes,
+      accessibility: accessibility ? true : false, 
       pickupLocation, 
-      dropoffLocation,
-      accessibility // Include accessibility in the data
+      dropoffLocation
     };
-    console.log("Itinerary Data:", itineraryData);
+    
+    try {
+      const response = await axios.post('http://localhost:4000/api/tour_guide_itinerary', itineraryData);
+      if (response.status === 200) {
+// Redirect to the itinerary view page with the correct state
+        navigate(`/itinerary-view/${response.data._id}`, { state: { profile: response.data } });
+}
+    } catch (error) {
+      console.error("There was an error creating the itinerary!", error);
+    }
   };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
       <h1>Create a New Itinerary</h1>
-      
       <label htmlFor="numActivities" style={{ fontSize: '18px', marginBottom: '10px' }}>
         Choose the number of activities:
       </label>
+      \\\\\
       <input
         type="number"
         id="numActivities"
@@ -84,8 +134,9 @@ export default function CreateItinerary() {
           />
         </div>
       ))}
-      
-      <textarea
+
+      <input
+        type="text"
         placeholder="Enter locations to be visited"
         value={locations}
         onChange={(e) => setLocations(e.target.value)}
@@ -96,7 +147,14 @@ export default function CreateItinerary() {
         placeholder="Enter timeline"
         value={timeline}
         onChange={(e) => setTimeline(e.target.value)}
-        style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
+        style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box', height: '40px' }}
+      />
+      <input
+        type="text"
+        placeholder="Enter Duration"
+        value={duration}
+        onChange={(e) => setDuration(e.target.value)}
+        style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box', height: '40px' }}
       />
       <input
         type="text"
@@ -112,35 +170,69 @@ export default function CreateItinerary() {
         onChange={(e) => setPrice(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
+
+      <h3>Available Dates</h3>
+      {availableDates.map((date, index) => (
+        <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => handleDateChange(index, e.target.value)}
+            style={{ padding: '10px', fontSize: '16px', width: '100%', boxSizing: 'border-box' }}
+          />
+          <button type="button" onClick={() => handleRemoveDate(index)} style={{ padding: '10px', cursor: 'pointer' }}>
+            Remove
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={handleAddDate} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer', marginBottom: '20px' }}>
+        Add Another Date
+      </button>
+
+      <h3>Available Times</h3>
+      {availableTimes.map((time, index) => (
+        <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => handleTimeChange(index, e.target.value)}
+            style={{ padding: '10px', fontSize: '16px', width: '100%', boxSizing: 'border-box' }}
+          />
+          <button type="button" onClick={() => handleRemoveTime(index)} style={{ padding: '10px', cursor: 'pointer' }}>
+            Remove
+          </button>
+        </div>
+      ))}
+      <button type="button" onClick={handleAddTime} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer', marginBottom: '20px' }}>
+        Add Another Time
+      </button>
+
+      <label>
+        Accessible:
+        <input
+          type="checkbox"
+          checked={accessibility}
+          onChange={() => setAccessibility(!accessibility)}
+          style={{ marginLeft: '10px' }}
+        />
+      </label>
       <input
         type="text"
-        placeholder="Enter pickup location"
+        placeholder="Pickup location"
         value={pickupLocation}
         onChange={(e) => setPickupLocation(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
       <input
         type="text"
-        placeholder="Enter dropoff location"
+        placeholder="Dropoff location"
         value={dropoffLocation}
         onChange={(e) => setDropoffLocation(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
-      <textarea
-        placeholder="Enter accessibility options (e.g., wheelchair accessible, hearing assistance)"
-        value={accessibility}
-        onChange={(e) => setAccessibility(e.target.value)}
-        style={{ 
-          padding: '10px', 
-          fontSize: '16px', 
-          height: '80px', // Adjusted height for better visibility
-          width: '100%', 
-          boxSizing: 'border-box', 
-          marginBottom: '10px' 
-        }}
-      />
+
       <button type="submit" onClick={handleSubmit} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer' }}>
-        Submit
+        Create Itinerary
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export default function UpdateProfile() {
   const [email, setEmail] = useState('');
@@ -14,18 +15,13 @@ export default function UpdateProfile() {
     // Fetch the user profile when the component mounts
     const fetchProfile = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/tour_guide_profile/me', {  
-          method: 'GET',
+        const response = await axios.get('http://localhost:4000/api/tour_guide_profile/me', {
           headers: {
-            'Authorization': 'Bearer YOUR_TOKEN_HERE', // Include token if needed
+            'Authorization': `Bearer YOUR_TOKEN_HERE`, // Include your actual token
           },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch profile');
-        }
-
-        const profile = await response.json();
+        const profile = response.data; // Response data
         setProfileId(profile._id); // Automatically get the user ID
         setEmail(profile.email);
         setName(profile.name);
@@ -34,6 +30,7 @@ export default function UpdateProfile() {
         setPreviousWork(profile.previousWork);
       } catch (error) {
         console.error('Error fetching profile:', error);
+        setMessage("Error fetching profile data.");
       }
     };
 
@@ -57,27 +54,16 @@ export default function UpdateProfile() {
     }
 
     try {
-      const response = await fetch(`http://localhost:4000/api/tour_guide_profile/me/${profileId}`, {
-        method: 'PUT',
+      const response = await axios.put(`http://localhost:4000/api/tour_guide_profile/me/${profileId}`, updatedProfile, {
         headers: {
+          'Authorization': `Bearer YOUR_TOKEN_HERE`, // Include your actual token
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_TOKEN_HERE', // Include token if needed
         },
-        body: JSON.stringify(updatedProfile),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to update profile');
-      }
-
-      console.log('Response status:', response.status);
-      const data = await response.json();
-      console.log('Response data:', data);
-      if (!response.ok) {
-        throw new Error(data.msg || 'Failed to update profile');
-      }
-  
+      console.log('Profile updated:', response.data);
       setMessage("Profile successfully updated!");
+      // Optionally, you can fetch the updated profile again or navigate back to the profile view
     } catch (error) {
       console.error("Error updating profile:", error);
       setMessage("Failed to update profile. Please try again.");
