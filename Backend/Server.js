@@ -17,6 +17,7 @@ const acitivityRoutes = require('./Routes/activity'); // Adjust the path as need
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
+const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
 
 
 
@@ -45,6 +46,7 @@ app.use('/api/activity', acitivityRoutes);   // For managing profiles
 app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For managing profiles
 app.use('/users', userRoutes); 
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
+app.use('/api/auth', authRoute);
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

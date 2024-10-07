@@ -2,7 +2,34 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
+const jwt = require('jsonwebtoken');
+const authenticateUser = require('../middleware/AuthMiddleware'); // Adjust the import
 
+
+const authenticateUser = async (req, res, next) => {
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+  console.log('Authorization Token:', token); // Log the token for debugging
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, 'your_secret_key'); // Use your actual secret key
+    const user = await User.findById(decoded.id); // Assuming the token contains user ID
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    req.user = user._id; // Store user ID in request for later use
+    next();
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+};
 
 // Sort itineraries by price (high to low or low to high)
 router.get('/sortprice', async (req, res) => {
@@ -102,15 +129,19 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Error occurred while searching itineraries.' });
   }
 });
-// GET all itineraries
-router.get('/', async (req, res) => {
-    try {
-        const itineraries = await Itinerary.find({ user: req.user.id });
-        res.json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+//-----------------
+// Get all itineraries for a specific user
+router.get('/me', async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find({ user: req.user }); // Adjust the query based on your schema
+    res.json(itineraries);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
 });
+
+
 
 router.get('/tag/:tag', async (req, res) => {
   const { tag } = req.params;
@@ -129,26 +160,22 @@ router.get('/tag/:tag', async (req, res) => {
 });
 
 // Create a new itinerary
-router.post('/', async (req, res) => {
-  const {
+router.post('/', authenticateUser, async (req, res) => {
+    const {
     activities,
     locations,
     timeline,
-    duration,
     language,
     price,
-    availableDates,
-    availableTimes,
-    accessibility,
     pickupLocation,
-    name,
     dropoffLocation, 
-    hasBookings, 
-    tags
+    accessibility,
+    tags,
   } = req.body;
 
   try {
     const newItinerary = new Itinerary({
+      user: req.user, // Set user from req.user
       activities,
       locations,
       timeline,
@@ -159,14 +186,12 @@ router.post('/', async (req, res) => {
       availableTimes,
       accessibility,
       pickupLocation,
-      name,
       dropoffLocation,
-      hasBookings, 
       tags
     });
 
     await newItinerary.save();
-    res.json(newItinerary);
+    res.status(201).json(newItinerary);
   } catch (error) {
     console.error(error);
     res.status(500).send('Server create error');
