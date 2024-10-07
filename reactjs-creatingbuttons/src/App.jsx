@@ -120,14 +120,11 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
-<<<<<<< HEAD
         <Route path="advact" element={<AdvActivity/>} />
         <Route path="create-act" element={<CreateAdvAct/>} />
         <Route path="list" element={<ActivityList2/>} />
         
-=======
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
->>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
         
 
         </Routes>
