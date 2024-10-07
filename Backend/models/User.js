@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { ImMagicWand } = require('react-icons/im');
 
 const Schema = mongoose.Schema;
 
@@ -10,21 +9,20 @@ const userSchema = new Schema({
         unique: true,
         immutable: true
     },
-    email: { 
-        type: String, 
-        required: true, 
-        unique: true 
-    },
     password: {
         type: String,
         required: true
     },
     role: { 
         type: String,
-        enum: ['Tourist','Seller','TourGuide','Advertiser','TourismGovernor', 'Admin'],
+        enum: ['Tourist','Seller','TourGuide','Advertiser','Governor', 'Admin'],
         required: true 
     }
 }, 
-       { discriminatorKey: 'role', timestamps: true });
+{ 
+    discriminatorKey: 'role', 
+    timestamps: true 
+});
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;
