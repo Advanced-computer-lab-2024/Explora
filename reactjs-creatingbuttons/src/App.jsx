@@ -1,23 +1,23 @@
-import AccsSettings from './components/AccsSettings'
+import AccsSettings from './components/AccsSettings.jsx'
 import CreatedPop from './components/CreatedPop.jsx'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LogInAdmin from './components/LogInAdmin';
-import LogInTourism from './components/LogInTourism';
-import AddProduct from './components/AddProduct';
-import CategoryManager from './components/CategoryManager';
-import CategoryForm from './components/CategoryForm';
-import CategoryList from './components/CategoryList';
-import TagManager from './components/TagManager';
-import TagForm from './components/TagForm';
-import TagList from './components/TagList';
-import ProductList from './components/ProductList';
-import MiddleForm from './components/MiddleForm';
-import LoginForm from './components/LoginForm';
-import SignupTourist from './components/SignupTourist';
-import SignupTourguide from './components/SignupTourguide';
-import SignupAdvertiser from './components/SignupAdvertiser';
-import SignupSeller from './components/SignupSeller';
-import Advertiser from './components/Advertiser';
+import LogInAdmin from './components/LogInAdmin.jsx';
+import LogInTourism from './components/LogInTourism.jsx';
+import AddProduct from './components/AddProduct.jsx';
+import CategoryManager from './components/CategoryManager.jsx';
+import CategoryForm from './components/CategoryForm.jsx';
+import CategoryList from './components/CategoryList.jsx';
+import TagManager from './components/TagManager.jsx';
+import TagForm from './components/TagForm.jsx';
+import TagList from './components/TagList.jsx';
+import ProductList from './components/ProductList.jsx';
+import MiddleForm from './components/MiddleForm.jsx';
+import LoginForm from './components/LoginForm.jsx';
+import SignupTourist from './components/SignupTourist.jsx';
+import SignupTourguide from './components/SignupTourguide.jsx';
+import SignupAdvertiser from './components/SignupAdvertiser.jsx';
+import SignupSeller from './components/SignupSeller.jsx';
+import Advertiser from './components/Advertiser.jsx';
 import TodoInput from './components/TodoInput.jsx';
 import TourGuideItinerary from './components/TourGuideItinerary.jsx';  
 import CreateItinerary from './components/CreateItinerary.jsx'; 
@@ -35,29 +35,31 @@ import MuseumForm from './components/MuseumForm.jsx';
 import MuseumList from './components/MuseumList.jsx';
 import MyActivities from './components/MyActivities.jsx';
 import Touristhome from './components/Touristhome.jsx';
-import CompanyProfilePage from "./components/CompanyProfilePage";
-import CompanyProfileForm from "./components/CompanyProfileForm";
-import CompanyProfile from"./components/CompanyProfile";
+import CompanyProfilePage from "./components/CompanyProfilePage.jsx";
+import CompanyProfileForm from "./components/CompanyProfileForm.jsx";
+import CompanyProfile from"./components/CompanyProfile.jsx";
 import ActivityManager from './components/ActivityManager.jsx';
-import Sellerhome from './components/Sellerhome';
-import UpdateSeller from './components/UpdateSeller';
-import ItineraryList from './components/ItineraryList';
+import Sellerhome from './components/Sellerhome.jsx';
+import UpdateSeller from './components/UpdateSeller.jsx';
+import ItineraryList from './components/ItineraryList.jsx';
 import CompanyUpdateForm from './components/CompanyUpdateForm.jsx';
 import CreateSeller from './components/CreateSeller.jsx';
-import ProfileDetailsPage from './components/ProfileDetailsPage';
-import SearchPageHeader from './components/SearchPageHeader';
-import SiteSearchPage from './components/SiteSearchPage'; // Your search components
-import ActivitySearchPage from './components/ActivitySearchPage';
-import ItinerarySearchPage from './components/ItinerarySearchPage';
-import UpcomingActivities from './components/UpcomingActivities';
-import UpcomingItineraries from './components/UpcomingItineraries';
+import ProfileDetailsPage from './components/ProfileDetailsPage.jsx';
+import SearchPageHeader from './components/SearchPageHeader.jsx';
+import SiteSearchPage from './components/SiteSearchPage.jsx'; // Your search components
+import ActivitySearchPage from './components/ActivitySearchPage.jsx';
+import ItinerarySearchPage from './components/ItinerarySearchPage.jsx';
+import UpcomingActivities from './components/UpcomingActivities.jsx';
+import UpcomingItineraries from './components/UpcomingItineraries.jsx';
 import ProductListTourist from './components/ProductListTourist.jsx';
 import CreateProfile from './components/Createprofile.jsx';
 import UpdateProfile from './components/UpdateProfile.jsx';
 import ProfileView from './components/ProfileView.jsx'; // Update the import
 import AdminViewUsers from './components/AdminViewUsers.jsx';
 import ItineraryView from './components/ItineraryView.jsx'; 
-
+import AdvActivity from './components/AdvActivity1.jsx';
+import CreateAdvAct from './components/CreateAdvAct.jsx';
+import ActivityList2 from './components/ActivityList.2.jsx';
 
 
 function App() {
@@ -102,8 +104,8 @@ function App() {
         <Route path="/tourist-profile" element={<TouristProfile />} /> {/* Route for TouristProfile */}
         <Route path="/tourist-search" element={<TouristSearch />} />  {/* Route for TouristSearch */}
         <Route path="/company" element={<CompanyProfilePage/>} />
-        <Route path="/profileform" element={<CompanyProfileForm/>} />
-        <Route path="/profile" element={<CompanyProfile/>} />
+        <Route path="/advertisers/create" element={<CompanyProfileForm/>} />
+        <Route path="/advertisers" element={<CompanyProfile/>} />
         <Route path="/amanager" element={<ActivityManager/>} />
         <Route path="/seller-home" element={<Sellerhome />} />
         <Route path="/update-seller" element={<UpdateSeller />} />
@@ -118,7 +120,14 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
+<<<<<<< HEAD
+        <Route path="advact" element={<AdvActivity/>} />
+        <Route path="create-act" element={<CreateAdvAct/>} />
+        <Route path="list" element={<ActivityList2/>} />
+        
+=======
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
+>>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
         
 
         </Routes>
