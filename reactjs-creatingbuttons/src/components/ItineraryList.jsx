@@ -1,174 +1,94 @@
-import { useState } from 'react';
+// src/components/ItineraryList.js
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
-export default function CreateItineraryTourist() {
-  const [numActivities, setNumActivities] = useState(0);
-  const [activities, setActivities] = useState([]);
-  const [locations, setLocations] = useState('');
-  const [timeline, setTimeline] = useState('');
-  const [language, setLanguage] = useState('');
-  const [price, setPrice] = useState('');
-  const [pickupLocation, setPickupLocation] = useState('');
-  const [dropoffLocation, setDropoffLocation] = useState('');
-  const [accessibility, setAccessibility] = useState(false);
-  const [tags, setTags] = useState('');
+const ItineraryList = () => {
+  const [itineraries, setItineraries] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleNumActivitiesChange = (e) => {
-    const value = parseInt(e.target.value) || 0;
-    setNumActivities(value);
-    const newActivities = Array.from({ length: value }, () => ({
-      duration: '',
-      date: '',
-      time: ''
-    }));
-    setActivities(newActivities);
-  };
-
-  const handleActivityChange = (index, field, value) => {
-    const updatedActivities = activities.map((activity, i) =>
-      i === index ? { ...activity, [field]: value } : activity
-    );
-    setActivities(updatedActivities);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const itineraryData = {
-      activities,
-      locations,
-      timeline,
-      language,
-      price,
-      pickupLocation,
-      dropoffLocation,
-      accessibility,
-      tags: tags.split(',').map(tag => tag.trim()), // Convert tags to an array
+  useEffect(() => {
+    const fetchItineraries = async () => {
+      try {
+        const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/me', {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Use the saved token
+          },
+        });
+        setItineraries(response.data);
+      } catch (err) {
+        setError('Failed to fetch itineraries');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    try {
-      const response = await axios.post('http://localhost:4000/api/tour_guide_itinerary', itineraryData, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`, // Use the saved token
-        },
-      });
-      console.log('Itinerary Created:', response.data);
-    } catch (error) {
-      console.error('Error creating itinerary:', error);
-    }
-  };
+    fetchItineraries();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
-      <h1>Create a New Itinerary</h1>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="numActivities" style={{ fontSize: '18px', marginBottom: '10px' }}>
-          Choose the number of activities:
-        </label>
-        <input
-          type="number"
-          id="numActivities"
-          placeholder="Enter number of activities"
-          value={numActivities}
-          onChange={handleNumActivitiesChange}
-          style={{ padding: '10px', fontSize: '16px', marginBottom: '20px', width: '100%', boxSizing: 'border-box' }}
-        />
-
-        {activities.map((activity, index) => (
-          <div key={index} style={{ border: '1px solid #ddd', padding: '10px', marginBottom: '10px' }}>
-            <h3>Activity {index + 1}</h3>
-            <input
-              type="text"
-              placeholder="Enter duration"
-              value={activity.duration}
-              onChange={(e) => handleActivityChange(index, 'duration', e.target.value)}
-              style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-            />
-            <input
-              type="date"
-              value={activity.date}
-              onChange={(e) => handleActivityChange(index, 'date', e.target.value)}
-              style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-            />
-            <input
-              type="time"
-              value={activity.time}
-              onChange={(e) => handleActivityChange(index, 'time', e.target.value)}
-              style={{ padding: '10px', fontSize: '16px', width: '100%', boxSizing: 'border-box' }}
-            />
-          </div>
+    <div className="itinerary-list">
+      <h1>Your Itineraries</h1>
+      <ul>
+        {itineraries.map(itinerary => (
+          <li key={itinerary._id} className="itinerary-item">
+            <h2>{itinerary.title}</h2>
+            <p>{itinerary.description}</p>
+            <p><strong>Locations:</strong> {itinerary.locations}</p>
+            <p><strong>Duration:</strong> {itinerary.duration} days</p>
+            <p><strong>Language:</strong> {itinerary.language}</p>
+            <p><strong>Price:</strong> ${itinerary.price}</p>
+            <p><strong>Available Dates:</strong> {itinerary.availableDates.join(', ')}</p>
+            <p><strong>Pickup Location:</strong> {itinerary.pickupLocation}</p>
+            <p><strong>Dropoff Location:</strong> {itinerary.dropoffLocation}</p>
+            {/* Include any other itinerary details you want to show */}
+          </li>
         ))}
+      </ul>
 
-        <textarea
-          placeholder="Enter locations to be visited"
-          value={locations}
-          onChange={(e) => setLocations(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px', height: '40px', width: '100%', boxSizing: 'border-box', marginBottom: '10px' }}
-        />
-        <input
-          type="text"
-          placeholder="Enter timeline"
-          value={timeline}
-          onChange={(e) => setTimeline(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-        />
-        <textarea
-          placeholder="Enter tags (comma-separated)"
-          value={tags}
-          onChange={(e) => setTags(e.target.value)}
-          style={{
-            padding: '10px',
-            fontSize: '16px',
-            height: '40px',
-            width: '100%',
-            boxSizing: 'border-box',
-            marginBottom: '10px'
-          }}
-        />
-        <input
-          type="text"
-          placeholder="Enter language of tour"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-        />
-        <input
-          type="number"
-          placeholder="Enter price of tour"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-        />
-        <input
-          type="text"
-          placeholder="Enter pickup location"
-          value={pickupLocation}
-          onChange={(e) => setPickupLocation(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-        />
-        <input
-          type="text"
-          placeholder="Enter dropoff location"
-          value={dropoffLocation}
-          onChange={(e) => setDropoffLocation(e.target.value)}
-          style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
-        />
-        <textarea
-          placeholder="Enter accessibility options (e.g., wheelchair accessible, hearing assistance)"
-          value={accessibility}
-          onChange={(e) => setAccessibility(e.target.value)}
-          style={{
-            padding: '10px',
-            fontSize: '16px',
-            height: '80px',
-            width: '100%',
-            boxSizing: 'border-box',
-            marginBottom: '10px'
-          }}
-        />
-        <button type="submit" style={{ padding: '10px', fontSize: '16px', cursor: 'pointer' }}>
-          Submit
-        </button>
-      </form>
+      <style jsx>{`
+        .itinerary-list {
+          max-width: 800px; /* Maximum width of the container */
+          margin: 0 auto; /* Center the container */
+          padding: 20px; /* Add padding around the container */
+          background-color: #fff; /* Background color for the container */
+          border-radius: 8px; /* Rounded corners */
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+
+        h1 {
+          text-align: center; /* Center the heading */
+          color: #333; /* Heading color */
+        }
+
+        ul {
+          list-style-type: none; /* Remove bullet points */
+          padding: 0; /* Remove default padding */
+        }
+
+        .itinerary-item {
+          background: #f9f9f9; /* Light background for each item */
+          margin: 15px 0; /* Margin between items */
+          padding: 15px; /* Padding inside each item */
+          border-radius: 5px; /* Rounded corners for items */
+          border-left: 5px solid #007bff; /* Blue left border */
+          transition: transform 0.2s; /* Smooth transition for hover effect */
+        }
+
+        .itinerary-item:hover {
+          transform: scale(1.02); /* Slightly enlarge on hover */
+        }
+
+        strong {
+          color: #555; /* Darker color for labels */
+        }
+      `}</style>
     </div>
   );
-}
+};
+
+export default ItineraryList;

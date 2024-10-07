@@ -3,33 +3,22 @@ const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 const jwt = require('jsonwebtoken');
-const authenticateUser = require('../middleware/AuthMiddleware'); // Adjust the import
 
 
-const authenticateUser = async (req, res, next) => {
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-  console.log('Authorization Token:', token); // Log the token for debugging
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
+// Middleware to verify JWT and get the user from token
+const auth = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
 
   try {
-    const decoded = jwt.verify(token, 'your_secret_key'); // Use your actual secret key
-    const user = await User.findById(decoded.id); // Assuming the token contains user ID
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    req.user = user._id; // Store user ID in request for later use
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.user; // assuming your payload contains user info
     next();
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(401).json({ message: 'Invalid token' });
+  } catch (err) {
+    res.status(401).json({ msg: 'Token is not valid' });
   }
 };
+
 
 // Sort itineraries by price (high to low or low to high)
 router.get('/sortprice', async (req, res) => {
@@ -160,22 +149,26 @@ router.get('/tag/:tag', async (req, res) => {
 });
 
 // Create a new itinerary
-router.post('/', authenticateUser, async (req, res) => {
-    const {
+router.post('/', async (req, res) => {
+  const {
     activities,
     locations,
     timeline,
+    duration,
     language,
     price,
-    pickupLocation,
-    dropoffLocation, 
+    availableDates,
+    availableTimes,
     accessibility,
-    tags,
+    pickupLocation,
+    name,
+    dropoffLocation, 
+    hasBookings, 
+    tags
   } = req.body;
 
   try {
     const newItinerary = new Itinerary({
-      user: req.user, // Set user from req.user
       activities,
       locations,
       timeline,
@@ -186,12 +179,14 @@ router.post('/', authenticateUser, async (req, res) => {
       availableTimes,
       accessibility,
       pickupLocation,
+      name,
       dropoffLocation,
+      hasBookings, 
       tags
     });
 
     await newItinerary.save();
-    res.status(201).json(newItinerary);
+    res.json(newItinerary);
   } catch (error) {
     console.error(error);
     res.status(500).send('Server create error');
@@ -246,6 +241,15 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
+  }
+});
+// GET all itineraries
+router.get('/', async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find();
+    res.json(itineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
