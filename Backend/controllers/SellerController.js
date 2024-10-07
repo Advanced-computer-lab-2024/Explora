@@ -1,14 +1,16 @@
 
+const { CgPassword } = require('react-icons/cg');
 const Seller = require('../models/Seller');
 
 
 const createSeller = async (req, res) => {
     try {
-        const { username, email, description, products, isAccepted } = req.body;
+        const { username, email,password, description, products, isAccepted } = req.body;
 
         const seller = new Seller({
             username,
             email,
+            password,
             description,
             products,
             isAccepted
