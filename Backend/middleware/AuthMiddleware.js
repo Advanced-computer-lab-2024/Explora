@@ -1,22 +1,29 @@
+// middleware/auth.js
 const jwt = require('jsonwebtoken');
+const User = require('../models/User'); // Assuming you have a User model
 
-// Generate JWT token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-};
+const authenticateUser = async (req, res, next) => {
+  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
 
-// Middleware to verify JWT and get the user from token
-const auth = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
-  if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
+  if (!token) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.id; // Ensure this has user details; change to decoded.id if that's what you encoded
-    next();
-  } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
+    // Use your actual secret key from an environment variable
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Ensure you have this in your .env file
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    req.user = user._id; // Store the user ID in the request object
+    next(); // Call the next middleware or route handler
+  } catch (error) {
+    console.error('Token verification failed:', error);
+    return res.status(401).json({ message: 'Invalid token' });
   }
 };
 
-module.exports = { generateToken, auth };
+module.exports = { authenticateUser };
