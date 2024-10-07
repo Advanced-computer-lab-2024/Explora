@@ -30,31 +30,9 @@ const TourGuideItinerary = () => {
           margin: '10px',
           fontSize: '16px',
         }}
-        onClick={() => navigate('/read-itinerary')}
+        onClick={() => navigate('/itinerariesList')}
       >
-        Read Itinerary
-      </button>
-      <button
-        style={{
-          width: '250px',
-          height: '60px',
-          margin: '10px',
-          fontSize: '16px',
-        }}
-        onClick={() => navigate('/update-itinerary')}
-      >
-        Update Itinerary
-      </button>
-      <button
-        style={{
-          width: '250px',
-          height: '60px',
-          margin: '10px',
-          fontSize: '16px',
-        }}
-        onClick={() => navigate('/delete-itinerary')}
-      >
-        Delete Itinerary
+        View Itinerary
       </button>
     </header>
   );
