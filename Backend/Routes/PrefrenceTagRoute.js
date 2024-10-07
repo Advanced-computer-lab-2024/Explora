@@ -14,7 +14,7 @@ router.post("/", createPrefrenceTag);
 router.get("/", readPrefrenceTag);
 
 // PUT - Update an existing category
-router.put("/", updatePrefrenceTag);
+router.put("/:oldTag", updatePrefrenceTag);
 
 // DELETE - Delete a category
 router.delete("/:tag", deletePrefrenceTag);

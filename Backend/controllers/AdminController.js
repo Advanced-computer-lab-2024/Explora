@@ -2,7 +2,7 @@ const User = require("../models/User");
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const {generateToken} = require('../middleware/AuthMiddleware');
-
+const Admin = require('../models/Admin');
 
 
 // delete admin account 
@@ -43,7 +43,7 @@ const createAdminAccount = async (req, res) => {
             username,
             email,
             password: hashedPassword,
-            role: 'Admin',
+            role: 'Admin'
         });
         res.status(200).json({
             _id: newAdmin.id,

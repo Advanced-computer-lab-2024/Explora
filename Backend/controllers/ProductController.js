@@ -5,7 +5,6 @@ const {upload } = require('../middleware/upload');
 // get all products 
 const allProducts = async (req, res) => {
     const products = await Product.find()
-
     try {
         const updatedProducts = products.map(product => {
             return {
@@ -18,6 +17,8 @@ const allProducts = async (req, res) => {
         res.status(500).json({ msg: err.message });
     }
 };
+
+
 
 // get all available products
 
@@ -56,6 +57,7 @@ const productsByName = async (req, res) => {
 
 const filteredProducts = async (req, res) => {
     try {
+        
         const {min, max } = req.query;
         const products = await Product.find({ price: { $gte: min, $lte: max } });
         if(!products){

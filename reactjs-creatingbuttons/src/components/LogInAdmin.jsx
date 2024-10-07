@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function LogInAdmin() {
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleUsernameChange = (event) => {
     setNewUsername(event.target.value);
@@ -12,11 +14,29 @@ export default function LogInAdmin() {
     setNewPassword(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('New Username:', newUsername);
-    console.log('New Password:', newPassword);
+    const inputData = {
+      username: newUsername,
+      password: newPassword
+  };    try{
+      const response = await axios.post('http://localhost:4000/Admin', inputData)
+      console.log('New Username:', newUsername);
+      console.log('New Password:', newPassword);
+      console.log('Profile created:', response.data);
+      setMessage('Profile successfully created!');
+    }
+    catch (error) {
+      if (error.response && error.response.data) {
+          console.error('Error:', error.response.data.msg); // Check for the specific error message
+          setMessage(`Failed to create profile: ${error.response.data.msg}`);
+      } else {
+          console.error('Error:', error.message);
+          setMessage('Failed to create profile, please try again.');
+      }
+  }
   };
+
 
   return (
     <div>
@@ -53,6 +73,8 @@ export default function LogInAdmin() {
             width: '100%',
           }}
         />
+                {message && <p>{message}</p>}
+
         
         <button type="submit">Sign Up</button>
       </form>
