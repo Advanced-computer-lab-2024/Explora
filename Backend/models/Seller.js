@@ -4,6 +4,11 @@ const User = require('./User');  // Import the base User model
 
 // Seller-specific fields
 const SellerSchema = new mongoose.Schema({
+    email: { 
+        type: String, 
+        required: true, 
+        unique: true 
+    },
     description: {
         type: String,
         trim: true

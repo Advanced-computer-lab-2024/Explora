@@ -17,7 +17,11 @@ const activityRoutes = require('./Routes/ActivityRoutes');
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
+<<<<<<< HEAD
 const advertiserRoutes = require('./Routes/advertiserRoute');
+=======
+const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
+>>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
 
 const categoryRoutes = require('./Routes/CategoryRoutes'); // Adjust path as needed
 
@@ -48,8 +52,12 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For managing profiles
 app.use('/users', userRoutes); 
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
+<<<<<<< HEAD
 app.use('/api/advertisers', advertiserRoutes); // This should be included
 
+=======
+app.use('/api/auth', authRoute);
+>>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

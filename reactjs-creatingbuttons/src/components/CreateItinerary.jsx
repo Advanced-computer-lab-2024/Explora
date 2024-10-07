@@ -17,7 +17,6 @@ export default function CreateItinerary() {
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
 
-
   const handleNumActivitiesChange = (e) => {
     const value = parseInt(e.target.value) || 0;
     setNumActivities(value);
@@ -30,7 +29,7 @@ export default function CreateItinerary() {
   };
 
   const handleActivityChange = (index, field, value) => {
-    const updatedActivities = activities.map((activity, i) => 
+    const updatedActivities = activities.map((activity, i) =>
       i === index ? { ...activity, [field]: value } : activity
     );
     setActivities(updatedActivities);
@@ -46,7 +45,7 @@ export default function CreateItinerary() {
   };
 
   const handleDateChange = (index, value) => {
-    const updatedDates = availableDates.map((date, i) => 
+    const updatedDates = availableDates.map((date, i) =>
       i === index ? value : date
     );
     setAvailableDates(updatedDates);
@@ -62,7 +61,7 @@ export default function CreateItinerary() {
   };
 
   const handleTimeChange = (index, value) => {
-    const updatedTimes = availableTimes.map((time, i) => 
+    const updatedTimes = availableTimes.map((time, i) =>
       i === index ? value : time
     );
     setAvailableTimes(updatedTimes);
@@ -98,10 +97,10 @@ export default function CreateItinerary() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
       <h1>Create a New Itinerary</h1>
-      
       <label htmlFor="numActivities" style={{ fontSize: '18px', marginBottom: '10px' }}>
         Choose the number of activities:
       </label>
+      \\\\\
       <input
         type="number"
         id="numActivities"
@@ -135,7 +134,7 @@ export default function CreateItinerary() {
           />
         </div>
       ))}
-      
+
       <input
         type="text"
         placeholder="Enter locations to be visited"
@@ -150,7 +149,7 @@ export default function CreateItinerary() {
         onChange={(e) => setTimeline(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box', height: '40px' }}
       />
-            <input
+      <input
         type="text"
         placeholder="Enter Duration"
         value={duration}
@@ -171,7 +170,7 @@ export default function CreateItinerary() {
         onChange={(e) => setPrice(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
-      
+
       <h3>Available Dates</h3>
       {availableDates.map((date, index) => (
         <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
@@ -189,7 +188,7 @@ export default function CreateItinerary() {
       <button type="button" onClick={handleAddDate} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer', marginBottom: '20px' }}>
         Add Another Date
       </button>
-      
+
       <h3>Available Times</h3>
       {availableTimes.map((time, index) => (
         <div key={index} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
@@ -204,34 +203,35 @@ export default function CreateItinerary() {
           </button>
         </div>
       ))}
-      <button type="button" onClick={handleAddTime} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer' }}>
+      <button type="button" onClick={handleAddTime} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer', marginBottom: '20px' }}>
         Add Another Time
       </button>
+
       <label>
-      <input
-      type="checkbox"
-      checked={accessibility}
-      onChange={(e) => setAccessibility(e.target.checked)} // Correctly set accessibility to true/false
-     />
-      Check for accessibility
+        Accessible:
+        <input
+          type="checkbox"
+          checked={accessibility}
+          onChange={() => setAccessibility(!accessibility)}
+          style={{ marginLeft: '10px' }}
+        />
       </label>
       <input
         type="text"
-        placeholder="Enter pickup location"
+        placeholder="Pickup location"
         value={pickupLocation}
         onChange={(e) => setPickupLocation(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
       <input
         type="text"
-        placeholder="Enter dropoff location"
+        placeholder="Dropoff location"
         value={dropoffLocation}
         onChange={(e) => setDropoffLocation(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
-      
 
-      <button onClick={handleSubmit} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer' }}>
+      <button type="submit" onClick={handleSubmit} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer' }}>
         Create Itinerary
       </button>
     </div>

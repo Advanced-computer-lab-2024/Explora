@@ -1,38 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 export default function AddProduct() {
   const [productName, setProductName] = useState('');
   const [productDetails, setProductDetails] = useState('');
   const [price, setPrice] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [sellerUsername, setSellerUsername] = useState(''); // Changed to username
+  const [sellerId, setSellerId] = useState(''); // State for seller's ObjectId
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [message, setMessage] = useState('');
 
-  const handleProductNameChange = (event) => {
-    setProductName(event.target.value);
+  const handleProductNameChange = (event) => setProductName(event.target.value);
+  const handleProductDetailsChange = (event) => setProductDetails(event.target.value);
+  const handlePriceChange = (event) => setPrice(event.target.value);
+  const handleQuantityChange = (event) => setQuantity(event.target.value);
+  const handleSellerUsernameChange = (event) => setSellerUsername(event.target.value);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    setImage(file);
+    const reader = new FileReader();
+    reader.onloadend = () => setImagePreview(reader.result);
+    reader.readAsDataURL(file);
   };
 
-  const handleProductDetailsChange = (event) => {
-    setProductDetails(event.target.value);
+  // Function to fetch seller ID based on username
+  const fetchSellerId = async (username) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/users/${username}`); // Adjust endpoint as needed
+      setSellerId(response.data._id); // Assuming the response has the ID under `_id`
+    } catch (error) {
+      console.error('Error fetching seller ID:', error);
+      setMessage('Failed to fetch seller ID, please check the username.');
+    }
   };
 
-  const handlePriceChange = (event) => {
-    setPrice(event.target.value);
-  };
-
-  const handleQuantityChange = (event) => {
-    setQuantity(event.target.value);
-  };
-
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log('Product Name:', productName);
-    console.log('Product Details:', productDetails);
-    console.log('Price:', price);
-    console.log('Quantity:', quantity);
-    // Reset the form fields
+    await fetchSellerId(sellerUsername); // Fetch seller ID before submitting
+    if (!sellerId) {
+      setMessage('Failed to fetch seller ID, please check the username.');
+      return; // Exit early if `sellerId` is not set
+  }
+    // Use sellerId when creating the product
+    const formData = new FormData();
+    formData.append('name', productName);
+    formData.append('description', productDetails);
+    formData.append('price', price);
+    formData.append('quantity', quantity);
+    formData.append('seller', sellerId); // Use the fetched seller ID
+    formData.append('image', image);
+
+    try {
+      const response = await axios.post('http://localhost:4000/Products/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      setMessage('Product successfully created!');
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Failed to create product, please try again.' + error);
+    }
+    if (response.status==200){
     setProductName('');
     setProductDetails('');
     setPrice('');
     setQuantity('');
+    setSellerUsername(''); // Reset username
+    setImage(null);
+    setImagePreview(null);
+    }
   };
 
   return (
@@ -41,69 +81,77 @@ export default function AddProduct() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          id="productName"
           value={productName}
           onChange={handleProductNameChange}
           placeholder="Enter product name"
           required
-          style={{
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            marginBottom: '10px',
-            width: '100%',
-          }}
+          style={inputStyle}
         />
 
         <input
-          id="productDetails"
           value={productDetails}
           onChange={handleProductDetailsChange}
           placeholder="Enter product details"
           required
-          style={{
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            marginBottom: '10px',
-            width: '100%',
-          }}
+          style={inputStyle}
         />
 
         <input
           type="number"
-          id="price"
           value={price}
           onChange={handlePriceChange}
           placeholder="Enter price"
           required
-          style={{
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            marginBottom: '10px',
-            width: '100%',
-          }}
+          style={inputStyle}
         />
 
         <input
           type="number"
-          id="quantity"
           value={quantity}
           onChange={handleQuantityChange}
           placeholder="Enter available quantity"
           required
-          style={{
-            padding: '10px',
-            border: '1px solid #ccc',
-            borderRadius: '5px',
-            marginBottom: '10px',
-            width: '100%',
-          }}
+          style={inputStyle}
         />
+
+        <input
+          type="text"
+          value={sellerUsername}
+          onChange={handleSellerUsernameChange}
+          placeholder="Enter seller username"
+          required
+          style={inputStyle}
+        />
+
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageChange}
+          required
+          style={{ marginBottom: '10px' }}
+        />
+
+        {imagePreview && (
+          <div>
+            <img
+              src={imagePreview}
+              alt="Product Preview"
+              style={{ width: '100px', height: '100px', marginBottom: '10px' }}
+            />
+          </div>
+        )}
+        {message && <p>{message}</p>}
 
         <button type="submit">Add Product</button>
       </form>
     </div>
   );
 }
+
+const inputStyle = {
+  padding: '10px',
+  border: '1px solid #ccc',
+  borderRadius: '5px',
+  marginBottom: '10px',
+  width: '100%',
+};

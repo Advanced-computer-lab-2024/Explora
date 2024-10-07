@@ -4,6 +4,11 @@ const User = require('./User'); // Ensure correct import path
 // Define the main tourist schema
 const touristSchema = new mongoose.Schema(
   {
+    email: { 
+      type: String, 
+      required: true, 
+      unique: true 
+  },
     mobileNumber: {
       type: String, // Changed to String to accommodate various formats (e.g., international)
       required: true,

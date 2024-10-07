@@ -7,6 +7,7 @@ const createActivityCategory = async (req, res) => {
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
     try {
+<<<<<<< HEAD
         // Validate required fields
         if (!name || !date || !time || !location || !price) {
             return res.status(400).json({ message: 'All fields are required.' });
@@ -49,6 +50,19 @@ const createActivityCategory = async (req, res) => {
 
         const savedActivity = await newActivity.save();
         res.status(201).json(savedActivity);
+=======
+        // Check if the activity category already exists
+        const activityCategory = await ActivityCategory.findOne({ activityType }); // Use findOne for a single document
+        if (activityCategory) {
+            return res.status(400).json({ message: "Activity category already exists" });
+        }
+
+        // Create a new activity category if it doesn't exist
+        const newActivityCategory = await ActivityCategory.create({ activityType });
+        
+        // Respond with the new category
+        res.status(201).json(newActivityCategory); // Use 201 for resource creation
+>>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -68,21 +82,34 @@ const readActivityCategories = async (req, res) => {
 
 // Update a specific activity category
 const updateActivityCategory = async (req, res) => {
-    const { oldActivityType, newActivityType } = req.body;
+    const { activityType } = req.params;
+    const { newActivityType } = req.body;
+
+    console.log('Attempting to update activity type:', activityType, 'to:', newActivityType);
+
+    if (!newActivityType) {
+        return res.status(400).json({ message: "New activity type is required." });
+    }
+
     try {
         const activityCategory = await ActivityCategory.findOneAndUpdate(
-            { activityType: oldActivityType }, 
+            { activityType },
             { $set: { activityType: newActivityType } },
             { new: true }
         );
+
         if (!activityCategory) {
             return res.status(404).json({ message: "Activity category not found." });
         }
+
         res.json(activityCategory);
     } catch (err) {
-        res.status(400).json({ message: err.message });
+        console.error('Error updating category:', err);
+        res.status(500).json({ message: "An error occurred while updating the category." });
     }
 };
+
+
 
 // Delete a specific activity category
 const deleteActivityCategory = async (req, res) => {

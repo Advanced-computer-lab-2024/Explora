@@ -55,6 +55,7 @@ import ProductListTourist from './components/ProductListTourist.jsx';
 import CreateProfile from './components/Createprofile.jsx';
 import UpdateProfile from './components/UpdateProfile.jsx';
 import ProfileView from './components/ProfileView.jsx'; // Update the import
+import AdminViewUsers from './components/AdminViewUsers.jsx';
 import ItineraryView from './components/ItineraryView.jsx'; 
 import AdvActivity from './components/AdvActivity1.jsx';
 import CreateAdvAct from './components/CreateAdvAct.jsx';
@@ -119,10 +120,14 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
+<<<<<<< HEAD
         <Route path="advact" element={<AdvActivity/>} />
         <Route path="create-act" element={<CreateAdvAct/>} />
         <Route path="list" element={<ActivityList2/>} />
         
+=======
+        <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
+>>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
         
 
         </Routes>

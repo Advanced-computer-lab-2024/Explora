@@ -13,11 +13,11 @@ const{
     addReview
 } = require("../controllers/ProductController");
 
-router.post('/upload', upload.single('file'), createProduct);
-router.get('/products', allProducts)
+router.post('/upload', upload.single('image'), createProduct);
+router.get('/', allProducts)
 router.get('/availableProducts', availableProducts)
-router.get('/search/:name', searchProducts);
-router.get('/filterByPrice', filteredProducts)
+router.get('/:name', searchProducts);
+router.get('/filterByPrice', filteredProducts);
 router.get('/sortByRating', sortProducts)
 router.put('/updateProduct/:id',updateProduct )
 router.get('/productByName/:name', productsByName)

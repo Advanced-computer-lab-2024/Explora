@@ -5,7 +5,7 @@ export default function AccsSettings() {
   const navigate = useNavigate();  // Initialize the navigate function
 
   const handleDeleteClick = () => {
-    navigate('/deleted');  // Navigate to the DeletedPop component
+    navigate('/admin-view-users');  // Navigate to the AdminViewUsers component
   };
 
   const handleAddTourismGovernorClick = () => {
@@ -31,13 +31,13 @@ export default function AccsSettings() {
   return (
     <header>
       <div className="button-container">
-        <button onClick={handleDeleteClick}>Delete / De-Activate Your Account </button>
+        <button onClick={handleDeleteClick}>Delete / De-Activate Your Account</button> {/* Redirects to AdminViewUsers */}
         <button onClick={handleAddTourismGovernorClick}>Add Tourism Governor to the System</button>
         <button onClick={handleAddAdminClick}>Add Another Admin to the System</button>
         <button onClick={handleActivityManagementClick}>Activity Management System</button>
         <button onClick={handleTagManagementClick}>Preference Tag Management System</button>
-        <button onClick={handleViewProductsClick}>View Products</button> {/* View Products Button */}
+        <button onClick={handleViewProductsClick}>View Products</button>
       </div>
     </header>
-  );
+  );
 }

@@ -3,10 +3,8 @@ const router = express.Router();
 
 const {
     addTourismGovernorAccount,
-    getAllGovernors,
-    
+    getAllGovernors
 } = require("../controllers/GovernorController");
-
 
 router.post("/", addTourismGovernorAccount);
 router.get("/", getAllGovernors);

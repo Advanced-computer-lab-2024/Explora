@@ -2,6 +2,22 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
+const jwt = require('jsonwebtoken');
+
+
+// Middleware to verify JWT and get the user from token
+const auth = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ msg: 'No token, authorization denied' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded.user; // assuming your payload contains user info
+    next();
+  } catch (err) {
+    res.status(401).json({ msg: 'Token is not valid' });
+  }
+};
 
 
 // Sort itineraries by price (high to low or low to high)
@@ -102,15 +118,19 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Error occurred while searching itineraries.' });
   }
 });
-// GET all itineraries
-router.get('/', async (req, res) => {
-    try {
-        const itineraries = await Itinerary.find({ user: req.user.id });
-        res.json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+//-----------------
+// Get all itineraries for a specific user
+router.get('/me', async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find({ user: req.user }); // Adjust the query based on your schema
+    res.json(itineraries);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send('Server error');
+  }
 });
+
+
 
 router.get('/tag/:tag', async (req, res) => {
   const { tag } = req.params;
@@ -221,6 +241,15 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
+  }
+});
+// GET all itineraries
+router.get('/', async (req, res) => {
+  try {
+    const itineraries = await Itinerary.find();
+    res.json(itineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
