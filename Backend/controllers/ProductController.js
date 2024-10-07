@@ -5,7 +5,6 @@ const {upload } = require('../middleware/upload');
 // get all products 
 const allProducts = async (req, res) => {
     const products = await Product.find()
-
     try {
         const updatedProducts = products.map(product => {
             return {

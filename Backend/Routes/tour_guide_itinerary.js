@@ -3,7 +3,8 @@ const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 const jwt = require('jsonwebtoken');
-const authenticateUser = require('../middleware/AuthMiddleware'); // Adjust the import
+const bcrypt = require('bcryptjs');
+
 
 
 const authenticateUser = async (req, res, next) => {
