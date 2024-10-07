@@ -14,7 +14,7 @@ router.post("/", createActivityCategory);
 router.get("/", readActivityCategories);
 
 // PUT - Update an existing category
-router.put("/", updateActivityCategory);
+router.put("/:activityType", updateActivityCategory);
 
 // DELETE - Delete a category
 router.delete("/:activityType", deleteActivityCategory);
