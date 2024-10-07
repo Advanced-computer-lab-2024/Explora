@@ -1,0 +1,96 @@
+/* General body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 20px;
+}
+
+/* Header styling */
+header {
+    background-color: #333;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #fff;
+}
+
+/* Headings styling */
+h2 {
+    font-size: 2rem;
+    color: #666;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+/* Form styling */
+form {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: white;
+}
+
+input, textarea {
+    width: 100%;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button styling */
+button {
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+/* Main container styling */
+main {
+    padding: 20px;
+}
+
+/* List and item styling */
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: white;
+    text-align: left;
+}
+
+/* Styling individual museum or product entries */
+li h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
+li ul {
+    margin-top: 10px;
+}
+
+/* Image styling for products */
+li img {
+    max-width: 100px;
+    margin-bottom: 10px;
+}
