@@ -5,12 +5,23 @@ const router = express.Router();
 const { createTourist, getTourist, updateTourist, allTourists } = require('../controllers/touristController');
 const Tourist = require('../models/touristModel');
 
+
+
+router.get('/id/:id', async (req, res) => {
+    try {
+        const tourist = await Tourist.findById(req.params.id);
+        if (!tourist) return res.status(404).json({ error: 'Tourist not found' });
+        res.status(200).json(tourist);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 // Route for getting a tourist by email
-router.get('/:email', getTourist);
+router.get('/email/:email', getTourist);
 router.get('/', allTourists);
 
 // Route for updating a tourist
-router.put('/update', updateTourist);
+router.put('/:id', updateTourist);
 
 // Register new tourist
 router.post('/register', createTourist) ;
@@ -79,14 +90,6 @@ router.post('/book', async (req, res) => {
 });
 
 // Get Tourist details (for example)
-router.get('/:id', async (req, res) => {
-    try {
-        const tourist = await Tourist.findById(req.params.id);
-        if (!tourist) return res.status(404).json({ error: 'Tourist not found' });
-        res.status(200).json(tourist);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
+
 
 module.exports = router;
