@@ -2,6 +2,11 @@ const mongoose = require('mongoose');
 const User = require('./User');  // Import the base User model
 
 const advertiserSchema = new mongoose.Schema({
+    email: { 
+        type: String, 
+        required: false, 
+        unique: true 
+    },
     companyName: { type: String, required: true },
     website: { type: String, required: true },
     hotline: { type: String, required: true },
