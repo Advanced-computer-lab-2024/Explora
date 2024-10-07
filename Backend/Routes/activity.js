@@ -256,5 +256,14 @@ router.get('/sortrate', async (req, res) => {
     }
 });
 
+// Get all activities
+router.get('/', async (req, res) => {
+    try {
+        const activities = await Activity.find().populate('category').populate('tags');
+        res.status(200).json(activities);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 module.exports = router;

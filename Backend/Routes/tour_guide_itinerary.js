@@ -20,6 +20,7 @@ const auth = (req, res, next) => {
 };
 
 
+
 // Sort itineraries by price (high to low or low to high)
 router.get('/sortprice', async (req, res) => {
   const { order } = req.query; // 'high' for descending, 'low' for ascending
@@ -118,16 +119,16 @@ router.get('/search', async (req, res) => {
     res.status(500).json({ message: 'Error occurred while searching itineraries.' });
   }
 });
-//-----------------
-// Get all itineraries for a specific user
-router.get('/me', async (req, res) => {
-  try {
-    const itineraries = await Itinerary.find({ user: req.user }); // Adjust the query based on your schema
-    res.json(itineraries);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
-  }
+
+// GET all itineraries
+router.get('/', async (req, res) => {
+    try {
+        const itineraries = await Itinerary.find();
+        res.json(itineraries);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+
 });
 
 

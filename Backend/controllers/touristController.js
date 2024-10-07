@@ -32,7 +32,7 @@ const allTourists = async (req, res) => {
 // Create a new tourist
 const createTourist = async (req, res) => {
     try {
-        const { email, username, password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
+        const { email, username, password, mobileNumber, nationality, dateOfBirth, job } = req.body;
 
         const existingTourist = await touristModel.findOne({ email });
         if (existingTourist) {
@@ -50,7 +50,7 @@ const createTourist = async (req, res) => {
             nationality,
             dateOfBirth,
             job,
-            wallet,
+           
             role: 'Tourist'
         });
 
@@ -65,14 +65,14 @@ const updateTourist = async (req, res) => {
     try {
         const { password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
 
-        const updatedTourist = await touristModel.findOneAndUpdate(
-            { email: req.params.email },
+        const updatedTourist = await touristModel.findByIdAndUpdate(
+            req.params.id,
             { password, mobileNumber, nationality, dateOfBirth, job, wallet },
             { new: true, runValidators: true }
         );
 
         if (!updatedTourist) {
-            return res.status(404).json({ message: `No tourist found with email ${req.params.email}` });
+            return res.status(404).json({ message: `No tourist found with ID ${req.params.id}` });
         }
 
         res.status(200).json(updatedTourist);

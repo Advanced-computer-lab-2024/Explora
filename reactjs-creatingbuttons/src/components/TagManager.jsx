@@ -59,6 +59,7 @@ export default function TagManager() {
   const updateTag = async (updatedTag) => {
     try {
       const inputData = { newTag: updatedTag.tag };
+      
       const response = await axios.put(`http://localhost:4000/PrefrenceTag/${currentTag.tag}`, inputData);
 
       console.log('Response from update:', response.data);

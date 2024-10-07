@@ -12,17 +12,15 @@ const ProductList = () => {
 
     const navigate = useNavigate();
 
-    // Function to fetch all products
     const fetchAllProducts = async () => {
         try {
             const response = await axios.get('http://localhost:4000/Products');
-            setProducts(response.data); // Update state with fetched products
+            setProducts(response.data);
         } catch (error) {
             console.error('Error fetching products:', error);
         }
     };
 
-    // Function to fetch products based on search term
     const fetchProductsByName = async (name) => {
         try {
             const response = await axios.get(`http://localhost:4000/Products/productByName/${name}`);
@@ -32,7 +30,6 @@ const ProductList = () => {
         }
     };
 
-    // Function to fetch filtered products by price range
     const fetchFilteredProducts = async (min, max) => {
         try {
             const response = await axios.get(`http://localhost:4000/Products/filterByPrice?min=${min}&max=${max}`);
@@ -42,7 +39,6 @@ const ProductList = () => {
         }
     };
 
-    // Function to fetch sorted products by ratings
     const fetchSortedProducts = async (order) => {
         try {
             const response = await axios.get(`http://localhost:4000/Products/sortByRating?order=${order}`);
@@ -52,35 +48,32 @@ const ProductList = () => {
         }
     };
 
-    // Function to handle changes in the search bar
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
         if (value) {
-            fetchProductsByName(value); // Fetch products by name when there's input
+            fetchProductsByName(value); 
         } else {
-            fetchAllProducts(); // Fetch all products if search bar is empty
+            fetchAllProducts(); 
         }
     };
 
-    // Function to handle price filtering
     const handlePriceChange = () => {
         fetchFilteredProducts(minPrice, maxPrice);
     };
 
-    // Function to handle sorting change
     const handleSortChange = (e) => {
-        const order = e.target.value;
-        setSortOrder(order);
-        if (order) {
-            fetchSortedProducts(order);
-        } else {
-            fetchAllProducts(); // Fetch all products if sorting is cleared
-        }
-    };
+      const order = e.target.value;
+      setSortOrder(order);
+      if (order) {
+          fetchSortedProducts(order); 
+      } else {
+          fetchAllProducts(); 
+      }
+  };
 
     useEffect(() => {
-        fetchAllProducts(); // Initial fetch of all products on component mount
+        fetchAllProducts(); 
     }, []);
 
     const handleAddProductClick = () => {
@@ -95,7 +88,7 @@ const ProductList = () => {
                 type="text"
                 placeholder="Search for a product..."
                 value={searchTerm}
-                onChange={handleSearchChange} // Use the handleSearchChange
+                onChange={handleSearchChange} 
                 className="search-input"
             />
 
@@ -105,8 +98,8 @@ const ProductList = () => {
                     <input
                         type="number"
                         value={minPrice}
-                        onChange={(e) => setMinPrice(Number(e.target.value))} // Update min price
-                        onBlur={handlePriceChange} // Trigger fetch on input blur
+                        onChange={(e) => setMinPrice(Number(e.target.value))} 
+                        onBlur={handlePriceChange} 
                         className="price-input"
                     />
                 </label>
@@ -115,8 +108,8 @@ const ProductList = () => {
                     <input
                         type="number"
                         value={maxPrice}
-                        onChange={(e) => setMaxPrice(Number(e.target.value))} // Update max price
-                        onBlur={handlePriceChange} // Trigger fetch on input blur
+                        onChange={(e) => setMaxPrice(Number(e.target.value))} 
+                        onBlur={handlePriceChange} 
                         className="price-input"
                     />
                 </label>
@@ -144,9 +137,13 @@ const ProductList = () => {
             </div>
 
             <div className="product-cards-container">
-                {products.map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                ))}
+                {products.length > 0 ? (
+                    products.map((product) => (
+                        <ProductCard key={product._id} product={product} products={products} setProducts={setProducts} />
+                    ))
+                ) : (
+                    <p>No products found.</p> // Display message if no products are available
+                )}
             </div>
         </div>
     );

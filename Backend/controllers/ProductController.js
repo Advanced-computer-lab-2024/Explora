@@ -57,19 +57,17 @@ const productsByName = async (req, res) => {
 
 const filteredProducts = async (req, res) => {
     try {
-        
         const {min, max } = req.query;
         const products = await Product.find({ price: { $gte: min, $lte: max } });
         if(!products){
             return res.status(404).json({msg: 'No products found'});
         }
         res.status(200).json(products);
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).json({ msg: err.message });
     }
+};
 
-}
  
 // add a new product
 const createProduct = async (req, res) => {
@@ -105,9 +103,9 @@ const createProduct = async (req, res) => {
 const updateProduct = async (req,res) => {
     try{
     const { id } = req.params;
-    const { name, price, description, seller, quantity } = req.body;
+    const { name, price, description } = req.body;
     if (id) {
-        const updatedProduct = await Product.findByIdAndUpdate(id, { name, price, description, seller, quantity }, { new: true });
+        const updatedProduct = await Product.findByIdAndUpdate(id, { name, price, description }, { new: true });
         if (!updatedProduct) {
             return res.status(404).json({ msg: 'Product not found' });
         }
@@ -145,20 +143,22 @@ const searchProducts = async (req, res) => {
 const sortProducts = async (req, res) => {
     const { order } = req.query; 
     let sortOrder = order === 'high' ? -1 : 1; 
-  
+
     try {
-      const sortedproducts = await Product.find().sort({ rating: sortOrder });
-  
-      if (sortedproducts.length === 0) {
-        return res.status(404).json({ message: 'No products found for sorting by rating.' });
-      }
-  
-      res.status(200).json(sortedproducts);
+        const allProducts = await Product.find();
+        console.log('All Products:', allProducts); 
+
+        const sortedProducts = await Product.find().sort({ averageRating: sortOrder });
+
+        if (sortedProducts.length === 0) {
+            return res.status(404).json({ msg: 'No products found for sorting by rating.' });
+        }
+
+        res.status(200).json(sortedProducts);
     } catch (error) {
-      console.error('Error sorting products by rating:', error);
-      res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
+        console.error('Error sorting products by rating:', error);
+        res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
     }
-    
 };
 const addReview = async (req, res) => {
     const { id } = req.params;
