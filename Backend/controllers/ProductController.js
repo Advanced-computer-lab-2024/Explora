@@ -57,19 +57,17 @@ const productsByName = async (req, res) => {
 
 const filteredProducts = async (req, res) => {
     try {
-        
         const {min, max } = req.query;
         const products = await Product.find({ price: { $gte: min, $lte: max } });
         if(!products){
             return res.status(404).json({msg: 'No products found'});
         }
         res.status(200).json(products);
-    }
-    catch (err) {
+    } catch (err) {
         res.status(500).json({ msg: err.message });
     }
+};
 
-}
  
 // add a new product
 const createProduct = async (req, res) => {
@@ -144,10 +142,10 @@ const searchProducts = async (req, res) => {
 // sort product by rating 
 const sortProducts = async (req, res) => {
     const { order } = req.query; 
-    let sortOrder = order === 'high-to-low' ? -1 : 1; 
+    let sortOrder = order === 'high' ? -1 : 1; 
 
     try {
-        const allProducts = await Product.find(); 
+        const allProducts = await Product.find();
         console.log('All Products:', allProducts); 
 
         const sortedProducts = await Product.find().sort({ averageRating: sortOrder });
@@ -162,7 +160,6 @@ const sortProducts = async (req, res) => {
         res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
     }
 };
-
 const addReview = async (req, res) => {
     const { id } = req.params;
     const { user, comment, rating } = req.body;
