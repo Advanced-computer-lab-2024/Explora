@@ -19,6 +19,8 @@ const allProducts = async (req, res) => {
     }
 };
 
+
+
 // get all available products
 
 const availableProducts = async (req, res) => {
@@ -56,6 +58,7 @@ const productsByName = async (req, res) => {
 
 const filteredProducts = async (req, res) => {
     try {
+        
         const {min, max } = req.query;
         const products = await Product.find({ price: { $gte: min, $lte: max } });
         if(!products){

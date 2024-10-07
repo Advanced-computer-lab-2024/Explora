@@ -62,11 +62,46 @@ const getUserid = async (req, res) => {
     }
 }
 
+const getuserbyusername = async (req, res) => {
+    try {
+        const username = req.params.username
+        const user = await User.findOne({ username });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+// Login a user
+
+const loginUser = async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        if (!user) return res.status(400).json({ error: 'User not found' });
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+
+        res.json({
+            _id: user._id,
+            username: user.username,
+            role: user.role
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 // Additional user controller functions can be defined here...
 
 module.exports = {
     registerUser,
     viewUsers,
-    getUserid
+    getUserid,
+    getuserbyusername,
+    loginUser
     // Add other controller methods like loginUser, getUserProfile, etc.
 };
