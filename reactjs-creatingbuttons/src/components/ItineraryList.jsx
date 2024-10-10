@@ -10,9 +10,9 @@ const ItineraryList = () => {
   useEffect(() => {
     const fetchItineraries = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/me', {
+        const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Use the saved token
+            'Authorization': `Bearer ${localStorage.getItem('tokesn')}`, // Use the saved token
           },
         });
         setItineraries(response.data);

@@ -59,7 +59,7 @@ mongoose.connect(process.env.MONGO_URI)
 const port = process.env.PORT; // define port number 
  // connect to port 
  app.listen(port, () => {
-    console.log('Server is listening at http://localhost:${port}');
+    console.log(`Server is listening at http://localhost:${port}`);
   });
 })
 .catch(err => {

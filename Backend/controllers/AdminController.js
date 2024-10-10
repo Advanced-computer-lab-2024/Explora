@@ -50,7 +50,6 @@ const createAdminAccount = async (req, res) => {
             username: newAdmin.username,
             email: newAdmin.email,
             role: newAdmin.role,
-            token: generateToken(newAdmin.id)
         });
     }
     catch (err) {
