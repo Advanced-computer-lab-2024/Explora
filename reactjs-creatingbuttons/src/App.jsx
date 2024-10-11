@@ -60,16 +60,24 @@ import ItineraryView from './components/ItineraryView.jsx';
 import AdvActivity from './components/AdvActivity1.jsx';
 import CreateAdvAct from './components/CreateAdvAct.jsx';
 import ActivityList2 from './components/ActivityList.2.jsx';
-
-
+import { Toaster } from 'react-hot-toast';
+import Register from './pages/Register/Register.jsx';
+import Login from './pages/Login/Login.jsx';
+import Test from './pages/test/Test.jsx';
 function App() {
 
   return (
     <main>
       <Router>
+      <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
+
         <Routes>
-          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<Test />} /> 
+          <Route path="/register" element={<Register />} />  {/* Route for LoginForm */}
+
+
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
+
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
           <Route path="/login-tourism" element={<LogInTourism />} />
@@ -120,14 +128,11 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
-<<<<<<< HEAD
         <Route path="advact" element={<AdvActivity/>} />
         <Route path="create-act" element={<CreateAdvAct/>} />
         <Route path="list" element={<ActivityList2/>} />
         
-=======
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
->>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
         
 
         </Routes>
