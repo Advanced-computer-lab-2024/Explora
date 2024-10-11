@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require("express");
 const path = require('path');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 
 const adminRoutes = require('./Routes/AdminRoutes');
@@ -17,15 +18,13 @@ const activityRoutes = require('./Routes/ActivityRoutes');
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
-<<<<<<< HEAD
 const advertiserRoutes = require('./Routes/advertiserRoute');
-=======
 const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
->>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
+const auth_route = require('./Routes/authRouts');
 
 const categoryRoutes = require('./Routes/CategoryRoutes'); // Adjust path as needed
 
-app.use('/api/categories', categoryRoutes); // Add this line to your routes
+// app.use('/api/categories', categoryRoutes); // Add this line to your routes
 
 const mongoose = require('mongoose'); 
 mongoose.set('strictQuery', false); // disable strict query 
@@ -36,7 +35,8 @@ const app = express();
 //middleware
 app.use(express.json()) //checks if the request contains data and passes that data to the request object
 app.use(cors());
-
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: false }))
 // routes
 app.use('/Governor', governorRoutes)
 app.use('/Seller', sellerRoutes);
@@ -52,12 +52,10 @@ app.use('/api/activity', activityRoutes);
 app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For managing profiles
 app.use('/users', userRoutes); 
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
-<<<<<<< HEAD
 app.use('/api/advertisers', advertiserRoutes); // This should be included
 
-=======
 app.use('/api/auth', authRoute);
->>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
+app.use('/autherization', auth_route);
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -66,8 +64,8 @@ mongoose.connect(process.env.MONGO_URI)
 const port = process.env.PORT; // define port number 
  // connect to port 
  app.listen(port, () => {
-    console.log('Server is listening at http://localhost:${port}');
-  });
+  console.log(`Server is listening at http://localhost:${port}`);
+});
 })
 .catch(err => {
     console.log(err)

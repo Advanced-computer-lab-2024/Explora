@@ -1,5 +1,6 @@
 // middleware/auth.js
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const User = require('../models/User'); // Assuming you have a User model
 
 const authenticateUser = async (req, res, next) => {
@@ -25,5 +26,20 @@ const authenticateUser = async (req, res, next) => {
     return res.status(401).json({ message: 'Invalid token' });
   }
 };
+const hashPassword = (password) => {
+  return new Promise((resolve, reject) => {
+    bcrypt.genSalt(12,(err, salt) => {
+      if (err) reject(err);
+    bcrypt.hash(password, salt, (err, hash) => {
+      if (err) reject(err);
+      resolve(hash);
+    })
+  })
+})
+}
 
-module.exports = { authenticateUser };
+const comparePassword = (password, hashedPassword) => {
+    return bcrypt.compare(password, hashedPassword)
+}
+
+module.exports = { authenticateUser, hashPassword, comparePassword};

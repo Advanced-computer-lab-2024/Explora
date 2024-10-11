@@ -7,9 +7,9 @@ const advertiserSchema = new mongoose.Schema({
         required: false, 
         unique: true 
     },
-    companyName: { type: String, required: true },
-    website: { type: String, required: true },
-    hotline: { type: String, required: true },
+    companyName: { type: String, required: false },
+    website: { type: String, required: false },
+    hotline: { type: String, required: false },
     profile: { type: String }, // Company profile description
     isAccepted: { type: Boolean, default: false } // Acceptance status
 });

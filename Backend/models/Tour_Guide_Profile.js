@@ -9,15 +9,15 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
 },
   name:{
     type: String,
-    required: true
+    required: false
   },
   mobile: {
     type: String,
-    required: true,
+    required: false,
   },
   yearsOfExperience: {
     type: Number,
-    required: true,
+    required: false,
   },
   previousWork: {
     type: String, 

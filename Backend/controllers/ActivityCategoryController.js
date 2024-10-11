@@ -7,7 +7,6 @@ const createActivityCategory = async (req, res) => {
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
     try {
-<<<<<<< HEAD
         // Validate required fields
         if (!name || !date || !time || !location || !price) {
             return res.status(400).json({ message: 'All fields are required.' });
@@ -50,7 +49,6 @@ const createActivityCategory = async (req, res) => {
 
         const savedActivity = await newActivity.save();
         res.status(201).json(savedActivity);
-=======
         // Check if the activity category already exists
         const activityCategory = await ActivityCategory.findOne({ activityType }); // Use findOne for a single document
         if (activityCategory) {
@@ -62,7 +60,6 @@ const createActivityCategory = async (req, res) => {
         
         // Respond with the new category
         res.status(201).json(newActivityCategory); // Use 201 for resource creation
->>>>>>> 0b91fb7a83cee7e1ca248370c036e2ffbc6a826e
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -131,3 +128,4 @@ module.exports = {
     updateActivityCategory,
     deleteActivityCategory
 };
+

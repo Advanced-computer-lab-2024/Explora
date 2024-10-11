@@ -1,16 +1,21 @@
 // controllers/userController.js
-
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Seller = require('../models/Seller');
 const TourGuide = require('../models/Tour_Guide_Profile');
 const Advertiser = require('../models/Advertiser');
+const Tourist = require('../models/touristModel');
+const {
+    hashPassword,
+    comparePassword
+} = require('../middleware/AuthMiddleware');
+
 
 // Register a new user
 const registerUser = async (req, res) => {
-    const { username, email, password, role, companyName, website, hotline , mobile, yearsOfExperience} = req.body;
+    const { username, email, password, role, mobileNumber, nationality, job, dateOfBirth } = req.body;
 
     try {
-        // Check if user already exists
         const existingUsername = await User.findOne({ username });
         if (existingUsername) {
             return res.status(400).json({ error: 'Username already exists' });
@@ -19,26 +24,40 @@ const registerUser = async (req, res) => {
         if (existingEmail) {
             return res.status(400).json({ error: 'Email already exists' });
         }
-        // Create new user
+
+        console.log("Received data:", req.body); // Log incoming data
+        const hashedPassword = await hashPassword(password);
         let newUser;
-        if (role == "Seller"){
-             newUser = new Seller({ username, email, password, role });
+        if (role === "Tourist") {
+            newUser = new Tourist({
+                username,
+                email,
+                password:hashedPassword,
+                role,
+                mobileNumber,
+                nationality,
+                job,
+                dateOfBirth: new Date(dateOfBirth) // Convert to Date object
+            });
+        } else if (role === "Seller") {
+            newUser = new Seller({ username, email, password:hashedPassword, role });
+        } else if (role === "TourGuide") {
+            newUser = new TourGuide({ username, email, password:hashedPassword, role });
+        } else if (role === "Advertiser") {
+            newUser = new Advertiser({ username, email, password:hashedPassword, role });
+        } else {
+            newUser = new User({ username, password:hashedPassword, role });
         }
-        else if (role == "TourGuide"){
-             newUser = new TourGuide({ username, email, password, role, mobile, yearsOfExperience});
-        }
-        else if (role == "Advertiser"){
-             newUser = new Advertiser({ username, email, password, role, companyName, website, hotline });
-        }
-        else{
-             newUser = new User({ username, email, password, role });
-        }
+
+        console.log("New User Object:", newUser); // Check the user object
         await newUser.save();
-        res.status(201).json({ message: 'User registered successfully!' , user: newUser });
+        res.status(201).json({ message: 'User registered successfully!', user: newUser });
     } catch (err) {
+        console.error("Registration error:", err); // Log the error
         res.status(500).json({ error: err.message });
     }
 };
+
 // view all users 
 const viewUsers = async (req, res) => {
         try {
@@ -62,12 +81,14 @@ const getUserid = async (req, res) => {
     }
 }
 
-const getuserbyusername = async (req, res) => {
+const getRoleByUsername = async (req, res) => {
     try {
         const username = req.params.username
         const user = await User.findOne({ username });
-        if (!user) return res.status(404).json({ message: "User not found" });
-        res.status(200).json(user);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.send({ role: user.role });    
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -76,24 +97,34 @@ const getuserbyusername = async (req, res) => {
 // Login a user
 
 const loginUser = async (req, res) => {
-    const { username, password } = req.body;
-
     try {
-        const user = await User.findOne({ username });
-        if (!user) return res.status(400).json({ error: 'User not found' });
+        const { username, password } = req.body;
 
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+        console.log('Received request:', req.body); // Log incoming data for debugging
+        
+        const user = await User.findOne({ username }); // Find user in the database by username
+        
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
 
-        res.json({
-            _id: user._id,
-            username: user.username,
-            role: user.role
-        });
+        const match = await comparePassword(password, user.password);
+        if (!match) {
+            return res.status(400).json({ error: 'Incorrect Username or Password' });
+        }
+        
+        // Generate and send back a JWT token
+        if(match){
+        jwt.sign({username: user.username, id: user.id}, process.env.JWT_SECRET, {}, (err,token) => {
+            if (err) throw err;
+            res.cookie('token',token).json(user)
+        })
+    }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Additional user controller functions can be defined here...
 
@@ -101,7 +132,7 @@ module.exports = {
     registerUser,
     viewUsers,
     getUserid,
-    getuserbyusername,
+    getRoleByUsername,
     loginUser
     // Add other controller methods like loginUser, getUserProfile, etc.
 };
