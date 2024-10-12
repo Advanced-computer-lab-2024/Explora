@@ -21,6 +21,7 @@ const userRoutes = require('./Routes/userRoute');
 const advertiserRoutes = require('./Routes/advertiserRoute');
 const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
 const auth_route = require('./Routes/authRouts');
+const complaintsRoute = require('./Routes/ComplaintsRoutes');
 
 const categoryRoutes = require('./Routes/CategoryRoutes'); // Adjust path as needed
 
@@ -56,6 +57,7 @@ app.use('/api/advertisers', advertiserRoutes); // This should be included
 
 app.use('/api/auth', authRoute);
 app.use('/autherization', auth_route);
+app.use('/complaints',complaintsRoute);
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
