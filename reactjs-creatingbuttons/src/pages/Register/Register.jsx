@@ -74,13 +74,13 @@ function Register() {
     };
 
     return (
-        <div className="container">
-            <form className="form" onSubmit={registerUser}>
-                <h1 className="title">Create an account</h1>
+        <div className="register-container">
+            <form className="register-form" onSubmit={registerUser}>
+                <h1 className="register-title">Create an account</h1>
 
-                <div className="formGroup">
-                <label className="label">Role</label>
-                <select className= 'dropdownlist' name="role" value={data.role} onChange={handleChange} required>
+                <div className="register-formGroup">
+                <label className="register-label">Role</label>
+                <select className= 'register-dropdownlist' name="role" value={data.role} onChange={handleChange} required>
                     <option value="">Select a role</option>
                     <option value="Tourist">Tourist</option>
                     <option value="Advertiser">Advertiser</option>
@@ -89,9 +89,9 @@ function Register() {
                 </select>
                 </div>
 
-                <div className="formGroup">
-                <label className="label"> <CgProfile/> Username</label>
-                <input className="input"
+                <div className="register-formGroup">
+                <label className="register-label"> <CgProfile/> Username</label>
+                <input className="register-input"
                     type="text"
                     placeholder="Enter your username"
                     required
@@ -100,9 +100,9 @@ function Register() {
                     onChange={handleChange}
                 />
                 </div>
-                <div className="formGroup">
-                <label className="label"> <MdEmail/> Email</label>
-                <input className="input"
+                <div className="register-formGroup">
+                <label className="register-label"> <MdEmail/> Email</label>
+                <input className="register-input"
                     type="email"
                     placeholder="Enter your email"
                     required
@@ -111,9 +111,9 @@ function Register() {
                     onChange={handleChange}
                 />
                 </div>
-                <div className="formGroup">
-                <label className="label"> <RiLockPasswordFill/> Password</label>
-                <input className="input"
+                <div className="register-formGroup">
+                <label className="register-label"> <RiLockPasswordFill/> Password</label>
+                <input className="register-input"
                     type="password"
                     placeholder="Enter your password"
                     required
@@ -124,57 +124,55 @@ function Register() {
                 </div>
                 
                 
-                {/* Conditionally render mobile, nationality, job, and date of birth based on the role */}
                 {data.role === 'Tourist' && (
-                    <>
+    <>
+        <div className="register-formGroup">
+            <label className="register-label"><FaMobileScreen/> Mobile</label>
+            <input className="register-input" // Corrected here
+                type="tel"
+                placeholder="Enter your mobile"
+                required
+                value={data.mobileNumber}
+                name="mobileNumber"
+                onChange={handleChange}
+            />
+        </div>
+        <div className="register-formGroup">
+            <label className="register-label"><FaRegFlag/> Nationality</label>
+            <input className="register-input" // Corrected here
+                type="text"
+                placeholder="Enter your nationality"
+                value={data.nationality}
+                name="nationality"
+                onChange={handleChange}
+            />
+        </div>
+        <div className="register-formGroup">
+            <label className="register-label"><MdOutlineWorkOutline /> Job</label>
+            <input className="register-input" // Corrected here
+                type="text"
+                placeholder="Enter your job"
+                value={data.job}
+                name="job"
+                onChange={handleChange}
+            />
+        </div>
+        <div className="register-formGroup">
+            <label className="register-label"><BsCalendarDate /> Date of Birth</label>
+            <input className="register-input" // Corrected here
+                type="date"
+                placeholder="Enter your date of birth"
+                required
+                value={data.dateOfBirth}
+                name="dateOfBirth"
+                onChange={handleChange}
+            />
+        </div>
+    </>
+)}
 
-                       <div className="formGroup">
-                       <label className="label"><FaMobileScreen/> Mobile</label>
-                        <input className="input"
-                            type="tel"
-                            placeholder="Enter your mobile"
-                            required
-                            value={data.mobileNumber}
-                            name="mobileNumber"
-                            onChange={handleChange}
-                        />
-                       </div>
-                       <div className="formGroup" >
-                       <label className="label"> <FaRegFlag/>Nationality</label>
-                        <input lassName="input"
-                            type="text"
-                            placeholder="Enter your nationality"
-                            value={data.nationality}
-                            name="nationality"
-                            onChange={handleChange}
-                        />
-                       </div>
-                        <div className="formGroup">
-                        <label className="label"> <MdOutlineWorkOutline />Job</label>
-                        <input lassName="input"
-                            type="text"
-                            placeholder="Enter your job"
-                            value={data.job}
-                            name="job"
-                            onChange={handleChange}
-                        />
-                        </div>
-                        <div className="formGroup">
-                        <label className="label"> <BsCalendarDate />
-                        Date of Birth</label>
-                        <input lassName="input"
-                            type="date"
-                            placeholder="Enter your date of birth"
-                            required
-                            value={data.dateOfBirth}
-                            name="dateOfBirth"
-                            onChange={handleChange}
-                        />
-                        </div>
-                    </>
-                )}
 
-                <button type="submit" className="register"><FaSignInAlt/>Create Account</button>
+                <button type="submit" className="register-button">Create Account<br/><FaSignInAlt/></button>
             </form>
         </div>
     );

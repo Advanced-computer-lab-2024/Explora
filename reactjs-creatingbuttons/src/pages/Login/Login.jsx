@@ -62,17 +62,17 @@ const Login = () => {
     }
 
     return (
-        <div className="container">
-            <form className='form'>
-                <div className="formGroup">
-                    <label className='label' htmlFor="username">< CgProfile/> Username</label>
-                    <input type="text" className="form-control" id="username" value={data.username} onChange={(e) => setData({...data, username: e.target.value })} />
+        <div className="container-login">
+            <form className='form-login'>
+                <div className="formGroup-login">
+                    <label className='label-login' htmlFor="username">< CgProfile/> Username</label>
+                    <input type="text" placeholder="Enter your username" className="form-control-login" id="username" value={data.username} onChange={(e) => setData({...data, username: e.target.value })} />
                 </div>
-                <div className="formGroup">
-                    <label className='label' htmlFor="password"><RiLockPasswordFill /> Password: </label>
-                    <input type="password" className="form-control" id="password" value={data.password} onChange={(e) => setData({...data, password: e.target.value })} />
+                <div className="formGroup-login">
+                    <label className='label-login' htmlFor="password"><RiLockPasswordFill /> Password: </label>
+                    <input type="password" placeholder="Enter your Password" className="form-control-login" id="password" value={data.password} onChange={(e) => setData({...data, password: e.target.value })} />
                 </div>
-                <button type="submit" className="submit" onClick={handleLogin}>Login</button>
+                <button type="submit" className="submit-login" onClick={handleLogin}>Login</button>
                 <a href="/forgot-password" style={{color: '#028090'}}>Forgot Password?</a>
             </form>
                 
