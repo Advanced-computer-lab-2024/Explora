@@ -23,7 +23,7 @@ const addComplaint = async (req, res) => {
 
 const getAllComplaints = async (req, res) => {
     try {
-        const complaints = await Complaint.find().select('title status');
+        const complaints = await Complaint.find();
         res.status(200).json(complaints);
     } catch (err) {
         console.error("Error retrieving complaints:", err);
@@ -85,22 +85,19 @@ const sortByDate = async (req, res) => {
     }
 }
 const sortAndFilterComplaints = async (req, res) => {
-    try {
-        const { status, order = 'desc' } = req.query; // Default to descending order
-        const sortOrder = order === 'asc' ? 1 : -1;
-
-        // Build a filter object
-        const filter = {};
-        if (status) {
-            filter.status = status;
+        try {
+            const { order = 'desc', status = 'All' } = req.query; // Default to descending order and all status
+            const sortOrder = order === 'asc' ? 1 : -1;
+            const query = status === 'All' ? {} : { status }; // Filter by status if not 'All'
+            
+            const complaints = await Complaint.find(query).sort({ date: sortOrder });
+            res.status(200).json(complaints);
+        } catch (err) {
+            console.error("Error sorting complaints:", err);
+            res.status(500).json({ error: err.message });
         }
-        const complaints = await Complaint.find(filter).sort({ date: sortOrder });
-        res.status(200).json(complaints);
-    } catch (err) {
-        console.error("Error sorting and filtering complaints:", err);
-        res.status(500).json({ error: err.message });
-    }
-};
+    };
+    
 
 const myComplaints = async (req, res) => {
     try {
