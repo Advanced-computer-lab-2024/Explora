@@ -1,62 +1,30 @@
 // src/components/MyActivities.js
 import React, { useEffect, useState } from 'react';
-
-// Mock data for testing purposes
-const mockActivities = [
-    {
-        id: 1,
-        name: 'Great Pyramid of Giza',
-        description: 'An ancient pyramid located in Egypt.',
-        location: 'Giza, Egypt',
-        type: 'Monument',
-        openingHours: '9 AM - 5 PM',
-        ticketPrices: {
-            native: 100,
-            foreigner: 200,
-            student: 50
-        }
-    },
-    {
-        id: 2,
-        name: 'Louvre Museum',
-        description: 'The world’s largest art museum in Paris, France.',
-        location: 'Paris, France',
-        type: 'Museum',
-        openingHours: '9 AM - 6 PM',
-        ticketPrices: {
-            native: 150,
-            foreigner: 250,
-            student: 100
-        }
-    },
-    {
-        id: 3,
-        name: 'Notre-Dame Cathedral',
-        description: 'A famous gothic cathedral located in Paris.',
-        location: 'Paris, France',
-        type: 'Religious Site',
-        openingHours: '8 AM - 7 PM',
-        ticketPrices: {
-            native: 0,
-            foreigner: 0,
-            student: 0
-        }
-    },
-    // Add more mock activities here if needed
-];
+import axios from 'axios';
 
 const MyActivities = () => {
     const [activities, setActivities] = useState([]);
+    const [error, setError] = useState('');
 
-    // Mimicking API call
+    // Fetching activities from backend
     useEffect(() => {
-        // In real case, this would be an API call
-        setActivities(mockActivities);
+        const fetchActivities = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/activities');
+                setActivities(response.data);
+            } catch (error) {
+                setError('Failed to fetch activities. Please try again later.');
+                console.error('Error fetching activities:', error);
+            }
+        };
+
+        fetchActivities();
     }, []);
 
     return (
         <div>
             <h1>My Created Activities</h1>
+            {error && <p>{error}</p>}
             <ul>
                 {activities.length > 0 ? (
                     activities.map((activity) => (
