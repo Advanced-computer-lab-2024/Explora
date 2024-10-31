@@ -11,7 +11,19 @@ const advertiserSchema = new mongoose.Schema({
     website: { type: String, required: false },
     hotline: { type: String, required: false },
     profile: { type: String }, // Company profile description
-    isAccepted: { type: Boolean, default: false } // Acceptance status
+    isAccepted: { type: Boolean, default: false }, // Acceptance status
+    idFile: {
+        type: String,
+        required: false // Path to the ID file for the advertiser
+    },
+    taxFile: {
+        type: String,
+        required: false // Path to the tax file for the advertiser
+    },
+    imageFile: {
+        type: String,
+        required: false // Path to the logo for the seller
+    }
 });
 
 const Advertiser = User.discriminator('Advertiser', advertiserSchema);

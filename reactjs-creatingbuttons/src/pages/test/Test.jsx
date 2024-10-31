@@ -31,12 +31,12 @@ const Test = () => {
                     <div className="toggle-panel toggle-left">
                         <h1>Welcome Back!</h1>
                         <p>Enter your personal details to use all of the site features</p>
-                        <button type="button" onClick={toggleForm} id="login">Sign In</button>
+                        <button type="button" onClick={toggleForm} id="login">Sign up</button>
                     </div>
                     <div className="toggle-panel toggle-right">
                         <h1>Hello, Friend!</h1>
                         <p>Register with your personal details to use all of the site features</p>
-                        <button type="button" onClick={toggleForm} id="register">Sign Up</button>
+                        <button type="button" onClick={toggleForm} id="register">Sign In</button>
                     </div>
                 </div>
             </div>

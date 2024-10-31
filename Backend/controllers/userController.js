@@ -1,5 +1,7 @@
 // controllers/userController.js
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const {asyncWrapper} = require('../middleware/upload');
 const User = require('../models/User');
 const Seller = require('../models/Seller');
 const TourGuide = require('../models/Tour_Guide_Profile');
@@ -12,10 +14,19 @@ const {
 
 
 // Register a new user
-const registerUser = async (req, res) => {
+const registerUser = asyncWrapper(async (req, res) => {
     const { username, email, password, role, mobileNumber, nationality, job, dateOfBirth } = req.body;
+    
+    // Access uploaded files
+    const idFile = req.files['idFile'] ? req.files['idFile'][0].path : null;
+    const certificatesFile = req.files['certificatesFile'] ? req.files['certificatesFile'][0].path : null;
+    const taxFile = req.files['taxFile'] ? req.files['taxFile'][0].path : null;
+    const imageFile = req.files['imageFile'] ? req.files['imageFile'][0].path : null;
+
+
 
     try {
+        // Check if the username or email already exists
         const existingUsername = await User.findOne({ username });
         if (existingUsername) {
             return res.status(400).json({ error: 'Username already exists' });
@@ -25,14 +36,15 @@ const registerUser = async (req, res) => {
             return res.status(400).json({ error: 'Email already exists' });
         }
 
-        console.log("Received data:", req.body); // Log incoming data
+        // Hash the password and create the new user
         const hashedPassword = await hashPassword(password);
         let newUser;
+
         if (role === "Tourist") {
             newUser = new Tourist({
                 username,
                 email,
-                password:hashedPassword,
+                password: hashedPassword,
                 role,
                 mobileNumber,
                 nationality,
@@ -40,23 +52,32 @@ const registerUser = async (req, res) => {
                 dateOfBirth: new Date(dateOfBirth) // Convert to Date object
             });
         } else if (role === "Seller") {
-            newUser = new Seller({ username, email, password:hashedPassword, role });
+            newUser = new Seller({ username, email, password: hashedPassword, role, idFile, taxFile, imageFile});
         } else if (role === "TourGuide") {
-            newUser = new TourGuide({ username, email, password:hashedPassword, role });
+            newUser = new TourGuide({ 
+                username, 
+                email, 
+                password: hashedPassword, 
+                role, 
+                idFile, 
+                certificatesFile,
+                imageFile
+            });
         } else if (role === "Advertiser") {
-            newUser = new Advertiser({ username, email, password:hashedPassword, role });
+            newUser = new Advertiser({ username, email, password: hashedPassword, role, idFile, taxFile, imageFile });
         } else {
-            newUser = new User({ username, password:hashedPassword, role });
+            newUser = new User({ username, password: hashedPassword, role });
         }
 
-        console.log("New User Object:", newUser); // Check the user object
+
+        // Save the new user
         await newUser.save();
         res.status(201).json({ message: 'User registered successfully!', user: newUser });
     } catch (err) {
         console.error("Registration error:", err); // Log the error
         res.status(500).json({ error: err.message });
     }
-};
+});
 
 // view all users 
 const viewUsers = async (req, res) => {
@@ -125,6 +146,51 @@ const loginUser = async (req, res) => {
     }
 };
 
+const downloadIDFile = asyncWrapper(async (req, res) => {
+    const { id } = req.params;
+
+    // No need to redeclare `User` here, it is already imported
+    const user = await User.findById(id);  // Use lowercase 'user' to avoid confusion with the model
+
+    if (!user) {
+        return res.status(404).json({ error: "User not found." });
+    }
+
+    const file = user.idFile;  // Access the 'idFile' field of the user
+    const filePath = path.join(__dirname, `../${file}`);  // Use proper path resolution
+    res.download(filePath);
+});
+
+const downloadCertificateFile = asyncWrapper(async (req, res) => {
+    const { id } = req.params;
+
+    // No need to redeclare `User` here, it is already imported
+    const user = await User.findById(id);  // Use lowercase 'user' to avoid confusion with the model
+
+    if (!user) {
+        return res.status(404).json({ error: "User not found." });
+    }
+
+    const file = user.certificatesFile;  // Access the 'idFile' field of the user
+    const filePath = path.join(__dirname, `../${file}`);  // Use proper path resolution
+    res.download(filePath);
+});
+
+const downloadTaxFile = asyncWrapper(async (req, res) => {
+    const { id } = req.params;
+
+    // No need to redeclare `User` here, it is already imported
+    const user = await User.findById(id);  // Use lowercase 'user' to avoid confusion with the model
+
+    if (!user) {
+        return res.status(404).json({ error: "User not found." });
+    }
+
+    const file = user.taxFile;  // Access the 'idFile' field of the user
+    const filePath = path.join(__dirname, `../${file}`);  // Use proper path resolution
+    res.download(filePath);
+});
+
 
 // Additional user controller functions can be defined here...
 
@@ -133,6 +199,9 @@ module.exports = {
     viewUsers,
     getUserid,
     getRoleByUsername,
-    loginUser
+    loginUser,
+    downloadIDFile,
+    downloadCertificateFile,
+    downloadTaxFile
     // Add other controller methods like loginUser, getUserProfile, etc.
 };

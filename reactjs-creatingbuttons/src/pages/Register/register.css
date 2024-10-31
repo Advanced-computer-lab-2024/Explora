@@ -116,3 +116,39 @@ a:hover {
 .register-tourist-fields .register-formGroup {
     margin-bottom: 15px;
 }
+
+.image-upload {
+    width: 100px; /* Desired width */
+    height: 100px; /* Desired height */
+    border-radius: 50%; /* Makes it circular */
+    overflow: hidden; /* Hides overflow */
+    border: 2px dashed #ccc; /* Dashed border for upload area */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    margin-top: 10px; /* Space above the preview */
+}
+
+.image-preview {
+    width: 100%; /* Full width for the preview */
+    height: 100%; /* Full height for the preview */
+    border-radius: 50%; /* Makes it circular */
+    overflow: hidden; /* Hides overflow */
+}
+
+.image-preview img {
+    width: 100%; /* Makes the image cover the entire circle */
+    height: 100%; /* Makes the image cover the entire circle */
+    object-fit: cover; /* Ensures the image maintains aspect ratio */
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa; /* Placeholder text color */
+    text-align: center;
+}

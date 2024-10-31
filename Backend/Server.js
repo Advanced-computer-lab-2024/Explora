@@ -1,10 +1,10 @@
 require('dotenv').config();
 
+
 const express = require("express");
 const path = require('path');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-
 
 const adminRoutes = require('./Routes/AdminRoutes');
 const productsRoutes = require('./Routes/ProductsRoutes');
@@ -32,6 +32,8 @@ mongoose.set('strictQuery', false); // disable strict query
 
 //express application
 const app = express();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 //middleware
 app.use(express.json()) //checks if the request contains data and passes that data to the request object

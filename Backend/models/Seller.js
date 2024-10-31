@@ -19,6 +19,18 @@ const SellerSchema = new mongoose.Schema({
     isAccepted: {
         type: Boolean,
         default: false  // For testing, default is false
+    },
+    idFile: {
+        type: String,
+        required: false // Path to the ID file for the advertiser
+    },
+    taxFile: {
+        type: String,
+        required: false // Path to the tax file for the advertiser
+    },
+    imageFile: {
+        type: String,
+        required: false // Path to the logo for the seller
     }
 });
 
