@@ -44,17 +44,22 @@ import UpdateSeller from './components/UpdateSeller';
 
 import CompanyUpdateForm from './components/CompanyUpdateForm.jsx';
 import CreateSeller from './components/CreateSeller.jsx';
-import ProfileDetailsPage from './components/ProfileDetailsPage';
-import SearchPageHeader from './components/SearchPageHeader';
-import SiteSearchPage from './components/SiteSearchPage'; // Your search components
-import ActivitySearchPage from './components/ActivitySearchPage';
-import ItinerarySearchPage from './components/ItinerarySearchPage';
-import UpcomingActivities from './components/UpcomingActivities';
-import UpcomingItineraries from './components/UpcomingItineraries';
+import ProfileDetailsPage from './components/ProfileDetailsPage.jsx';
+import SearchPageHeader from './components/SearchPageHeader.jsx';
+import SiteSearchPage from './components/SiteSearchPage.jsx'; // Your search components
+import ActivitySearchPage from './components/ActivitySearchPage.jsx';
+import ItinerarySearchPage from './components/ItinerarySearchPage.jsx';
+import UpcomingActivities from './components/UpcomingActivities.jsx';
+import UpcomingItineraries from './components/UpcomingItineraries.jsx';
 import ProductListTourist from './components/ProductListTourist.jsx';
 import CreateProfile from './components/Createprofile.jsx';
 import UpdateProfile from './components/UpdateProfile.jsx';
 import ProfileView from './components/ProfileView.jsx'; // Update the import
+import AdminViewUsers from './components/AdminViewUsers.jsx';
+import ItineraryView from './components/ItineraryView.jsx'; 
+import AdvActivity from './components/AdvActivity1.jsx';
+import CreateAdvAct from './components/CreateAdvAct.jsx';
+import ActivityList2 from './components/ActivityList.2.jsx';
 
 
 function App() {
@@ -111,8 +116,12 @@ function App() {
         <Route path="/ItinerarySearchPage" element={<ItinerarySearchPage/>} />
         <Route path="/UpcomingActivities" element={<UpcomingActivities/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
-        <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
+        <Route path="advact" element={<AdvActivity/>} />
+        <Route path="create-act" element={<CreateAdvAct/>} />
+        <Route path="list" element={<ActivityList2/>} />
+        
+        <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
         
 
         </Routes>

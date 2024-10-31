@@ -14,6 +14,9 @@ export default function Sellerhome() {
         <button>View Profiles</button>
         <button onClick={() => navigate('/update-seller')}>Update my profile</button>
         <button onClick={() => navigate('/product-list')}>View Products</button>
+
+        {/* New button for Request Account Deletion */}
+        <button onClick={() => navigate('/request-deletion')}>Request Account Deletion</button>
       </div>
     </header>
   );

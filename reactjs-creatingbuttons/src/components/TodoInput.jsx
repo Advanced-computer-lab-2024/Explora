@@ -47,7 +47,14 @@ export default function TodoInput() {
       >
         Tourist Itinerary
       </button>
+
+      {/* New button for Request Account Deletion */}
+      <button
+        style={{ width: '220px', height: '60px', margin: '10px' }}
+        onClick={() => navigate('/request-deletion')}
+      >
+        Request Account Deletion
+      </button>
     </header>
   );
 }
-

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const ItinerarySearchPage = () => {
@@ -6,34 +6,122 @@ const ItinerarySearchPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [budgetSearchTerm, setBudgetSearchTerm] = useState('');
   const [selectedRating, setSelectedRating] = useState('all');
-  const [selectedPrice, setSelectedPrice] = useState(100); // Default max price
+  const [selectedPrice, setSelectedPrice] = useState(299999000); // Default max price
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedPreferences, setSelectedPreferences] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState('all languages');
+  const [selectedLanguage, setSelectedLanguage] = useState('');
   const [sortOrder, setSortOrder] = useState('none');
 
+useEffect(() => {
+  fetch('http://localhost:4000/api/tour_guide_itinerary/').
+  then(response => response.json()).
+  then(data => {  
+      data=data.map((place)=>{return {...place,date:place.date.split('T')[0]}})
+      setPlaces(data);
+  })},[])
+
   // Dummy data with ratings, price, date, and preferences
-  const places = [
-    { name: 'Egyptian Museum', Language: 'Arabic Tour', category: 'museum tour', rating: 9, price: 20, date: '2024-10-10', preferences: ['educational', 'museum tour'] },
-    { name: 'Egyptian Museum', Language: 'Spanish Tour', category: 'museum tour', rating: 9, price: 28, date: '2024-10-10', preferences: ['educational', 'museum tour'] },
-    { name: 'Egyptian Museum', Language: 'English Tour', category: 'museum tour', rating: 9, price: 22, date: '2024-10-10', preferences: ['educational', 'museum tour'] },
-    { name: 'Pyramids of Giza', Language: 'Arabic Tour', category: 'historical place tour', rating: 9.7, price: 50, date: '2024-11-01', preferences: ['adventurous', 'outdoors', 'landmark'] },
-    { name: 'Pyramids of Giza', Language: 'English Tour', category: 'historical place tour', rating: 9.7, price: 53, date: '2024-11-01', preferences: ['adventurous', 'outdoors', 'landmark'] },
-    { name: 'Pyramids of Giza', Language: 'Italian Tour', category: 'historical place tour', rating: 9.6, price: 55, date: '2024-11-01', preferences: ['adventurous', 'outdoors', 'landmark'] },
-    { name: 'Art Museum', Language: 'Arabic Tour', category: 'museum tour', rating: 8, price: 15, date: '2024-09-20', preferences: ['cultural', 'budget-friendly', 'educational', 'museum tour'] },
-    { name: 'Cairo Tower', Language: 'Arabic Tour', category: 'landmark tour', rating: 7.2, price: 10, date: '2024-12-05', preferences: ['scenic', 'budget-friendly', 'landmark'] },
-    { name: 'Luxor Temple', Language: 'Arabic Tour', category: 'historical place tour', rating: 9.2, price: 30, date: '2024-10-25', preferences: ['educational', 'adventurous', 'outdoors', 'landmark'] },
-    { name: 'Luxor Temple', Language: 'German Tour', category: 'historical place tour', rating: 9.2, price: 40, date: '2024-10-25', preferences: ['educational', 'adventurous', 'outdoors', 'landmark'] }
-  ];
+  const places =[
+    {
+        "_id": "670437882d97c4fb1fad8d83",
+        "activities": [
+            "Kayaking",
+            "Bird Watching"
+        ],
+        "locations": "River, Forest",
+        "timeline": "2023-12-05T08:00:00Z",
+        "duration": 6,
+        "language": "French",
+        "price": 120,
+        "availableDates": [
+            "2023-12-05T00:00:00.000Z",
+            "2023-12-06T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "8:00 AM",
+            "12:00 PM"
+        ],
+        "accessibility": true,
+        "pickupLocation": "River Dock",
+        "name": "Nature Exploration",
+        "dropoffLocation": "Forest Entrance",
+        "hasBookings": true,
+        "tags": [
+            "Nature",
+            "Adventure"
+        ],
+        "__v": 0
+    },
+    {
+        "_id": "670437a62d97c4fb1fad8d85",
+        "activities": [
+            "Snorkeling",
+            "Beach Volleyball"
+        ],
+        "locations": "Beach, Resort",
+        "timeline": "2023-11-20T09:00:00Z",
+        "duration": 4,
+        "language": "English",
+        "price": 80,
+        "availableDates": [
+            "2023-11-20T00:00:00.000Z",
+            "2023-11-21T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "9:00 AM",
+            "1:00 PM"
+        ],
+        "accessibility": true,
+        "pickupLocation": "Resort Lobby",
+        "name": "Beach Fun Day",
+        "dropoffLocation": "Beach Entrance",
+        "hasBookings": false,
+        "tags": [
+            "Beach",
+            "Sports"
+        ],
+        "__v": 0
+    },
+    {
+        "_id": "670437b42d97c4fb1fad8d87",
+        "activities": [
+            "Wine Tasting",
+            "Vineyard Tour"
+        ],
+        "locations": "Vineyard, Winery",
+        "timeline": "2023-10-15T10:00:00Z",
+        "duration": 3,
+        "language": "Italian",
+        "price": 150,
+        "availableDates": [
+            "2023-10-15T00:00:00.000Z",
+            "2023-10-16T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "10:00 AM",
+            "2:00 PM"
+        ],
+        "accessibility": false,
+        "pickupLocation": "Hotel Lobby",
+        "name": "Wine Experience",
+        "dropoffLocation": "Winery Entrance",
+        "hasBookings": true,
+        "tags": [
+            "Wine",
+            "Tour"
+        ],
+        "__v": 0
+    }
+];
 
   // Filtering logic
   const filteredPlaces = places.filter((place) => {
     const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesBudget = place.price <= selectedPrice; // Changed from === to <=
-    const matchesLanguage = selectedLanguage === 'all languages' || place.Language === selectedLanguage;
+    const matchesLanguage = place.language.toLowerCase().includes(selectedLanguage.toLowerCase()); 
     const matchesRating = selectedRating === 'all' || place.rating >= Number(selectedRating);
     const matchesDate = !selectedDate || place.date === selectedDate;
-    const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.every(pref => place.preferences.includes(pref));
+    const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.every(pref => place.tags.map((tag)=>tag.toLowerCase()).includes(pref.toLowerCase()));
     
     return matchesSearch && matchesRating && matchesDate && matchesPreferences && matchesLanguage && matchesBudget;
   });
@@ -111,14 +199,13 @@ const ItinerarySearchPage = () => {
 
         {/* Language Dropdown */}
         <label style={{ marginLeft: '15px' }}>Language: </label>
-        <select value={selectedLanguage} onChange={handleLanguageChange} style={{ padding: '10px' }}>
-          <option value="all languages">All Languages</option>
-          <option value="Arabic Tour">Arabic Tour</option>
-          <option value="English Tour">English Tour</option>
-          <option value="Spanish Tour">Spanish Tour</option>
-          <option value="German Tour">German Tour</option>
-          <option value="Italian Tour">Italian Tour</option>
-        </select>
+        <input
+          type="text"
+          placeholder="Search by language..."
+          value={selectedLanguage}
+          onChange={handleLanguageChange}
+          style={{ padding: '10px', width: '300px', marginRight: '15px' }}
+        />
 
         {/* Date Picker */}
         <label style={{ marginLeft: '15px' }}>Date:</label>
@@ -156,7 +243,7 @@ const ItinerarySearchPage = () => {
           <ul>
             {sortedPlaces.map((place, index) => (
               <li key={index}>
-                <strong>{place.name}</strong> - {place.category} - ({place.Language}) - ${place.price} - rated: {place.rating}/10
+                <strong>{place.name}</strong>  - ({place.language}) - ${place.price} - rated: {place.rating}/10
               </li>
             ))}
           </ul>

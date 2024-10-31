@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const SiteSearchPage = () => {
     // State to manage the search input, category, and additional filters
@@ -9,21 +9,24 @@ const SiteSearchPage = () => {
     const [sortOrder, setSortOrder] = useState('none');
 
     // Dummy data with ratings, price, date, and preferences
-    const places = [
-        { name: 'Egyptian Museum', rating: 9, price: 20, preferences: [ 'educational', 'museum tour'] },
-        { name: 'Pyramids of Giza', rating: 8.8, price: 50, preferences: ['adventurous', 'outdoors','landmark']},
-        { name: 'Art Museum', rating: 8, price: 15, preferences: ['cultural', 'budget-friendly','educational','museum tour'] },
-        { name: 'Cairo Tower', rating: 7, price: 10, preferences: ['scenic','budget-friendly','landmark']  },
-        { name: 'Luxor Temple', rating: 9.4, price: 30, preferences: ['educational', 'adventurous','outdoors','landmark'] },
-    ];
+    const [places, setPlaces] = useState([]);
+       
+    useEffect(() => { 
+        fetch('http://localhost:4000/api/Governor/museums')
+        .then(response => response.json())
+        .then(data => {
+            setPlaces(data);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+     }, []);
 
     // Filtering logic
     const filteredPlaces = places.filter((place) => {
         const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesRating = selectedRating === 'all' || place.rating >= Number(selectedRating);
-        const matchesPrice = place.price <= selectedPrice;
-        const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.every(pref => place.preferences.includes(pref));
-        return matchesSearch && matchesRating && matchesPrice && matchesPreferences;
+        const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences[0]==="" || selectedPreferences.every(pref => place.tags.includes(pref));
+        return matchesSearch && matchesPreferences;
     });
 
     // Event handlers
@@ -37,15 +40,11 @@ const SiteSearchPage = () => {
     let sortedPlaces = [...filteredPlaces];
 
     if (sortOrder === 'low-to-high') {
-        sortedPlaces = sortedPlaces.sort((a, b) => a.price - b.price);
+        sortedPlaces = sortedPlaces.sort((a, b) => a.ticketPrices.native - b.ticketPrices.native );
     } else if (sortOrder === 'high-to-low') {
-        sortedPlaces = sortedPlaces.sort((a, b) => b.price - a.price);
-    } else if (sortOrder === 'lowest-to-highest'){
-        sortedPlaces = sortedPlaces.sort((a,b) => a.rating - b.rating);
-    } else if (sortOrder === 'highest-to-lowest'){
-        sortedPlaces = sortedPlaces.sort((a,b) => b.rating - a.rating);
-    }
-
+        sortedPlaces = sortedPlaces.sort((a, b) => b.ticketPrices.native  - a.ticketPrices.native );
+    } 
+    
     return (
         <div>
             <h2>Site Search Page</h2>
@@ -83,7 +82,7 @@ const SiteSearchPage = () => {
                     <ul>
                         {sortedPlaces.map((place, index) => (
                             <li key={index}>
-                                <strong>{place.name}</strong> - ${place.price} - rated: {place.rating}/10
+                                <strong>{place.name}</strong> - {place.description} - tags: {place.tags.join(', ')} - {place.ticketPrices.native}$
                             </li>
                         ))}
                     </ul>

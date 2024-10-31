@@ -256,6 +256,41 @@ p {
   border-radius: 4px; /* Rounded corners */
 }
 
+.review-section textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+.submit-review-button {
+  margin-top: 10px;
+  background-color: #000000;
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submit-review-button:hover {
+  background-color: #0056b3;
+}
+
+.submitted-review {
+  margin-top: 20px;
+}
+
+.archive-link {
+  margin-left: 10px; /* Adjust spacing */
+  text-decoration: none; /* Remove underline */
+  color: blue; /* Link color */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.archive-link:hover {
+  text-decoration: underline; /* Underline on hover */
+}
 
 }
