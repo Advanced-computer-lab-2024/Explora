@@ -44,29 +44,46 @@ const availableProducts = async (req, res) => {
 
 // get product by name
 const productsByName = async (req, res) => {
-    const  {name}  = req.params;
-    const products = await Product.find({ name: new RegExp(name, 'i') });
-    if(!products){
-        return res.status(404).json({msg: 'No products found'});
-    }
-    res.status(200).json(products);
+    const { name } = req.params;
+    try {
+        const products = await Product.find({ name: new RegExp(name, 'i') });
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No products found' });
+        }
 
-}
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`
+        }));
+
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
 
 // filter product by price 
 
 const filteredProducts = async (req, res) => {
     try {
-        const {min, max } = req.query;
+        const { min, max } = req.query;
         const products = await Product.find({ price: { $gte: min, $lte: max } });
-        if(!products){
-            return res.status(404).json({msg: 'No products found'});
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No products found' });
         }
-        res.status(200).json(products);
+
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`
+        }));
+
+        res.status(200).json(updatedProducts);
     } catch (err) {
         res.status(500).json({ msg: err.message });
     }
 };
+
 
  
 // add a new product
@@ -74,14 +91,14 @@ const createProduct = async (req, res) => {
     const {name, price, description,seller, quantity} = req.body;
 
     try {
-        const picturePath = req.file ? `uploads/${req.file.filename}` : null;
+        const image = req.file ? req.file.path : null; // Use req.file instead of req.files
 
         const newProduct = await Product.create({
             name,
             price,
             description,
             seller,
-            image: picturePath,
+            image: image,
             quantity: quantity
         });
         res.status(201).json({
@@ -180,6 +197,38 @@ const addReview = async (req, res) => {
     }
 };
 
+// view qnatity and sales 
+
+const viewQuantityAndSales = async (req, res) => {
+        try {
+            const products = await Product.find().select('name quantity sales');
+            if (!products || products.length === 0) {
+                return res.status(404).json({ msg: 'No products found' });
+            }
+            res.status(200).json(products);
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    };
+
+// archive and unarchive products 
+
+const archiveProduct = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        const { archived } = req.body; 
+        const updatedProduct = await Product.findByIdAndUpdate(id,{archived},{new: true});
+
+        if (!updatedProduct) {
+            return res.status(404).json({ msg: 'Product not found' });
+        }
+        res.status(200).json(updatedProduct); 
+    } catch (err) {
+        res.status(400).json({ msg: err.message });
+    }
+};
+
+
 
 module.exports = {
     createProduct,
@@ -190,5 +239,7 @@ module.exports = {
     filteredProducts,
     sortProducts,
     updateProduct,
-    addReview
+    addReview,
+    viewQuantityAndSales,
+    archiveProduct
 };

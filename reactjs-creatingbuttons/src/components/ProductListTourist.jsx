@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import ProductCard from './ProductCard';
+import ProductCard from './productCard/ProductCard';
 
 const ProductListTourist = () => {
   const [products, setProducts] = useState([]);

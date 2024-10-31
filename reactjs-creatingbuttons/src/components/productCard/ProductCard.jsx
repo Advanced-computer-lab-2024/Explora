@@ -1,5 +1,8 @@
+// ProductCard.js
 import React, { useState } from 'react';
 import axios from 'axios';
+import './productsCard.css';
+
 
 const ProductCard = ({ product, products, setProducts }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -8,30 +11,24 @@ const ProductCard = ({ product, products, setProducts }) => {
     const [editedDescription, setEditedDescription] = useState(product.description);
     const [message, setMessage] = useState('');
 
-    // Handle the edit button click
     const handleEditClick = () => {
         setIsEditing(true);
-        // Set edited values to current product details
         setEditedName(product.name);
         setEditedPrice(product.price);
         setEditedDescription(product.description);
     };
 
-    // Function to update the product
     const updateProduct = async () => {
         try {
             const inputData = {
                 name: editedName,
                 price: editedPrice,
                 description: editedDescription,
-                reviews: product.reviews // Include reviews in the update
+                reviews: product.reviews 
             };
 
             const response = await axios.put(`http://localhost:4000/Products/updateProduct/${product._id}`, inputData);
 
-            console.log('Response from update:', response.data);
-
-            // Update the products state immediately after the successful response
             setProducts(prevProducts =>
                 prevProducts.map(prod =>
                     prod._id === product._id ? { ...prod, ...inputData } : prod
@@ -46,7 +43,6 @@ const ProductCard = ({ product, products, setProducts }) => {
         }
     };
 
-    // Function to render stars based on averageRating
     const renderStars = (averageRating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -59,8 +55,13 @@ const ProductCard = ({ product, products, setProducts }) => {
 
     return (
         <div className="product-card">
-            <img src={product.image} alt={product.name} className="product-image" />
-
+            {/* Display product image */}
+            {product.image ? (
+                <img src={product.image} alt={product.name} className="product-image" />
+            ) : (
+                <p>No Image Available</p>
+            )}
+    
             {isEditing ? (
                 <>
                     <input
@@ -92,18 +93,18 @@ const ProductCard = ({ product, products, setProducts }) => {
                     <p className="product-description">{editedDescription}</p>
                     <p className="product-price">${editedPrice.toFixed(2)}</p>
                     <p className="product-ratings">
-                        Average Rating: {renderStars(product.averageRating)} {/* Render stars based on average rating */}
+                        Average Rating: {renderStars(product.averageRating)}
                     </p>
                 </>
             )}
-
+    
             <p className="product-seller">Seller: {product.seller}</p>
             <p className="product-reviews">{product.reviews.length} reviews</p>
-
+    
             <button className="edit-button" onClick={handleEditClick}>
                 <i className="fa-solid fa-pen-to-square"></i>
             </button>
-
+    
             {message && <p className="message">{message}</p>}
         </div>
     );

@@ -1,7 +1,11 @@
+// ProductList.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProductCard from './ProductCard';
+import ProductCard from '../productCard/ProductCard';
 import axios from 'axios';
+import './products.css';
+
+
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -126,7 +130,7 @@ const ProductList = () => {
                     Sort by Ratings:
                     <select
                         value={sortOrder}
-                        onChange={handleSortChange} // Use the handleSortChange
+                        onChange={handleSortChange} 
                         className="sort-input"
                     >
                         <option value="">Select</option>
@@ -142,7 +146,7 @@ const ProductList = () => {
                         <ProductCard key={product._id} product={product} products={products} setProducts={setProducts} />
                     ))
                 ) : (
-                    <p>No products found.</p> // Display message if no products are available
+                    <p>No products found.</p>
                 )}
             </div>
         </div>

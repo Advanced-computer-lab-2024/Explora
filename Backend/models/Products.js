@@ -54,11 +54,20 @@ const productSchema = new Schema({
     averageRating: {
         type: Number,
         default: 0
+    },
+    archived: {
+        type: Boolean,
+        default: false
+    },
+    sales: {
+        type: Number,
+        default: 0 
     }
 
+},
 
 
-}, { timestamps: true });
+{ timestamps: true });
 
 productSchema.methods.calculateAverageRating = function() {
     if (this.reviews.length === 0) return 0;

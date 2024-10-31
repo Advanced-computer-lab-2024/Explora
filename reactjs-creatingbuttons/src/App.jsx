@@ -10,7 +10,7 @@ import CategoryList from './components/CategoryList.jsx';
 import TagManager from './components/TagManager.jsx';
 import TagForm from './components/TagForm.jsx';
 import TagList from './components/TagList.jsx';
-import ProductList from './components/ProductList.jsx';
+import ProductList from './components/productList/ProductList.jsx';
 import MiddleForm from './components/MiddleForm.jsx';
 import LoginForm from './components/LoginForm.jsx';
 import SignupTourist from './components/SignupTourist.jsx';
@@ -64,6 +64,8 @@ import { Toaster } from 'react-hot-toast';
 import Register from './pages/Register/Register.jsx';
 import Login from './pages/Login/Login.jsx';
 import Test from './pages/test/Test.jsx';
+import TopBar from './components/Admin/topBar/TopBar.jsx';
+import Navbar from './components/Admin/navbar/Navbar.jsx';
 function App() {
 
   return (
@@ -72,7 +74,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<Test />} /> 
+          <Route path="/" element={<Navbar />} /> 
           <Route path="/register" element={<Register />} />  {/* Route for LoginForm */}
 
 
@@ -133,6 +135,8 @@ function App() {
         <Route path="list" element={<ActivityList2/>} />
         
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
+
+
         
 
         </Routes>
