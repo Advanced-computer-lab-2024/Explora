@@ -64,8 +64,7 @@ import { Toaster } from 'react-hot-toast';
 import Register from './pages/Register/Register.jsx';
 import Login from './pages/Login/Login.jsx';
 import Test from './pages/test/Test.jsx';
-import TopBar from './components/Admin/topBar/TopBar.jsx';
-import Navbar from './components/Admin/navbar/Navbar.jsx';
+import AdminComplaint from './pages/AdminComplaints/AdminComplaints.jsx'
 function App() {
 
   return (
@@ -74,8 +73,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<Navbar />} /> 
-          <Route path="/register" element={<Register />} />  {/* Route for LoginForm */}
+          <Route path="/" element={<AdminComplaint />} /> 
 
 
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
