@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './AdminComplaintCard.css';
-import Image from '../../assets/images/complaint_img.jpg';
+import Image from '../../../assets/images/complaint_img.jpg';
 
 const AdminComplaintCard = ({ title, date, status, body, reply: existingReply, onUpdate, id }) => {
     const [showDetails, setShowDetails] = useState(false);
@@ -19,7 +19,7 @@ const AdminComplaintCard = ({ title, date, status, body, reply: existingReply, o
             updatedComplaint.reply = reply;
         }
 
-        if (newStatus !== status) {
+        if (newStatus !== status) { 
             updatedComplaint.status = newStatus; 
         }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import AdminComplaintCard from '../../components/AdminComplaintCard/AdminComplaintCard';
+import AdminComplaintCard from '../../components/Admin/AdminComplaintCard/AdminComplaintCard';
 import './adminComplaint.css';
 
 const AdminComplaints = () => {
