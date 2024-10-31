@@ -14,7 +14,7 @@ const activityCategoriesRoute = require('./Routes/ActivityCategoryRoutes');
 const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
 const touristRoutes = require('./Routes/touristRouter'); // Route for tourists
 const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjust the path as needed
-const activityRoutes = require('./Routes/ActivityRoutes'); 
+const activityRoutes = require('./Routes/ActivityRoutes');
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
@@ -62,15 +62,16 @@ app.use('/autherization', auth_route);
 app.use('/complaints',complaintsRoute);
 
 //connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 .then(() => {
-//listen for requests
-const port = process.env.PORT; // define port number 
- // connect to port 
- app.listen(port, () => {
-  console.log(`Server is listening at http://localhost:${port}`);
-});
+  //listen for requests
+  const port = process.env.PORT || 5000; // define port number with a default value
+  // connect to port 
+  app.listen(port, () => {
+    console.log(`Server is listening at http://localhost:${port}`);
+  });
 })
 .catch(err => {
-    console.log(err)
+    console.log('MongoDB connection error:', err);
 });
