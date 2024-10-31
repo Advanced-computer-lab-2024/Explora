@@ -29,16 +29,20 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
   },
   idFile: {
     type: String,
-    required: false, // URL of ID file (if available)
+    required: true, // URL of ID file (if available)
   },
   certificatesFile : {
     type: String,
-    required: false, // URL of tax file (if available)
+    required: true, // URL of tax file (if available)
   },
   imageFile: {
     type: String,
-    required: false, // URL of photo (if available)
-  }
+    required: true, // URL of photo (if available)
+  },
+  status: {
+    type: String,
+    default: 'Pending' // Default status is 'pending'
+}
 
 });
 const TourGuide = User.discriminator('TourGuide', Tour_Guide_Profile_ProfileSchema);

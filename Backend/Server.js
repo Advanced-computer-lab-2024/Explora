@@ -63,7 +63,7 @@ app.use('/complaints',complaintsRoute);
 
 //connect to MongoDB
 console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGO_URI)
 .then(() => {
   //listen for requests
   const port = process.env.PORT || 5000; // define port number with a default value

@@ -65,9 +65,11 @@ const updateSeller = async (req, res) => {
     }
 };
 
+
+
 module.exports = {
     createSeller,
     getAllSellers,
     getSellerById,
-    updateSeller
+    updateSeller,
 };

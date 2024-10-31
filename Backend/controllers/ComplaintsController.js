@@ -11,8 +11,6 @@ const addComplaint = async (req, res) => {
             user,
             title,
             body,
-            status,
-            date,
         });
         res.status(201).json(complaint);
     } catch (err) {

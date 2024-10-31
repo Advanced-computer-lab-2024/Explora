@@ -22,15 +22,19 @@ const SellerSchema = new mongoose.Schema({
     },
     idFile: {
         type: String,
-        required: false // Path to the ID file for the advertiser
+        required: true // Path to the ID file for the advertiser
     },
     taxFile: {
         type: String,
-        required: false // Path to the tax file for the advertiser
+        required: true // Path to the tax file for the advertiser
     },
     imageFile: {
         type: String,
-        required: false // Path to the logo for the seller
+        required: true // Path to the logo for the seller
+    },
+    status: {
+        type: String,
+        default: 'Pending' // Default status is 'pending'
     }
 });
 

@@ -43,6 +43,7 @@ const comparePassword = (password, hashedPassword) => {
     return bcrypt.compare(password, hashedPassword)
 }
 
+
 // Send email verification
 function sendEmail({ recipient_email, OTP }) {
   return new Promise((resolve, reject) => {

@@ -191,6 +191,50 @@ const downloadTaxFile = asyncWrapper(async (req, res) => {
     res.download(filePath);
 });
 
+const updateStatus = async (req, res) => {
+    try {
+        const { status } = req.body;
+        const { id } = req.params;
+        const user = await User.findById(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+        user.status = status; 
+        await user.save(); 
+        res.status(200).json(user);
+
+    }
+    catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const viewRequests = async (req, res) => {
+    try {
+        const users = await User.find({
+            role: { $in: ["Seller", "TourGuide", "Advertiser"] }  // Correct usage
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+const filterByStatus = async (req, res) => {
+    try {
+        const { status } = req.params;
+        const users = await User.find({
+            role: { $in: ["Seller", "TourGuide", "Advertiser"] }, // Matches any of these roles
+            status // Filter by the status from params
+        });
+        res.status(200).json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+
+
+
 
 // Additional user controller functions can be defined here...
 
@@ -202,6 +246,9 @@ module.exports = {
     loginUser,
     downloadIDFile,
     downloadCertificateFile,
-    downloadTaxFile
+    downloadTaxFile,
+    updateStatus,
+    viewRequests,
+    filterByStatus
     // Add other controller methods like loginUser, getUserProfile, etc.
 };
