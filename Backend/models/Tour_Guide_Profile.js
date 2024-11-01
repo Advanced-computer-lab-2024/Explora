@@ -6,7 +6,11 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
     type: String, 
     required: true, 
     unique: true 
-},
+  },
+  tourists: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'touristModel' // Link to Tourist model
+  }],
   name:{
     type: String,
     required: true

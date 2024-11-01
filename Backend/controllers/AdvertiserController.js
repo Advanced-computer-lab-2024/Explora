@@ -81,9 +81,24 @@ const getAdvertiserById = async (req, res) => {
 };
 
 // Delete an advertiser profile
+
 const deleteAdvertiserProfile = async (req, res) => {
     try {
         const { id } = req.params; // Get the ID from the request parameters
+        
+        // Check for upcoming activities associated with the advertiser that have bookings
+        const upcomingActivities = await Activity.find({
+            advertiserId: id, // Assuming there is an advertiserId field in your Activity schema
+            hasBookings: true, // Check if there are bookings
+            // Check for upcoming dates (this can vary based on your schema, assuming 'date' field)
+            date: { $gte: new Date() } // Example: Activities that are on or after the current date
+        });
+
+        // If there are any upcoming activities with bookings, prevent deletion
+        if (upcomingActivities.length > 0) {
+            return res.status(400).json({ error: 'Cannot delete profile; there are upcoming activities with bookings.' });
+        }
+
         const deletedAdvertiser = await Advertiser.findByIdAndDelete(id); // Delete the advertiser
 
         if (!deletedAdvertiser) {

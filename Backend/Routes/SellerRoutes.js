@@ -5,12 +5,14 @@ const {
     createSeller,      // Correct import
     getAllSellers,     // Correct import
     getSellerById,     // Correct import
-    updateSeller       // Correct import
+    updateSeller,       // Correct import
+    deleteSeller
 } = require('../controllers/SellerController');  // Ensure correct path to SellerController
 
 // Create a seller profile (POST /seller/create)
 router.post('/create', createSeller);
-
+// Assuming deleteSeller is imported from your controller file
+router.delete('/:id', deleteSeller);
 // Get seller profile by ID (GET /seller/:id)
 router.get('/:id', getSellerById);
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Profile = require('../models/Tour_Guide_Profile');
+const Itinerary = require('../models/Tour_Guide_Itinerary'); // Adjust the path as needed
 const multer = require('multer');
 const path = require('path');
 
@@ -130,7 +131,30 @@ router.put('/accept-terms/:id', async (req, res) => {
   }
 });
 
+// DELETE /tour-guide/:id
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
 
+  try {
+      // Check for upcoming itineraries associated with this tour guide
+      const upcomingItineraries = await Itinerary.find({ tourGuideId: id, hasBookings: true });
+      
+      if (upcomingItineraries.length > 0) {
+          return res.status(400).json({ message: 'Cannot delete profile; there are upcoming itineraries associated with it.' });
+      }
 
+      // If no upcoming itineraries, proceed to delete
+      const result = await User.findByIdAndDelete(id); // Assuming your User model is set up properly
+      
+      if (!result) {
+          return res.status(404).json({ message: 'Tour guide not found' });
+      }
+      
+      res.status(200).json({ message: 'Tour guide profile deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting tour guide profile:', error);
+      res.status(500).send('Server delete error');
+  }
+});
 
 module.exports = router;

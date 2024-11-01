@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const itinerarySchema = new mongoose.Schema({
+  tourGuideId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', // Assuming your User model is named 'User'
+    required: true 
+  },
   activities: [{
     duration: { type: Number, required: true }, // Duration in minutes
     date: { type: Date, required: true },

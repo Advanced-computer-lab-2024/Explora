@@ -2,10 +2,8 @@
 
 const express = require('express');
 const router = express.Router();
-const { createTourist, getTourist, updateTourist, allTourists } = require('../controllers/touristController');
+const { createTourist, getTourist, updateTourist, allTourists, deleteTourist } = require('../controllers/touristController');
 const Tourist = require('../models/touristModel');
-
-
 
 router.get('/id/:id', async (req, res) => {
     try {
@@ -25,7 +23,9 @@ router.put('/:id', updateTourist);
 
 // Register new tourist
 router.post('/register', createTourist) ;
-    
+router.delete('/:id', deleteTourist) ;
+
+
 
     // Hash password before saving to the database
     // const hashedPassword = await bcrypt.hash(password, 10);

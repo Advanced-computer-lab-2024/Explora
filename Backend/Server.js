@@ -13,7 +13,7 @@ const activityCategoriesRoute = require('./Routes/ActivityCategoryRoutes');
 const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
 const touristRoutes = require('./Routes/touristRouter'); // Route for tourists
 const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjust the path as needed
-const activityRoutes = require('./Routes/ActivityRoutes'); 
+const activityRoutes = require('./Routes/activity'); 
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
@@ -49,7 +49,8 @@ app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For manag
 app.use('/users', userRoutes); 
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
 app.use('/api/advertisers', advertiserRoutes); // This should be included
-
+//6703f74592c1cac4108a7481
+//6704021592c1cac4108a748b
 app.use('/api/auth', authRoute);
 
 //connect to MongoDB

@@ -150,10 +150,9 @@ router.get('/tag/:tag', async (req, res) => {
 });
 
 // Create a new itinerary
-router.post('/', async (req, res) => {
+router.post('/:id', async (req, res) => {
   const {
     activities,
-    locations,
     timeline,
     duration,
     language,
@@ -163,15 +162,17 @@ router.post('/', async (req, res) => {
     accessibility,
     pickupLocation,
     name,
-    dropoffLocation, 
+    dropoffLocation,
     hasBookings, 
     tags
   } = req.body;
 
+  const tourGuideId = req.params.id; // Get tourGuideId from URL parameter
+
   try {
     const newItinerary = new Itinerary({
+      tourGuideId, // Set the tourGuideId here
       activities,
-      locations,
       timeline,
       duration,
       language,
@@ -187,12 +188,13 @@ router.post('/', async (req, res) => {
     });
 
     await newItinerary.save();
-    res.json(newItinerary);
+    res.status(201).json(newItinerary); // Return created status
   } catch (error) {
-    console.error(error);
+    console.error('Error creating itinerary:', error);
     res.status(500).send('Server create error');
   }
 });
+
 
 router.get('/filter', async (req, res) => {
   const { price, date, tags, language } = req.query;
@@ -244,15 +246,7 @@ router.get('/:id', async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-// GET all itineraries
-router.get('/', async (req, res) => {
-  try {
-    const itineraries = await Itinerary.find();
-    res.json(itineraries);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+
 
 // Update an itinerary
 router.put('/:id', async (req, res) => {

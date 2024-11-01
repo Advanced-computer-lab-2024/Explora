@@ -4,6 +4,9 @@ const User = require('../models/User');
 const Seller = require('../models/Seller');
 const TourGuide = require('../models/Tour_Guide_Profile');
 const Advertiser = require('../models/Advertiser');
+const Tourist = require('../models/touristModel');
+const TourismGovernor = require('../models/Governor');
+const Admin = require('../models/Admin');
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -94,6 +97,28 @@ const loginUser = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+// Change user password
+const changePassword = async (req, res) => {
+    const { username, oldPassword, newPassword } = req.body;
+
+    try {
+        // Find the user by username
+        const user = await User.findOne({ username });
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        // Check if the old password matches
+        const isMatch = await user.comparePassword(oldPassword);
+        if (!isMatch) return res.status(400).json({ error: 'Old password is incorrect' });
+
+        // Update the password
+        user.password = newPassword; // Assuming you hash it later in a pre-save hook or using a method
+        await user.save();
+
+        res.status(200).json({ message: 'Password changed successfully!' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 // Additional user controller functions can be defined here...
 
@@ -102,6 +127,7 @@ module.exports = {
     viewUsers,
     getUserid,
     getuserbyusername,
-    loginUser
+    loginUser,
+    changePassword,
     // Add other controller methods like loginUser, getUserProfile, etc.
 };
