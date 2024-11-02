@@ -1,36 +1,51 @@
 import React from 'react';
 
-
+import { useState, useEffect } from 'react';
 
 const UpcomingActivities = () => {
+
+  const [places,setPlaces]=useState([])
+
+  useEffect(() => {
+  fetch('http://localhost:4000/api/activity/upcoming').then(response => response.json()).then(data => {  
+      data=data.map((place)=>{return {...place,date:place.date.split('T')[0]}})
+      console.log(data)
+      setPlaces(data);
+  })
+  
+  },[])
+
   return (
-    <div>
-      <h1>Here Are Our Upcoming Activities!</h1>
+  <div>
+   {  places.map((place) => ( 
+      <div key={place._id} className="place">
+        <h3>{place.name}</h3>
+        <p>date: {place.date}</p>
+        <p>{place.price}$</p>
+        <p>rating: {place.rating}/10</p>
 
-       <p1>
-
-       Visit to Egyptian Museum ON THE 10TH OF OCTOBER <br />
-
-       Visit to Pyramids of Giza ON NOVEMBER THE 1ST <br />
-
-       Visit to Art Museum ON THE 20TH OF SEPTEMBER <br />
-
-       Visit to Cairo Tower ON THE 5TH OF DECEMBER <br />
-
-       Visit to Luxor Temple ON THE 25TH OF OCTOBER <br />
-
-       Ski Egypt Trip ON THE 26TH OF OCTOBER <br />
-
-       Go Kart Trip ON THE 24TH OF OCTOBER <br />
-
-       Gravity Code Trip ON THE 17TH OF OCTOBER <br />
-
-       Air Zone Egypt Trip  ON THE 28TH OF OCTOBER 
-
-       </p1>
-      
-    </div>
+       
+      </div>
+     ))}
+     <div>
+       {/* Link button your bookings */}
+       <Link to="/UpcomingBookings">
+          <button style={buttonStyle}>View Your Bookings</button>
+        </Link>
+     </div>
+    
+  </div>
+    
   );
+};
+
+const buttonStyle = {
+  margin: '0 10px',
+  padding: '10px 20px',
+  fontSize: '16px',
+  cursor: 'pointer',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
 };
 
 export default UpcomingActivities;
