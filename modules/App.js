@@ -9,6 +9,8 @@ import ActivitySearchPage from './ActivitySearchPage';
 import ItinerarySearchPage from './ItinerarySearchPage';
 import UpcomingActivities from './UpcomingActivities';
 import UpcomingItineraries from './UpcomingItineraries';
+import CompletedItineraries from './components/CompletedItineraries';
+import UpcomingBookings from './components/UpcomingBookings.jsx';
 
 
 function App() {
@@ -22,6 +24,8 @@ function App() {
         <Route path="/ActivitySearchPage" element={<ActivitySearchPage/>} />
         <Route path="/ItinerarySearchPage" element={<ItinerarySearchPage/>} />
         <Route path="/UpcomingActivities" element={<UpcomingActivities/>} />
+        <Route path="/CompletedItineraries" element={<CompletedItineraries />} />
+        <Route path="/UpcomingBookings" element={<UpcomingBookings/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
        </Routes>
      </div>
