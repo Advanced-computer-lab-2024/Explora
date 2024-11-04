@@ -342,6 +342,31 @@ router.get('/historical', async (req, res) => {
 
 // Filter itineraries based on price, date, tags, and language
 
+router.patch('/:id/deactivate', async (req, res) => {
+  const itineraryId = req.params.id;
 
+  try {
+    // Find the itinerary by its ID
+    const itinerary = await Itinerary.findById(itineraryId);
+
+    // Check if the itinerary exists
+    if (!itinerary) {
+      return res.status(404).json({ error: 'Itinerary not found' });
+    }
+
+    // Check if the itinerary has bookings
+    if (!itinerary.hasBookings || itinerary.hasBookings.length === 0) {
+      return res.status(400).json({ error: 'Cannot deactivate itinerary without bookings' });
+    }
+
+    // Set the itinerary status to 'inactive'
+    itinerary.status = 'inactive';
+    await itinerary.save();
+
+    res.status(200).json({ message: 'Itinerary deactivated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to deactivate itinerary' });
+  }
+});
 
 module.exports = router;

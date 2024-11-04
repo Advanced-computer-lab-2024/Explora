@@ -19,7 +19,7 @@ const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adju
 const userRoutes = require('./Routes/userRoute');
 const advertiserRoutes = require('./Routes/advertiserRoute');
 const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
-
+const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes'); // Adjust path as needed
 
 
@@ -49,8 +49,8 @@ app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For manag
 app.use('/users', userRoutes); 
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
 app.use('/api/advertisers', advertiserRoutes); // This should be included
-//6703f74592c1cac4108a7481
-//6704021592c1cac4108a748b
+app.use('/reviews', reviewRoutes);
+
 app.use('/api/auth', authRoute);
 
 //connect to MongoDB

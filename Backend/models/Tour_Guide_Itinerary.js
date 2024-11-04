@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const itinerarySchema = new mongoose.Schema({
   tourGuideId: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', // Assuming your User model is named 'User'
+    ref: 'TourGuide', // Assuming your User model is named 'User'
     required: true 
   },
   activities: [{
@@ -21,12 +21,18 @@ const itinerarySchema = new mongoose.Schema({
   pickupLocation: { type: String, required: true },
   name: { type: String, required: false },
   dropoffLocation: { type: String, required: true },
-  hasBookings: {
-    type: Boolean,
-    default: false, // Default to false, can be updated when accepted as a guide
-  },
+  hasBookings: { type: Boolean, default: false},
+  isActive: { type: Boolean, default: true },
   tags: { type: [String], required: false },
   rating: { type: Number, default: 0 },
+  reviews: [
+    {
+      tourist: { type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' },
+      rating: { type: Number, required: true, min: 1, max: 5 },
+      comment: { type: String, required: true },
+      date: { type: Date, default: Date.now }
+    }
+  ]
 });
 
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);
