@@ -2,28 +2,26 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User'); // Assuming you have a User model
 
-const authenticateUser = async (req, res, next) => {
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-
-  try {
-    // Use your actual secret key from an environment variable
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Ensure you have this in your .env file
-    const user = await User.findById(decoded.id);
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    req.user = user._id; // Store the user ID in the request object
-    next(); // Call the next middleware or route handler
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(401).json({ message: 'Invalid token' });
+const requireAuth = (req, res, next) => {
+  const token = req.cookies.jwt;
+    
+  // check json web token exists & is verified
+  if (token) {
+    jwt.verify(token, 'supersecret', (err, decodedToken) => {
+      if (err) {
+        // console.log('You are not logged in.');
+        // res send status 401 you are not logged in
+        res.status(401).json({message:"You are not logged in."})
+        // res.redirect('/login');
+      } else {
+        console.log(decodedToken);
+        next();
+      }
+    });
+  } else {
+    res.status(401).json({message:"You are not logged in."})
   }
 };
 
-module.exports = { authenticateUser };
+
+module.exports = { requireAuth };

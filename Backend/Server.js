@@ -3,8 +3,8 @@ require('dotenv').config();
 const express = require("express");
 const path = require('path');
 const cors = require('cors');
-
-
+const cookieParser = require('cookie-parser');
+const { requireAuth } = require('./middleware/AuthMiddleware');
 const adminRoutes = require('./Routes/AdminRoutes');
 const productsRoutes = require('./Routes/ProductsRoutes');
 const governorRoutes = require('./Routes/GovernorRoutes');
@@ -18,7 +18,6 @@ const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // 
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
 const advertiserRoutes = require('./Routes/advertiserRoute');
-const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
 const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes'); // Adjust path as needed
 
@@ -50,8 +49,9 @@ app.use('/users', userRoutes);
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
 app.use('/api/advertisers', advertiserRoutes); // This should be included
 app.use('/reviews', reviewRoutes);
-
-app.use('/api/auth', authRoute);
+app.use('/api/auth', requireAuth);
+app.use(express.json());
+app.use(cookieParser());
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
