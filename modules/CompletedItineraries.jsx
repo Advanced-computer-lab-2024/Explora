@@ -2,74 +2,123 @@ import React, { useState } from 'react';
 
 const CompletedItineraries = () => {
   // Sample data for completed itineraries
-  const [itineraries, setItineraries] = useState([
-    { id: 1, name: 'Historical Egypt Tour', tourGuide: 'John Doe', rating: null, comment: '' },
-    { id: 2, name: 'Beach and Relaxation', tourGuide: 'Jane Smith', rating: null, comment: '' },
-    // Add more itineraries as needed
+  const [completedItineraries, setCompletedItineraries] = useState([
+    {
+      id: 1,
+      name: 'Ancient Egypt Tour',
+      tourGuide: 'John Doe',
+      rating: null,
+      comment: '',
+    },
+    {
+      id: 2,
+      name: 'Pyramids of Giza',
+      tourGuide: 'Jane Smith',
+      rating: null,
+      comment: '',
+    },
   ]);
 
-  // Handle rating change
-  const handleRatingChange = (id, newRating) => {
-    setItineraries(itineraries.map(itinerary => 
-      itinerary.id === id ? { ...itinerary, rating: newRating } : itinerary
-    ));
+  // Function to copy the itinerary link to clipboard
+  const handleCopyLink = (itinerary) => {
+    const link = `${window.location.origin}/itinerary/${itinerary.id}`;
+    navigator.clipboard.writeText(link);
+    alert(`Link copied to clipboard: ${link}`);
   };
 
-  // Handle comment change
-  const handleCommentChange = (id, newComment) => {
-    setItineraries(itineraries.map(itinerary => 
-      itinerary.id === id ? { ...itinerary, comment: newComment } : itinerary
-    ));
+  // Function to open email client with pre-filled content
+  const handleEmailShare = (itinerary) => {
+    const link = `${window.location.origin}/itinerary/${itinerary.id}`;
+    const subject = `Check out this itinerary: ${itinerary.name}`;
+    const body = `Hi,\n\nI wanted to share this amazing itinerary with you: ${itinerary.name}. You can view it here: ${link}\n\nBest regards!`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  // Handle form submission (e.g., save the rating and comment)
+  // Function to handle rating change
+  const handleRatingChange = (id, rating) => {
+    setCompletedItineraries((prevItineraries) =>
+      prevItineraries.map((itinerary) =>
+        itinerary.id === id ? { ...itinerary, rating: rating } : itinerary
+      )
+    );
+  };
+
+  // Function to handle comment change
+  const handleCommentChange = (id, comment) => {
+    setCompletedItineraries((prevItineraries) =>
+      prevItineraries.map((itinerary) =>
+        itinerary.id === id ? { ...itinerary, comment: comment } : itinerary
+      )
+    );
+  };
+
+  // Function to submit rating and comment
   const handleSubmit = (id) => {
-    const itinerary = itineraries.find(itinerary => itinerary.id === id);
-    console.log(`Saved for itinerary "${itinerary.name}":`, {
+    const itinerary = completedItineraries.find((item) => item.id === id);
+    console.log('Rating and Comment Submitted:', {
+      name: itinerary.name,
       rating: itinerary.rating,
-      comment: itinerary.comment
+      comment: itinerary.comment,
     });
-    // You can add logic to save the data to a backend or API
+    alert('Your rating and comment have been submitted!');
+    // In a real application, here you would make an API call to save the data
   };
 
   return (
     <div>
       <h2>Completed Itineraries</h2>
-      {itineraries.map(itinerary => (
+      {completedItineraries.map((itinerary) => (
         <div key={itinerary.id} style={itineraryStyle}>
           <h3>{itinerary.name}</h3>
           <p>Tour Guide: {itinerary.tourGuide}</p>
 
-          {/* Rating Input */}
-          <label>
-            Rate this itinerary:
-            <select
-              value={itinerary.rating || ''}
-              onChange={(e) => handleRatingChange(itinerary.id, e.target.value)}
-            >
-              <option value="">Select a rating</option>
-              <option value="1">1 - Poor</option>
-              <option value="2">2 - Fair</option>
-              <option value="3">3 - Good</option>
-              <option value="4">4 - Very Good</option>
-              <option value="5">5 - Excellent</option>
-            </select>
-          </label>
+          {/* Share buttons */}
+          <button onClick={() => handleCopyLink(itinerary)} style={buttonStyle}>
+            Copy Link
+          </button>
+          <button onClick={() => handleEmailShare(itinerary)} style={buttonStyle}>
+            Share via Email
+          </button>
 
-          {/* Comment Input */}
-          <label>
-            Comment:
-            <textarea
-              value={itinerary.comment}
-              onChange={(e) => handleCommentChange(itinerary.id, e.target.value)}
-              placeholder="Write your comment here"
-              style={textareaStyle}
-            />
-          </label>
+          {/* Rating input */}
+          <div style={{ marginTop: '10px' }}>
+            <label>
+              Rate this itinerary:
+              <select
+                value={itinerary.rating || ''}
+                onChange={(e) => handleRatingChange(itinerary.id, e.target.value)}
+                style={inputStyle}
+              >
+                <option value="">Select a rating</option>
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+              </select>
+            </label>
+          </div>
 
-          {/* Submit Button */}
-          <button onClick={() => handleSubmit(itinerary.id)} style={buttonStyle}>
-            Save Rating & Comment
+          {/* Comment input */}
+          <div style={{ marginTop: '10px' }}>
+            <label>
+              Comment:
+              <input
+                type="text"
+                value={itinerary.comment}
+                onChange={(e) => handleCommentChange(itinerary.id, e.target.value)}
+                style={inputStyle}
+                placeholder="Add your comment here"
+              />
+            </label>
+          </div>
+
+          {/* Submit button for rating and comment */}
+          <button
+            onClick={() => handleSubmit(itinerary.id)}
+            style={{ ...buttonStyle, marginTop: '10px' }}
+          >
+            Submit Rating & Comment
           </button>
         </div>
       ))}
@@ -77,32 +126,30 @@ const CompletedItineraries = () => {
   );
 };
 
-// Styling for the itinerary containers
+// Basic styling for itinerary items and buttons
 const itineraryStyle = {
-  border: '1px solid #ccc',
   padding: '10px',
-  marginBottom: '10px',
-  borderRadius: '5px'
+  marginBottom: '15px',
+  border: '1px solid #ccc',
+  borderRadius: '5px',
 };
 
-// Styling for the text area
-const textareaStyle = {
-  display: 'block',
-  width: '100%',
-  padding: '5px',
-  marginTop: '5px',
-  marginBottom: '10px',
-  borderRadius: '5px'
-};
-
-// Styling for the submit button
 const buttonStyle = {
-  padding: '5px 10px',
-  fontSize: '16px',
+  margin: '5px',
+  padding: '8px 15px',
+  fontSize: '14px',
   cursor: 'pointer',
   borderRadius: '5px',
   border: '1px solid #ccc',
-  marginTop: '10px'
+  backgroundColor: '#f0f0f0',
+};
+
+const inputStyle = {
+  marginLeft: '10px',
+  padding: '5px',
+  fontSize: '14px',
+  borderRadius: '3px',
+  border: '1px solid #ccc',
 };
 
 export default CompletedItineraries;
