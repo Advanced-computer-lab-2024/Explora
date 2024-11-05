@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+
 const TouristProfile = () => {
   // State to store the profile data
   const [profileData, setProfileData] = useState({
@@ -48,6 +49,10 @@ const TouristProfile = () => {
       {/* New button to view products */}
       <Link to="/product-list-tourist">
         <button style={buttonStyle}>View Products</button>
+      </Link>
+      {/* New button to view completed activities */}
+      <Link to="/CompletedActivities">
+        <button style={buttonStyle}>Completed Activities</button>
       </Link>
       {/* New button to view completed itineraries */}
       <Link to="/CompletedItineraries">
