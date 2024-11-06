@@ -31,10 +31,10 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
     type: Boolean,
     default: false, // Default to false, can be updated when accepted as a guide
   },
-  profilePicture: { 
-    type: String, 
-    default: '', // Default to empty string if no image uploaded
-  },
+  image: {    
+    type: String,
+    required: true
+},
   termsAccepted: { // Field to track terms acceptance
     type: Boolean,
     default: false

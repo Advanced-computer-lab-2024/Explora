@@ -65,41 +65,45 @@ const logout = async (req, res) => {
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Directory where files will be stored
+    cb(null, 'uploads/'); // Specify the directory where files should be stored
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`); // Filename with timestamp
+    cb(null, Date.now() + path.extname(file.originalname)); // Save with a unique name
   }
 });
-
 const upload = multer({ storage });
 
 // Create profile
-router.post('/', upload.single('profilePicture'), async (req, res) => {
-  const { username, email, password, name, mobile, yearsOfExperience, previousWork, termsAccepted} = req.body;
-  
-  // Check if terms were accepted
+const createProfile = async (req, res) => {
+  const { username, email, password, name, mobile, yearsOfExperience, previousWork, termsAccepted } = req.body;
+
   if (termsAccepted !== 'true' && termsAccepted !== true) {
-    return res.status(400).json({ msg: 'You must accept the terms and conditions to register.' });
+      return res.status(400).json({ msg: 'You must accept the terms and conditions to register.' });
   }
+
   try {
-    const newProfile = new Profile({
-      username,
-      email,
-      password,
-      name,
-      mobile,
-      yearsOfExperience,
-      previousWork,
-      profilePicture: req.file ? req.file.path : '', // Save the path of the uploaded file
-      termsAccepted: termsAccepted === 'true' || termsAccepted === true // Ensure correct boolean assignment
-     });
-    await newProfile.save();
-    res.json(newProfile);
+    const picturePath = req.file ? `uploads/${req.file.filename}` : null;
+
+      const newProfile = new Profile({
+          username,
+          email,
+          password,
+          name,
+          mobile,
+          yearsOfExperience,
+          previousWork,
+          image: picturePath,
+          termsAccepted: termsAccepted === 'true' || termsAccepted === true
+      });
+
+      await newProfile.save();
+      res.json(newProfile);
+
   } catch (error) {
-    console.error('Error creating profile:', error);  // Log the error
-    res.status(500).send('Server error');  }
-});
+      console.error('Error creating profile:', error);
+      res.status(500).send('Server error');
+  }
+};
 
 // Get profile by ID
 router.get('/:id', async (req, res) => {
@@ -248,5 +252,6 @@ router.put("/change-password", requireAuth, changePassword);
 router.post("/signup", signUp);
 router.post("/login", login);
 router.get("/logout", logout);
+router.post('/upload', upload.single('image'), createProfile);
 
 module.exports = router;
