@@ -31,7 +31,7 @@ export default function CreateProfile() {
     formData.append('termsAccepted', termsAccepted); // Checkbox value
 
     try {
-      const response = await axios.post('http://localhost:4000/api/tour_guide_profile/upload', formData, {
+      const response = await axios.post('http://localhost:4000/api/tour_guide_profile/register', formData, {
       headers: {
         'Content-Type': 'multipart/form-data', // Important to set this header for file uploads
       },

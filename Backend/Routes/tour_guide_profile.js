@@ -18,20 +18,6 @@ const createToken = (username) => {
     });
 };
 
-const signUp = async (req, res) => {
-    const { username, email, password } = req.body;
-    try {
-        const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);
-        const user = await Profile.create({ username: username, email: email, password: hashedPassword });
-        const token = createToken(user.username);
-
-        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-        res.status(200).json(user)
-    } catch (error) {
-        res.status(400).json({ error: error.message })
-    }
-}
 
 const login = async (req, res) => {
         try {
@@ -77,31 +63,40 @@ const upload = multer({ storage });
 const createProfile = async (req, res) => {
   const { username, email, password, name, mobile, yearsOfExperience, previousWork, termsAccepted } = req.body;
 
-  if (termsAccepted !== 'true' && termsAccepted !== true) {
+  // Check if terms and conditions are accepted
+  if (!termsAccepted) {
       return res.status(400).json({ msg: 'You must accept the terms and conditions to register.' });
   }
 
   try {
+    // Hash password
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
     const picturePath = req.file ? `uploads/${req.file.filename}` : null;
 
-      const newProfile = new Profile({
-          username,
-          email,
-          password,
-          name,
-          mobile,
-          yearsOfExperience,
-          previousWork,
-          image: picturePath,
-          termsAccepted: termsAccepted === 'true' || termsAccepted === true
-      });
+    // Create profile
+    const newProfile = new Profile({
+      username,
+      email,
+      password: hashedPassword,
+      name,
+      mobile,
+      yearsOfExperience,
+      previousWork,
+      image: picturePath,
+      termsAccepted: true
+    });
 
-      await newProfile.save();
-      res.json(newProfile);
+    await newProfile.save();
 
+    // Generate token
+    const token = createToken(newProfile.username);
+    res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+
+    res.status(200).json(newProfile);
   } catch (error) {
-      console.error('Error creating profile:', error);
-      res.status(500).send('Server error');
+    console.error('Error creating profile:', error);
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -249,9 +244,8 @@ const changePassword = async (req, res) => {
   }
 };
 router.put("/change-password", requireAuth, changePassword);
-router.post("/signup", signUp);
 router.post("/login", login);
 router.get("/logout", logout);
-router.post('/upload', upload.single('image'), createProfile);
+router.post('/register', upload.single('image'), createProfile);
 
 module.exports = router;
