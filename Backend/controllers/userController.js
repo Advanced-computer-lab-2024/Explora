@@ -101,16 +101,16 @@ const loginUser = async (req, res) => {
 const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
 
 const changePassword = async (req, res) => {
-  const { password, newPassword } = req.body;
+  const { username, password, newPassword } = req.body;
   const userId = req.user._id; // assuming req.user is set in AuthMiddleware, which should contain the authenticated user's info
 
   try {
-    // Find the user by ID
-    const user = await User.findById(userId);  // Assuming 'Profile' is the model for the user
+    // Find the user by username
+    const user = await User.findOne({ username }); // Use findOne to search by username
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
+    
     // Verify the current password
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
