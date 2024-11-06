@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const ProductCard = ({ product, products, setProducts, onArchive }) => {
+const ProductCard = ({ product, products, setProducts }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(product.name);
     const [editedPrice, setEditedPrice] = useState(product.price);
     const [editedDescription, setEditedDescription] = useState(product.description);
     const [message, setMessage] = useState('');
+    const [userRating, setUserRating] = useState(0); // State to store user's selected rating
+    const [userReview, setUserReview] = useState(''); // State for review text
 
     // Handle the edit button click
     const handleEditClick = () => {
         setIsEditing(true);
-        // Set edited values to current product details
         setEditedName(product.name);
         setEditedPrice(product.price);
         setEditedDescription(product.description);
@@ -24,14 +25,12 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
                 name: editedName,
                 price: editedPrice,
                 description: editedDescription,
-                reviews: product.reviews // Include reviews in the update
+                reviews: product.reviews
             };
 
             const response = await axios.put(`http://localhost:4000/Products/updateProduct/${product._id}`, inputData);
-
             console.log('Response from update:', response.data);
 
-            // Update the products state immediately after the successful response
             setProducts(prevProducts =>
                 prevProducts.map(prod =>
                     prod._id === product._id ? { ...prod, ...inputData } : prod
@@ -46,18 +45,39 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
         }
     };
 
-    // Function to archive the product
-    const archiveProduct = () => {
-        onArchive(product._id); // Call the passed-in archive function
-        setMessage('Product archived successfully!');
-    };
-
     // Function to render stars based on averageRating
     const renderStars = (averageRating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
             stars.push(
                 <i key={i} className={i <= averageRating ? "fa-solid fa-star" : "fa-regular fa-star"} />
+            );
+        }
+        return stars;
+    };
+
+    // Handle rating selection
+    const handleRatingClick = (rating) => {
+        setUserRating(rating);
+    };
+
+    // Handle review submission
+    const handleReviewSubmit = () => {
+        setMessage(`Thank you for your review!`);
+        setUserRating(0); // Reset rating
+        setUserReview(''); // Reset review input
+    };
+
+    // Function to render interactive star rating for user
+    const renderUserRating = () => {
+        const stars = [];
+        for (let i = 1; i <= 5; i++) {
+            stars.push(
+                <i
+                    key={i}
+                    className={i <= userRating ? "fa-solid fa-star selected" : "fa-regular fa-star"}
+                    onClick={() => handleRatingClick(i)}
+                />
             );
         }
         return stars;
@@ -98,33 +118,27 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
                     <p className="product-description">{editedDescription}</p>
                     <p className="product-price">${editedPrice.toFixed(2)}</p>
                     <p className="product-ratings">
-                        Average Rating: {renderStars(product.averageRating)} {/* Render stars based on average rating */}
+                        Average Rating: {renderStars(product.averageRating)}
                     </p>
-                    <p className="product-quantity">Available Quantity: {product.availableQuantity}</p>
-                    <p className="product-sales">Total Sales: {product.totalSales}</p>
                 </>
             )}
 
             <p className="product-seller">Seller: {product.seller}</p>
             <p className="product-reviews">{product.reviews.length} reviews</p>
 
-            <button className="edit-button" onClick={handleEditClick}>
-                <i className="fa-solid fa-pen-to-square"></i>
-            </button>
-            <button
-                onClick={() => onArchive(product._id)}
-                style={{
-                    marginTop: '10px',
-                    backgroundColor: 'black',
-                    color: 'white',
-                    padding: '8px',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    width: '100%', // To make it span the width of the card
-                }}
-            >
-                Archive
-            </button>
+            {/* Rating input for the user */}
+            <div className="user-rating">
+                <p>Rate this product:</p>
+                {renderUserRating()} {/* Display interactive rating stars */}
+            </div>
+
+            <textarea
+                value={userReview}
+                onChange={(e) => setUserReview(e.target.value)}
+                placeholder="Write your review here..."
+                rows="3"
+            />
+            <button onClick={handleReviewSubmit}>Submit Review</button>
 
             {message && <p className="message">{message}</p>}
         </div>

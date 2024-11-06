@@ -1,56 +1,74 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-const ActivitySearchPage = () => {
-const [searchTerm, setSearchTerm] = useState('');
-const [selectedCategory, setSelectedCategory] = useState('');
-const [selectedRating, setSelectedRating] = useState(''); // Change to '' for empty input
-const [selectedPrice, setSelectedPrice] = useState(100); // Default max price
-const [selectedDate, setSelectedDate] = useState('');
-const [selectedPreferences, setSelectedPreferences] = useState([]);
-const [sortOrder, setSortOrder] = useState('none');
-const [places, setPlaces] = useState([]);
+import Select from 'react-select';
 
-useEffect(() => {
-    axios.get(`http://localhost:4000/api/activity`)
-    .then(response => {
-        const data = response.data.map(place => ({
-            ...place,
-            date: place.date.split('T')[0]
-        }));
-        setPlaces(data);
-    })
-    .catch(error => {
-        console.error("Error fetching data:", error);
-    });
-}, []);
+const preferencesOptions = [
+    { value: 'historic', label: 'Historic Areas' },
+    { value: 'beach', label: 'Beaches' },
+    { value: 'family', label: 'Family-Friendly' },
+    { value: 'shopping', label: 'Shopping' },
+];
+
+const ActivitySearchPage = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedRating, setSelectedRating] = useState('');
+    const [selectedPrice, setSelectedPrice] = useState(100); // Default max price
+    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedPreferences, setSelectedPreferences] = useState([]);
+    const [sortOrder, setSortOrder] = useState('none');
+    const [places, setPlaces] = useState([]);
+    const [selectedCurrency, setSelectedCurrency] = useState('USD'); // State for selected currency
+    const [error, setError] = useState(null); // State for error handling
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get("http://localhost:4000/api/activity");
+                const data = response.data.map(place => ({
+                    ...place,
+                    date: place.date.split('T')[0] // Assuming date is in ISO format
+                }));
+                setPlaces(data);
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setError("An error occurred while fetching activities. Please try again later."); // Set error message
+            }
+        };
+        fetchData();
+    }, []);
 
     // Filtering logic
     const filteredPlaces = places.filter((place) => {
         const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = !selectedCategory || place.category.activityType === selectedCategory;
-        const matchesRating = selectedRating === '' || place.rating.toString() === selectedRating;
+        const matchesCategory = !selectedCategory || place.category?.activityType === selectedCategory; // Optional chaining
+        const matchesRating = selectedRating === '' || place.rating?.toString() === selectedRating; // Optional chaining
         const matchesPrice = place.price <= selectedPrice;
         const matchesDate = !selectedDate || place.date === selectedDate;
-        const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.every(pref =>
-            place.tags.map(tag => tag.tag).includes(pref)
+        const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
+            place.tags?.map(tag => tag.tag).includes(pref.value) // Optional chaining
         );
 
         return matchesSearch && matchesCategory && matchesRating && matchesPrice && matchesDate && matchesPreferences;
     });
 
-// Event handlers
-const handleSearchChange = (e) => setSearchTerm(e.target.value);
-const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
-const handleRatingChange = (e) => setSelectedRating(e.target.value);
-const handlePriceChange = (e) => setSelectedPrice(Number(e.target.value)); // Convert to number
-const handleDateChange = (e) => setSelectedDate(e.target.value);
-const handlePreferencesChange = (e) => {
-    const value = e.target.value.split(',').map(tag => tag.trim());
-    setSelectedPreferences(value);
-};
+    // Log filtered places for debugging
+    console.log("Filtered Places:", filteredPlaces);
 
- let sortedPlaces = [...filteredPlaces];
+    // Event handlers
+    const handleSearchChange = (e) => setSearchTerm(e.target.value);
+    const handleCategoryChange = (e) => setSelectedCategory(e.target.value);
+    const handleRatingChange = (e) => setSelectedRating(e.target.value);
+    const handlePriceChange = (e) => setSelectedPrice(Number(e.target.value)); // Convert to number
+    const handleDateChange = (e) => setSelectedDate(e.target.value);
+    const handleCurrencyChange = (e) => setSelectedCurrency(e.target.value); // Handle currency change
+    const handlePreferencesChange = (selectedOptions) => {
+        setSelectedPreferences(selectedOptions || []);
+        console.log("Selected Preferences:", selectedOptions);
+    };
+
+    let sortedPlaces = [...filteredPlaces];
     if (sortOrder === 'low-to-high') {
         sortedPlaces.sort((a, b) => a.price - b.price);
     } else if (sortOrder === 'high-to-low') {
@@ -60,9 +78,12 @@ const handlePreferencesChange = (e) => {
     } else if (sortOrder === 'highest-to-lowest') {
         sortedPlaces.sort((a, b) => b.rating - a.rating);
     }
+
     return (
         <div>
             <h1>Activity Search Page</h1>
+
+            {error && <div style={{ color: 'red', marginBottom: '15px' }}>{error}</div>} {/* Display error message */}
 
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '20px', 
                 border: '2px solid #ccc', 
@@ -79,15 +100,7 @@ const handlePreferencesChange = (e) => {
                     style={{ padding: '10px', width: '300px', marginRight: '15px' }}
                 />
 
-                {/* Tags Search Bar */}
-                <label style={{ marginLeft: '15px' }}>Tags:</label>
-                <input
-                    type="text"
-                    placeholder="Search tags..."
-                    value={selectedPreferences.join(', ')}
-                    onChange={handlePreferencesChange}
-                    style={{ padding: '10px', marginLeft: '10px', width: '200px' }}
-                />
+                {/* Category Input */}
                 <label style={{ marginLeft: '15px' }}>Category: </label>
                 <input
                     type="text"
@@ -98,13 +111,30 @@ const handlePreferencesChange = (e) => {
                 />
             </div>
 
-            {/* Combined Div Container for Category, Date, Rating, and Budget */}
+            {/* Preferences Section - Multi-Select Dropdown */}
+            <div style={{ marginBottom: '15px' }}>
+                <h4>Select Your Preferences:</h4>
+                <Select
+                    isMulti
+                    options={preferencesOptions}
+                    onChange={handlePreferencesChange}
+                    styles={{
+                        control: (provided) => ({
+                            ...provided,
+                            width: '300px',
+                            marginTop: '10px',
+                        }),
+                    }}
+                />
+            </div>
+
+            {/* Combined Div Container for Date, Rating, Budget, and Currency */}
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '20px', 
                 border: '2px solid #ccc', 
                 borderRadius: '8px', 
                 boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)', 
                 backgroundColor: '#f9f9f9' }}>
-            
+                
                 {/* Date Picker */}
                 <label style={{ marginLeft: '15px' }}>Date:</label>
                 <input type="date" value={selectedDate} onChange={handleDateChange} style={{ padding: '10px', marginLeft: '10px' }} />
@@ -128,42 +158,48 @@ const handlePreferencesChange = (e) => {
                     onChange={handlePriceChange} 
                     style={{ padding: '10px', marginLeft: '10px', width: '80px' }} 
                 />
+                
+                {/* Currency Selector */}
+                <label style={{ marginLeft: '15px' }}>Currency:</label>
+                <select value={selectedCurrency} onChange={handleCurrencyChange} style={{ padding: '10px', marginLeft: '10px' }}>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                    <option value="EGP">EGP</option>
+                </select>
             </div>
 
-            {/* Sort by Rating */}
-            <label style={{ marginLeft: '15px' }}>Sort by Rating:</label>
+            {/* Sort by Options */}
+            <label style={{ marginLeft: '15px' }}>Sort by:</label>
             <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '10px', marginLeft: '10px' }}>
                 <option value="none">None</option>
-                <option value="lowest-to-highest">Low to High</option>
-                <option value="highest-to-lowest">High to Low</option>
-            </select>
-
-            {/* Sort by Price */}
-            <label style={{ marginLeft: '15px' }}>Sort by Price:</label>
-            <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '10px', marginLeft: '10px' }}>
-                <option value="none">None</option>
-                <option value="low-to-high">Low to High</option>
-                <option value="high-to-low">High to Low</option>
+                <option value="lowest-to-highest">Rating: Low to High</option>
+                <option value="highest-to-lowest">Rating: High to Low</option>
+                <option value="low-to-high">Price: Low to High</option>
+                <option value="high-to-low">Price: High to Low</option>
             </select>
 
             {/* Displaying the filtered results */}
             <div style={{ marginTop: '20px' }}>
                 <h3>Results:</h3>
                 <div>
-                    {sortedPlaces.map(item => ( // Map through sortedPlaces
-                        <div key={item.id}>
-                            {item.activityType} {/* Safely access activityType */}
-                        </div>
-                    ))}
+                    {sortedPlaces.length > 0 ? (
+                        sortedPlaces.map((item) => (
+                            <div key={item.id}>
+                                {item.activityType} {/* Safely access activityType */}
+                            </div>
+                        ))
+                    ) : (
+                        <p>No results found.</p>
+                    )}
                 </div>
             </div>
 
             {/* Add the "View Upcoming Activities" button */}
-            <Link to="/UpcomingActivities">
-                <button style={{ padding: '10px', margin: '10px', fontSize: '16px' }}>
-                    View All Upcoming Activities
-                </button>
-            </Link>
+            <div style={{ marginTop: '20px' }}>
+                <Link to="/UpcomingActivities">
+                    <button style={{ padding: '10px 15px' }}>View Upcoming Activities</button>
+                </Link>
+            </div>
         </div>
     );
 };
