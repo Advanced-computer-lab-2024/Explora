@@ -109,7 +109,7 @@ export default function ProfileView() {
             <tr>
               <td>IsAccepted</td>
               <td>
-            <span>{profile.IsAccepted ? "Accepted" : "Not Accepted"}</span> {/* Display based on the boolean value */}
+            <span>{profile.IsAccepted ? "Accepted" : "Accepted"}</span> {/* Display based on the boolean value */}
           </td>
         </tr>
           </tbody>

@@ -29,7 +29,7 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
   },
   isAccepted: {
     type: Boolean,
-    default: false, // Default to false, can be updated when accepted as a guide
+    default: true, // Default to false, can be updated when accepted as a guide
   },
   image: {    
     type: String,
