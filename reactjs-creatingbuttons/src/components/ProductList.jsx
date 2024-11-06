@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from './ProductCard';
 import axios from 'axios';
 
@@ -8,7 +8,8 @@ const ProductList = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(1000);
-    const [sortOrder, setSortOrder] = useState('');
+    const [sortOrder, setSortOrder] = useState([]);
+    const [archivedProducts, setArchivedProducts] = useState([]); // Archived products
 
     const navigate = useNavigate();
 
@@ -48,6 +49,14 @@ const ProductList = () => {
         }
     };
 
+    const archiveProduct = (productId) => {
+        setProducts((prevProducts) => {
+            const productToArchive = prevProducts.find((product) => product._id === productId);
+            setArchivedProducts((prevArchived) => [...prevArchived, productToArchive]); // Add to archived
+            return prevProducts.filter((product) => product._id !== productId); // Remove from active
+        });
+    };
+
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -63,14 +72,14 @@ const ProductList = () => {
     };
 
     const handleSortChange = (e) => {
-      const order = e.target.value;
-      setSortOrder(order);
-      if (order) {
-          fetchSortedProducts(order); 
-      } else {
-          fetchAllProducts(); 
-      }
-  };
+        const order = e.target.value;
+        setSortOrder(order);
+        if (order) {
+            fetchSortedProducts(order); 
+        } else {
+            fetchAllProducts(); 
+        }
+    };
 
     useEffect(() => {
         fetchAllProducts(); 
@@ -119,6 +128,15 @@ const ProductList = () => {
                 <button onClick={handleAddProductClick}>
                     <i className="fa-solid fa-plus"></i>
                 </button>
+                <Link
+                to={{
+                    pathname: "/archived-products",
+                    state: { archivedProducts } // Passing archived products to ArchivedProducts
+                }}
+                className="archive-link"
+            >
+                View Archived Products
+            </Link>
             </div>
 
             <div className="sort-filter">
@@ -126,7 +144,7 @@ const ProductList = () => {
                     Sort by Ratings:
                     <select
                         value={sortOrder}
-                        onChange={handleSortChange} // Use the handleSortChange
+                        onChange={handleSortChange}
                         className="sort-input"
                     >
                         <option value="">Select</option>
@@ -139,10 +157,10 @@ const ProductList = () => {
             <div className="product-cards-container">
                 {products.length > 0 ? (
                     products.map((product) => (
-                        <ProductCard key={product._id} product={product} products={products} setProducts={setProducts} />
+                        <ProductCard key={product._id} product={product} onArchive={archiveProduct} />
                     ))
                 ) : (
-                    <p>No products found.</p> // Display message if no products are available
+                    <p>No products found.</p>
                 )}
             </div>
         </div>

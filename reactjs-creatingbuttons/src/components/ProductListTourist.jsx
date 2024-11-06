@@ -1,140 +1,148 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
-import ProductCard from './ProductCard';
+import { useNavigate } from 'react-router-dom';
+import ProductCardTourist from './ProductCardTourist';
+import axios from 'axios';
 
-const ProductListTourist = () => {
-  const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(1000);
-  const [sortOrder, setSortOrder] = useState(''); // New state for sorting
+const ProductList = () => {
+    const [products, setProducts] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [minPrice, setMinPrice] = useState(0);
+    const [maxPrice, setMaxPrice] = useState(1000);
+    const [sortOrder, setSortOrder] = useState('');
 
-  const navigate = useNavigate(); // Initialize navigate function
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    // Mock fetch or API call to get products
-    const fetchProducts = async () => {
-      const mockProducts = [
-        {
-          id: 1,
-          name: 'Product 1',
-          description: 'Description for product 1',
-          price: 29.99,
-          seller: 'Seller 1',
-          ratings: 4.5,
-          reviews: 10,
-          image: 'https://via.placeholder.com/150',
-        },
-        {
-          id: 2,
-          name: 'Product 2',
-          description: 'Description for product 2',
-          price: 19.99,
-          seller: 'Seller 2',
-          ratings: 4.0,
-          reviews: 5,
-          image: 'https://via.placeholder.com/150',
-        },
-        {
-          id: 3,
-          name: 'Amazing Product',
-          description: 'Amazing product description',
-          price: 49.99,
-          seller: 'Seller 3',
-          ratings: 5.0,
-          reviews: 20,
-          image: 'https://via.placeholder.com/150',
-        },
-        // Add more products as needed
-      ];
-      setProducts(mockProducts);
+    const fetchAllProducts = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/Products');
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
     };
 
-    fetchProducts();
-  }, []);
+    const fetchProductsByName = async (name) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/Products/productByName/${name}`);
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching products by name:', error);
+        }
+    };
 
-  // Function to sort products by ratings
-  const sortProductsByRatings = (products, order) => {
-    return [...products].sort((a, b) => {
-      if (order === 'high-to-low') {
-        return b.ratings - a.ratings; // Sort by high to low
-      } else if (order === 'low-to-high') {
-        return a.ratings - b.ratings; // Sort by low to high
+    const fetchFilteredProducts = async (min, max) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/Products/filterByPrice?min=${min}&max=${max}`);
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching filtered products:', error);
+        }
+    };
+
+    const fetchSortedProducts = async (order) => {
+        try {
+            const response = await axios.get(`http://localhost:4000/Products/sortByRating?order=${order}`);
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching sorted products:', error);
+        }
+    };
+
+    const handleSearchChange = (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        if (value) {
+            fetchProductsByName(value); 
+        } else {
+            fetchAllProducts(); 
+        }
+    };
+
+    const handlePriceChange = () => {
+        fetchFilteredProducts(minPrice, maxPrice);
+    };
+
+    const handleSortChange = (e) => {
+      const order = e.target.value;
+      setSortOrder(order);
+      if (order) {
+          fetchSortedProducts(order); 
+      } else {
+          fetchAllProducts(); 
       }
-      return products;
-    });
   };
 
-  // Filter and sort products based on search, price, and sort order
-  const filteredAndSortedProducts = sortProductsByRatings(
-    products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        product.price >= minPrice &&
-        product.price <= maxPrice
-    ),
-    sortOrder
-  );
+    useEffect(() => {
+        fetchAllProducts(); 
+    }, []);
 
-  return (
-    <div className="product-list">
-      <h1>Available Products</h1>
+    const handleAddProductClick = () => {
+        navigate('/add-product');
+    };
 
-      {/* Search Input */}
-      <input
-        type="text"
-        placeholder="Search for a product..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-input"
-      />
+    return (
+        <div className="product-list">
+            <h1>Available Products</h1>
 
-      {/* Price Range Filter */}
-      <div className="price-filter">
-        <label>
-          Min Price: $
-          <input
-            type="number"
-            value={minPrice}
-            onChange={(e) => setMinPrice(Number(e.target.value))}
-            className="price-input"
-          />
-        </label>
-        <label>
-          Max Price: $
-          <input
-            type="number"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="price-input"
-          />
-        </label>
-      </div>
+            <input
+                type="text"
+                placeholder="Search for a product..."
+                value={searchTerm}
+                onChange={handleSearchChange} 
+                className="search-input"
+            />
 
-      {/* Sorting by Ratings */}
-      <div className="sort-filter">
-        <label>
-          Sort by Ratings:
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="sort-input"
-          >
-            <option value="">Select</option>
-            <option value="high-to-low">High to Low</option>
-            <option value="low-to-high">Low to High</option>
-          </select>
-        </label>
-      </div>
+            <div className="price-filter">
+                <label>
+                    Min Price: $
+                    <input
+                        type="number"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(Number(e.target.value))} 
+                        onBlur={handlePriceChange} 
+                        className="price-input"
+                    />
+                </label>
+                <label>
+                    Max Price: $
+                    <input
+                        type="number"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(Number(e.target.value))} 
+                        onBlur={handlePriceChange} 
+                        className="price-input"
+                    />
+                </label>
+            </div>
 
-      {/* Product Cards */}
-      <div className="product-cards-container">
-        {filteredAndSortedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
-      </div>
-    </div>
-  );
+       
+
+            <div className="sort-filter">
+                <label>
+                    Sort by Ratings:
+                    <select
+                        value={sortOrder}
+                        onChange={handleSortChange} // Use the handleSortChange
+                        className="sort-input"
+                    >
+                        <option value="">Select</option>
+                        <option value="high-to-low">High to Low</option>
+                        <option value="low-to-high">Low to High</option>
+                    </select>
+                </label>
+            </div>
+
+            <div className="product-cards-container">
+                {products.length > 0 ? (
+                    products.map((product) => (
+                        <ProductCardTourist key={product._id} product={product} products={products} setProducts={setProducts} />
+                    ))
+                ) : (
+                    <p>No products found.</p> // Display message if no products are available
+                )}
+            </div>
+        </div>
+    );
 };
 
-export default ProductListTourist;
+export default ProductList;
