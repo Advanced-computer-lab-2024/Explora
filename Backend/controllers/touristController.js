@@ -1,20 +1,26 @@
 const touristModel = require('../models/touristModel');
 
-// Get a tourist by email
+// controllers/touristController.js
+
 const getTourist = async (req, res) => {
     try {
         const { email } = req.params;
-        const tourist = await touristModel.findOne({ email });
+        const tourist = await touristModel.findOne({ email }).lean(); // `.lean()` to get plain JS object
 
         if (!tourist) {
             return res.status(404).json({ message: "Tourist not found" });
         }
 
-        res.status(200).json(tourist);
+        res.status(200).json({
+            ...tourist,
+            level: tourist.level,
+            badge: tourist.badge
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+
 const allTourists = async (req, res) => {
     try {
         const tourist = await touristModel.find({ });
@@ -81,4 +87,98 @@ const updateTourist = async (req, res) => {
     }
 };
 
-module.exports = { getTourist, updateTourist, createTourist, allTourists };
+
+// controllers/touristController.js
+
+const Tourist = require('../models/touristModel'); // Ensure the model is imported
+const calculateLoyaltyPoints = (amountPaid, level) => {
+    switch (level) {
+        case 1:
+            return amountPaid * 0.5;
+        case 2:
+            return amountPaid * 1;
+        case 3:
+            return amountPaid * 1.5;
+        default:
+            return 0;
+    }
+};
+
+const addLoyaltyPoints = async (req, res) => {
+    const { touristId, amountPaid, level } = req.body;
+
+    // Basic validation to ensure required fields are provided
+    if (!touristId || !amountPaid || !level) {
+        return res.status(400).json({ message: "touristId, amountPaid, and level are required." });
+    }
+
+    try {
+        // Find the tourist by ID
+        const tourist = await Tourist.findById(touristId);
+        if (!tourist) {
+            return res.status(404).json({ message: 'Tourist not found' });
+        }
+
+        // Calculate the loyalty points earned
+        const pointsEarned = calculateLoyaltyPoints(amountPaid, level);
+
+        // Update tourist's loyalty points
+        tourist.loyaltyPoints += pointsEarned;
+
+        // Save updated tourist information
+        await tourist.save();
+
+        // Send a success response with points details
+        res.status(200).json({
+            message: 'Points added successfully',
+            pointsEarned,
+            totalPoints: tourist.loyaltyPoints,
+        });
+    } catch (error) {
+        // Handle errors
+        console.error("Error in addLoyaltyPoints:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+
+
+// controllers/touristController.js
+
+const redeemPoints = async (req, res) => {
+    const { touristId, pointsToRedeem } = req.body;
+
+    try {
+        const tourist = await Tourist.findById(touristId);
+        if (!tourist) return res.status(404).json({ message: 'Tourist not found' });
+
+        // Check if the tourist has enough points
+        if (tourist.loyaltyPoints < pointsToRedeem) {
+            return res.status(400).json({ message: 'Insufficient loyalty points for redemption.' });
+        }
+
+        // Calculate cash equivalent and apply the conversion rate
+        const cashEquivalent = (pointsToRedeem / 10000) * 100; // Conversion rate: 10,000 points = 100 EGP
+
+        // Deduct points and add cash to wallet
+        tourist.loyaltyPoints -= pointsToRedeem;
+        tourist.wallet += cashEquivalent;
+
+        // Save the updated tourist data
+        await tourist.save();
+
+        res.status(200).json({
+            message: 'Points redeemed successfully.',
+            cashAdded: cashEquivalent,
+            remainingPoints: tourist.loyaltyPoints,
+            walletBalance: tourist.wallet
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
+module.exports = { getTourist, updateTourist, createTourist, allTourists, addLoyaltyPoints, redeemPoints };

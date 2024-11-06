@@ -64,8 +64,9 @@ productSchema.methods.calculateAverageRating = function() {
     if (this.reviews.length === 0) return 0;
 
     const sum = this.reviews.reduce((total, review) => total + review.rating, 0);
-    return (sum / this.reviews.length).toFixed(2); // Rounded to 2 decimal places
+    return parseFloat((sum / this.reviews.length).toFixed(2)); // Rounded to 2 decimal places
 };
+
 
 module.exports = mongoose.model('Product', productSchema);
 
