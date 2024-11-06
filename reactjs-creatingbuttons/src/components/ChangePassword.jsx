@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function ChangePassword() {
-  const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -11,7 +10,9 @@ export default function ChangePassword() {
   const [success, setSuccess] = useState('');
 
   const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
 
     if (newPassword !== confirmPassword) {
       setError('New password and confirmation do not match.');
@@ -82,8 +83,8 @@ export default function ChangePassword() {
         {error && <p style={{ color: 'red' }}>{error}</p>}
         {success && <p style={{ color: 'green' }}>{success}</p>}
 
-        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px', background: '#000000', color: '#fff', border: 'none', cursor: 'pointer' }}>
-          Change Password
+        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px', background: '#000000', color: '#fff', border: 'none', cursor: 'pointer' }} disabled={loading}>
+          {loading ? 'Changing...' : 'Change Password'}
         </button>
       </form>
     </div>
