@@ -1,25 +1,42 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function ChangePassword() {
-  const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Make sure to initialize this state
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Add your password change logic here, e.g., API call
+
     if (newPassword !== confirmPassword) {
       setError('New password and confirmation do not match.');
       return;
     }
 
-    // Assuming password change is successful
-    // navigate('/success-page');  // Redirect to a success page or similar
-    console.log("Password changed successfully!");
+    // Show loading indicator while processing
+    setLoading(true);
+    setError('');
+
+    try {
+      // Replace the URL with the correct backend URL if needed
+      const response = await axios.post('http://localhost:4000/change-password', {
+        oldPassword: currentPassword,
+        newPassword: newPassword,
+      });
+
+      if (response.status === 200) {
+        alert('Password changed successfully!');
+      }
+    } catch (err) {
+      console.error('Error changing password:', err);
+      setError('Failed to change password. Please try again.');
+    } finally {
+      // Hide loading indicator
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,8 +84,8 @@ export default function ChangePassword() {
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
 
-        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px', background: '#000000', color: '#fff', border: 'none', cursor: 'pointer' }}>
-          Change Password
+        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px', background: '#000000', color: '#fff', border: 'none', cursor: 'pointer' }} disabled={loading}>
+          {loading ? 'Changing...' : 'Change Password'}
         </button>
       </form>
     </div>

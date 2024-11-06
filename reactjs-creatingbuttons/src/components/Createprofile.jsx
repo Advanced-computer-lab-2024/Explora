@@ -13,7 +13,6 @@ export default function CreateProfile() {
   const [message, setMessage] = useState('');
   const [image, setImage] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
-  
 
   const navigate = useNavigate();
 
@@ -32,14 +31,16 @@ export default function CreateProfile() {
 
     try {
       const response = await axios.post('http://localhost:4000/api/tour_guide_profile/upload', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data', // Important to set this header for file uploads
-      },
-    });
+        headers: {
+          'Content-Type': 'multipart/form-data', // Important to set this header for file uploads
+        },
+      });
+
       console.log('Profile created:', response.data);
       setMessage('Profile successfully created!');
 
       // Redirect to the profile view page with the correct state
+      // Corrected navigate route using template literals
       navigate(`/view-profile/${response.data._id}`, { state: { profile: response.data } });
 
     } catch (error) {
