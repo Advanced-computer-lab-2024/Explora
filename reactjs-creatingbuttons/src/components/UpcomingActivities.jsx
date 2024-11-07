@@ -123,41 +123,7 @@ const UpcomingActivities = () => {
             <p className="activity-price">Price: {place.price}$</p>
             <p className="activity-rating">Rating: {place.rating}/10</p>
             
-            {/* Star Rating Section */}
-            <div className="rating-container">
-              <span>Rate this activity: </span>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span 
-                  key={star} 
-                  onClick={() => handleRating(place._id, star)} 
-                  style={{ 
-                    cursor: 'pointer', 
-                    fontSize: '24px', 
-                    color: ratings[place._id] >= star ? 'gold' : 'lightgray' 
-                  }}
-                >
-                  ★
-                </span>
-              ))}
-            </div>
-
-            {/* Comment Section */}
-            <div className="comment-section">
-              <textarea
-                placeholder="Add your comment here..."
-                className="comment-input"
-                value={comments[place._id] || ''}
-                onChange={(e) => handleCommentChange(place._id, e.target.value)}
-              />
-              <button 
-                className="comment-submit" 
-                onClick={() => handleCommentSubmit(place._id)} 
-                disabled={!comments[place._id]}
-              >
-                Submit Comment
-              </button>
-            </div>
-
+  
             <div className="share-buttons">
               <button onClick={() => shareLink(place)}>Share Link</button>
               <button onClick={() => shareEmail(place)}>Share via Email</button>
