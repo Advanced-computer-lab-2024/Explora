@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 
@@ -19,6 +19,12 @@ const SearchPage = () => {
     { name: 'Cairo Tower', category: 'activity', tag: 'view', rating: 3.5, price: 10, date: '2024-12-05', preferences: ['scenic', 'family-friendly','budget-friendly'] },
     { name: 'Luxor Temple', category: 'historical place', tag: 'ancient', rating: 4.7, price: 30, date: '2024-10-25', preferences: ['educational', 'adventurous','outdoors'] }
   ];
+  useEffect(async() => {
+
+await fetch('http://localhost:4000/api/Governor/museums')
+
+  }, []
+)
 
   // Filtering logic
   const filteredPlaces = places.filter((place) => {

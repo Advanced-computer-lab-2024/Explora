@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const express = require('express');
+const axios =require('axios');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
+const EXCHANGE_RATE_API_KEY = 'bddd7e18d4adf92a570fd135';
 
 // Create a new itinerary
 router.post('/', async (req, res) => {
@@ -71,7 +73,19 @@ router.get('/sortprice', async (req, res) => {
   }
 });
 
-module.exports = router;
+router.get('/upcoming', async (req, res) => {
+  try {
+    const today = new Date();
+    const upcomingItineraries = await Itinerary.find({
+      availableDates: { $gte: today }
+    });
+    
+    res.json(upcomingItineraries);
+  } catch (error) {
+    console.error('Error fetching upcoming itineraries:', error);
+    res.status(500).json({ message: 'Server error while fetching upcoming itineraries' });
+  }
+});
 
 
 
@@ -117,30 +131,7 @@ router.get('/sortrate', async (req, res) => {
   }
 });
 
-// get all upcoming itineraries
-router.get('/upcoming', async (req, res) => {
-  try {
-    // Get today's date and remove the time component for accurate comparisons
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
 
-    // Query the database for itineraries with availableDates equal to or later than today
-    const upcomingItineraries = await Itinerary.find({
-      availableDates: { $gte: today }
-    });
-
-    // If no itineraries are found
-    if (upcomingItineraries.length === 0) {
-      return res.status(404).json({ message: 'No upcoming itineraries found.' });
-    }
-
-    // Return the list of upcoming itineraries
-    res.status(200).json(upcomingItineraries);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
 // Search itineraries by name and tag
 router.get('/search', async (req, res) => {
   const { name, tags } = req.query;
@@ -199,7 +190,41 @@ router.get('/tag/:tag', async (req, res) => {
   }
 });
 
-// Create a new itinerary
+router.get('/currency/:currency/:id', async (req, res) => {
+  try {
+    const { currency, id } = req.params;
+
+    // Fetch the specified itinerary by ID
+    const itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    // Fetch exchange rates from the Exchange Rate API
+    const ratesResponse = await axios.get(`https://v6.exchangerate-api.com/v6/${EXCHANGE_RATE_API_KEY}/latest/USD`);
+    const rates = ratesResponse.data.conversion_rates;
+
+    // Check if the requested currency is available
+    if (!rates[currency]) {
+      return res.status(400).json({ message: 'Currency not supported' });
+    }
+
+    // Convert the price for the itinerary
+    const convertedPrice = itinerary.price * rates[currency]; // Convert to requested currency
+
+    // Respond with the itinerary data and the converted price
+    const response = {
+      ...itinerary.toObject(), // Spread the existing itinerary data
+      price: convertedPrice.toFixed(2), // Round to 2 decimal places
+      currency: currency // Add the currency to the response
+    };
+
+    res.json(response);
+  } catch (error) {
+    console.error('Error fetching currency data:', error);
+    res.status(500).json({ message: 'Server error while converting currency' });
+  }
+});
 
 
 router.get('/filter', async (req, res) => {
@@ -324,26 +349,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-
-// GET itineraries containing "museum" activities
-router.get('/museums', async (req, res) => {
-  try {
-      const itineraries = await Itinerary.find({ tags: 'museum' });
-      res.json(itineraries);
-  } catch (error) {
-      res.status(500).json({ message: error.message });
-  }
-});
-
-// GET itineraries containing "historical" activities
-router.get('/historical', async (req, res) => {
-    try {
-        const itineraries = await Itinerary.find({ tags: 'historical' });
-        res.json(itineraries);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
 
 
 // Filter itineraries based on price, date, tags, and language

@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require("express");
 const path = require('path');
 const cors = require('cors');
-
+const axios = require('axios');
 
 const adminRoutes = require('./Routes/AdminRoutes');
 const productsRoutes = require('./Routes/ProductsRoutes');
@@ -17,6 +17,10 @@ const acitivityRoutes = require('./Routes/activity'); // Adjust the path as need
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
+const flightRoutes = require('./Routes/flightRoutes'); // Adjust the path as needed
+const hotelRoutes = require('./Routes/hotelRoutes'); // Adjust the path as needed
+const transportationRoutes = require('./Routes/transportation'); // Adjust the path as needed
+const transBookRoutes = require('./Routes/transportationBook'); // Adjust the path as needed
 
 
 
@@ -36,6 +40,7 @@ app.use('/Seller', sellerRoutes);
 app.use('/Admin',adminRoutes);
 app.use('/Products',productsRoutes);
 app.use('/ActivityCategories', activityCategoriesRoute)
+app.use('/tour_guide_profile', tour_guide_profileRoutes)
 app.use('/PrefrenceTag', PrefrenceTagRoute)
 app.use('/uploads', express.static(path.join(__dirname, '../images')));
 
@@ -44,7 +49,10 @@ app.use('/api/Governor', MuseumRoutes);   // For managing profiles
 app.use('/api/activity', acitivityRoutes);   // For managing profiles
 app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For managing profiles
 app.use('/users', userRoutes); 
-app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
+app.use('/flights', flightRoutes);   // For managing profiles
+app.use('/hotels', hotelRoutes);   // For managing profiles
+app.use('/transportation', transportationRoutes);   // For managing profiles
+app.use('/transportationBook', transBookRoutes);   // For managing profiles
 
 //connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

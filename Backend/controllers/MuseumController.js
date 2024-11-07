@@ -1,5 +1,5 @@
 const Museum = require("../models/Museum");
-
+const nodemailer = require('nodemailer');
 // Method to create a new museum
 const createMuseum = async (req, res) => {
     try {
@@ -8,6 +8,22 @@ const createMuseum = async (req, res) => {
         res.status(201).json(museum);
     } catch (error) {
         res.status(400).json({ message: error.message });
+    }
+};
+
+// Method to get a museum by ID
+const getMuseumById = async (req, res) => {
+    try {
+        const { id } = req.params; // Assuming you are passing the ID in the URL
+        const museum = await Museum.findById(id);
+        if (!museum) {
+            return res.status(404).json({ message: 'Museum not found' });
+        }
+        const link = `http://localhost:4000/api/Governor/museums/id/${museum._id}`; // Or use museum.name if you prefer
+
+        res.status(200).json(museum);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
     }
 };
 
@@ -114,5 +130,6 @@ module.exports = {
     getMuseumByName,
     updateMuseumByName,
     deleteMuseumByName,
-    getTicketPrice
+    getTicketPrice,
+    getMuseumById
 };

@@ -27,19 +27,6 @@ router.put('/:id', updateTourist);
 router.post('/register', createTourist) ;
     
 
-    // Hash password before saving to the database
-    // const hashedPassword = await bcrypt.hash(password, 10);
-
-    // const newTourist = new Tourist({
-    //     email,
-    //     username,
-    //     password: hashedPassword,
-    //     mobileNumber,
-    //     nationality,
-    //     dob,
-    //     occupation
-    // });
-
     
 
 

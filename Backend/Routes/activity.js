@@ -7,6 +7,8 @@ const Activity = require('../models/Activity');
 const ActivityCategory = require('../models/ActivityCategory'); // Import your ActivityCategory model
 const PrefrenceTag = require('../models/PrefrenceTag');
 const mongoose = require('mongoose');
+const axios =require('axios');
+const EXCHANGE_RATE_API_KEY = 'bddd7e18d4adf92a570fd135';
 
 // Create an activity
 router.post('/create/:categoryName', async (req, res) => {
@@ -111,7 +113,6 @@ router.get('/', async (req, res) => {
 });
 
 // Get all upcoming itineraries
-// Get all upcoming activities
 router.get('/upcoming', async (req, res) => {
     const today = new Date(); // Get today's date
 
@@ -266,4 +267,39 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/currency/:currency/:id', async (req, res) => {
+    try {
+      const { currency, id } = req.params;
+  
+      // Fetch the specified itinerary by ID
+      const activity = await Activity.findById(id);
+      if (!activity) {
+        return res.status(404).json({ message: 'Activity not found' });
+      }
+  
+      // Fetch exchange rates from the Exchange Rate API
+      const ratesResponse = await axios.get(`https://v6.exchangerate-api.com/v6/${EXCHANGE_RATE_API_KEY}/latest/USD`);
+      const rates = ratesResponse.data.conversion_rates;
+  
+      // Check if the requested currency is available
+      if (!rates[currency]) {
+        return res.status(400).json({ message: 'Currency not supported' });
+      }
+  
+      // Convert the price for the itinerary
+      const convertedPrice = activity.price * rates[currency]; // Convert to requested currency
+  
+      // Respond with the itinerary data and the converted price
+      const response = {
+        ...activity.toObject(), // Spread the existing itinerary data
+        price: convertedPrice.toFixed(2), // Round to 2 decimal places
+        currency: currency // Add the currency to the response
+      };
+  
+      res.json(response);
+    } catch (error) {
+      console.error('Error fetching currency data:', error);
+      res.status(500).json({ message: 'Server error while converting currency' });
+    }
+  });
 module.exports = router;

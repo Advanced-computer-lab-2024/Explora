@@ -26,6 +26,7 @@ const activitySchema = new Schema({
     type: Number,   // Price as a Number for arithmetic operations
     required: true,
   },
+  currency: { type: String, required: true, default: 'USD' },
   category: {
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'ActivityCategory',

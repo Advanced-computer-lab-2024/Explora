@@ -1,20 +1,24 @@
 const mongoose = require('mongoose');
 
 const itinerarySchema = new mongoose.Schema({
-  activities: {
-  type:[String]
-  },
+
+    activities: [{
+      duration: { type: Number, required: true }, // Duration in minutes
+      date: { type: Date, required: true },
+      time: { type: String, required: true },
+    }],
   locations: { type: String, required: true },
   timeline: { type: String, required: true },
   duration: { type: Number, required: true }, // Duration in days or appropriate unit
   language: { type: String, required: true },
   price: { type: Number, required: true },
+  currency: { type: String, required: true, default: 'USD' },
   availableDates: { type: [Date], required: true },
   availableTimes: { type: [String], required: true },
   accessibility:{ type: Boolean, default: false }, 
   pickupLocation: { type: String, required: true },
-  name: { type: String, required: false },
   dropoffLocation: { type: String, required: true },
+  name: { type: String, required: false },
   hasBookings: {
     type: Boolean,
     default: false, // Default to false, can be updated when accepted as a guide

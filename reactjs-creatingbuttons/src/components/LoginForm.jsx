@@ -45,8 +45,8 @@ const LoginForm = () => {
             Don't have an account? <Link to="/middle">Signup </Link>
           </p>
           <p>
-            <Link to="/tourist-search">Continue as a guest</Link>
-          </p>
+            <Link to="/SearchPageHeader">Continue as a guest</Link>
+          </p>
           <p>
             <Link to="/acc-settings">Admin Access</Link>
           </p>

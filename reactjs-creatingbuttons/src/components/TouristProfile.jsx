@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const TouristProfile = () => {
   // State to store the profile data
+  
   const [profileData, setProfileData] = useState({
     email: 'tourist@example.com',
     username: 'touristUser', // Non-editable
+    password: 'pass', // Non-editable
+    mobileNumber: '+1234567890',
     nationality: 'USA',
-    dob: '1990-01-01',
-    jobStatus: 'job',
-    wallet: '1000.00$' // Non-editable
-  });
+    dateOfBirth: '1990-01-01',
+    job: 'job'
+    });
+
+  useEffect(() => {
+    // Fetch the user's profile data
+    axios.get('http://localhost:4000/api/id/tourists/6700f0f299fb90dc8f7502e2')
+      .then((response) => {
+        console.log('Profile data:', response.data);
+        setProfileData(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching profile data:', error);
+      });
+  })
 
   // State to toggle between edit mode and view mode
   const [isEditable, setIsEditable] = useState(false);
