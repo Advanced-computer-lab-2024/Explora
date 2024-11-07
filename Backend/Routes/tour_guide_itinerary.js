@@ -87,6 +87,32 @@ router.get('/upcoming', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
+// get all Previous itineraries
+router.get('/previous', async (req, res) => {
+  try {
+    // Get today's date and remove the time component for accurate comparisons
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Query the database for itineraries with availableDates earlier than today
+    const previousItineraries = await Itinerary.find({
+      availableDates: { $lt: today }
+    });
+
+    // If no itineraries are found
+    if (previousItineraries.length === 0) {
+      return res.status(404).json({ message: 'No previous itineraries found.' });
+    }
+
+    // Return the list of previous itineraries
+    res.status(200).json(previousItineraries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 // Search itineraries by name and tag
 router.get('/search', async (req, res) => {
   const { name, tags } = req.query;
