@@ -4,7 +4,6 @@ import axios from 'axios'; // Import axios
 const PastItineraries = () => {
   const [places, setPlaces] = useState([]);
   const [message, setMessage] = useState('');
-  const [bookedTickets, setBookedTickets] = useState([]);
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [badgeLevel, setBadgeLevel] = useState('');
   const [activityRatings, setActivityRatings] = useState({});
@@ -15,6 +14,7 @@ const PastItineraries = () => {
   useEffect(() => {
     axios.get('http://localhost:4000/api/tour_guide_itinerary/previous')
       .then(response => {
+        console.log(response.data); // Check if the tourGuide is available here
         const formattedData = response.data.map((place) => ({
           ...place,
           date: place.date ? place.date.split('T')[0] : 'Date not available',
@@ -28,7 +28,6 @@ const PastItineraries = () => {
       });
   }, []);
   
-
   const shareLink = (place) => {
     const link = `http://localhost:3000/activities/${place._id}`;
     navigator.clipboard.writeText(link)
@@ -38,33 +37,9 @@ const PastItineraries = () => {
 
   const shareEmail = (place) => {
     const subject = `Check out this activity: ${place.name}`;
-    const body = `I thought you might be interested in this activity:\n\n${place.name}\nDate: ${place.date}\nPrice: ${place.price}$\nRating: ${place.rating}/10\nTour Guide: ${place.tourGuide}\n\nYou can check it out here: http://localhost:3000/activities/${place._id}`;
+    const body = `I thought you might be interested in this activity:\n\n${place.name}\nDate: ${place.date}\nPrice: ${place.price}$\nRating: ${place.rating}/10\nTour Guide: ${place.tourGuideName ? place.tourGuideName : 'N/A'}\n\nYou can check it out here: http://localhost:3000/activities/${place._id}`;
     
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
-  const handleBookTicket = (place) => {
-    setBookedTickets((prev) => [...prev, place._id]);
-    let pointsToAdd = 0;
-
-    if (place.price <= 100000) pointsToAdd = place.price * 0.5;
-    else if (place.price <= 500000) pointsToAdd = place.price * 1;
-    else pointsToAdd = place.price * 1.5;
-
-    alert(`Your ticket for "${place.name}" has been booked!`);
-  };
-
-  const handleCancelBooking = (place) => {
-    const now = new Date();
-    const timeDifference = place.dateObject - now;
-    const hoursDifference = timeDifference / (1000 * 60 * 60);
-
-    if (hoursDifference >= 48) {
-      setBookedTickets((prev) => prev.filter(ticketId => ticketId !== place._id));
-      alert(`Your booking for "${place.name}" has been canceled.`);
-    } else {
-      alert('You can only cancel your booking 48 hours before the event starts.');
-    }
   };
 
   const handleActivityRating = (placeId, rating) => {
@@ -123,7 +98,7 @@ const PastItineraries = () => {
             <p className="activity-date">Date: {place.date}</p>
             <p className="activity-price">Price: {place.price}$</p>
             <p className="activity-rating">Activity Rating: {place.rating}/10</p>
-            <p className="tour-guide-name">Tour Guide: {place.tourGuide}</p>
+            <p className="tour-guide-name">Tour Guide: {place.tourGuideName ? place.tourGuideName : 'N/A'}</p>
             
             <div className="rating-container">
               <span>Rate this activity: </span>
@@ -193,13 +168,14 @@ const PastItineraries = () => {
 
             <div className="share-buttons">
               <button className="share-button" onClick={() => shareLink(place)}>Share Link</button>
-              <button className="share-button" onClick={() => shareEmail(place)}>Share via Email</button>
+              <button className="share-button" onClick={() => shareEmail(place)}>Share by Email</button>
             </div>
+
+            
           </div>
         ))}
       </div>
-     
-      <div>{message}</div>
+      <p>{message}</p>
     </div>
   );
 };
