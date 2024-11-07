@@ -11,8 +11,9 @@ import UpcomingActivities from './UpcomingActivities';
 import UpcomingItineraries from './UpcomingItineraries';
 import CompletedItineraries from './components/CompletedItineraries'; //added in sprint 2
 import CompletedActivities from './components/CompletedActivities'; //added in sprint 2
-import UpcomingBookings from './components/UpcomingBookings.jsx'; //added in sprint 2
-
+import FlightBooking from './components/FlightBooking.jsx';
+import HotelBooking from './components/HotelBooking.jsx';
+import EventActivityItineraryBooking from './components/EventActivityItineraryBooking.jsx';
 
 function App() {
   return (
@@ -28,7 +29,9 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="/CompletedItineraries" element={<CompletedItineraries />} />  
         <Route path="/CompletedActivities" element={<CompletedActivities />} />
-        <Route path="/UpcomingBookings" element={<UpcomingBookings/>} />        
+        <Route path="/FlightBooking" element={<FlightBooking/>} />
+        <Route path="/HotelBooking" element={<HotelBooking/>} />
+        <Route path="/EventActivityItineraryBooking" element={<EventActivityItineraryBooking/>} />
        </Routes>
      </div>
     </Router>
