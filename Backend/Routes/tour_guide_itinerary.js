@@ -178,6 +178,7 @@ router.get('/tag/:tag', async (req, res) => {
 // Create a new itinerary
 router.post('/:id', async (req, res) => {
   const {
+    tourGuideName,
     activities,
     timeline,
     duration,
@@ -187,7 +188,6 @@ router.post('/:id', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
-    name,
     dropoffLocation,
     hasBookings, 
     tags
@@ -197,7 +197,7 @@ router.post('/:id', async (req, res) => {
 
   try {
     const newItinerary = new Itinerary({
-      tourGuideId, // Set the tourGuideId here
+      tourGuideName,
       activities,
       timeline,
       duration,
@@ -207,7 +207,6 @@ router.post('/:id', async (req, res) => {
       availableTimes,
       accessibility,
       pickupLocation,
-      name,
       dropoffLocation,
       hasBookings, 
       tags
@@ -277,6 +276,7 @@ router.get('/:id', async (req, res) => {
 // Update an itinerary
 router.put('/:id', async (req, res) => {
   const {
+    tourGuideName,
     activities,
     locations,
     timeline,
@@ -288,7 +288,6 @@ router.put('/:id', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation,
-    name,
     hasBookings, 
     tags
   } = req.body;
@@ -299,6 +298,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ msg: 'Itinerary not found' });
     }
 
+    itinerary.tourGuideName = tourGuideName || itinerary.tourGuideName;
     itinerary.activities = activities || itinerary.activities;
     itinerary.locations = locations || itinerary.locations;
     itinerary.timeline = timeline || itinerary.timeline;
@@ -309,7 +309,6 @@ router.put('/:id', async (req, res) => {
     itinerary.availableTimes = availableTimes || itinerary.availableTimes;
     itinerary.accessibility = accessibility !== undefined ? accessibility : itinerary.accessibility;
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
-    itinerary.name = name || itinerary.name;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
     itinerary.tags = tags || itinerary.tags;

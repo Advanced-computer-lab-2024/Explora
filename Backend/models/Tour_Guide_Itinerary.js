@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const itinerarySchema = new mongoose.Schema({
+  tourGuideName: { type: String, required: true },
   activities: [{
     duration: { type: Number, required: true }, // Duration in minutes
     date: { type: Date, required: true },
@@ -14,7 +15,6 @@ const itinerarySchema = new mongoose.Schema({
   availableTimes: { type: [String], required: true },
   accessibility:{ type: Boolean, default: false }, 
   pickupLocation: { type: String, required: true },
-  tourGuideName: { type: String, required: true },
   dropoffLocation: { type: String, required: true },
   hasBookings: { type: Boolean, default: false},
   isActive: { type: Boolean, default: true },
