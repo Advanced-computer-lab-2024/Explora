@@ -114,7 +114,7 @@ function App() {
           <Route path="/view-profile/:id" element={<ProfileView />} />
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
         <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
-        <Route path="/create-itinerary/:id" element={<CreateItinerary />} />
+        <Route path="/create-itinerary" element={<CreateItinerary />} />
         <Route path="/itinerary-view/:id" element={<ItineraryView />} />
         <Route path="/read-itinerary" element={<ReadItinerary />} />
         <Route path="/itinerariesList" element={<ItineraryList />} />
