@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function CreateItinerary() {
@@ -17,6 +17,7 @@ export default function CreateItinerary() {
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [tourGuideName, setTourGuideName] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleNumActivitiesChange = (e) => {
     const value = parseInt(e.target.value) || 0;
@@ -87,15 +88,14 @@ export default function CreateItinerary() {
     
     try {
       const response = await axios.post('http://localhost:4000/api/tour_guide_itinerary', itineraryData);
-      if (response.status === 200) {
-      // Redirect to the itinerary view page with the correct state
+      setMessage('Itinerary created successfully!');
+
+      // Redirect to the itinerary-view page with the newly created itinerary's ID
       navigate(`/itinerary-view/${response.data._id}`);
-    }
     } catch (error) {
       console.error("There was an error creating the itinerary!", error);
     }
   };
-
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
@@ -218,32 +218,31 @@ export default function CreateItinerary() {
         Add Another Time
       </button>
 
-      <label style={{ display: 'flex', alignItems: 'center', fontSize: '16px', marginBottom: '10px' }}>
+      <label>
+        Accessible:
         <input
           type="checkbox"
           checked={accessibility}
           onChange={() => setAccessibility(!accessibility)}
-          style={{ marginRight: '10px' }}
+          style={{ marginLeft: '10px' }}
         />
-        Is the itinerary accessible?
       </label>
-
       <input
         type="text"
-        placeholder="Enter pickup location"
+        placeholder="Pickup location"
         value={pickupLocation}
         onChange={(e) => setPickupLocation(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
       <input
         type="text"
-        placeholder="Enter dropoff location"
+        placeholder="Dropoff location"
         value={dropoffLocation}
         onChange={(e) => setDropoffLocation(e.target.value)}
         style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
       />
 
-      <button type="submit" onClick={handleSubmit} style={{ padding: '15px 30px', fontSize: '18px', cursor: 'pointer', marginTop: '20px' }}>
+      <button type="submit" onClick={handleSubmit} style={{ padding: '10px', fontSize: '16px', cursor: 'pointer' }}>
         Create Itinerary
       </button>
     </div>

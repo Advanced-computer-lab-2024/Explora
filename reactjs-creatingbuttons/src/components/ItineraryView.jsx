@@ -221,9 +221,9 @@ export default function ItineraryView() {
           <button onClick={() => setIsEditing(true)} style={{ padding: '10px 20px', cursor: 'pointer', marginTop: '20px' }}>
             Edit Itinerary
           </button>
-          <button type="submit" style={{ padding: '15px 30px', fontSize: '18px', cursor: 'pointer', marginTop: '20px' }}>
-          Create Itinerary
-        </button>
+          <button onClick={handleDelete} style={{ padding: '10px 20px', cursor: 'pointer', marginTop: '20px', marginLeft: '270px', backgroundColor: 'red', color: 'white' }}>
+            Delete Itinerary
+          </button>
         </>
       )}
     </div>
