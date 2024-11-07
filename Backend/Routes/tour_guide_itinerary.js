@@ -394,4 +394,54 @@ router.patch('/:id/deactivate', async (req, res) => {
   }
 });
 
+router.put('/rate/:id', async (req, res) => {
+  try {
+    const itineraryId = req.params.id;
+    const { rating } = req.body; // Expect rating to be between 1 and 5
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
+
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      itineraryId, 
+      { $set: { rating } },
+      { new: true } // Return the updated itinerary
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    res.json(itinerary); // Return updated itinerary
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add or update a comment for an itinerary
+router.put('/comment/:id', async (req, res) => {
+  try {
+    const itineraryId = req.params.id;
+    const { comment } = req.body; // Comment can be a string
+
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      itineraryId, 
+      { $set: { comment } },
+      { new: true } // Return the updated itinerary
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    res.json(itinerary); // Return updated itinerary
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 module.exports = router;

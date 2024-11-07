@@ -245,6 +245,56 @@ const changePassword = async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 };
+
+router.put('/rate/:id', async (req, res) => {
+  try {
+    const tourGuideId = req.params.id;
+    const { rating } = req.body; // Expect rating to be between 1 and 5
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
+
+    const profile = await profile.findByIdAndUpdate(
+      tourGuideId, 
+      { $set: { rating } },
+      { new: true } // Return the updated itinerary
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: 'tour guide not found' });
+    }
+
+    res.json(profile); // Return updated itinerary
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add or update a comment for an itinerary
+router.put('/comment/:id', async (req, res) => {
+  try {
+    const tourGuideId = req.params.id;
+    const { comment } = req.body; // Comment can be a string
+
+    const profile = await profile.findByIdAndUpdate(
+      tourGuideId, 
+      { $set: { comment } },
+      { new: true } // Return the updated itinerary
+    );
+
+    if (!profile) {
+      return res.status(404).json({ message: 'profile not found' });
+    }
+
+    res.json(profile); // Return updated itinerary
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 router.put("/me/:id/change-password", changePassword);
 router.post("/login", login);
 router.get("/logout", logout);
