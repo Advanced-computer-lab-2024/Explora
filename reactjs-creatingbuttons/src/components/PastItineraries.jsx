@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-//import './PastItineraries.css'; // Ensure to import the CSS file
+import axios from 'axios'; // Import axios
 
 const PastItineraries = () => {
   const [places, setPlaces] = useState([]);
@@ -13,39 +13,21 @@ const PastItineraries = () => {
   const [guideComments, setGuideComments] = useState({});
 
   useEffect(() => {
-    const sampleData = [
-      {
-        _id: '1',
-        name: 'Historical Museum Tour',
-        date: '2024-11-15',
-        price: 500,
-        rating: 8,
-        tourGuide: 'Alice Johnson',
-      },
-      {
-        _id: '2',
-        name: 'City Walking Tour',
-        date: '2024-12-05',
-        price: 35,
-        rating: 9,
-        tourGuide: 'Bob Smith',
-      },
-      {
-        _id: '3',
-        name: 'Mountain Hiking Adventure',
-        date: '2025-01-10',
-        price: 30,
-        rating: 7,
-        tourGuide: 'Cathy Brown',
-      },
-    ];
-
-    const formattedData = sampleData.map((place) => ({
-      ...place,
-      dateObject: new Date(place.date),
-    }));
-    setPlaces(formattedData);
+    axios.get('http://localhost:4000/api/tour_guide_itinerary/previous')
+      .then(response => {
+        const formattedData = response.data.map((place) => ({
+          ...place,
+          date: place.date ? place.date.split('T')[0] : 'Date not available',
+          dateObject: place.date ? new Date(place.date) : null,
+        }));
+        setPlaces(formattedData);
+      })
+      .catch(error => {
+        console.error('Error fetching itineraries:', error);
+        setMessage('Failed to load itineraries.');
+      });
   }, []);
+  
 
   const shareLink = (place) => {
     const link = `http://localhost:3000/activities/${place._id}`;
@@ -210,7 +192,7 @@ const PastItineraries = () => {
             </div>
 
             <div className="share-buttons">
-                              <button className="share-button" onClick={() => shareLink(place)}>Share Link</button>
+              <button className="share-button" onClick={() => shareLink(place)}>Share Link</button>
               <button className="share-button" onClick={() => shareEmail(place)}>Share via Email</button>
             </div>
           </div>
