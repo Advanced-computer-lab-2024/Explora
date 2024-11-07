@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { createTourist, getTourist, updateTourist, allTourists, deleteTourist, signUp, login, logout, changePassword } = require('../controllers/touristController');
 const Tourist = require('../models/touristModel');
-const { requireAuth } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
+const { authenticateUser } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
 
 router.get('/id/:id', async (req, res) => {
     try {
@@ -21,7 +21,7 @@ router.get('/', allTourists);
 router.post("/signup", signUp);
 router.post('/login', login)
 router.get('/logout', logout);
-router.put("/change-password", requireAuth, changePassword);
+router.put("/change-password", changePassword);
 
 // Route for updating a tourist
 router.put('/:id', updateTourist);

@@ -1,7 +1,7 @@
 // routes/advertiser.js
 
 const express = require('express');
-const { requireAuth } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
+const { authenticateUser } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
 
 const {
     createAdvertiserProfile,
@@ -19,7 +19,7 @@ const router = express.Router();
 router.post("/signup", signUp);
 router.post('/login', login)
 router.get('/logout', logout);
-router.put("/change-password", requireAuth, changePassword);
+router.put("/change-password", changePassword);
 
 // POST route for creating an advertiser profile
 router.post('/create', createAdvertiserProfile);

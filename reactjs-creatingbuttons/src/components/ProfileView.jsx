@@ -10,6 +10,7 @@ export default function ProfileView() {
   const initialProfile = state?.profile;
   const [profile, setProfile] = useState(initialProfile);
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!profile) {
     return <p>No profile data available. Something went wrong.</p>;
@@ -39,6 +40,10 @@ export default function ProfileView() {
     }
   };
 
+  const navigateToChangePassword = () => {
+    navigate(`/change-password/${profile._id}`); // Pass user ID as part of the URL
+  };
+
   return (
     <div>
       <h1>Profile Details</h1>
@@ -55,6 +60,20 @@ export default function ProfileView() {
                   onChange={handleEdit} 
                 />
               </td>
+            </tr>
+            <tr>
+              <td>Password</td>
+              <td>
+<label>
+  <input
+    type="password"
+    name="newPassword"
+    value={profile.newPassword || ""}
+    onChange={handleEdit}
+    placeholder="Enter a new password"
+  />
+</label>
+    </td>
             </tr>
             <tr>
               <td>Username</td>
@@ -109,14 +128,20 @@ export default function ProfileView() {
             <tr>
               <td>IsAccepted</td>
               <td>
-            <span>{profile.IsAccepted ? "Accepted" : "Accepted"}</span> {/* Display based on the boolean value */}
-          </td>
-        </tr>
+                <span>{profile.IsAccepted ? "Accepted" : "Accepted"}</span> {/* Display based on the boolean value */}
+              </td>
+            </tr>
           </tbody>
         </table>
         <button type="submit">Update Profile</button>
       </form>
+      
       {message && <p style={{ color: message.includes("success") ? 'green' : 'red' }}>{message}</p>}
+
+      {/* Button to navigate to Change Password page */}
+      {/* <button onClick={navigateToChangePassword} style={{ marginTop: '20px' }}>
+        Change Password
+      </button> */}
     </div>
   );
 }

@@ -1,27 +1,37 @@
-// middleware/auth.js
+const express = require('express');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Assuming you have a User model
+const User = require('../models/User');
+const router = express.Router();
 
-const requireAuth = (req, res, next) => {
-  const token = req.cookies.jwt;
-    
-  // check json web token exists & is verified
-  if (token) {
-    jwt.verify(token, 'supersecret', (err, decodedToken) => {
-      if (err) {
-        // console.log('You are not logged in.');
-        // res send status 401 you are not logged in
-        res.status(401).json({message:"You are not logged in."})
-        // res.redirect('/login');
-      } else {
-        console.log(decodedToken);
-        next();
-      }
-    });
-  } else {
-    res.status(401).json({message:"You are not logged in."})
+// Login route (doesn't need token)
+router.post('/api/auth', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    // Check if password is correct
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
+
+    // Create JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.json({ token, role: user.role });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error.' });
   }
-};
+});
 
-
-module.exports = { requireAuth };
+module.exports = router;

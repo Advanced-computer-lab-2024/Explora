@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { requireAuth } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
+const { authenticateUser } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
 
 const {
     addTourismGovernorAccount,
@@ -10,6 +10,6 @@ const {
 
 router.post("/", addTourismGovernorAccount);
 router.get("/", getAllGovernors);
-router.put("/change-password", requireAuth, changePassword);
+router.put("/change-password", changePassword);
 
 module.exports = router;

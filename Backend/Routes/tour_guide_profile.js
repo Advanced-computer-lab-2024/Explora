@@ -1,5 +1,5 @@
 const express = require('express');
-const { requireAuth } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
+const { authenticateUser } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
 const router = express.Router();
 const Profile = require('../models/Tour_Guide_Profile');
 const Itinerary = require('../models/Tour_Guide_Itinerary'); // Adjust the path as needed
@@ -9,6 +9,7 @@ const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const {generateToken} = require('../middleware/AuthMiddleware');
 const jwt = require('jsonwebtoken');
+const { profile } = require('console');
 
 // create json web token
 const maxAge = 3 * 24 * 60 * 60;
@@ -30,9 +31,9 @@ const login = async (req, res) => {
             }
     
             // Compare provided password with the stored hashed password
-            const isPasswordCorrect = await bcrypt.compare(password, user.password);
-            if (!isPasswordCorrect) {
-                return res.status(400).json({ message: "Invalid password" });
+            // Compare the provided password with the stored password directly
+            if (password !== user.password) {  // Direct comparison
+            return res.status(400).json({ msg: 'Wrong username or password' });
             }
             const token = createToken(user.username);
             res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
@@ -69,16 +70,13 @@ const createProfile = async (req, res) => {
   }
 
   try {
-    // Hash password
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
     const picturePath = req.file ? `uploads/${req.file.filename}` : null;
 
     // Create profile
     const newProfile = new Profile({
       username,
       email,
-      password: hashedPassword,
+      password,
       name,
       mobile,
       yearsOfExperience,
@@ -147,7 +145,11 @@ router.put('/me/:id', upload.single('profilePicture'), async (req, res) => {
     
     // Update the profile fields
     profile.email = email || profile.email;
-    profile.password = password || profile.password;
+// Controller or route handler
+if (req.body.newPassword) {
+  const hashedPassword = await bcrypt.hash(req.body.newPassword, 10);
+  profile.password = hashedPassword; // Update password with hashed version
+}
     profile.name = name || profile.name;
     profile.mobile = mobile || profile.mobile;
     profile.yearsOfExperience = yearsOfExperience || profile.yearsOfExperience;
@@ -215,14 +217,14 @@ router.delete('/:id', async (req, res) => {
 
 const changePassword = async (req, res) => {
   const { password, newPassword } = req.body;
-  const userId = req.user._id; // assuming req.user is set in AuthMiddleware
+  //const userId = req.user._id; // assuming req.user is set in AuthMiddleware
 
   try {
-      // Find the user by ID
-      const user = await Profile.findById(userId);
-      if (!user) {
-          return res.status(404).json({ message: "User not found" });
-      }
+      // // Find the user by ID
+      // const user = await Profile.findById(userId);
+      // if (!user) {
+      //     return res.status(404).json({ message: "User not found" });
+      // }
 
       // Verify the current password
       const isPasswordCorrect = await bcrypt.compare(password, user.password);
@@ -243,7 +245,7 @@ const changePassword = async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 };
-router.put("/change-password", requireAuth, changePassword);
+router.put("/me/:id/change-password", changePassword);
 router.post("/login", login);
 router.get("/logout", logout);
 router.post('/register', upload.single('image'), createProfile);

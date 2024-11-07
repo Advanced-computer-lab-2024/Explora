@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { requireAuth } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
+const { authenticateUser } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
 
 const { 
     createSeller,      // Correct import
@@ -17,7 +17,7 @@ const {
 router.post("/signup", signUp);
 router.post('/login', login)
 router.get('/logout', logout);
-router.put("/change-password", requireAuth, changePassword);
+router.put("/change-password", changePassword);
 
 // Create a seller profile (POST /seller/create)
 router.post('/create', createSeller);
