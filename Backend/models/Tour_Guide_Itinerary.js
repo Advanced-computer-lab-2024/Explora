@@ -14,7 +14,7 @@ const itinerarySchema = new mongoose.Schema({
   availableTimes: { type: [String], required: true },
   accessibility:{ type: Boolean, default: false }, 
   pickupLocation: { type: String, required: true },
-  name: { type: String, required: false },
+  tourGuideName: { type: String, required: true },
   dropoffLocation: { type: String, required: true },
   hasBookings: { type: Boolean, default: false},
   isActive: { type: Boolean, default: true },
