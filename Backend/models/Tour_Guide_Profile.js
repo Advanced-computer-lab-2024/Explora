@@ -38,7 +38,16 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
   termsAccepted: { // Field to track terms acceptance
     type: Boolean,
     default: false
-  },
+},
+  rating: { 
+    type: Number,
+     default: 0 
+},
+  comment: {
+     type: String,
+      required: true
+},
+
 });
 const TourGuide = User.discriminator('TourGuide', Tour_Guide_Profile_ProfileSchema);
 
