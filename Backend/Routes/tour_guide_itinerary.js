@@ -176,10 +176,11 @@ router.get('/tag/:tag', async (req, res) => {
 });
 
 // Create a new itinerary
-router.post('/:id', async (req, res) => {
+router.post('/', async (req, res) => {
   const {
     tourGuideName,
     activities,
+    locations,
     timeline,
     duration,
     language,
@@ -193,12 +194,11 @@ router.post('/:id', async (req, res) => {
     tags
   } = req.body;
 
-  const tourGuideId = req.params.id; // Get tourGuideId from URL parameter
-
   try {
     const newItinerary = new Itinerary({
       tourGuideName,
       activities,
+      locations,
       timeline,
       duration,
       language,

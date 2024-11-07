@@ -7,6 +7,7 @@ const itinerarySchema = new mongoose.Schema({
     date: { type: Date, required: true },
     time: { type: String, required: true }
   }],
+  locations: { type: String, required: true },
   timeline: { type: String, required: true },
   duration: { type: Number, required: true }, // Duration in days or appropriate unit
   language: { type: String, required: true },
@@ -20,14 +21,6 @@ const itinerarySchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   tags: { type: [String], required: false },
   rating: { type: Number, default: 0 },
-  reviews: [
-    {
-      tourist: { type: mongoose.Schema.Types.ObjectId, ref: 'Tourist' },
-      rating: { type: Number, required: true, min: 1, max: 5 },
-      comment: { type: String, required: true },
-      date: { type: Date, default: Date.now }
-    }
-  ]
 });
 
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);

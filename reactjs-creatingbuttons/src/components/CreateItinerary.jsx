@@ -71,6 +71,7 @@ export default function CreateItinerary() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const itineraryData = { 
+      tourGuideName,
       activities, 
       locations, 
       timeline, 
@@ -81,20 +82,20 @@ export default function CreateItinerary() {
       availableTimes,
       accessibility: accessibility ? true : false, 
       pickupLocation, 
-      dropoffLocation,
-      tourGuideName // Add tour guide name here
+      dropoffLocation
     };
     
     try {
       const response = await axios.post('http://localhost:4000/api/tour_guide_itinerary', itineraryData);
       if (response.status === 200) {
-        // Redirect to the itinerary view page with the correct state
-        navigate(`/itinerary-view/${response.data._id}`, { state: { profile: response.data } });
-      }
+      // Redirect to the itinerary view page with the correct state
+      navigate(`/itinerary-view/${response.data._id}`);
+    }
     } catch (error) {
       console.error("There was an error creating the itinerary!", error);
     }
   };
+
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>

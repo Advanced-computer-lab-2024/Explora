@@ -9,6 +9,7 @@ export default function ItineraryView() {
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
+  const [tourGuideName, setTourGuideName] = useState('');
   const [activities, setActivities] = useState([]);
   const [locations, setLocations] = useState('');
   const [timeline, setTimeline] = useState('');
@@ -26,6 +27,7 @@ export default function ItineraryView() {
       try {
         const response = await axios.get(`http://localhost:4000/api/tour_guide_itinerary/${id}`);
         setItinerary(response.data);
+        setTourGuideName(response.data.tourGuideName);
         setActivities(response.data.activities);
         setLocations(response.data.locations);
         setTimeline(response.data.timeline);
@@ -37,6 +39,7 @@ export default function ItineraryView() {
         setPickupLocation(response.data.pickupLocation);
         setDropoffLocation(response.data.dropoffLocation);
         setTags(response.data.tags);
+
       } catch (err) {
         console.error("Error fetching itinerary:", err);
         setError('No itinerary data available. Something went wrong.');
@@ -48,6 +51,7 @@ export default function ItineraryView() {
 
   const handleUpdate = async () => {
     const updatedItinerary = {
+      tourGuideName, // Add tour guide name here
       activities,
       locations,
       timeline,
@@ -95,7 +99,14 @@ export default function ItineraryView() {
   return (
     <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px' }}>
       <h1>{isEditing ? 'Edit Itinerary' : 'View Itinerary'}</h1>
-
+      <label>Tour Guide Name:</label>
+      <input
+        type="text"
+        value={tourGuideName}
+        onChange={(e) => setTourGuideName(e.target.value)}
+        disabled={!isEditing}
+        style={{ width: '100%', marginBottom: '10px' }}
+      />
       <label>Locations:</label>
       <input
         type="text"
@@ -210,9 +221,9 @@ export default function ItineraryView() {
           <button onClick={() => setIsEditing(true)} style={{ padding: '10px 20px', cursor: 'pointer', marginTop: '20px' }}>
             Edit Itinerary
           </button>
-          <button onClick={handleDelete} style={{ padding: '10px 20px', cursor: 'pointer', marginTop: '20px', marginLeft: '270px', backgroundColor: 'red', color: 'white' }}>
-            Delete Itinerary
-          </button>
+          <button type="submit" style={{ padding: '15px 30px', fontSize: '18px', cursor: 'pointer', marginTop: '20px' }}>
+          Create Itinerary
+        </button>
         </>
       )}
     </div>
