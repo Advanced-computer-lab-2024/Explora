@@ -281,6 +281,8 @@ p {
 }
 
 .account-deletion-request-container input[type="email"],
+.account-deletion-request-container input[type="text"],
+
 .account-deletion-request-container select,
 .account-deletion-request-container textarea {
   width: 100%;
