@@ -10,7 +10,6 @@ export default function ProfileView() {
   const initialProfile = state?.profile;
   const [profile, setProfile] = useState(initialProfile);
   const [message, setMessage] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
   if (!profile) {
     return <p>No profile data available. Something went wrong.</p>;
@@ -38,10 +37,6 @@ export default function ProfileView() {
       console.error("Error updating profile:", error);
       setMessage("Failed to update profile. Please try again.");
     }
-  };
-
-  const navigateToChangePassword = () => {
-    navigate(`/change-password/${profile._id}`); // Pass user ID as part of the URL
   };
 
   return (
@@ -138,10 +133,6 @@ export default function ProfileView() {
       
       {message && <p style={{ color: message.includes("success") ? 'green' : 'red' }}>{message}</p>}
 
-      {/* Button to navigate to Change Password page */}
-      {/* <button onClick={navigateToChangePassword} style={{ marginTop: '20px' }}>
-        Change Password
-      </button> */}
     </div>
   );
 }
