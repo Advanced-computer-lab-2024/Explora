@@ -25,12 +25,7 @@ export default function TodoInput() {
         Tour Guide Itinerary
       </button>
 
-      <button
-        style={{ width: '220px', height: '60px', margin: '10px' }}
-        onClick={() => navigate('/tourist-itinerary')}
-      >
-        Tourist Itinerary
-      </button>
+     
 
       {/* New button for Account Deletion Request */}
       <button
@@ -40,10 +35,7 @@ export default function TodoInput() {
         Request Account Deletion
       </button>
 
-      <button onClick={() => navigate('/change-password')}>Change My Password</button>
-      <button onClick={() => navigate('/upload-image')}>
-        Upload Profile Picture
-      </button>
+     
 
       {/* New button for Activate / De-activate Itinerary */}
       <button
