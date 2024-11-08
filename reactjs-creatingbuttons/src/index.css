@@ -571,70 +571,68 @@ p {
 }
 
 /* FileComplaint.css */
-
 .file-complaint-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
-  background-color: #f0f2f5;
   padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eff6ff, #d0e2ff);
 }
 
 .complaint-card {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  max-width: 400px;
   width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 15px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+.complaint-card h2 {
   text-align: center;
-  color: #333;
+  font-size: 1.8em;
+  color: #007bff;
   margin-bottom: 20px;
+  font-family: 'Press Start 2P', system-ui;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
-label {
+.form-group label {
   display: block;
-  margin-bottom: 5px;
-  color: #555;
   font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
 }
 
-input[type="text"],
-input[type="date"],
-textarea {
+.form-group input,
+.form-group textarea {
   width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  background: #f9f9f9;
+  transition: border-color 0.3s;
 }
 
-textarea {
-  resize: none;
-}
-
-input:focus,
-textarea:focus {
+.form-group input:focus,
+.form-group textarea:focus {
   border-color: #007bff;
-  outline: none;
 }
 
 .submit-button {
   width: 100%;
-  padding: 10px;
+  padding: 14px;
+  border-radius: 15px;
   background-color: #007bff;
   color: #fff;
+  font-size: 1em;
+  font-family: 'Press Start 2P', system-ui;
   border: none;
-  border-radius: 5px;
-  font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
@@ -645,10 +643,11 @@ textarea:focus {
 
 .feedback-message {
   text-align: center;
-  color: #28a745;
-  margin-top: 10px;
+  margin-top: 15px;
+  color: green;
   font-weight: bold;
 }
+
 
 
 
