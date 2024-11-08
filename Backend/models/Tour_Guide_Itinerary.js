@@ -21,9 +21,8 @@ const itinerarySchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   tags: { type: [String], required: false },
   rating: { type: Number, default: 0 },
-  comment: { type: String, required: true },
-
- });
+  comment: { type: String, required: false },
+})
 
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);
 

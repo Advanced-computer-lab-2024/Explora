@@ -21,7 +21,7 @@ router.get('/filterByPrice', filteredProducts);
 router.get('/sortByRating', sortProducts)
 router.put('/updateProduct/:id',updateProduct )
 router.get('/productByName/:name', productsByName)
-router.put('/addReview/:id', addReview); // Route for adding a review to a product
+router.post('/addReview/:id', addReview); // Route for adding a review to a product
 
 
 

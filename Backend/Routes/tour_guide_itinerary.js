@@ -367,29 +367,34 @@ router.get('/historical', async (req, res) => {
 
 // Filter itineraries based on price, date, tags, and language
 
-router.patch('/:id/deactivate', async (req, res) => {
+router.put('/:id/deactivate', async (req, res) => {
   const itineraryId = req.params.id;
+  console.log('Deactivation request received for itinerary ID:', itineraryId);
 
   try {
     // Find the itinerary by its ID
     const itinerary = await Itinerary.findById(itineraryId);
+    console.log('Itinerary found:', itinerary);
 
     // Check if the itinerary exists
     if (!itinerary) {
       return res.status(404).json({ error: 'Itinerary not found' });
     }
 
-    // Check if the itinerary has bookings
-    if (!itinerary.hasBookings || itinerary.hasBookings.length === 0) {
-      return res.status(400).json({ error: 'Cannot deactivate itinerary without bookings' });
+    // Only allow deactivation if itinerary has bookings
+    if (!itinerary.hasBookings) {
+      console.log('Itinerary has no bookings, cannot deactivate.');
+      return res.status(400).json({ error: 'Only itineraries with bookings can be deactivated' });
     }
 
-    // Set the itinerary status to 'inactive'
-    itinerary.status = 'inactive';
+    // Set isActive to false to deactivate
+    itinerary.isActive = false;
     await itinerary.save();
 
+    console.log('Itinerary deactivated successfully.');
     res.status(200).json({ message: 'Itinerary deactivated successfully.' });
   } catch (error) {
+    console.error('Error occurred while deactivating itinerary:', error);
     res.status(500).json({ error: 'Failed to deactivate itinerary' });
   }
 });

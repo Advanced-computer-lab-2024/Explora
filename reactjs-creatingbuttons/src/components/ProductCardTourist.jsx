@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const ProductCard = ({ product, products, setProducts }) => {
+const ProductCardTourist = ({ product, products, setProducts }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(product.name);
     const [editedPrice, setEditedPrice] = useState(product.price);
@@ -62,10 +62,39 @@ const ProductCard = ({ product, products, setProducts }) => {
     };
 
     // Handle review submission
-    const handleReviewSubmit = () => {
-        setMessage(`Thank you for your review!`);
-        setUserRating(0); // Reset rating
-        setUserReview(''); // Reset review input
+    const handleReviewSubmit = async () => {
+        if (userRating === 0 || userReview.trim() === '') {
+            setMessage('Please provide both a rating and a review.');
+            return;
+        }
+    
+        try {
+            const reviewData = {
+                user: 'Anonymous', // Change this to logged-in user if applicable
+                comment: userReview,
+                rating: userRating
+            };
+    
+            // Make POST request to backend to add the review
+            const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
+    
+            console.log('Review response:', response.data);
+    
+            // Update the product's reviews and average rating in the state
+            setProducts(prevProducts =>
+                prevProducts.map(prod =>
+                    prod._id === product._id ? response.data.product : prod
+                )
+            );
+    
+            // Reset the input fields after submitting the review
+            setUserRating(0);
+            setUserReview('');
+            setMessage('Thank you for your review!');
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            setMessage('Error submitting review: ' + error.message);
+        }
     };
 
     // Function to render interactive star rating for user
@@ -141,8 +170,24 @@ const ProductCard = ({ product, products, setProducts }) => {
             <button onClick={handleReviewSubmit}>Submit Review</button>
 
             {message && <p className="message">{message}</p>}
+
+            {/* Display all reviews */}
+            <div className="product-reviews">
+                <h3>Reviews:</h3>
+                {product.reviews.length === 0 ? (
+                    <p>No reviews yet.</p>
+                ) : (
+                    product.reviews.map(review => (
+                        <div key={review._id} className="review">
+                            <p><strong>{review.user}</strong></p>
+                            <p>{review.comment}</p>
+                            <p>Rating: {renderStars(review.rating)}</p>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
     );
 };
 
-export default ProductCard;
+export default ProductCardTourist;
