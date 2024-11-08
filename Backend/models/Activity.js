@@ -48,6 +48,10 @@ const activitySchema = new Schema({
     type: Boolean,
     default: true,  // Optional field with default value
   },
+  isDeleted: {
+    type: Boolean,
+    default: false,  // Optional field
+  },
 }, { timestamps: true });
 
 const Activity = mongoose.model('Activity', activitySchema);

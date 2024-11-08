@@ -28,8 +28,5 @@ router.put('/addReview/:id', addReview);
 router.put('/archiveProduct/:id', archiveProduct);
 
 
-
-
-
 module.exports = router;
 

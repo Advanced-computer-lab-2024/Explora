@@ -18,8 +18,6 @@ const allProducts = async (req, res) => {
     }
 };
 
-
-
 // get all available products
 
 const availableProducts = async (req, res) => {
@@ -39,6 +37,47 @@ const availableProducts = async (req, res) => {
         res.status(500).json({ msg: err.message });
     }
 };
+
+// get archived products
+
+const archivedProducts = async (req, res) => {
+    try {
+        const products = await Product.find({ archived: true });
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No archived products found' });
+        }
+        const updatedProducts = products.map(product => {
+            return {
+                ...product._doc,
+                image: `${req.protocol}://${req.get('host')}/${product.image}`
+            };
+        });
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+}
+
+// get unarchived products
+
+const unarchivedProducts = async (req, res) => {
+    try {
+        const products = await Product.find({ archived: false });
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No unarchived products found' });
+        }
+
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`
+        }));
+
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+}
+
 
 
 
@@ -96,7 +135,7 @@ const createProduct = async (req, res) => {
         const newProduct = await Product.create({
             name,
             price,
-            description,
+            description: description,
             seller,
             image: image,
             quantity: quantity
@@ -215,18 +254,33 @@ const viewQuantityAndSales = async (req, res) => {
 
 const archiveProduct = async (req, res) => {
     try {
-        const { id } = req.params; 
-        const { archived } = req.body; 
-        const updatedProduct = await Product.findByIdAndUpdate(id,{archived},{new: true});
-
-        if (!updatedProduct) {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ msg: 'Invalid product ID' });
+        }
+        const product = await Product.findById(id);
+        if (!product) {
             return res.status(404).json({ msg: 'Product not found' });
         }
-        res.status(200).json(updatedProduct); 
+        const newArchivedStatus = !product.archived;
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id, 
+            { archived: newArchivedStatus }, 
+            { new: true, runValidators: true }
+        );
+        if (!updatedProduct) {
+            return res.status(404).json({ msg: 'Product not found after update' });
+        }
+        console.log("Updated Product:", updatedProduct);
+        res.status(200).json(updatedProduct);
     } catch (err) {
+        console.error("Error during update:", err);  // Log full error stack for debugging
         res.status(400).json({ msg: err.message });
     }
 };
+
+
+
 
 
 
@@ -241,5 +295,7 @@ module.exports = {
     updateProduct,
     addReview,
     viewQuantityAndSales,
-    archiveProduct
+    archiveProduct,
+    archivedProducts,
+    unarchivedProducts
 };
