@@ -17,8 +17,6 @@ const createToken = (name) => {
     });
 };
 
-
-const Tourist = require('../models/touristModel');
 const TourismGovernor = require('../models/Governor');
 const Admin = require('../models/Admin');
 
@@ -271,8 +269,6 @@ const deleteUser = async (req, res) => {
 
 
 // Change user password
-const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
-
 const changePassword = async (req, res) => {
   const { username, password, newPassword } = req.body;
   const userId = req.user._id; // assuming req.user is set in AuthMiddleware, which should contain the authenticated user's info
@@ -327,7 +323,6 @@ module.exports = {
     viewRequests,
     filterByStatus,
     logout,
-    getuserbyusername,
     loginUser,
     changePassword,
     // Add other controller methods like loginUser, getUserProfile, etc.
