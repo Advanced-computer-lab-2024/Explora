@@ -31,10 +31,6 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
     type: Boolean,
     default: true, // Default to false, can be updated when accepted as a guide
   },
-  image: {    
-    type: String,
-    required: true
-},
   termsAccepted: { // Field to track terms acceptance
     type: Boolean,
     default: false
@@ -47,10 +43,7 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
      type: String,
       required: true
 },
-
-    default: false, // Default to false, can be updated when accepted as a guide
-  },
-  idFile: {
+idFile: {
     type: String,
     required: true, // URL of ID file (if available)
   },

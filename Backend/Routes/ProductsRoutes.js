@@ -29,16 +29,5 @@ router.post('/addReview/:id', addReview); // Route for adding a review to a prod
 
 
 
-
-router.get('/availableProducts', availableProducts);    
-router.get('/filterByPrice', filteredProducts);          
-router.get('/sortByRating', sortProducts);               
-router.put('/updateProduct/:id', updateProduct);          
-router.get('/productByName/:name', productsByName);     
-router.get('/:name', searchProducts);                     
-router.put('/addReview/:id', addReview);  
-router.put('/archiveProduct/:id', archiveProduct);
-
-
 module.exports = router;
 

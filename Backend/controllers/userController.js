@@ -269,27 +269,7 @@ const deleteUser = async (req, res) => {
     }
 }
 
-// Login a user
 
-const loginUser = async (req, res) => {
-    const { username, password } = req.body;
-
-    try {
-        const user = await User.findOne({ username });
-        if (!user) return res.status(400).json({ error: 'User not found' });
-
-        const isMatch = await user.comparePassword(password);
-        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
-
-        res.json({
-            _id: user._id,
-            username: user.username,
-            role: user.role
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
 // Change user password
 const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
 
@@ -346,7 +326,7 @@ module.exports = {
     updateStatus,
     viewRequests,
     filterByStatus,
-    logout
+    logout,
     getuserbyusername,
     loginUser,
     changePassword,
