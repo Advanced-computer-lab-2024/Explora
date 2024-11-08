@@ -1,16 +1,22 @@
 // controllers/userController.js
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const bcrypt = require('bcryptjs');
 const {asyncWrapper} = require('../middleware/upload');
 const User = require('../models/User');
 const Seller = require('../models/Seller');
 const TourGuide = require('../models/Tour_Guide_Profile');
 const Advertiser = require('../models/Advertiser');
 const Tourist = require('../models/touristModel');
-const {
-    hashPassword,
-    comparePassword
-} = require('../middleware/AuthMiddleware');
+const Product = require('../models/Products');
+const Activity = require('../models/Activity');
+const maxAge = 3 * 24 * 60 * 60;
+const createToken = (name) => {
+    return jwt.sign({ name }, 'supersecret', {
+        expiresIn: maxAge
+    });
+};
+
 
 
 // Register a new user
@@ -37,7 +43,8 @@ const registerUser = asyncWrapper(async (req, res) => {
         }
 
         // Hash the password and create the new user
-        const hashedPassword = await hashPassword(password);
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(password, salt);        
         let newUser;
 
         if (role === "Tourist") {
@@ -72,12 +79,46 @@ const registerUser = asyncWrapper(async (req, res) => {
 
         // Save the new user
         await newUser.save();
+        const token = createToken(newUser.name); 
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 }); 
         res.status(201).json({ message: 'User registered successfully!', user: newUser });
     } catch (err) {
         console.error("Registration error:", err); // Log the error
         res.status(500).json({ error: err.message });
     }
 });
+
+// Login a user
+
+const loginUser = async (req, res) => {
+    try {
+        const { username, password } = req.body;        
+        const user = await User.findOne({ username }); 
+        if (!user) {
+            return res.status(400).json({ error: 'User not found' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Incorrect Username or Password' });
+        }
+        if(isMatch){
+            const token = createToken(user.name);
+            res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+            res.status(200).json({ message: 'Logged in successfully!', user });
+        }
+      
+    }
+    catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+// Logout a user
+const logout = async (req, res) => {
+    //res.cookie('jwt', '', { maxAge: 1 });
+    res.clearCookie('jwt');  // clears the cookie in the browser
+    res.status(200).json({ message: 'Logged out successfully' });
+}
 
 // view all users 
 const viewUsers = async (req, res) => {
@@ -91,7 +132,7 @@ const viewUsers = async (req, res) => {
 
 const getUserid = async (req, res) => {
     try {
-        const username = req.params.username
+    const username = req.params.username
       const user = await User.findOne({ username });
       if (!user) {
         return res.status(404).send({ msg: 'User not found' });
@@ -115,36 +156,6 @@ const getRoleByUsername = async (req, res) => {
     }
 }
 
-// Login a user
-
-const loginUser = async (req, res) => {
-    try {
-        const { username, password } = req.body;
-
-        console.log('Received request:', req.body); // Log incoming data for debugging
-        
-        const user = await User.findOne({ username }); // Find user in the database by username
-        
-        if (!user) {
-            return res.status(400).json({ error: 'User not found' });
-        }
-
-        const match = await comparePassword(password, user.password);
-        if (!match) {
-            return res.status(400).json({ error: 'Incorrect Username or Password' });
-        }
-        
-        // Generate and send back a JWT token
-        if(match){
-        jwt.sign({username: user.username, id: user.id}, process.env.JWT_SECRET, {}, (err,token) => {
-            if (err) throw err;
-            res.cookie('token',token).json(user)
-        })
-    }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-};
 
 const downloadIDFile = asyncWrapper(async (req, res) => {
     const { id } = req.params;
@@ -230,6 +241,33 @@ const filterByStatus = async (req, res) => {
     }
 };
 
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find and delete the user
+        const user = await User.findByIdAndDelete(id);
+        if (!user) return res.status(404).json({ message: "User not found" });
+
+        // If the user is a seller, set isDeleted of their products to true
+        if (user.role === "Seller") {
+            const products = await Product.updateMany(
+                { seller: id },          // Find all products associated with this seller
+                { $set: { isDeleted: true } } // Set isDeleted to true for these products
+            );
+        }
+        if (user.role === "TourGuide") {
+
+        }
+
+        res.status(200).json({ message: "User and associated products deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+
+
 
 
 
@@ -249,6 +287,7 @@ module.exports = {
     downloadTaxFile,
     updateStatus,
     viewRequests,
-    filterByStatus
+    filterByStatus,
+    logout
     // Add other controller methods like loginUser, getUserProfile, etc.
 };

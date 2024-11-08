@@ -37,6 +37,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //middleware
 app.use(express.json()) //checks if the request contains data and passes that data to the request object
+app.use(cookieParser());
 app.use(cors());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }))

@@ -65,6 +65,8 @@ import Register from './pages/Register/Register.jsx';
 import Login from './pages/Login/Login.jsx';
 import Test from './pages/test/Test.jsx';
 import AdminComplaint from './pages/AdminComplaints/AdminComplaints.jsx'
+//import ComplaintsDashboard from './components/Admin/ComplaintsDashboard.jsx'
+
 function App() {
 
   return (
@@ -73,7 +75,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<AdminComplaint />} /> 
+          <Route path="/" element={<Test />} /> 
 
 
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
