@@ -66,6 +66,32 @@ import Login from './pages/Login/Login.jsx';
 import Test from './pages/test/Test.jsx';
 import AdminComplaint from './pages/AdminComplaints/AdminComplaints.jsx'
 //import ComplaintsDashboard from './components/Admin/ComplaintsDashboard.jsx'
+import ProductCardTourist from './components/ProductCardTourist.jsx';
+import ComplaintsTable from './components/ComplaintsTable'; // Import the ComplaintsTable component
+import FileComplaint from './components/FileComplaint';
+import AccountDeletionRequest from './components/AccountDeletionRequest';
+import ChangePassword from './components/ChangePassword';
+import DocumentUpload from './components/DocumentUpload';
+import GuestHome from './components/GuestHome';
+import UploadImagePage from './components/UploadImagePage';
+import ArchivedProducts from './components/ArchivedProducts';
+import AdminDocumentViewer from './components/AdminDocumentViewer'; // Adjust path as needed
+import TermsAndConditionsPage from './components/TermsAndConditionsPage';
+import ItinerariesTable from './components/ItinerariesTable'; // Import ItinerariesTable component
+import FlaggedEvents from './components/FlaggedEvents'; // Import your new component
+import TransportationBooking from './components/TransportationBooking'; // Adjust the path as necessary
+import FlightBooking from './components/FlightBooking'; // import the new component
+import PastItineraries from './components/PastItineraries.jsx';
+import BookHotel from './components/BookHotel';
+
+
+
+
+
+
+
+
+
 
 function App() {
 
@@ -128,7 +154,6 @@ function App() {
         <Route path="/ItinerarySearchPage" element={<ItinerarySearchPage/>} />
         <Route path="/UpcomingActivities" element={<UpcomingActivities/>} />
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
-        <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
         <Route path="advact" element={<AdvActivity/>} />
         <Route path="create-act" element={<CreateAdvAct/>} />
@@ -138,6 +163,32 @@ function App() {
 
 
         
+        <Route path="/product-card-tourist" element={<ProductCardTourist />} /> {/* Add this route */}
+        <Route path="/complaints" element={<ComplaintsTable />} /> {/* Complaints Page */}
+        <Route path="/file-complaint" element={<FileComplaint />} />  {/* Route for filing complaints */}
+        <Route path="/request-account-deletion" element={<AccountDeletionRequest />} /> {/* New route */}
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/upload-documents" element={<DocumentUpload />} />
+        <Route path="/guest-home" element={<GuestHome />} />
+        <Route path="/upload-image" element={<UploadImagePage />} />
+        <Route path="/archived-products" element={<ArchivedProducts />} />
+        <Route path="/admin-documents" element={<AdminDocumentViewer />} />
+        <Route path="/terms/:userId" element={<TermsAndConditionsPage />} /> {/* Add this line */}
+        <Route path="/itineraries-table" element={<ItinerariesTable />} /> {/* Itineraries table route */}
+        <Route path="/flagged-events" element={<FlaggedEvents />} /> {/* New route */}
+        <Route path="/book-transportation" element={<TransportationBooking />} />
+        <Route path="/book-flight" element={<FlightBooking />} /> {/* Add the route here */}
+        <Route path="/tourist-previous-activities" element={<PastItineraries />} /> {/* Add the route here */}
+        <Route path="/book-hotel" element={<BookHotel />} />
+
+
+
+
+
+
+
+
+
 
         </Routes>
       </Router>

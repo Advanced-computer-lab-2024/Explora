@@ -1,34 +1,37 @@
-// ProductCard.js
 import React, { useState } from 'react';
 import axios from 'axios';
-import './productsCard.css';
 
-
-const ProductCard = ({ product, products, setProducts }) => {
+const ProductCard = ({ product, products, setProducts, onArchive }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(product.name);
     const [editedPrice, setEditedPrice] = useState(product.price);
     const [editedDescription, setEditedDescription] = useState(product.description);
     const [message, setMessage] = useState('');
 
+    // Handle the edit button click
     const handleEditClick = () => {
         setIsEditing(true);
+        // Set edited values to current product details
         setEditedName(product.name);
         setEditedPrice(product.price);
         setEditedDescription(product.description);
     };
 
+    // Function to update the product
     const updateProduct = async () => {
         try {
             const inputData = {
                 name: editedName,
                 price: editedPrice,
                 description: editedDescription,
-                reviews: product.reviews 
+                reviews: product.reviews // Include reviews in the update
             };
 
             const response = await axios.put(`http://localhost:4000/Products/updateProduct/${product._id}`, inputData);
 
+            console.log('Response from update:', response.data);
+
+            // Update the products state immediately after the successful response
             setProducts(prevProducts =>
                 prevProducts.map(prod =>
                     prod._id === product._id ? { ...prod, ...inputData } : prod
@@ -43,6 +46,13 @@ const ProductCard = ({ product, products, setProducts }) => {
         }
     };
 
+    // Function to archive the product
+    const archiveProduct = () => {
+        onArchive(product._id); // Call the passed-in archive function
+        setMessage('Product archived successfully!');
+    };
+
+    // Function to render stars based on averageRating
     const renderStars = (averageRating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -55,13 +65,8 @@ const ProductCard = ({ product, products, setProducts }) => {
 
     return (
         <div className="product-card">
-            {/* Display product image */}
-            {product.image ? (
-                <img src={product.image} alt={product.name} className="product-image" />
-            ) : (
-                <p>No Image Available</p>
-            )}
-    
+            <img src={product.image} alt={product.name} className="product-image" />
+
             {isEditing ? (
                 <>
                     <input
@@ -93,18 +98,34 @@ const ProductCard = ({ product, products, setProducts }) => {
                     <p className="product-description">{editedDescription}</p>
                     <p className="product-price">${editedPrice.toFixed(2)}</p>
                     <p className="product-ratings">
-                        Average Rating: {renderStars(product.averageRating)}
+                        Average Rating: {renderStars(product.averageRating)} {/* Render stars based on average rating */}
                     </p>
+                    <p className="product-quantity">Available Quantity: {product.availableQuantity}</p>
+                    <p className="product-sales">Total Sales: {product.totalSales}</p>
                 </>
             )}
-    
+
             <p className="product-seller">Seller: {product.seller}</p>
             <p className="product-reviews">{product.reviews.length} reviews</p>
-    
+
             <button className="edit-button" onClick={handleEditClick}>
                 <i className="fa-solid fa-pen-to-square"></i>
             </button>
-    
+            <button
+                onClick={() => onArchive(product._id)}
+                style={{
+                    marginTop: '10px',
+                    backgroundColor: 'black',
+                    color: 'white',
+                    padding: '8px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    width: '100%', // To make it span the width of the card
+                }}
+            >
+                Archive
+            </button>
+
             {message && <p className="message">{message}</p>}
         </div>
     );

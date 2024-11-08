@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const activitySchema = new Schema({
+  advertiserId: { 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User', // Assuming your User model is named 'User'
+    required: true 
+  },
+
   name: {
     type: String,
     required: true,

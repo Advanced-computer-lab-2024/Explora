@@ -1,6 +1,6 @@
-// src/components/ItineraryList.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { MdToggleOn, MdToggleOff } from 'react-icons/md'; // Import toggle icons
 
 const ItineraryList = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -12,7 +12,7 @@ const ItineraryList = () => {
       try {
         const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary', {
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('tokesn')}`, // Use the saved token
+            'Authorization': `Bearer ${localStorage.getItem('token')}`, // Use the saved token
           },
         });
         setItineraries(response.data);
@@ -26,6 +26,42 @@ const ItineraryList = () => {
 
     fetchItineraries();
   }, []);
+
+  const handleToggleActivation = async (itineraryId, isActive, hasBookings) => {
+    console.log(`Toggling itinerary with ID: ${itineraryId} and current status: ${isActive}`);
+  
+    if (!hasBookings && isActive) {
+      alert('Itinerary has no bookings, cannot deactivate.');
+      return;
+    }
+  
+    try {
+      const newStatus = !isActive; // Toggle the status
+  
+      await axios.put(
+        `http://localhost:4000/api/tour_guide_itinerary/${itineraryId}/deactivate`,
+        {}, // Empty body
+        {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
+  
+      // Update the state to reflect the new status
+      setItineraries(prevItineraries =>
+        prevItineraries.map(itinerary =>
+          itinerary._id === itineraryId ? { ...itinerary, isActive: newStatus } : itinerary
+        )
+      );
+  
+      alert(`Itinerary ${newStatus ? 'activated' : 'deactivated'} successfully!`);
+    } catch (err) {
+      console.error('Error toggling itinerary activation:', err);
+      alert('Failed to update itinerary status.');
+    }
+  };
+  
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
@@ -45,46 +81,68 @@ const ItineraryList = () => {
             <p><strong>Available Dates:</strong> {itinerary.availableDates.join(', ')}</p>
             <p><strong>Pickup Location:</strong> {itinerary.pickupLocation}</p>
             <p><strong>Dropoff Location:</strong> {itinerary.dropoffLocation}</p>
-            {/* Include any other itinerary details you want to show */}
+
+            {/* Add "Status:" next to the toggle button */}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ marginRight: '10px', fontWeight: 'bold' }}>Status:</span>
+              <span>{itinerary.isActive ? 'Active' : 'Inactive'}</span>
+<button
+  onClick={() => handleToggleActivation(itinerary._id, itinerary.isActive, itinerary.hasBookings)}
+  style={{
+    border: 'none',
+    background: 'none',
+    cursor: 'pointer',
+    padding: '10px 20px',
+    marginLeft: '10px',
+  }}
+>
+  {itinerary.isActive ? (
+    <MdToggleOn color="green" size={30} />
+  ) : (
+    <MdToggleOff color="gray" size={30} />
+  )}
+</button>
+
+            </div>
           </li>
         ))}
       </ul>
 
       <style jsx>{`
         .itinerary-list {
-          max-width: 800px; /* Maximum width of the container */
-          margin: 0 auto; /* Center the container */
-          padding: 20px; /* Add padding around the container */
-          background-color: #fff; /* Background color for the container */
-          border-radius: 8px; /* Rounded corners */
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
-          text-align: center; /* Center the heading */
-          color: #333; /* Heading color */
+          text-align: center;
+          color: #333;
         }
 
         ul {
-          list-style-type: none; /* Remove bullet points */
-          padding: 0; /* Remove default padding */
+          list-style-type: none;
+          padding: 0;
         }
 
         .itinerary-item {
-          background: #f9f9f9; /* Light background for each item */
-          margin: 15px 0; /* Margin between items */
-          padding: 15px; /* Padding inside each item */
-          border-radius: 5px; /* Rounded corners for items */
-          border-left: 5px solid #007bff; /* Blue left border */
-          transition: transform 0.2s; /* Smooth transition for hover effect */
+          background: #f9f9f9;
+          margin: 15px 0;
+          padding: 15px;
+          border-radius: 5px;
+          border-left: 5px solid #007bff;
+          transition: transform 0.2s;
         }
 
         .itinerary-item:hover {
-          transform: scale(1.02); /* Slightly enlarge on hover */
+          transform: scale(1.02);
         }
 
         strong {
-          color: #555; /* Darker color for labels */
+          color: #555;
         }
       `}</style>
     </div>

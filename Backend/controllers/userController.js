@@ -18,6 +18,9 @@ const createToken = (name) => {
 };
 
 
+const Tourist = require('../models/touristModel');
+const TourismGovernor = require('../models/Governor');
+const Admin = require('../models/Admin');
 
 // Register a new user
 const registerUser = asyncWrapper(async (req, res) => {
@@ -264,6 +267,61 @@ const deleteUser = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
+}
+
+// Login a user
+
+const loginUser = async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const user = await User.findOne({ username });
+        if (!user) return res.status(400).json({ error: 'User not found' });
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) return res.status(400).json({ error: 'Invalid credentials' });
+
+        res.json({
+            _id: user._id,
+            username: user.username,
+            role: user.role
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+// Change user password
+const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
+
+const changePassword = async (req, res) => {
+  const { username, password, newPassword } = req.body;
+  const userId = req.user._id; // assuming req.user is set in AuthMiddleware, which should contain the authenticated user's info
+
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username }); // Use findOne to search by username
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Verify the current password
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10); // Increase the salt rounds if needed
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password in the database
+    user.password = hashedNewPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 
@@ -289,5 +347,8 @@ module.exports = {
     viewRequests,
     filterByStatus,
     logout
+    getuserbyusername,
+    loginUser,
+    changePassword,
     // Add other controller methods like loginUser, getUserProfile, etc.
 };

@@ -2,8 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const { createTourist, getTourist, updateTourist, allTourists } = require('../controllers/touristController');
+const { createTourist, getTourist, updateTourist, allTourists, deleteTourist, signUp, login, logout, changePassword } = require('../controllers/touristController');
 const Tourist = require('../models/touristModel');
+const { addLoyaltyPoints } = require('../controllers/touristController');
+const { redeemPoints } = require('../controllers/touristController');
 
 
 
@@ -18,14 +20,16 @@ router.get('/id/:id', async (req, res) => {
 });
 // Route for getting a tourist by email
 router.get('/email/:email', getTourist);
-router.get('/', allTourists);
+router.get('/tourist', allTourists);
 
 // Route for updating a tourist
 router.put('/:id', updateTourist);
 
 // Register new tourist
 router.post('/register', createTourist) ;
-    
+router.delete('/:id', deleteTourist) ;
+
+
 
     // Hash password before saving to the database
     // const hashedPassword = await bcrypt.hash(password, 10);
@@ -88,8 +92,13 @@ router.post('/book', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
+router.post('/addLoyaltyPoints', addLoyaltyPoints);
+// routes/touristRoutes.js
 
-// Get Tourist details (for example)
+router.post('/redeemPoints', redeemPoints);
+
+
+
 
 
 module.exports = router;

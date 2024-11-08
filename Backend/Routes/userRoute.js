@@ -14,6 +14,7 @@ const { registerUser,
         updateStatus,
         viewRequests,
         filterByStatus,
+        changePassword
     } = require('../controllers/userController'); // Import the controller
 
 const router = express.Router();
@@ -31,12 +32,7 @@ router.get('/downloadID/:id', downloadIDFile )
 router.get('/downloadCertificate/:id', downloadCertificateFile )
 router.get('/downloadTax/:id', downloadTaxFile )
 router.put('/updateStatus/:id', updateStatus);
-
-
-
-
-
-
+router.post('/change-password', changePassword); // New route for changing password
 
 // Additional user routes can go here...
 

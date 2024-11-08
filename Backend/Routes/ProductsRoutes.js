@@ -18,6 +18,18 @@ const{
 router.get('/', allProducts);                            
 router.get('/quantity&sales', viewQuantityAndSales);       
 router.post('/upload', upload.single('image'), createProduct);
+router.get('/', allProducts)
+router.get('/availableProducts', availableProducts)
+router.get('/:name', searchProducts);
+router.get('/filterByPrice', filteredProducts);
+router.get('/sortByRating', sortProducts)
+router.put('/updateProduct/:id',updateProduct )
+router.get('/productByName/:name', productsByName)
+router.post('/addReview/:id', addReview); // Route for adding a review to a product
+
+
+
+
 router.get('/availableProducts', availableProducts);    
 router.get('/filterByPrice', filteredProducts);          
 router.get('/sortByRating', sortProducts);               
