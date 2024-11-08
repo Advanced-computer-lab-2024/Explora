@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-//import './FileComplaint.css'; // Import the CSS file for styling
 
 const FileComplaint = () => {
   const [complaint, setComplaint] = useState({
     title: '',
     body: '',
-    date: new Date().toISOString().slice(0, 10), // Default to current date
+    date: new Date().toISOString().slice(0, 10),
   });
-  const [message, setMessage] = useState(''); // Feedback message for user
+  const [message, setMessage] = useState('');
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setComplaint({ ...complaint, [name]: value });
   };
 
-  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log('Complaint submitted:', complaint);
