@@ -37,6 +37,8 @@ router.put("/status/:id", updateComplaintStatus);
 // PUT - Reply to a complaint
 router.put("/reply/:id", replyToComplaint);
 
+router.get("/myComplaints/:user", myComplaints);
+
 
 
 module.exports = router;

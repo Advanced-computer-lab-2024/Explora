@@ -13,10 +13,6 @@ const sellerRoutes = require('./Routes/SellerRoutes');
 const activityCategoriesRoute = require('./Routes/ActivityCategoryRoutes');
 const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
 const touristRoutes = require('./Routes/touristRouter'); // Route for tourists
-const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjust the path as needed
-const activityRoutes = require('./Routes/ActivityRoutes');
-const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // Adjust the path as needed
-const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjusted path
 const activityRoutes = require('./Routes/activity');
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary');
@@ -26,6 +22,7 @@ const advertiserRoutes = require('./Routes/advertiserRoute');
 const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes');
 const authRoute = require('./Routes/LoginRoute');
+const complaintsRoute = require('./Routes/ComplaintsRoutes');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -61,7 +58,6 @@ app.use('/api/tour_guide_profile', tour_guide_profileRoutes);
 app.use('/api/advertisers', advertiserRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/api/auth', authRoute);
-app.use('/autherization', auth_route);
 app.use('/complaints',complaintsRoute);
 
 //connect to MongoDB
