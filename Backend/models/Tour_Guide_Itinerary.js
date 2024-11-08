@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
 const itinerarySchema = new mongoose.Schema({
-  activities: {
-  type:[String]
-  },
-  locations: { type: String, required: true },
+  activities: [{
+    duration: { type: Number, required: true }, // Duration in minutes
+    date: { type: Date, required: true },
+    time: { type: String, required: true }
+  }],
   timeline: { type: String, required: true },
   duration: { type: Number, required: true }, // Duration in days or appropriate unit
   language: { type: String, required: true },

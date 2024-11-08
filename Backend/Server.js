@@ -49,7 +49,7 @@ app.use('/Products',productsRoutes);
 app.use('/ActivityCategories', activityCategoriesRoute)
 app.use('/PrefrenceTag', PrefrenceTagRoute)
 app.use('/uploads', express.static(path.join(__dirname, '../images')));
-
+app.use('/api/categories', categoryRoutes); // Add this line to your routes
 app.use('/api/tourists', touristRoutes);   // For managing tourists
 app.use('/api/Governor', MuseumRoutes);   // For managing profiles
 app.use('/api/activity', activityRoutes); 
