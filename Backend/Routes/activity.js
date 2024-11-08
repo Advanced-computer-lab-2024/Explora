@@ -1,6 +1,5 @@
 // THIS FILE HAS THE ROUTE IN THE CONTROLLER
 
-
 const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
@@ -15,6 +14,7 @@ router.post('/create/:categoryName', async (req, res) => {
 
     // Extract other activity details from the request body
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
+    const advertiserId = req.user.id; 
 
     try {
         const activity = await Activity.findOne({ name, date, time, location });

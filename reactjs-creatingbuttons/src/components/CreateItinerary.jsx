@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 export default function CreateItinerary() {
@@ -16,6 +16,8 @@ export default function CreateItinerary() {
   const [accessibility, setAccessibility] = useState(false);
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
+  const [tourGuideName, setTourGuideName] = useState('');
+  const [message, setMessage] = useState('');
 
   const handleNumActivitiesChange = (e) => {
     const value = parseInt(e.target.value) || 0;
@@ -70,6 +72,7 @@ export default function CreateItinerary() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const itineraryData = { 
+      tourGuideName,
       activities, 
       locations, 
       timeline, 
@@ -85,10 +88,10 @@ export default function CreateItinerary() {
     
     try {
       const response = await axios.post('http://localhost:4000/api/tour_guide_itinerary', itineraryData);
-      if (response.status === 200) {
-// Redirect to the itinerary view page with the correct state
-        navigate(`/itinerary-view/${response.data._id}`, { state: { profile: response.data } });
-}
+      setMessage('Itinerary created successfully!');
+
+      // Redirect to the itinerary-view page with the newly created itinerary's ID
+      navigate(`/itinerary-view/${response.data._id}`);
     } catch (error) {
       console.error("There was an error creating the itinerary!", error);
     }
@@ -97,10 +100,18 @@ export default function CreateItinerary() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
       <h1>Create a New Itinerary</h1>
+
+      <input
+        type="text"
+        placeholder="Enter Tour Guide Name"
+        value={tourGuideName}
+        onChange={(e) => setTourGuideName(e.target.value)}
+        style={{ padding: '10px', fontSize: '16px', marginBottom: '10px', width: '100%', boxSizing: 'border-box' }}
+      />
+
       <label htmlFor="numActivities" style={{ fontSize: '18px', marginBottom: '10px' }}>
         Choose the number of activities:
       </label>
-      \\\\\
       <input
         type="number"
         id="numActivities"

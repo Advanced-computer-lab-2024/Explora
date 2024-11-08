@@ -5,6 +5,7 @@ const ProfileDetailsPage = () => {
     const [profileData, setProfileData] = useState({
         email: 'tourist@example.com',
         username: 'touristUser', // Non-editable
+        password: 'tourist@123',
         nationality: 'USA',
         dob: '1990-01-01',
         jobStatus: 'job',
@@ -57,6 +58,16 @@ const ProfileDetailsPage = () => {
                         name="username"
                         value={profileData.username}
                         disabled
+                    />
+                </div>
+                <div>
+                    <label>Password: </label>
+                    <input
+                        type="password"
+                        name="password"
+                        value={profileData.password}
+                        onChange={handleChange}
+                        disabled={!isEditable}
                     />
                 </div>
 

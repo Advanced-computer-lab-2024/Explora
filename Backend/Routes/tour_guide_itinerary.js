@@ -87,6 +87,32 @@ router.get('/upcoming', async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
+// get all Previous itineraries
+router.get('/previous', async (req, res) => {
+  try {
+    // Get today's date and remove the time component for accurate comparisons
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Query the database for itineraries with availableDates earlier than today
+    const previousItineraries = await Itinerary.find({
+      availableDates: { $lt: today }
+    });
+
+    // If no itineraries are found
+    if (previousItineraries.length === 0) {
+      return res.status(404).json({ message: 'No previous itineraries found.' });
+    }
+
+    // Return the list of previous itineraries
+    res.status(200).json(previousItineraries);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 // Search itineraries by name and tag
 router.get('/search', async (req, res) => {
   const { name, tags } = req.query;
@@ -152,6 +178,7 @@ router.get('/tag/:tag', async (req, res) => {
 // Create a new itinerary
 router.post('/', async (req, res) => {
   const {
+    tourGuideName,
     activities,
     locations,
     timeline,
@@ -162,14 +189,14 @@ router.post('/', async (req, res) => {
     availableTimes,
     accessibility,
     pickupLocation,
-    name,
-    dropoffLocation, 
+    dropoffLocation,
     hasBookings, 
     tags
   } = req.body;
 
   try {
     const newItinerary = new Itinerary({
+      tourGuideName,
       activities,
       locations,
       timeline,
@@ -180,19 +207,19 @@ router.post('/', async (req, res) => {
       availableTimes,
       accessibility,
       pickupLocation,
-      name,
       dropoffLocation,
       hasBookings, 
       tags
     });
 
     await newItinerary.save();
-    res.json(newItinerary);
+    res.status(201).json(newItinerary); // Return created status
   } catch (error) {
-    console.error(error);
+    console.error('Error creating itinerary:', error);
     res.status(500).send('Server create error');
   }
 });
+
 
 router.get('/filter', async (req, res) => {
   const { price, date, tags, language } = req.query;
@@ -244,19 +271,12 @@ router.get('/:id', async (req, res) => {
     res.status(500).send(error.message);
   }
 });
-// GET all itineraries
-router.get('/', async (req, res) => {
-  try {
-    const itineraries = await Itinerary.find();
-    res.json(itineraries);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+
 
 // Update an itinerary
 router.put('/:id', async (req, res) => {
   const {
+    tourGuideName,
     activities,
     locations,
     timeline,
@@ -268,7 +288,6 @@ router.put('/:id', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation,
-    name,
     hasBookings, 
     tags
   } = req.body;
@@ -279,6 +298,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ msg: 'Itinerary not found' });
     }
 
+    itinerary.tourGuideName = tourGuideName || itinerary.tourGuideName;
     itinerary.activities = activities || itinerary.activities;
     itinerary.locations = locations || itinerary.locations;
     itinerary.timeline = timeline || itinerary.timeline;
@@ -289,7 +309,6 @@ router.put('/:id', async (req, res) => {
     itinerary.availableTimes = availableTimes || itinerary.availableTimes;
     itinerary.accessibility = accessibility !== undefined ? accessibility : itinerary.accessibility;
     itinerary.pickupLocation = pickupLocation || itinerary.pickupLocation;
-    itinerary.name = name || itinerary.name;
     itinerary.dropoffLocation = dropoffLocation || itinerary.dropoffLocation;
     itinerary.hasBookings = hasBookings || itinerary.hasBookings;
     itinerary.tags = tags || itinerary.tags;
@@ -348,6 +367,81 @@ router.get('/historical', async (req, res) => {
 
 // Filter itineraries based on price, date, tags, and language
 
+router.patch('/:id/deactivate', async (req, res) => {
+  const itineraryId = req.params.id;
+
+  try {
+    // Find the itinerary by its ID
+    const itinerary = await Itinerary.findById(itineraryId);
+
+    // Check if the itinerary exists
+    if (!itinerary) {
+      return res.status(404).json({ error: 'Itinerary not found' });
+    }
+
+    // Check if the itinerary has bookings
+    if (!itinerary.hasBookings || itinerary.hasBookings.length === 0) {
+      return res.status(400).json({ error: 'Cannot deactivate itinerary without bookings' });
+    }
+
+    // Set the itinerary status to 'inactive'
+    itinerary.status = 'inactive';
+    await itinerary.save();
+
+    res.status(200).json({ message: 'Itinerary deactivated successfully.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to deactivate itinerary' });
+  }
+});
+
+router.put('/rate/:id', async (req, res) => {
+  try {
+    const itineraryId = req.params.id;
+    const { rating } = req.body; // Expect rating to be between 1 and 5
+
+    if (rating < 1 || rating > 5) {
+      return res.status(400).json({ message: 'Rating must be between 1 and 5.' });
+    }
+
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      itineraryId, 
+      { $set: { rating } },
+      { new: true } // Return the updated itinerary
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    res.json(itinerary); // Return updated itinerary
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Add or update a comment for an itinerary
+router.put('/comment/:id', async (req, res) => {
+  try {
+    const itineraryId = req.params.id;
+    const { comment } = req.body; // Comment can be a string
+
+    const itinerary = await Itinerary.findByIdAndUpdate(
+      itineraryId, 
+      { $set: { comment } },
+      { new: true } // Return the updated itinerary
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    res.json(itinerary); // Return updated itinerary
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 
 module.exports = router;

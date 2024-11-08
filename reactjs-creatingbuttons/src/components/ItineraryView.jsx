@@ -9,6 +9,7 @@ export default function ItineraryView() {
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
+  const [tourGuideName, setTourGuideName] = useState('');
   const [activities, setActivities] = useState([]);
   const [locations, setLocations] = useState('');
   const [timeline, setTimeline] = useState('');
@@ -21,11 +22,18 @@ export default function ItineraryView() {
   const [dropoffLocation, setDropoffLocation] = useState('');
   const [tags, setTags] = useState([]);
 
+  // Format date function
+  const formatDate = (date) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(date).toLocaleDateString('en-GB', options); // Format as "day month year"
+  };
+
   useEffect(() => {
     const fetchItinerary = async () => {
       try {
         const response = await axios.get(`http://localhost:4000/api/tour_guide_itinerary/${id}`);
         setItinerary(response.data);
+        setTourGuideName(response.data.tourGuideName);
         setActivities(response.data.activities);
         setLocations(response.data.locations);
         setTimeline(response.data.timeline);
@@ -48,6 +56,7 @@ export default function ItineraryView() {
 
   const handleUpdate = async () => {
     const updatedItinerary = {
+      tourGuideName,
       activities,
       locations,
       timeline,
@@ -64,7 +73,7 @@ export default function ItineraryView() {
     try {
       await axios.put(`http://localhost:4000/api/tour_guide_itinerary/${id}`, updatedItinerary);
       alert('Itinerary updated successfully!');
-      setIsEditing(false); // Stop editing mode after update
+      setIsEditing(false);
     } catch (err) {
       console.error('Error updating itinerary:', err);
     }
@@ -77,7 +86,7 @@ export default function ItineraryView() {
     try {
       await axios.delete(`http://localhost:4000/api/tour_guide_itinerary/${id}`);
       alert('Itinerary deleted successfully!');
-      navigate('/itineraries'); // Redirect to the list of itineraries after deletion
+      navigate('/itineraries');
     } catch (err) {
       console.error('Error deleting itinerary:', err);
       alert('Failed to delete the itinerary.');
@@ -95,7 +104,14 @@ export default function ItineraryView() {
   return (
     <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px' }}>
       <h1>{isEditing ? 'Edit Itinerary' : 'View Itinerary'}</h1>
-
+      <label>Tour Guide Name:</label>
+      <input
+        type="text"
+        value={tourGuideName}
+        onChange={(e) => setTourGuideName(e.target.value)}
+        disabled={!isEditing}
+        style={{ width: '100%', marginBottom: '10px' }}
+      />
       <label>Locations:</label>
       <input
         type="text"
@@ -136,14 +152,9 @@ export default function ItineraryView() {
       {availableDates.map((date, index) => (
         <input
           key={index}
-          type="date"
-          value={date}
-          onChange={(e) => {
-            const updatedDates = [...availableDates];
-            updatedDates[index] = e.target.value;
-            setAvailableDates(updatedDates);
-          }}
-          disabled={!isEditing}
+          type="text"
+          value={formatDate(date)} // Format the date here
+          disabled={true} // Disable editing since this is just a display
           style={{ width: '100%', marginBottom: '10px' }}
         />
       ))}

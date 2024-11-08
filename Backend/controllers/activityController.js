@@ -6,6 +6,7 @@ const PrefrenceTag = require('../models/PrefrenceTag');
 
 const createActivity = async (req, res) => {
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen, category } = req.body; // Adjusted
+    const advertiserId = req.params.id; // Get Id from URL parameter
 
     try {
         // Validate required fields

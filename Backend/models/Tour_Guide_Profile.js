@@ -6,7 +6,11 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
     type: String, 
     required: true, 
     unique: true 
-},
+  },
+  tourists: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'touristModel' // Link to Tourist model
+  }],
   name:{
     type: String,
     required: true
@@ -25,8 +29,25 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
   },
   isAccepted: {
     type: Boolean,
-    default: false, // Default to false, can be updated when accepted as a guide
-  }
+    default: true, // Default to false, can be updated when accepted as a guide
+  },
+  image: {    
+    type: String,
+    required: true
+},
+  termsAccepted: { // Field to track terms acceptance
+    type: Boolean,
+    default: false
+},
+  rating: { 
+    type: Number,
+     default: 0 
+},
+  comment: {
+     type: String,
+      required: true
+},
+
 });
 const TourGuide = User.discriminator('TourGuide', Tour_Guide_Profile_ProfileSchema);
 
