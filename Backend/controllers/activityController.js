@@ -5,11 +5,12 @@ const ActivityCategory = require('../models/ActivityCategory');
 const PrefrenceTag = require('../models/PrefrenceTag');
 
 const createActivity = async (req, res) => {
-    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen, category } = req.body; // Adjusted
+    const { category } = req.params;
+    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
     try {
         // Validate required fields
-        if (!name || !date || !time || !location || !price || !category) {
+        if (!name || !date || !time || !location || !price) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
 
@@ -19,10 +20,16 @@ const createActivity = async (req, res) => {
             return res.status(400).json({ message: 'Activity already exists.' });
         }
 
-        // Validate the category (category must be an ObjectId)
-        const foundCategory = await ActivityCategory.findById(category);
+        // Find the category by name
+        const foundCategory = await ActivityCategory.findOne({ activityType: category });
         if (!foundCategory) {
             return res.status(404).json({ message: 'Category not found.' });
+        }
+
+        // Convert tag names to ObjectId references
+        const prefTags = await PrefrenceTag.find({ tag: { $in: tags } });
+        if (prefTags.length !== tags.length) {
+            return res.status(400).json({ message: 'One or more tags are invalid.' });
         }
 
         // Create a new activity instance
@@ -33,8 +40,8 @@ const createActivity = async (req, res) => {
             rating,
             location,
             price,
-            category, // Now storing the category ID directly
-            tags, // Assuming tags are already ObjectId references
+            category: foundCategory._id, // Use the ObjectId of the found category
+            tags: prefTags.map(tag => tag._id), // Ensure tags are ObjectId references
             specialDiscounts,
             bookingOpen,
         });
@@ -42,10 +49,55 @@ const createActivity = async (req, res) => {
         const savedActivity = await newActivity.save();
         res.status(201).json(savedActivity);
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(500).json({ error: err.message });
     }
 };
 
+
+
+// Rate an activity
+const rateActivity = async (req, res) => {
+    const { id } = req.params; // ID of the activity to rate
+    const { userId, score } = req.body; // Extract the user ID and score from the request body
+
+    if (!userId || !score) {
+        return res.status(400).json({ message: 'User ID and score are required.' });
+    }
+
+    try {
+        // Validate the score
+        if (score < 1 || score > 5) {
+            return res.status(400).json({ message: 'Score must be between 1 and 5.' });
+        }
+
+        // Find the activity by ID
+        const activity = await Activity.findById(id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found.' });
+        }
+
+        // Check if the user has already rated the activity
+        const existingRating = activity.ratings.find(rating => rating.userId.toString() === userId);
+        if (existingRating) {
+            // Update the existing rating
+            existingRating.score = score;
+        } else {
+            // Add a new rating
+            activity.ratings.push({ userId, score });
+        }
+
+        // Recalculate the average rating
+        const totalScore = activity.ratings.reduce((sum, rating) => sum + rating.score, 0);
+        activity.rating = totalScore / activity.ratings.length;
+
+        // Save the updated activity
+        await activity.save();
+        res.status(200).json({ message: 'Rating submitted successfully!', activity });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
 
 // Filter activities by tag, name, or category
 const filterActivities = async (req, res) => {
@@ -238,6 +290,7 @@ const sortActivitiesByRating = async (req, res) => {
 
 module.exports = {
     createActivity,
+    rateActivity,
     filterActivities,
     getAllActivities,
     getUpcomingActivities,

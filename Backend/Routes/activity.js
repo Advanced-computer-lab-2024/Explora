@@ -1,5 +1,3 @@
-// THIS FILE HAS THE ROUTE IN THE CONTROLLER
-
 
 const express = require('express');
 const router = express.Router();
@@ -10,31 +8,37 @@ const mongoose = require('mongoose');
 
 // Create an activity
 router.post('/create/:categoryName', async (req, res) => {
-    // Extract the category name from request parameters
-    const { categoryName } = req.params;
-
-    // Extract other activity details from the request body
+    const { categoryName } = req.params; // Extract category name from URL
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
     try {
-        const activity = await Activity.findOne({ name, date, time, location });
-        if (activity) {
+        // Validate required fields
+        if (!name || !date || !time || !location || !price || !Array.isArray(tags)) {
+            return res.status(400).json({ message: 'All fields are required, and tags must be an array.' });
+        }
+
+        // Check if the activity already exists
+        const existingActivity = await Activity.findOne({ name, date, time, location });
+        if (existingActivity) {
             return res.status(400).json({ message: 'Activity already exists.' });
         }
+
         // Find the category by name
         const category = await ActivityCategory.findOne({ activityType: categoryName });
-
-        // If the category is not found, return an error
         if (!category) {
             return res.status(404).json({ message: 'Category not found.' });
         }
 
+        // Convert tag names to ObjectId references
         const prefTags = await PrefrenceTag.find({ tag: { $in: tags } });
-
-
+        
+        // Check if all provided tags were found
         if (prefTags.length !== tags.length) {
             return res.status(400).json({ message: 'One or more tags are invalid.' });
         }
+
+        // Extract the ObjectId values from the found tags
+        const tagIds = prefTags.map(tag => tag._id);
 
         // Create a new activity instance
         const newActivity = new Activity({
@@ -44,8 +48,8 @@ router.post('/create/:categoryName', async (req, res) => {
             rating,
             location,
             price,
-            category: category._id,
-            tags: prefTags.map(tag => tag._id), 
+            category: category._id, // Use the ObjectId of the found category
+            tags: tagIds, // Use the ObjectIds for tags
             specialDiscounts,
             bookingOpen,
         });
@@ -53,9 +57,91 @@ router.post('/create/:categoryName', async (req, res) => {
         const savedActivity = await newActivity.save();
         res.status(201).json(savedActivity);
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(500).json({ error: err.message });
     }
 });
+
+// Rate an activity
+router.post('/rate/:id', async (req, res) => {
+    const { id } = req.params; // ID of the activity to rate
+    const { userId, score } = req.body; // Extract the user ID and score from the request body
+
+    if (!userId || !score) {
+        return res.status(400).json({ message: 'User ID and score are required.' });
+    }
+
+    try {
+        // Validate the score
+        if (score < 1 || score > 5) {
+            return res.status(400).json({ message: 'Score must be between 1 and 5.' });
+        }
+
+        // Find the activity by ID
+        const activity = await Activity.findById(id);
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found.' });
+        }
+
+        // Check if the user has already rated the activity
+        const existingRating = activity.ratings.find(rating => rating.userId.toString() === userId);
+        if (existingRating) {
+            // Update the existing rating
+            existingRating.score = score;
+        } else {
+            // Add a new rating
+            activity.ratings.push({ userId, score });
+        }
+
+        // Recalculate the average rating
+        const totalScore = activity.ratings.reduce((sum, rating) => sum + rating.score, 0);
+        activity.rating = totalScore / activity.ratings.length;
+
+        // Save the updated activity
+        await activity.save();
+        res.status(200).json({ message: 'Rating submitted successfully!', activity });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// // Add a comment to an activity
+router.post('/comment/:activityId', async (req, res) => {
+    const { activityId } = req.params;
+    const { userId, text } = req.body;
+
+    try {
+        // Check for missing fields
+        if (!userId || !text) {
+            return res.status(400).json({ message: 'User ID and comment text are required.' });
+        }
+
+        // Add the comment to the activity
+        const updatedActivity = await Activity.findByIdAndUpdate(
+            activityId,
+            {
+                $push: {
+                    comments: {
+                        userId: new mongoose.Types.ObjectId(userId), // Correct instantiation
+                        text: text,
+                        createdAt: new Date()
+                    }
+                }
+            },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedActivity) {
+            return res.status(404).json({ message: 'Activity not found.' });
+        }
+
+        res.status(200).json({ message: 'Comment added successfully', updatedActivity });
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 // Filter activities by tag, name, or category
 router.get('/filter', async (req, res) => {
@@ -127,9 +213,7 @@ router.get('/upcoming', async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error: error.message });
     }
-});
-
-  
+});  
 
 // Update an activity
 router.put('/:id', async (req, res) => {

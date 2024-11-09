@@ -14,39 +14,45 @@ const activitySchema = new Schema({
     type: String,
     required: true,
   },
-  rating: {
-    type: Number,
-    required: true,
-  },
+  ratings: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      score: { type: Number, min: 1, max: 5, required: true },
+    },
+  ],
+  comments: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      text: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
   location: {
     type: String,
-    required: true,  // You can save Google Maps location as a string
+    required: true, // Store location as a string (e.g., Google Maps location URL or address)
   },
   price: {
-    type: Number,   // Price as a Number for arithmetic operations
+    type: Number, // Store price as a number for calculations
     required: true,
   },
   category: {
-    type: mongoose.Schema.Types.ObjectId, 
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'ActivityCategory',
     required: true,
   },
-  tags: {
-    type: 
-    [{
-      type: mongoose.Schema.Types.ObjectId,   // Reference the PrefrenceTag model
-      ref: 'PrefrenceTag'
-    }], 
-    default: [],
-  
-  },
+  tags: [
+    {
+      type: mongoose.Schema.Types.ObjectId, // Reference the PrefrenceTag model
+      ref: 'PrefrenceTag',
+    },
+  ],
   specialDiscounts: {
     type: String,
-    default: null,  // Optional field
+    default: null, // Optional field
   },
   bookingOpen: {
     type: Boolean,
-    default: true,  // Optional field with default value
+    default: true, // Optional field with default value
   },
 }, { timestamps: true });
 
