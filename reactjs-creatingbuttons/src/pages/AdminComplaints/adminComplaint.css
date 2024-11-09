@@ -16,7 +16,7 @@
     padding: 5px;
 }
 
-.complaint-card {
+.admin-complaints complaint-card {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
