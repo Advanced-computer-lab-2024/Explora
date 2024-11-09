@@ -54,6 +54,15 @@ const CompletedActivities = () => {
     ));
   };
 
+  // Handle feedback submission
+  const handleSubmitFeedback = (activity) => {
+    console.log(`Feedback submitted for ${activity.name}:`, {
+      rating: activity.rating,
+      comment: activity.comment,
+    });
+    alert(`Feedback for "${activity.name}" submitted successfully!`);
+  };
+
   return (
     <div>
       <h2>Completed Activities</h2>
@@ -92,6 +101,11 @@ const CompletedActivities = () => {
               />
             </label>
           </div>
+
+          {/* Submit Feedback Button */}
+          <button onClick={() => handleSubmitFeedback(activity)} style={buttonStyle}>
+            Submit Feedback
+          </button>
 
           {/* Share buttons */}
           <div style={{ marginTop: '10px' }}>
