@@ -415,37 +415,142 @@ p {
   border-radius: 8px;
   padding: 14px;
   text-align: center;
-  width: calc(33% - 20px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  color: green;
+  margin-top: 20px;
 }
 
-.activity-item h3 {
-  font-size: 18px;
-  color: #202124;
+.comment-section {
+  margin-top: 10px;
 }
 
-.activity-item p {
-  font-size: 14px;
-  color: #666;
-}
-
-.activity-item .activity-image {
+.comment-input {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 10px;
-}
-
-.activity-item .activity-time,
-.activity-item .activity-location {
-  font-size: 12px;
-  color: #888;
-}
-
-.activity-item .activity-price {
+  height: 60px;
+  padding: 10px;
+  border: 1px solid #ccc; /* Adjust the border color as per your theme */
+  border-radius: 5px;
   font-size: 16px;
+  resize: none; /* Prevent resizing the textarea */
+}
+
+.comment-submit {
+  margin-top: 5px;
+  padding: 10px 15px;
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comment-submit:disabled {
+  background-color: #ccc; /* Disabled button style */
+  cursor: not-allowed;
+}
+
+.comment-submit:hover:not(:disabled) {
+  background-color: #0056b3; /* Button hover effect */
+}
+
+.past-itinerary-button {
+  background-color: #4CAF50; /* Green background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 10px 20px; /* Add padding */
+  text-align: center; /* Centered text */
+  text-decoration: none; /* Remove underline */
+  display: inline-block; /* Make the link behave like a button */
+  font-size: 16px; /* Increase font size */
+  margin: 4px 2px; /* Margin around buttons */
+  cursor: pointer; /* Pointer cursor on hover */
+  border-radius: 5px; /* Rounded corners */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+}
+
+.past-itinerary-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+/* FileComplaint.css */
+.file-complaint-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eff6ff, #d0e2ff);
+}
+
+.complaint-card {
+  width: 100%;
+  max-width: 500px;
+  padding: 30px;
+  border-radius: 15px;
+  background-color: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.complaint-card h2 {
+  text-align: center;
+  font-size: 1.8em;
+  color: #007bff;
+  margin-bottom: 20px;
+  font-family: 'Press Start 2P', system-ui;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  background: #f9f9f9;
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #007bff;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1em;
+  font-family: 'Press Start 2P', system-ui;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+.feedback-message {
+  text-align: center;
+  margin-top: 15px;
+  color: green;
   font-weight: bold;
   color: #007bff;
 }
 
-/* ///////////////////////////////////////////////////////////////// */
+
+
+
+}
