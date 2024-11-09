@@ -5,6 +5,7 @@ const CompanyProfileForm = () => {
   const [advertisers, setAdvertisers] = useState([]); // Stores all advertisers
   const [selectedAdvertiser, setSelectedAdvertiser] = useState(null); // Currently selected advertiser for editing
   const [isEditing, setIsEditing] = useState(false); // Track if editing mode is active
+  const [termsAccepted, setTermsAccepted] = useState(false); // State to manage terms acceptance
 
   // Empty advertiser template
   const emptyAdvertiser = {
@@ -39,6 +40,11 @@ const CompanyProfileForm = () => {
   // Handle form submission for both create and update
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!termsAccepted) {
+      alert('You must accept the terms and conditions to submit the form.');
+      return;
+    }
+
     try {
       if (isEditing && selectedAdvertiser._id) {
         // Update existing profile
@@ -53,6 +59,7 @@ const CompanyProfileForm = () => {
       }
       setSelectedAdvertiser(null); // Reset form
       setIsEditing(false); // Exit editing mode
+      setTermsAccepted(false); // Reset terms acceptance
     } catch (err) {
       console.error('Error:', err.response ? err.response.data : err.message);
       if (err.response) {
@@ -120,22 +127,33 @@ const CompanyProfileForm = () => {
           onChange={handleChange}
           required
         />
-        {!isEditing && (
+        <input
+          name="password"
+          type="password"
+          placeholder="Password"
+          value={selectedAdvertiser?.password || ''}
+          onChange={handleChange}
+          required={isEditing ? false : true} // Password is required only if creating a new advertiser
+        />
+        
+        {/* Terms and Conditions Checkbox */}
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
           <input
-            name="password"
-            type="password"
-            placeholder="Password"
-            value={selectedAdvertiser?.password || ''}
-            onChange={handleChange}
-            required
+            type="checkbox"
+            checked={termsAccepted}
+            onChange={() => setTermsAccepted(!termsAccepted)}
+            style={{ marginRight: '5px' }}
           />
-        )}
-        {/* Password only required for creation */}
-        <button type="submit">{isEditing ? 'Update Profile' : 'Create Profile'}</button>
+          <label style={{ margin: 0 }}>I accept the terms and conditions</label>
+        </div>
+
+        <button type="submit" style={{ marginTop: '20px' }}>
+          {isEditing ? 'Update Profile' : 'Create Profile'}
+        </button>
       </form>
 
       {/* Button to create a new profile */}
-      {!isEditing && <button onClick={handleCreateNew}>Create New Profile</button>}
+      {!isEditing && <button onClick={handleCreateNew} style={{ marginTop: '10px' }}>Create New Profile</button>}
 
       {/* List of all advertisers */}
       <h3>All Profiles</h3>

@@ -9,6 +9,10 @@ const touristSchema = new mongoose.Schema(
       required: true, 
       unique: true 
   },
+    tours: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Tour_Guide_Profile' // Link to TourGuide model
+     }],
     mobileNumber: {
       type: String, // Changed to String to accommodate various formats (e.g., international)
       required: true,

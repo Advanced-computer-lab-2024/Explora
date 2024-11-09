@@ -1,29 +1,37 @@
-// middleware/auth.js
+const express = require('express');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User'); // Assuming you have a User model
+const User = require('../models/User');
+const router = express.Router();
 
-const authenticateUser = async (req, res, next) => {
-  const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
+// Login route (doesn't need token)
+router.post('/api/auth', async (req, res) => {
+  const { username, password } = req.body;
 
   try {
-    // Use your actual secret key from an environment variable
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Ensure you have this in your .env file
-    const user = await User.findById(decoded.id);
-
+    const user = await User.findOne({ username });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(401).json({ message: 'Invalid username or password.' });
     }
 
-    req.user = user._id; // Store the user ID in the request object
-    next(); // Call the next middleware or route handler
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-};
+    // Check if password is correct
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: 'Invalid username or password.' });
+    }
 
-module.exports = { authenticateUser };
+    // Create JWT token
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' } // Token expires in 1 hour
+    );
+
+    res.json({ token, role: user.role });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error.' });
+  }
+});
+
+module.exports = router;

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const SiteSearchPage = () => {
     // State to manage the search input, category, and additional filters
@@ -7,28 +8,45 @@ const SiteSearchPage = () => {
     const [selectedPreferences, setSelectedPreferences] = useState([]);
     const [selectedPrice, setSelectedPrice] = useState(100); // Default max price
     const [sortOrder, setSortOrder] = useState('none');
+    const [currency, setCurrency] = useState('USD'); // Default currency
+    const [exchangeRates, setExchangeRates] = useState({ USD: 1, EUR: 0.85, EGP: 15.7 }); // Mock exchange rates
 
-    // Dummy data with ratings, price, date, and preferences
-    const places = [
-        { name: 'Egyptian Museum', rating: 9, price: 20, preferences: [ 'educational', 'museum tour'] },
-        { name: 'Pyramids of Giza', rating: 8.8, price: 50, preferences: ['adventurous', 'outdoors','landmark']},
-        { name: 'Art Museum', rating: 8, price: 15, preferences: ['cultural', 'budget-friendly','educational','museum tour'] },
-        { name: 'Cairo Tower', rating: 7, price: 10, preferences: ['scenic','budget-friendly','landmark']  },
-        { name: 'Luxor Temple', rating: 9.4, price: 30, preferences: ['educational', 'adventurous','outdoors','landmark'] },
-    ];
+
+    // Data with ratings, price, date, and preferences
+    const [places, setPlaces] = useState([]);
+       
+    useEffect(() => { 
+        axios.get('http://localhost:4000/api/Governor/museums')
+            .then((response) => {
+                setPlaces(response.data);
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+            });
+     }, []);
 
     // Filtering logic
     const filteredPlaces = places.filter((place) => {
-        const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesRating = selectedRating === 'all' || place.rating >= Number(selectedRating);
-        const matchesPrice = place.price <= selectedPrice;
-        const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.every(pref => place.preferences.includes(pref));
-        return matchesSearch && matchesRating && matchesPrice && matchesPreferences;
+        const matchesSearch = place?.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false;
+        const matchesPreferences = 
+            selectedPreferences.length === 0 || 
+            selectedPreferences[0] === "" || 
+            selectedPreferences.every(pref => place?.tags?.includes(pref));
+        return matchesSearch && matchesPreferences;
     });
 
     // Event handlers
     const handleSearchChange = (e) => setSearchTerm(e.target.value);
     const handlePriceChange = (e) => setSelectedPrice(e.target.value);
+
+    const handleCurrencyChange = (e) => {
+        setCurrency(e.target.value);
+      };
+
+      const convertPrice = (price) => {
+        return (price * exchangeRates[currency]).toFixed(2);
+      };
+      
     const handlePreferencesChange = (e) => {
         const value = Array.from(e.target.selectedOptions, option => option.value);
         setSelectedPreferences(value);
@@ -37,15 +55,11 @@ const SiteSearchPage = () => {
     let sortedPlaces = [...filteredPlaces];
 
     if (sortOrder === 'low-to-high') {
-        sortedPlaces = sortedPlaces.sort((a, b) => a.price - b.price);
+        sortedPlaces = sortedPlaces.sort((a, b) => (a.ticketPrices?.native || 0) - (b.ticketPrices?.native || 0));
     } else if (sortOrder === 'high-to-low') {
-        sortedPlaces = sortedPlaces.sort((a, b) => b.price - a.price);
-    } else if (sortOrder === 'lowest-to-highest'){
-        sortedPlaces = sortedPlaces.sort((a,b) => a.rating - b.rating);
-    } else if (sortOrder === 'highest-to-lowest'){
-        sortedPlaces = sortedPlaces.sort((a,b) => b.rating - a.rating);
-    }
-
+        sortedPlaces = sortedPlaces.sort((a, b) => (b.ticketPrices?.native || 0) - (a.ticketPrices?.native || 0));
+    } 
+    
     return (
         <div>
             <h2>Site Search Page</h2>
@@ -74,6 +88,14 @@ const SiteSearchPage = () => {
                     onChange={(e) => setSelectedPreferences(e.target.value.split(',').map(tag => tag.trim()))} // Update selected preferences based on input
                     style={{ padding: '10px', marginLeft: '10px', width: '200px' }}
                 />
+
+                <label style={{ marginLeft: '15px' }}>Currency:</label>
+<select value={currency} onChange={handleCurrencyChange} style={{ padding: '10px', marginLeft: '10px' }}>
+  <option value="USD">USD</option>
+  <option value="EUR">EUR</option>
+  <option value="EGP">EGP</option>
+</select>
+
             </div>
 
             {/* Displaying the filtered results */}
@@ -83,7 +105,10 @@ const SiteSearchPage = () => {
                     <ul>
                         {sortedPlaces.map((place, index) => (
                             <li key={index}>
-                                <strong>{place.name}</strong> - ${place.price} - rated: {place.rating}/10
+                                <strong>{place.name || 'No Name Available'}</strong> - 
+                                {place.description || 'No Description Available'} - 
+                                tags: {place.tags?.join(', ') || 'No Tags'} - 
+                                {place.ticketPrices?.native || 0}$
                             </li>
                         ))}
                     </ul>

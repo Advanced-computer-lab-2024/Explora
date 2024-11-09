@@ -11,7 +11,6 @@ export default function TodoInput() {
       justifyContent: 'center',
       height: '100vh',
     }}>
-      
       <button
         style={{ width: '220px', height: '60px', margin: '10px' }}
         onClick={() => navigate('/create-profile')}
@@ -26,14 +25,25 @@ export default function TodoInput() {
         Tour Guide Itinerary
       </button>
 
-      {/* New button for Tourist Itinerary */}
+     
+
+      {/* New button for Account Deletion Request */}
+      <button
+        style={{ width: '220px', height: '73px', margin: '10px' }}
+        onClick={() => navigate('/request-account-deletion')}
+      >
+        Request Account Deletion
+      </button>
+
+     
+
+      {/* New button for Activate / De-activate Itinerary */}
       <button
         style={{ width: '220px', height: '60px', margin: '10px' }}
-        onClick={() => navigate('/tourist-itinerary')}
+        onClick={() => navigate('/itineraries-table')}
       >
-        Tourist Itinerary
+        Activate / De-activate Itinerary
       </button>
     </header>
   );
 }
-

@@ -57,6 +57,20 @@ export default function ProfileView() {
               </td>
             </tr>
             <tr>
+              <td>Password</td>
+              <td>
+<label>
+  <input
+    type="password"
+    name="newPassword"
+    value={profile.newPassword || ""}
+    onChange={handleEdit}
+    placeholder="Enter a new password"
+  />
+</label>
+    </td>
+            </tr>
+            <tr>
               <td>Username</td>
               <td>
                 <span>{profile.username}</span> {/* Display username as text */}
@@ -109,14 +123,16 @@ export default function ProfileView() {
             <tr>
               <td>IsAccepted</td>
               <td>
-            <span>{profile.IsAccepted ? "Accepted" : "Not Accepted"}</span> {/* Display based on the boolean value */}
-          </td>
-        </tr>
+                <span>{profile.IsAccepted ? "Accepted" : "Accepted"}</span> {/* Display based on the boolean value */}
+              </td>
+            </tr>
           </tbody>
         </table>
         <button type="submit">Update Profile</button>
       </form>
+      
       {message && <p style={{ color: message.includes("success") ? 'green' : 'red' }}>{message}</p>}
+
     </div>
   );
 }
