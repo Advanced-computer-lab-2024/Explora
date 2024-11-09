@@ -33,7 +33,7 @@ const bookingSchema = new Schema({
 
 // Adding a method to process the booking payment
 bookingSchema.methods.processPayment = async function() {
-    const Tourist = require('./Tourist'); // Ensure correct import path
+    const Tourist = require('./touristModel'); // Ensure correct import path
     const tourist = await Tourist.findById(this.tourist);
     
     // Check if tourist has enough wallet balance
