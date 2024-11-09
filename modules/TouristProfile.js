@@ -78,9 +78,7 @@ const BookDropdown = () => {
       navigate('/FlightBooking'); // Redirect to flight booking page
     } else if (option === 'hotel') {
       navigate('/HotelBooking'); // Redirect to hotel booking page
-    } else if (option === 'ticket') {
-      navigate('/Event-Activity-ItineraryBooking');
-    }
+    } 
   };
 
   return (
@@ -98,9 +96,6 @@ const BookDropdown = () => {
             Book a Hotel
           </button>
 
-          <button onClick={() => handleSelect('ticket')} style={dropdownItemStyle}>
-            Book a ticket to an event/activity or itinerary
-          </button>
         </div>
       )}
     </div>
