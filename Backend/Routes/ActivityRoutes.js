@@ -12,6 +12,8 @@ const {
     searchActivities,
     sortActivitiesByPrice,
     sortActivitiesByRating,
+    getPreviousActivities
+
 } = require('../controllers/activityController'); // Import the activity controller
 
 const router = express.Router();
@@ -45,5 +47,8 @@ router.get('/sortprice', sortActivitiesByPrice);
 
 // Sort activities by rating (low to high or high to low)
 router.get('/sortrate', sortActivitiesByRating);
+
+router.get('/previous-activities', getPreviousActivities);
+
 
 module.exports = router;

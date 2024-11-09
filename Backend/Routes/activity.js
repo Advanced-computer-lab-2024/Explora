@@ -129,6 +129,23 @@ router.get('/upcoming', async (req, res) => {
     }
 });
 
+router.get('/previous-activities', async (req, res) => {
+    const today = new Date(); // Get today's date
+
+    try {
+        // Find activities where the date is less than today (past activities)
+        const previousActivities = await Activity.find({ date: { $lt: today } });
+
+        if (previousActivities.length === 0) {
+            return res.status(404).json({ message: 'No previous activities found.' });
+        }
+
+        return res.status(200).json(previousActivities);
+    } catch (error) {
+        return res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
   
 
 // Update an activity

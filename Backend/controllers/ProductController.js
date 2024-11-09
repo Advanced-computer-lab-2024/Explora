@@ -160,16 +160,30 @@ const sortProducts = async (req, res) => {
         res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
     }
 };
-const addProductReview = async (req, res) => {
+
+const addReview = async (req, res) => {
     const { id } = req.params; // ID of the product to review
     const { user, comment } = req.body;
 
+    console.log("Received data:", { user, comment, rating }); // Log data to check
     try {
         const product = await Product.findById(id);
         if (!product) return res.status(404).json({ msg: 'Product not found' });
 
-        // Add the review without rating
-        product.addReview({ user, comment });
+        // Log product and reviews for debugging
+        console.log('Product found:', product);
+        console.log('Reviews:', product.reviews);
+
+        // Check if rating is within the acceptable range
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({ msg: 'Rating must be between 1 and 5' });
+        }
+
+        // Add the new review to the product's reviews array
+        product.reviews.push({ user, comment, rating });
+
+        // Recalculate and update the average rating
+        product.averageRating = product.calculateAverageRating();
         await product.save();
 
         res.status(200).json({ msg: 'Review added successfully', product });
