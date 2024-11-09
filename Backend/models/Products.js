@@ -40,7 +40,7 @@ const productSchema = new Schema({
             },
             comment: {
                 type: String,
-                required: false
+                required: true
             },
             rating: {
                 type: Number,
@@ -56,17 +56,14 @@ const productSchema = new Schema({
         default: 0
     }
 
-
-
 }, { timestamps: true });
 
+// Inside your Product model
 productSchema.methods.calculateAverageRating = function() {
-    if (this.reviews.length === 0) return 0;
-
-    const sum = this.reviews.reduce((total, review) => total + review.rating, 0);
-    return parseFloat((sum / this.reviews.length).toFixed(2)); // Rounded to 2 decimal places
+    if (this.reviews.length === 0) return 0;  // If there are no reviews, return 0
+    const totalRating = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+    return totalRating / this.reviews.length;
 };
-
 
 module.exports = mongoose.model('Product', productSchema);
 

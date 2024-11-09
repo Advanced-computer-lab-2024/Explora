@@ -67,26 +67,26 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             setMessage('Please provide both a rating and a review.');
             return;
         }
-    
+
         try {
             const reviewData = {
-                user: 'Anonymous', // Change this to logged-in user if applicable
+                user: 'Anonymous', // Replace with logged-in user's info
                 comment: userReview,
                 rating: userRating
             };
-    
+
             // Make POST request to backend to add the review
             const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
-    
+
             console.log('Review response:', response.data);
-    
+
             // Update the product's reviews and average rating in the state
             setProducts(prevProducts =>
                 prevProducts.map(prod =>
                     prod._id === product._id ? response.data.product : prod
                 )
             );
-    
+            
             // Reset the input fields after submitting the review
             setUserRating(0);
             setUserReview('');
@@ -182,7 +182,7 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                             <p><strong>{review.user}</strong></p>
                             <p>{review.comment}</p>
                             <p>Rating: {renderStars(review.rating)}</p>
-                        </div>
+                        </div>                    
                     ))
                 )}
             </div>
