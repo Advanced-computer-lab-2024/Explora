@@ -44,7 +44,7 @@ const productSchema = new Schema({
             },
             rating: {
                 type: Number,
-                required: true,
+                required: false,
                 min: 1,
                 max: 5
             }
@@ -60,11 +60,22 @@ const productSchema = new Schema({
 
 }, { timestamps: true });
 
-productSchema.methods.calculateAverageRating = function() {
-    if (this.reviews.length === 0) return 0;
+productSchema.methods.addReview = function({ user, comment }) {
+    this.reviews.push({ user, comment });
+};
 
-    const sum = this.reviews.reduce((total, review) => total + review.rating, 0);
-    return parseFloat((sum / this.reviews.length).toFixed(2)); // Rounded to 2 decimal places
+productSchema.methods.addRating = function(rating) {
+    this.reviews.push({ rating });
+};
+
+productSchema.methods.updateAverageRating = function() {
+    if (this.reviews.length === 0) {
+        this.averageRating = 0;
+    } else {
+        const sum = this.reviews.reduce((total, review) => total + (review.rating || 0), 0);
+        const ratingsCount = this.reviews.filter(review => review.rating).length;
+        this.averageRating = parseFloat((sum / ratingsCount).toFixed(2)); // Rounded to 2 decimal places
+    }
 };
 
 

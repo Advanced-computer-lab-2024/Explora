@@ -160,24 +160,16 @@ const sortProducts = async (req, res) => {
         res.status(500).json({ message: 'Server error while sorting by rating', error: error.message });
     }
 };
-const addReview = async (req, res) => {
+const addProductReview = async (req, res) => {
     const { id } = req.params; // ID of the product to review
-    const { user, comment, rating } = req.body;
+    const { user, comment } = req.body;
 
     try {
         const product = await Product.findById(id);
         if (!product) return res.status(404).json({ msg: 'Product not found' });
 
-        // Check if rating is within the acceptable range
-        if (rating < 1 || rating > 5) {
-            return res.status(400).json({ msg: 'Rating must be between 1 and 5' });
-        }
-
-        // Add the new review to the product's reviews array
-        product.reviews.push({ user, comment, rating });
-
-        // Recalculate and update the average rating
-        product.averageRating = product.calculateAverageRating();
+        // Add the review without rating
+        product.addReview({ user, comment });
         await product.save();
 
         res.status(200).json({ msg: 'Review added successfully', product });
@@ -186,6 +178,29 @@ const addReview = async (req, res) => {
     }
 };
 
+const updateProductRating = async (req, res) => {
+    const { id } = req.params; // ID of the product to rate
+    const { rating } = req.body;
+
+    try {
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ msg: 'Product not found' });
+
+        // Validate the rating
+        if (rating < 1 || rating > 5) {
+            return res.status(400).json({ msg: 'Rating must be between 1 and 5' });
+        }
+
+        // Add the rating and update the average
+        product.addRating(rating);
+        product.updateAverageRating();
+        await product.save();
+
+        res.status(200).json({ msg: 'Rating updated successfully', product });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
 
 
 module.exports = {
@@ -197,5 +212,6 @@ module.exports = {
     filteredProducts,
     sortProducts,
     updateProduct,
-    addReview
+    addProductReview,
+    updateProductRating
 };
