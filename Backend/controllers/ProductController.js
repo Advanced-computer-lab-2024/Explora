@@ -4,20 +4,17 @@ const {upload } = require('../middleware/upload');
 
 // get all products 
 const allProducts = async (req, res) => {
-    const products = await Product.find()
     try {
-        const updatedProducts = products.map(product => {
-            return {
-                ...product._doc, 
-                image: `${req.protocol}://${req.get('host')}/${product.image}` // Include the full URL for the image
-            };
-        });
+        const products = await Product.find();
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`,
+        }));
         res.status(200).json(updatedProducts);
     } catch (err) {
         res.status(500).json({ msg: err.message });
     }
 };
-
 
 
 // get all available products
@@ -71,32 +68,24 @@ const filteredProducts = async (req, res) => {
  
 // add a new product
 const createProduct = async (req, res) => {
-    const {name, price, description,seller, quantity} = req.body;
+    const { name, price, description, seller, quantity } = req.body;
+    const picturePath = req.file ? `uploads/${req.file.filename}` : null;
 
     try {
-        const picturePath = req.file ? `uploads/${req.file.filename}` : null;
-
         const newProduct = await Product.create({
-            name,
-            price,
-            description,
-            seller,
-            image: picturePath,
-            quantity: quantity
+            name, price, description, seller, image: picturePath, quantity
         });
         res.status(201).json({
             name: newProduct.name,
             price: newProduct.price,
             description: newProduct.description,
             seller: newProduct.seller,
-            picture: newProduct.image // Use 'image' field to return the image path
+            image: newProduct.image,
         });
-        } catch (err) {
-        res.status(400).json({msg: err.message}); 
+    } catch (err) {
+        res.status(400).json({ msg: err.message });
     }
-    
-}
-
+};
 
 // update a product
 
@@ -161,61 +150,70 @@ const sortProducts = async (req, res) => {
     }
 };
 
-const addReview = async (req, res) => {
-    const { id } = req.params; // ID of the product to review
-    const { user, comment } = req.body;
+// Add a review (text-only)
 
-    console.log("Received data:", { user, comment, rating }); // Log data to check
-    try {
-        const product = await Product.findById(id);
-        if (!product) return res.status(404).json({ msg: 'Product not found' });
 
-        // Log product and reviews for debugging
-        console.log('Product found:', product);
-        console.log('Reviews:', product.reviews);
+// Existing controller functions...
 
-        // Check if rating is within the acceptable range
-        if (rating < 1 || rating > 5) {
-            return res.status(400).json({ msg: 'Rating must be between 1 and 5' });
-        }
-
-        // Add the new review to the product's reviews array
-        product.reviews.push({ user, comment, rating });
-
-        // Recalculate and update the average rating
-        product.averageRating = product.calculateAverageRating();
-        await product.save();
-
-        res.status(200).json({ msg: 'Review added successfully', product });
-    } catch (err) {
-        res.status(500).json({ msg: err.message });
-    }
-};
-
-const updateProductRating = async (req, res) => {
-    const { id } = req.params; // ID of the product to rate
+// Add a rating
+const addRating = async (req, res) => {
+    const { id } = req.params;
     const { rating } = req.body;
 
     try {
+        // Find the product by its ID
         const product = await Product.findById(id);
-        if (!product) return res.status(404).json({ msg: 'Product not found' });
-
-        // Validate the rating
-        if (rating < 1 || rating > 5) {
-            return res.status(400).json({ msg: 'Rating must be between 1 and 5' });
+        
+        // Check if the product exists
+        if (!product) {
+            return res.status(404).json({ msg: 'Product not found' });
         }
 
-        // Add the rating and update the average
-        product.addRating(rating);
-        product.updateAverageRating();
+        // Validate the rating value
+        if (typeof rating !== 'number' || rating < 1 || rating > 5) {
+            return res.status(400).json({ msg: 'Rating must be a number between 1 and 5' });
+        }
+
+        // Add the new rating with a default comment if none provided
+        product.reviews.push({ rating, comment: 'No comment provided' });
+        
+        // Calculate and update the average rating
+        product.averageRating = product.calculateAverageRating();
+        
+        // Save the updated product
         await product.save();
 
-        res.status(200).json({ msg: 'Rating updated successfully', product });
-    } catch (err) {
-        res.status(500).json({ msg: err.message });
+        // Respond with success message and updated product
+        res.status(200).json({ msg: 'Rating added successfully', product });
+    } catch (error) {
+        console.error('Error in addRating:', error);
+        res.status(500).json({ msg: 'Internal Server Error', error: error.message });
     }
 };
 
+// Add a review
+const addReview = async (req, res) => {
+    const { id } = req.params;
+    const { user, comment } = req.body; // Only user and comment are expected
+
+    try {
+        // Find the product by ID
+        const product = await Product.findById(id);
+        if (!product) return res.status(404).json({ msg: 'Product not found' });
+
+        // Push the new review with user and comment
+        product.reviews.push({ user, comment });
+
+        // Save the updated product
+        await product.save();
+
+        // Send the response
+        res.status(200).json({ msg: 'Review added successfully', product });
+    } catch (err) {
+        console.error('Error in addReview:', err);
+        res.status(500).json({ msg: 'Internal Server Error', error: err.message });
+    }
+};
 
 module.exports = {
     createProduct,
@@ -226,6 +224,6 @@ module.exports = {
     filteredProducts,
     sortProducts,
     updateProduct,
-    addProductReview,
-    updateProductRating
+    addReview,
+    addRating
 };
