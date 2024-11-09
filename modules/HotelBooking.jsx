@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
 
 const HotelBooking = () => {
-  const [city, setCity] = useState('');
-  const [hotel, setHotel] = useState('');
-  const [date, setDate] = useState('');
+  const [cityCode, setCityCode] = useState('');
+  const [checkInDate, setCheckInDate] = useState('');
+  const [checkOutDate, setCheckOutDate] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [bookedHotels, setBookedHotels] = useState([]);
 
   // Sample hotel data for demonstration (replace this with API data in the future)
   const hotels = [
-    { id: 1, city: 'New York', name: 'Hotel Empire', date: '2024-12-10' },
-    { id: 2, city: 'Los Angeles', name: 'Sunset Inn', date: '2024-12-15' },
-    { id: 3, city: 'Chicago', name: 'Windy City Hotel', date: '2024-12-20' },
+    { id: 1, cityCode: 'NYC', name: 'Hotel Empire', checkInDate: '2024-12-10', checkOutDate: '2024-12-15' },
+    { id: 2, cityCode: 'LAX', name: 'Sunset Inn', checkInDate: '2024-12-15', checkOutDate: '2024-12-20' },
+    { id: 3, cityCode: 'CHI', name: 'Windy City Hotel', checkInDate: '2024-12-20', checkOutDate: '2024-12-25' },
   ];
 
   // Handle search submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    // Filter hotels based on city, hotel name, and date
+    // Filter hotels based on city code, check-in date, and check-out date
     const results = hotels.filter(
       (hotelData) =>
-        hotelData.city.toLowerCase().includes(city.toLowerCase()) &&
-        hotelData.name.toLowerCase().includes(hotel.toLowerCase()) &&
-        (!date || hotelData.date === date) // Check if date matches or is empty
+        hotelData.cityCode.toLowerCase().includes(cityCode.toLowerCase()) &&
+        (!checkInDate || hotelData.checkInDate === checkInDate) &&
+        (!checkOutDate || hotelData.checkOutDate === checkOutDate) // Check if dates match or are empty
     );
     setSearchResults(results);
   };
@@ -39,9 +39,9 @@ const HotelBooking = () => {
       setBookedHotels([...bookedHotels, selectedHotel]);
       setSelectedHotel(null); // Clear the selection after booking
       setSearchResults([]); // Clear search results
-      setCity(''); // Reset search fields
-      setHotel('');
-      setDate('');
+      setCityCode(''); // Reset search fields
+      setCheckInDate('');
+      setCheckOutDate('');
     }
   };
 
@@ -58,31 +58,30 @@ const HotelBooking = () => {
       {/* Search Form */}
       <form onSubmit={handleSearchSubmit} style={{ marginBottom: '20px' }}>
         <label>
-          City:
+          City Code:
           <input
             type="text"
-            placeholder="Enter city name"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
+            placeholder="Enter city code"
+            value={cityCode}
+            onChange={(e) => setCityCode(e.target.value)}
             style={inputStyle}
           />
         </label>
         <label>
-          Hotel:
-          <input
-            type="text"
-            placeholder="Enter hotel name"
-            value={hotel}
-            onChange={(e) => setHotel(e.target.value)}
-            style={inputStyle}
-          />
-        </label>
-        <label>
-          Date:
+          Check-In Date:
           <input
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
+            value={checkInDate}
+            onChange={(e) => setCheckInDate(e.target.value)}
+            style={inputStyle}
+          />
+        </label>
+        <label>
+          Check-Out Date:
+          <input
+            type="date"
+            value={checkOutDate}
+            onChange={(e) => setCheckOutDate(e.target.value)}
             style={inputStyle}
           />
         </label>
@@ -96,7 +95,7 @@ const HotelBooking = () => {
           <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
             {searchResults.map((hotelData) => (
               <li key={hotelData.id} style={listItemStyle}>
-                {hotelData.city} - {hotelData.name} on {hotelData.date}
+                {hotelData.cityCode} - {hotelData.name} from {hotelData.checkInDate} to {hotelData.checkOutDate}
                 <button onClick={() => handleHotelSelect(hotelData)} style={buttonStyle}>
                   Select
                 </button>
@@ -111,7 +110,7 @@ const HotelBooking = () => {
         <div style={{ marginTop: '20px' }}>
           <h4>Selected Hotel:</h4>
           <p>
-            {selectedHotel.city} - {selectedHotel.name} on {selectedHotel.date}
+            {selectedHotel.cityCode} - {selectedHotel.name} from {selectedHotel.checkInDate} to {selectedHotel.checkOutDate}
           </p>
           <button onClick={handleConfirmBooking} style={buttonStyle}>Confirm Booking</button>
         </div>
@@ -124,7 +123,7 @@ const HotelBooking = () => {
           <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
             {bookedHotels.map((hotelData) => (
               <li key={hotelData.id} style={listItemStyle}>
-                {hotelData.city} - {hotelData.name} on {hotelData.date} - Booked
+                {hotelData.cityCode} - {hotelData.name} from {hotelData.checkInDate} to {hotelData.checkOutDate} - Booked
                 <button onClick={() => handleCancelBooking(hotelData.id)} style={buttonStyle}>
                   Cancel Booking
                 </button>
