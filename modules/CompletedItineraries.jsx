@@ -2,22 +2,51 @@ import React, { useState } from 'react';
 
 const CompletedItineraries = () => {
   // Sample data for completed itineraries
-  const [completedItineraries, setCompletedItineraries] = useState([
+  const completedItineraries = [
     {
       id: 1,
-      name: 'Ancient Egypt Tour',
-      tourGuide: 'John Doe',
-      rating: null,
-      comment: '',
+      name: 'Egypt Historical Tour',
+      tourGuide: 'Ahmed',
     },
     {
       id: 2,
-      name: 'Pyramids of Giza',
-      tourGuide: 'Jane Smith',
-      rating: null,
-      comment: '',
+      name: 'Pyramids and Nile Adventure',
+      tourGuide: 'Sarah',
     },
-  ]);
+  ];
+
+  // State for storing ratings and comments
+  const [itineraryFeedback, setItineraryFeedback] = useState({});
+  const [guideFeedback, setGuideFeedback] = useState({});
+
+  // Handle tour guide rating and comment changes
+  const handleGuideFeedbackChange = (id, field, value) => {
+    setGuideFeedback({
+      ...guideFeedback,
+      [id]: {
+        ...guideFeedback[id],
+        [field]: value,
+      },
+    });
+  };
+
+  // Handle itinerary rating and comment changes
+  const handleItineraryFeedbackChange = (id, field, value) => {
+    setItineraryFeedback({
+      ...itineraryFeedback,
+      [id]: {
+        ...itineraryFeedback[id],
+        [field]: value,
+      },
+    });
+  };
+
+  // Handle submission of feedback
+  const handleSubmitFeedback = (type, id) => {
+    const feedback = type === 'guide' ? guideFeedback[id] : itineraryFeedback[id];
+    console.log(`${type === 'guide' ? 'Tour Guide' : 'Itinerary'} Feedback for ID ${id}:`, feedback);
+    alert(`${type === 'guide' ? 'Tour Guide' : 'Itinerary'} feedback submitted successfully!`);
+  };
 
   // Function to copy the itinerary link to clipboard
   const handleCopyLink = (itinerary) => {
@@ -34,59 +63,22 @@ const CompletedItineraries = () => {
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  // Function to handle rating change
-  const handleRatingChange = (id, rating) => {
-    setCompletedItineraries((prevItineraries) =>
-      prevItineraries.map((itinerary) =>
-        itinerary.id === id ? { ...itinerary, rating: rating } : itinerary
-      )
-    );
-  };
-
-  // Function to handle comment change
-  const handleCommentChange = (id, comment) => {
-    setCompletedItineraries((prevItineraries) =>
-      prevItineraries.map((itinerary) =>
-        itinerary.id === id ? { ...itinerary, comment: comment } : itinerary
-      )
-    );
-  };
-
-  // Function to submit rating and comment
-  const handleSubmit = (id) => {
-    const itinerary = completedItineraries.find((item) => item.id === id);
-    console.log('Rating and Comment Submitted:', {
-      name: itinerary.name,
-      rating: itinerary.rating,
-      comment: itinerary.comment,
-    });
-    alert('Your rating and comment have been submitted!');
-    // In a real application, here you would make an API call to save the data
-  };
-
   return (
     <div>
       <h2>Completed Itineraries</h2>
       {completedItineraries.map((itinerary) => (
         <div key={itinerary.id} style={itineraryStyle}>
           <h3>{itinerary.name}</h3>
-          <p>Tour Guide: {itinerary.tourGuide}</p>
+          <h4>Tour Guide: {itinerary.tourGuide}</h4>
 
-          {/* Share buttons */}
-          <button onClick={() => handleCopyLink(itinerary)} style={buttonStyle}>
-            Copy Link
-          </button>
-          <button onClick={() => handleEmailShare(itinerary)} style={buttonStyle}>
-            Share via Email
-          </button>
-
-          {/* Rating input */}
-          <div style={{ marginTop: '10px' }}>
+          {/* Tour Guide Rating and Comment */}
+          <div style={feedbackSectionStyle}>
+            <h5>Rate and Comment on Tour Guide</h5>
             <label>
-              Rate this itinerary:
+              Rating:
               <select
-                value={itinerary.rating || ''}
-                onChange={(e) => handleRatingChange(itinerary.id, e.target.value)}
+                value={guideFeedback[itinerary.id]?.rating || ''}
+                onChange={(e) => handleGuideFeedbackChange(itinerary.id, 'rating', e.target.value)}
                 style={inputStyle}
               >
                 <option value="">Select a rating</option>
@@ -97,41 +89,80 @@ const CompletedItineraries = () => {
                 <option value="5">5 - Excellent</option>
               </select>
             </label>
-          </div>
-
-          {/* Comment input */}
-          <div style={{ marginTop: '10px' }}>
             <label>
               Comment:
-              <input
-                type="text"
-                value={itinerary.comment}
-                onChange={(e) => handleCommentChange(itinerary.id, e.target.value)}
-                style={inputStyle}
-                placeholder="Add your comment here"
+              <textarea
+                value={guideFeedback[itinerary.id]?.comment || ''}
+                onChange={(e) => handleGuideFeedbackChange(itinerary.id, 'comment', e.target.value)}
+                style={textareaStyle}
               />
             </label>
+            <button onClick={() => handleSubmitFeedback('guide', itinerary.id)} style={buttonStyle}>
+              Submit Guide Feedback
+            </button>
           </div>
 
-          {/* Submit button for rating and comment */}
-          <button
-            onClick={() => handleSubmit(itinerary.id)}
-            style={{ ...buttonStyle, marginTop: '10px' }}
-          >
-            Submit Rating & Comment
-          </button>
+          {/* Itinerary Rating and Comment */}
+          <div style={feedbackSectionStyle}>
+            <h5>Rate and Comment on Itinerary</h5>
+            <label>
+              Rating:
+              <select
+                value={itineraryFeedback[itinerary.id]?.rating || ''}
+                onChange={(e) => handleItineraryFeedbackChange(itinerary.id, 'rating', e.target.value)}
+                style={inputStyle}
+              >
+                <option value="">Select a rating</option>
+                <option value="1">1 - Poor</option>
+                <option value="2">2 - Fair</option>
+                <option value="3">3 - Good</option>
+                <option value="4">4 - Very Good</option>
+                <option value="5">5 - Excellent</option>
+              </select>
+            </label>
+            <label>
+              Comment:
+              <textarea
+                value={itineraryFeedback[itinerary.id]?.comment || ''}
+                onChange={(e) => handleItineraryFeedbackChange(itinerary.id, 'comment', e.target.value)}
+                style={textareaStyle}
+              />
+            </label>
+            <button onClick={() => handleSubmitFeedback('itinerary', itinerary.id)} style={buttonStyle}>
+              Submit Itinerary Feedback
+            </button>
+          </div>
+
+          {/* Share buttons */}
+          <div style={shareSectionStyle}>
+            <button onClick={() => handleCopyLink(itinerary)} style={buttonStyle}>
+              Copy Link
+            </button>
+            <button onClick={() => handleEmailShare(itinerary)} style={buttonStyle}>
+              Share via Email
+            </button>
+          </div>
         </div>
       ))}
     </div>
   );
 };
 
-// Basic styling for itinerary items and buttons
+// Basic styling for itinerary items, buttons, and input fields
 const itineraryStyle = {
   padding: '10px',
   marginBottom: '15px',
   border: '1px solid #ccc',
   borderRadius: '5px',
+};
+
+const feedbackSectionStyle = {
+  marginTop: '15px',
+  marginBottom: '15px',
+};
+
+const shareSectionStyle = {
+  marginTop: '10px',
 };
 
 const buttonStyle = {
@@ -145,10 +176,22 @@ const buttonStyle = {
 };
 
 const inputStyle = {
-  marginLeft: '10px',
+  display: 'block',
+  marginBottom: '10px',
   padding: '5px',
   fontSize: '14px',
-  borderRadius: '3px',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+};
+
+const textareaStyle = {
+  display: 'block',
+  width: '100%',
+  height: '60px',
+  marginBottom: '10px',
+  padding: '5px',
+  fontSize: '14px',
+  borderRadius: '5px',
   border: '1px solid #ccc',
 };
 
