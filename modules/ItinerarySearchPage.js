@@ -258,6 +258,9 @@ useEffect(() => {
           View All Upcoming Itineraries
         </button>
       </Link>
+      <Link to="/EventActivityItineraryBooking">
+        <button style={{ padding: '10px', margin: '10px', fontSize: '16px' }}>Book a ticket to an itinerary</button>
+      </Link>
     </div>
   );
 };
