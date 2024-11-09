@@ -2,10 +2,9 @@
 
 const express = require('express');
 const router = express.Router();
-const { createTourist, getTourist, updateTourist, allTourists } = require('../controllers/touristController');
+const { createTourist, getTourist, updateTourist, allTourists, deleteTourist, signUp, login, logout, changePassword } = require('../controllers/touristController');
 const Tourist = require('../models/touristModel');
-
-
+const { authenticateUser } = require('../middleware/AuthMiddleware'); // Adjust the path as necessary
 
 router.get('/id/:id', async (req, res) => {
     try {
@@ -19,13 +18,19 @@ router.get('/id/:id', async (req, res) => {
 // Route for getting a tourist by email
 router.get('/email/:email', getTourist);
 router.get('/', allTourists);
+router.post("/signup", signUp);
+router.post('/login', login)
+router.get('/logout', logout);
+router.put("/change-password", changePassword);
 
 // Route for updating a tourist
 router.put('/:id', updateTourist);
 
 // Register new tourist
 router.post('/register', createTourist) ;
-    
+router.delete('/:id', deleteTourist) ;
+
+
 
     // Hash password before saving to the database
     // const hashedPassword = await bcrypt.hash(password, 10);

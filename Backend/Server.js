@@ -3,8 +3,8 @@ require('dotenv').config();
 const express = require("express");
 const path = require('path');
 const cors = require('cors');
-
-const bookingRoutes = require('./Routes/booking');
+const cookieParser = require('cookie-parser');
+const { authenticateUser } = require('./middleware/AuthMiddleware');const bookingRoutes = require('./Routes/booking');
 const adminRoutes = require('./Routes/AdminRoutes');
 const productsRoutes = require('./Routes/ProductsRoutes');
 const governorRoutes = require('./Routes/GovernorRoutes');
@@ -18,10 +18,9 @@ const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary'); // 
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile'); // Adjust the path as needed
 const userRoutes = require('./Routes/userRoute');
 const advertiserRoutes = require('./Routes/advertiserRoute');
-const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
-
+const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes'); // Adjust path as needed
-
+const authRoute = require('./Routes/LoginRoute'); // Path to the new auth route
 
 const mongoose = require('mongoose'); 
 mongoose.set('strictQuery', false); // disable strict query 
@@ -30,8 +29,12 @@ mongoose.set('strictQuery', false); // disable strict query
 const app = express();
 
 //middleware
-app.use(express.json()) //checks if the request contains data and passes that data to the request object
-app.use(cors());
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({
+  origin: 'http://localhost:5173',  // your frontend URL
+  credentials: true,                // allow cookies to be sent
+}));
 
 // routes
 app.use('/Governor', governorRoutes)
@@ -49,7 +52,7 @@ app.use('/api/tour_guide_itinerary', tour_guide_itineraryRoutes);   // For manag
 app.use('/users', userRoutes); 
 app.use('/api/tour_guide_profile', tour_guide_profileRoutes);   // For managing profiles
 app.use('/api/advertisers', advertiserRoutes); // This should be included
-app.use('/api/booking', bookingRoutes);
+app.use('/api/booking', bookingRoutes);app.use('/reviews', reviewRoutes);
 app.use('/api/auth', authRoute);
 
 //connect to MongoDB

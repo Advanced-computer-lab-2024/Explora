@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const ProductCard = ({ product, products, setProducts }) => {
+const ProductCard = ({ product, products, setProducts, onArchive }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(product.name);
     const [editedPrice, setEditedPrice] = useState(product.price);
@@ -44,6 +44,12 @@ const ProductCard = ({ product, products, setProducts }) => {
             console.error('Error updating product:', error);
             setMessage('Error updating product: ' + error.message);
         }
+    };
+
+    // Function to archive the product
+    const archiveProduct = () => {
+        onArchive(product._id); // Call the passed-in archive function
+        setMessage('Product archived successfully!');
     };
 
     // Function to render stars based on averageRating
@@ -94,6 +100,8 @@ const ProductCard = ({ product, products, setProducts }) => {
                     <p className="product-ratings">
                         Average Rating: {renderStars(product.averageRating)} {/* Render stars based on average rating */}
                     </p>
+                    <p className="product-quantity">Available Quantity: {product.availableQuantity}</p>
+                    <p className="product-sales">Total Sales: {product.totalSales}</p>
                 </>
             )}
 
@@ -102,6 +110,20 @@ const ProductCard = ({ product, products, setProducts }) => {
 
             <button className="edit-button" onClick={handleEditClick}>
                 <i className="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button
+                onClick={() => onArchive(product._id)}
+                style={{
+                    marginTop: '10px',
+                    backgroundColor: 'black',
+                    color: 'white',
+                    padding: '8px',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    width: '100%', // To make it span the width of the card
+                }}
+            >
+                Archive
             </button>
 
             {message && <p className="message">{message}</p>}

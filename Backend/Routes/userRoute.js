@@ -1,7 +1,7 @@
 // routes/user.js
 
 const express = require('express');
-const { registerUser, viewUsers, getUserid, getuserbyusername, loginUser} = require('../controllers/userController'); // Import the controller
+const { registerUser, viewUsers, getUserid, getuserbyusername, loginUser, changePassword} = require('../controllers/userController'); // Import the controller
 
 const router = express.Router();
 
@@ -11,6 +11,8 @@ router.get('/', viewUsers)
 
 router.get('/:username', getUserid)
 router.get ('/login', loginUser)
+router.post('/change-password', changePassword); // New route for changing password
+
 // Additional user routes can go here...
 
 module.exports = router;
