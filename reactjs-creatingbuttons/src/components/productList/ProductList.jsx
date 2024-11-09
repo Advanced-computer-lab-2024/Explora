@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import ProductCard from './ProductCard';
+import ProductCard from '../productCard/ProductCard';
 import axios from 'axios';
 
 const ProductList = () => {

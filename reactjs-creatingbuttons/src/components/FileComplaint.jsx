@@ -1,26 +1,43 @@
 import React, { useState } from 'react';
-//import './FileComplaint.css'; // Import the CSS file for styling
+import axios from 'axios'; // Make sure axios is imported
 
 const FileComplaint = () => {
   const [complaint, setComplaint] = useState({
     title: '',
     body: '',
-    date: new Date().toISOString().slice(0, 10), // Default to current date
+    date: new Date().toISOString().slice(0, 10),
   });
-  const [message, setMessage] = useState(''); // Feedback message for user
+  const [message, setMessage] = useState('');
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setComplaint({ ...complaint, [name]: value });
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Complaint submitted:', complaint);
-    setMessage('Your complaint has been filed successfully!');
-    setComplaint({ title: '', body: '', date: new Date().toISOString().slice(0, 10) });
+
+    try {
+      const userId = '67226ff0561640471cddb264'; // Example user ID
+      const response = await axios.post(
+        `http://localhost:4000/complaints/${userId}`,
+        complaint,
+        {
+          headers: {
+            'Content-Type': 'application/json', // Ensures the server receives JSON
+          },
+        }
+      );
+
+      // Check if the complaint was created successfully (HTTP status 201 for created)
+      if (response.status === 201) {
+        setMessage('Your complaint has been filed successfully!');
+        setComplaint({ title: '', body: '', date: new Date().toISOString().slice(0, 10) });
+      }
+    } catch (err) {
+      console.error('Error filing complaint:', err);
+      setMessage('There was an error filing your complaint. Please try again later.');
+    }
   };
 
   return (

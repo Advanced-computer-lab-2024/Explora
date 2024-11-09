@@ -75,7 +75,7 @@ const AdminComplaintCard = ({ title, date, status, body, reply: existingReply, o
                                     <option value="Resolved">Resolved</option>
                                 </select>
                             </div>
-                            <button type="submit">Submit</button>
+                            <button type="submit" className='complain_button'>Submit</button>
                         </form>
                     </div>
                 </div>

@@ -1,12 +1,4 @@
-/* General Page Styles */
-body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-}
+General Page Styles
 
 /* Container Styling */
 .register-container {
@@ -59,7 +51,7 @@ body {
 }
 
 /* Input and Button Styling */
-.register-input,
+.registerr-input,
 .register-dropdownlist,
 .register-button {
     width: 100%;
@@ -101,14 +93,14 @@ body {
 }
 
 /* Link Styling */
-a {
+.register-container a {
     text-decoration: none;
     color: #05668D;
     font-size: 0.9rem;
     margin-top: 10px;
 }
 
-a:hover {
+.register-container a:hover {
     font-weight: bold;
 }
 

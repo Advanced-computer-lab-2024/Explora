@@ -3,7 +3,7 @@ const Complaint = require ('../models/ComplaintModel');
 const addComplaint = async (req, res) => {
     try {
         const { user } = req.params;
-        const { title, body, status, date } = req.body;
+        const { title, body} = req.body;
         if (!title || !body) {
             return res.status(400).json({ error: "Title and body are required fields." });
         }

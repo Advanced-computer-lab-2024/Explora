@@ -60,12 +60,6 @@ import ItineraryView from './components/ItineraryView.jsx';
 import AdvActivity from './components/AdvActivity1.jsx';
 import CreateAdvAct from './components/CreateAdvAct.jsx';
 import ActivityList2 from './components/ActivityList.2.jsx';
-import { Toaster } from 'react-hot-toast';
-import Register from './pages/Register/Register.jsx';
-import Login from './pages/Login/Login.jsx';
-import Test from './pages/test/Test.jsx';
-import AdminComplaint from './pages/AdminComplaints/AdminComplaints.jsx'
-//import ComplaintsDashboard from './components/Admin/ComplaintsDashboard.jsx'
 import ProductCardTourist from './components/ProductCardTourist.jsx';
 import ComplaintsTable from './components/ComplaintsTable'; // Import the ComplaintsTable component
 import FileComplaint from './components/FileComplaint';
@@ -83,8 +77,9 @@ import TransportationBooking from './components/TransportationBooking'; // Adjus
 import FlightBooking from './components/FlightBooking'; // import the new component
 import PastItineraries from './components/PastItineraries.jsx';
 import BookHotel from './components/BookHotel';
-
-
+import AdminComplaints from './pages/AdminComplaints/AdminComplaints.jsx';
+import Test from './pages/test/test.jsx';
+import { Toaster } from 'react-hot-toast';
 
 
 
@@ -101,11 +96,8 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<Test />} /> 
-
-
+          <Route path="/" element={<Test />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
-
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
           <Route path="/login-tourism" element={<LogInTourism />} />
@@ -160,9 +152,6 @@ function App() {
         <Route path="list" element={<ActivityList2/>} />
         
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
-
-
-        
         <Route path="/product-card-tourist" element={<ProductCardTourist />} /> {/* Add this route */}
         <Route path="/complaints" element={<ComplaintsTable />} /> {/* Complaints Page */}
         <Route path="/file-complaint" element={<FileComplaint />} />  {/* Route for filing complaints */}
@@ -180,6 +169,8 @@ function App() {
         <Route path="/book-flight" element={<FlightBooking />} /> {/* Add the route here */}
         <Route path="/tourist-previous-activities" element={<PastItineraries />} /> {/* Add the route here */}
         <Route path="/book-hotel" element={<BookHotel />} />
+        <Route path="/admin-complaints" element={<AdminComplaints />} /> {/* Admin Complaints route */}
+        
 
 
 
@@ -197,6 +188,3 @@ function App() {
 }
 
 export default App;
-
-
-

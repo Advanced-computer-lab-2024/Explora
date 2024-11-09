@@ -1,11 +1,3 @@
-body {
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-}
 
 .container-login {
     background-color: #fff;
@@ -62,7 +54,7 @@ input.form-control-login{
     box-sizing: border-box;
 }
 
-button.login-button {
+.container-login button.login-button {
     border-radius: 5px;
     background-color: #05668D;
     color: white;
@@ -75,16 +67,16 @@ button.login-button {
     border: none;
 }
 
-button.login-button:hover {
+.container-login button.login-button:hover {
     background-color: #028090;
 }
 
-button.login-button:active {
+.container-login button.login-button:active {
     background-color: white;
     color: #05668D;
 }
 
-a {
+.container-login a {
     text-decoration: none;
     color: #028090 !important;
     font-size: 0.9rem;
@@ -92,7 +84,7 @@ a {
     display: block;
 }
 
-a:hover {
+.container-login a:hover {
     font-size: 1.0rem;
 }
 

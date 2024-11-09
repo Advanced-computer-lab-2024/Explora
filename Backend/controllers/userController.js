@@ -102,7 +102,7 @@ const loginUser = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ error: 'Incorrect Username or Password' });
         }
-        if(isMatch){
+        else{
             const token = createToken(user.name);
             res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
             res.status(200).json({ message: 'Logged in successfully!', user });

@@ -27,7 +27,7 @@ textarea {
     margin-bottom: 10px;
 }
 
-button[type="submit"] {
+.complain_button{
     background-color: #4CAF50;
     color: white;
     border: none;

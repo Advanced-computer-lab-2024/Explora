@@ -70,10 +70,25 @@ function Register() {
 
             if (response.data.error) {
                 toast.error(response.data.error);
-            } else {
+            } 
+            else {
                 toast.success('Registration Successful');
                 // navigate('/home'); // Uncomment to navigate after successful registration
+                if(data.role === 'Tourist') {
+                    navigate('/tourist-home');
+                } else if(data.role === 'TourGuide') {
+                    navigate('/to-do');
+                } else if(data.role === 'Advertiser') {
+                    navigate('/company');
+                } else if(data.role === 'Seller') {
+                    navigate('/seller-home');
+                } else if(data.role === 'Governor') {
+                    navigate('/');
+                } else {
+                    toast.error('Role not found');
             }
+
+        }
         } catch (error) {
             console.error(error);
             toast.error(`Registration failed. Please try again. ${error.response?.data?.error || error.message}`);
@@ -234,7 +249,7 @@ function Register() {
                         </div>
                         <div className="register-formGroup">
                             <label className="register-label">Upload ID File</label>
-                            <input className="register-input"
+                            <input className="registerr-input"
                                 type="file"
                                 name="idFile"
                                 accept=".pdf,.jpg,.jpeg,.png"
@@ -249,7 +264,7 @@ function Register() {
                 {data.role === 'TourGuide' && (
                     <div className="register-formGroup">
                         <label className="register-label">Upload Certificates</label>
-                        <input className="register-input"
+                        <input className="registerr-input"
                             type="file"
                             name="certificatesFile"
                             accept=".pdf,.jpg,.jpeg,.png"
@@ -262,7 +277,7 @@ function Register() {
                 {(data.role === 'Advertiser' || data.role === 'Seller') && (
                     <div className="register-formGroup">
                         <label className="register-label">Upload Tax File</label>
-                        <input className="register-input"
+                        <input className="registerr-input"
                             type="file"
                             name="taxFile"
                             accept=".pdf,.jpg,.jpeg,.png"

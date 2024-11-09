@@ -286,11 +286,6 @@ const archiveProduct = async (req, res) => {
 };
 
 
-
-
-
-
-
 module.exports = {
     createProduct,
     allProducts, 

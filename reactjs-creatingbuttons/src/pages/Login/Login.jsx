@@ -32,21 +32,21 @@ const Login = () => {
                 setData({ username: '', password: '' });
                 
                 // Get user role using username
-                const roleResponse = await axios.get(`http://localhost:4000/users/role/${username}`);
+                const roleResponse = await axios.post(`http://localhost:4000/users/role/${username}`);
                 const role = roleResponse.data.role; // assuming role is returned as `data.role`
 
                 if (role === 'Tourist') {
                     navigate('/tourist-home');
                 } else if (role === 'Admin') {
-                    navigate('/login-admin');
+                    navigate('/acc-settings');
                 } else if (role === 'Seller') {
                     navigate('/seller-home');
                 } else if (role === 'Advertiser') {
-                    navigate('/advertiser');
+                    navigate('/company');
                 } else if (role === 'TourGuide') {
-                    navigate('/tour-guide-itinerary');
+                    navigate('/to-do');
                 } else if (role === 'Governor') {
-                    navigate('/view-profile');
+                    navigate('/');
                 } else {
                     toast.error('Role not found');
                 }

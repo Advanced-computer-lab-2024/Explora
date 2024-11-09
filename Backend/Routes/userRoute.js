@@ -20,11 +20,12 @@ const { registerUser,
 const router = express.Router();
 
 // Route to register a new user
+router.post ('/login', loginUser)
+
 router.get('/role/:username', getRoleByUsername);
 router.get('/requests', viewRequests);
 router.get('/filterByStatus/:status', filterByStatus);
 router.post('/register', upload.fields([{ name: 'idFile', maxCount: 1 }, { name: 'certificatesFile', maxCount: 1 }, { name: 'taxFile', maxCount: 1 }, { name: 'imageFile', maxCount: 1 }]), registerUser);
-router.post ('/login', loginUser)
 router.get('/logout', logout)
 router.get('/:username', getUserid)
 router.get('/',viewUsers)
