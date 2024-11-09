@@ -166,8 +166,12 @@ fetch('http://localhost:4000/api/activity/').then(response => response.json()).t
                     View All Upcoming Activities
                 </button>
             </Link>
+            <Link to="/EventActivityItineraryBooking">
+               <button style={{ padding: '10px', margin: '10px', fontSize: '16px' }}>Book a ticket to an activity</button>
+           </Link>
         </div>
     );
 };
 
 export default ActivitySearchPage;
+
