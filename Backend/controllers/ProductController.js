@@ -78,6 +78,17 @@ const unarchivedProducts = async (req, res) => {
     }
 }
 
+// delete all products 
+
+const deleteAllProducts = async (req, res) => {
+    try {
+        await Product.deleteMany();
+        res.status(200).json({ msg: 'All products deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
 
 
 
@@ -106,12 +117,25 @@ const productsByName = async (req, res) => {
 
 const filteredProducts = async (req, res) => {
     try {
-        const { min, max } = req.query;
-        const products = await Product.find({ price: { $gte: min, $lte: max } });
+        let { min, max } = req.query;
+
+        // Convert to numbers and validate
+        min = Number(min);
+        max = Number(max);
+
+        if (isNaN(min) || isNaN(max)) {
+            return res.status(400).json({ msg: 'Invalid price range' });
+        }
+
+        const products = await Product.find({
+            price: { $gte: min, $lte: max }
+        });
+
         if (!products.length) {
             return res.status(404).json({ msg: 'No products found' });
         }
 
+        // Update product image URL
         const updatedProducts = products.map(product => ({
             ...product._doc,
             image: `${req.protocol}://${req.get('host')}/${product.image}`
@@ -122,7 +146,6 @@ const filteredProducts = async (req, res) => {
         res.status(500).json({ msg: err.message });
     }
 };
-
 
  
 // add a new product
@@ -197,12 +220,20 @@ const searchProducts = async (req, res) => {
 
 // sort product by rating 
 const sortProducts = async (req, res) => {
-    const { order } = req.query; 
-    let sortOrder = order === 'high' ? -1 : 1; 
+    const { order } = req.query;
+    let sortOrder;
+
+    if (order === 'high-to-low') {
+        sortOrder = -1; // Descending order
+    } else if (order === 'low-to-high') {
+        sortOrder = 1;  // Ascending order
+    } else {
+        sortOrder = 1;  // Default to ascending order if no valid value
+    }
 
     try {
         const allProducts = await Product.find();
-        console.log('All Products:', allProducts); 
+        console.log('All Products:', allProducts);
 
         const sortedProducts = await Product.find().sort({ averageRating: sortOrder });
 
@@ -299,5 +330,6 @@ module.exports = {
     viewQuantityAndSales,
     archiveProduct,
     archivedProducts,
-    unarchivedProducts
+    unarchivedProducts,
+    deleteAllProducts
 };

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { FaBoxArchive } from "react-icons/fa6";
 
-const ProductCard = ({ product, products, setProducts, onArchive }) => {
+
+const ProductCard = ({ product, onArchive }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [editedName, setEditedName] = useState(product.name);
     const [editedPrice, setEditedPrice] = useState(product.price);
     const [editedDescription, setEditedDescription] = useState(product.description);
     const [message, setMessage] = useState('');
+    const [products, setProducts] = useState([]);
 
     // Handle the edit button click
     const handleEditClick = () => {
@@ -24,34 +27,44 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
                 name: editedName,
                 price: editedPrice,
                 description: editedDescription,
-                reviews: product.reviews // Include reviews in the update
+                // Optionally include reviews if needed
             };
-
+    
             const response = await axios.put(`http://localhost:4000/Products/updateProduct/${product._id}`, inputData);
-
+            
+            // Log response to ensure you get updated product data
             console.log('Response from update:', response.data);
-
-            // Update the products state immediately after the successful response
-            setProducts(prevProducts =>
-                prevProducts.map(prod =>
-                    prod._id === product._id ? { ...prod, ...inputData } : prod
-                )
-            );
-
-            setIsEditing(false);
-            setMessage('Product successfully updated!');
+    
+            if (response.status === 200) {
+                setProducts(prevProducts =>
+                    prevProducts.map(prod =>
+                        prod._id === product._id ? { ...prod, ...response.data } : prod
+                    )
+                );
+                setIsEditing(false);
+                setMessage('Product successfully updated!');
+            } else {
+                setMessage('Failed to update product.');
+            }
         } catch (error) {
             console.error('Error updating product:', error);
             setMessage('Error updating product: ' + error.message);
         }
     };
-
     // Function to archive the product
-    const archiveProduct = () => {
-        onArchive(product._id); // Call the passed-in archive function
-        setMessage('Product archived successfully!');
-    };
+    const archiveProduct = async () => {
+        try {
+            const response = await axios.put(`http://localhost:4000/Products/archiveProduct/${product._id}`);
+            
+            // Call the passed-in archive function to update the UI
+            onArchive(product._id); 
 
+            setMessage('Product archived successfully!');
+        } catch (error) {
+            console.error('Error archiving product:', error);
+            setMessage('Error archiving product: ' + error.message);
+        }
+    };
     // Function to render stars based on averageRating
     const renderStars = (averageRating) => {
         const stars = [];
@@ -100,8 +113,9 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
                     <p className="product-ratings">
                         Average Rating: {renderStars(product.averageRating)} {/* Render stars based on average rating */}
                     </p>
-                    <p className="product-quantity">Available Quantity: {product.availableQuantity}</p>
-                    <p className="product-sales">Total Sales: {product.totalSales}</p>
+                    <p className="product-quantity">Available Quantity: {product.quantity}</p>
+                    <p className="product-sales">Total Sales: {product.sales}</p>
+                    <p className="product-sales">State: {product.archived}</p>
                 </>
             )}
 
@@ -112,7 +126,7 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
                 <i className="fa-solid fa-pen-to-square"></i>
             </button>
             <button
-                onClick={() => onArchive(product._id)}
+                onClick={archiveProduct}
                 style={{
                     marginTop: '10px',
                     backgroundColor: 'black',
@@ -123,7 +137,10 @@ const ProductCard = ({ product, products, setProducts, onArchive }) => {
                     width: '100%', // To make it span the width of the card
                 }}
             >
-                Archive
+                
+                <FaBoxArchive style={{ color: 'white', backgroundColor: 'white', fontSize: '18px' }} /> 
+
+
             </button>
 
             {message && <p className="message">{message}</p>}

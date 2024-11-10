@@ -3,13 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../productCard/ProductCard';
 import axios from 'axios';
 
+
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(1000);
-    const [sortOrder, setSortOrder] = useState([]);
+    const [sortOrder, setSortOrder] = useState("");
     const [archivedProducts, setArchivedProducts] = useState([]); // Archived products
+    const [filterStatus, setFilterStatus] = useState('all'); // Track selected filter status
 
     const navigate = useNavigate();
 
@@ -19,6 +21,24 @@ const ProductList = () => {
             setProducts(response.data);
         } catch (error) {
             console.error('Error fetching products:', error);
+        }
+    };
+
+    const fetchArchivedProducts = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/Products/archiveProducts');
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching archived products:', error);
+        }
+    };
+
+    const fetchUnarchivedProducts = async () => {
+        try {
+            const response = await axios.get('http://localhost:4000/Products/unarchivedProducts');
+            setProducts(response.data);
+        } catch (error) {
+            console.error('Error fetching unarchived products:', error);
         }
     };
 
@@ -32,11 +52,17 @@ const ProductList = () => {
     };
 
     const fetchFilteredProducts = async (min, max) => {
-        try {
-            const response = await axios.get(`http://localhost:4000/Products/filterByPrice?min=${min}&max=${max}`);
-            setProducts(response.data);
-        } catch (error) {
-            console.error('Error fetching filtered products:', error);
+        if (min && max && min < max) { // Ensure min is less than max
+            try {
+                const response = await axios.get(
+                    `http://localhost:4000/Products/filterByPrice?min=${min}&max=${max}`
+                );
+                setProducts(response.data);
+            } catch (error) {
+                console.error('Error fetching filtered products:', error);
+            }
+        } else {
+            setProducts([]); // Optionally clear products if filter is invalid
         }
     };
 
@@ -57,6 +83,19 @@ const ProductList = () => {
         });
     };
 
+    const handleFilterChange = (e) => {
+        const value = e.target.value;
+        setFilterStatus(value);
+
+        if (value === 'archived') {
+            fetchArchivedProducts();
+        } else if (value === 'unarchived') {
+            fetchUnarchivedProducts();
+        } else {
+            fetchAllProducts();
+        }
+    };
+
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
@@ -67,9 +106,27 @@ const ProductList = () => {
         }
     };
 
-    const handlePriceChange = () => {
-        fetchFilteredProducts(minPrice, maxPrice);
-    };
+const handlePriceChange = (e) => {
+    const { name, value } = e.target;
+    const numericValue = Number(value);
+    
+    if (name === 'minPrice') {
+        setMinPrice(numericValue);
+    } else if (name === 'maxPrice') {
+        setMaxPrice(numericValue);
+    }
+};
+
+useEffect(() => {
+    if (minPrice && maxPrice && minPrice < maxPrice) {
+        const timeoutId = setTimeout(() => {
+            fetchFilteredProducts(minPrice, maxPrice);
+        }, 500); // Delay by 500ms
+
+        return () => clearTimeout(timeoutId); // Cleanup timeout if the component re-renders
+    }
+}, [minPrice, maxPrice]); // Trigger effect when minPrice or maxPrice changes
+
 
     const handleSortChange = (e) => {
         const order = e.target.value;
@@ -100,15 +157,14 @@ const ProductList = () => {
                 onChange={handleSearchChange} 
                 className="search-input"
             />
-
             <div className="price-filter">
                 <label>
                     Min Price: $
                     <input
                         type="number"
+                        name="minPrice"
                         value={minPrice}
-                        onChange={(e) => setMinPrice(Number(e.target.value))} 
-                        onBlur={handlePriceChange} 
+                        onChange={(e) => handlePriceChange(e)}
                         className="price-input"
                     />
                 </label>
@@ -116,9 +172,9 @@ const ProductList = () => {
                     Max Price: $
                     <input
                         type="number"
+                        name="maxPrice"
                         value={maxPrice}
-                        onChange={(e) => setMaxPrice(Number(e.target.value))} 
-                        onBlur={handlePriceChange} 
+                        onChange={(e) => handlePriceChange(e)}
                         className="price-input"
                     />
                 </label>
@@ -150,6 +206,20 @@ const ProductList = () => {
                         <option value="">Select</option>
                         <option value="high-to-low">High to Low</option>
                         <option value="low-to-high">Low to High</option>
+                    </select>
+                </label>
+            </div>
+            <div className="sort-filter">
+                <label>
+                    Filter by status:
+                    <select
+                        value={filterStatus}
+                        onChange={handleFilterChange} 
+                        className="sort-input"
+                    >
+                        <option value="all">All</option>
+                        <option value="archived">Archived</option>
+                        <option value="unarchived">Active</option>
                     </select>
                 </label>
             </div>

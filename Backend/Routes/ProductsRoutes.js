@@ -12,21 +12,28 @@ const{
     updateProduct,
     addReview,
     viewQuantityAndSales,
-    archiveProduct
+    archiveProduct,
+    archivedProducts,
+    unarchivedProducts,
+    deleteAllProducts
 } = require("../controllers/ProductController");
 
-router.get('/', allProducts);                            
+router.get('/', allProducts);    
+router.get('/archiveProducts', archivedProducts);
+router.get('/unarchivedProducts', unarchivedProducts);
+router.get('/sortByRating', sortProducts)
+router.get('/filterByPrice', filteredProducts);
+
 router.get('/quantity&sales', viewQuantityAndSales);       
 router.post('/upload', upload.single('image'), createProduct);
 router.get('/', allProducts)
 router.get('/availableProducts', availableProducts)
 router.get('/:name', searchProducts);
-router.get('/filterByPrice', filteredProducts);
-router.get('/sortByRating', sortProducts)
 router.put('/updateProduct/:id',updateProduct )
 router.get('/productByName/:name', productsByName)
-router.post('/addReview/:id', addReview); // Route for adding a review to a product
-
+router.post('/addReview/:id', addReview); // Route for adding a review to a product  
+router.put('/archiveProduct/:id', archiveProduct);
+router.delete('/deleteAllProducts', deleteAllProducts);
 
 
 module.exports = router;
