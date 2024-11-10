@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 export default function LogInTourism() {
   const [newUsername, setNewUsername] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState('');
 
-  const navigate = useNavigate();  // Initialize navigate function
+  const navigate = useNavigate(); // Initialize navigate function
 
   const handleUsernameChange = (event) => {
     setNewUsername(event.target.value);
@@ -21,24 +22,26 @@ export default function LogInTourism() {
     event.preventDefault();
     const inputData = {
       username: newUsername,
-      password: newPassword
-  };    try{
-      const response = await axios.post('http://localhost:4000/Governor', inputData)
+      password: newPassword,
+    };
+
+    try {
+      const response = await axios.post('http://localhost:4000/Governor', inputData);
       console.log('New Username:', newUsername);
       console.log('New Password:', newPassword);
       console.log('Profile created:', response.data);
       setMessage('Profile successfully created!');
-      // Redirect to CreatedPop component after form submission
-    }
-    catch (error) {
+      // Redirect after successful form submission
+      navigate('/CreatedPop');
+    } catch (error) {
       if (error.response && error.response.data) {
-          console.error('Error:', error.response.data.msg); // Check for the specific error message
-          setMessage(`Failed to create profile: ${error.response.data.msg}`);
+        console.error('Error:', error.response.data.msg);
+        setMessage(`Failed to create profile: ${error.response.data.msg}`);
       } else {
-          console.error('Error:', error.message);
-          setMessage('Failed to create profile, please try again.');
+        console.error('Error:', error.message);
+        setMessage('Failed to create profile, please try again.');
       }
-  }
+    }
   };
 
   return (
@@ -60,7 +63,7 @@ export default function LogInTourism() {
             width: '100%',
           }}
         />
-        
+
         <label htmlFor="password">New Password:</label>
         <input
           type="password"
@@ -77,7 +80,7 @@ export default function LogInTourism() {
           }}
         />
         {message && <p>{message}</p>}
-        <button type="submit">Sign Up</button> 
+        <button type="submit">Sign Up</button>
       </form>
     </div>
   );

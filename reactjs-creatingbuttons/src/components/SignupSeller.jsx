@@ -11,20 +11,41 @@ const SignupSeller = () => {
   };
 
   return (
-    <div className='wrapper'>
-      <form onSubmit={handleSubmit}>
-        <h1>Signup as a seller</h1>  
-        <div className="input-box">
-          <input type="text" placeholder='Username' required />
-        </div> 
-        <div className="input-box">
-          <input type="text" placeholder='Email' required />
+    <div className="wrapper">
+      <form onSubmit={handleSubmit} className="login-form-container">
+        <h1 className="form-title">Signup as a Seller</h1>
+        <div className="form-group">
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            type="text"
+            className="input-field"
+            placeholder="Username"
+            required
+          />
         </div>
-        <div className="input-box">
-          <input type="password" placeholder='Password' required />
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            className="input-field"
+            placeholder="Email"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            className="input-field"
+            placeholder="Password"
+            required
+          />
         </div>
 
-        <button type="submit">Signup</button>
+        <button type="submit" className="login-button">Signup</button>
       </form>
     </div>
   );
