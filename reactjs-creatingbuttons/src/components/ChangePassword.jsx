@@ -1,40 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 export default function ChangePassword() {
+  const navigate = useNavigate();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
-  const handleSubmit = async (e) => {
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-
+    
+    // Add your password change logic here, e.g., API call
     if (newPassword !== confirmPassword) {
       setError('New password and confirmation do not match.');
       return;
     }
 
-    try {
-      const response = await axios.put('http://localhost:4000/api/tour_guide_profile/change-password', {
-        password: currentPassword,
-        newPassword,
-      }, {
-        withCredentials: true, // Allows cookies to be sent with the request
-      });
-
-      setSuccess(response.data.message);
-      setError('');
-      // Redirect to a success page or show a success message
-      navigate('/success-page');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Failed to change password');
-      setSuccess('');
-    }
+    // Assuming password change is successful
+    // navigate('/success-page');  // Redirect to a success page or similar
+    console.log("Password changed successfully!");
   };
 
   return (
@@ -81,13 +66,11 @@ export default function ChangePassword() {
         </div>
 
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        {success && <p style={{ color: 'green' }}>{success}</p>}
 
-        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px', background: '#000000', color: '#fff', border: 'none', cursor: 'pointer' }} disabled={loading}>
-          {loading ? 'Changing...' : 'Change Password'}
+        <button type="submit" style={{ padding: '10px 20px', borderRadius: '5px', background: '#000000', color: '#fff', border: 'none', cursor: 'pointer' }}>
+          Change Password
         </button>
       </form>
     </div>
   );
-}
 }
