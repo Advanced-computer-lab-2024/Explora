@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 const AccountDeletionRequest = () => {
-  const [username, setUsername] = useState(''); // New state for username
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [deletionReason, setDeletionReason] = useState('');
   const [additionalComments, setAdditionalComments] = useState('');
   const [confirmation, setConfirmation] = useState(false);
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!confirmation) {
@@ -16,13 +17,21 @@ const AccountDeletionRequest = () => {
       return;
     }
 
-    // Placeholder for backend request handling
-    console.log('Account deletion requested for username:', username);
-    console.log('Account deletion requested for email:', email);
-    console.log('Reason for deletion:', deletionReason);
-    console.log('Additional comments:', additionalComments);
+    try {
+      // Send the deletion request to the backend
+      const response = await axios.post('http://localhost:4000/Request/requestDeletion', {
+        username,
+        reason: deletionReason,
+      });
 
-    alert('Your account deletion request has been submitted.');
+      if (response.status === 200) {
+        alert('Your account deletion request has been submitted.');
+      }
+    } catch (error) {
+      // Handle any errors
+      console.error('Error submitting deletion request:', error);
+      alert(error.response?.data?.message || 'An error occurred while submitting the deletion request.');
+    }
 
     // Reset the form fields
     setUsername('');
@@ -55,7 +64,6 @@ const AccountDeletionRequest = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
             />
           </label>
 
