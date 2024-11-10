@@ -21,6 +21,7 @@ const advertiserRoutes = require('./Routes/advertiserRoute');
 const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes');
 const authRoute = require('./Routes/LoginRoute');
+const req = require('./Routes/deletionRequest');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -54,6 +55,7 @@ app.use('/api/tour_guide_profile', tour_guide_profileRoutes);
 app.use('/api/advertisers', advertiserRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/api/auth', authRoute);
+app.use('/Request', req);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
