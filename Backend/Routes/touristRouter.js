@@ -25,6 +25,8 @@ router.get('/tourist', allTourists);
 // Route for updating a tourist
 router.put('/:id', updateTourist);
 
+//gets all tourists
+router.get('/', allTourists);
 // Register new tourist
 router.post('/register', createTourist) ;
 router.delete('/:id', deleteTourist) ;
