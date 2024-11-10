@@ -271,26 +271,56 @@ const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Find and delete the user
-        const user = await User.findByIdAndDelete(id);
+        // Find the user by ID
+        const user = await User.findById(id);
         if (!user) return res.status(404).json({ message: "User not found" });
 
-        // If the user is a seller, set isDeleted of their products to true
+        // If the user is a Seller, check for upcoming itineraries and activities
+        if (user.role === "Admin"){
+            const admins = await User.find({ role: "Admin" });
+            if (admins.length > 1) {
+                return res.status(400).json({
+                    message: "Cannot delete admin profile; there are other admin accounts."
+                });
+            }
+        }
+        if (user.role === "Tourist") {
+            // cancel bookings 
+            // delete any pemding complaints 
+            // delete any reviews
+            // cancel any itineraries
+            // cancel any activities
+
+        }
         if (user.role === "Seller") {
-            const products = await Product.updateMany(
-                { seller: id },          // Find all products associated with this seller
-                { $set: { isDeleted: true } } // Set isDeleted to true for these products
-            );
+            const products = await Product.find({ seller: id });
+            if (products.length > 0) {
+                await Product.updateMany({ seller: id }, { $set: { isDeleted: true } });
+            }
         }
+        // If the user is a TourGuide, add any additional deletion logic here
         if (user.role === "TourGuide") {
-
+            // deactivate iteneraries and activities
+            
         }
 
-        res.status(200).json({ message: "User and associated products deleted successfully" });
+        if(user.role === "Advertiser") {
+            // deactivate activities
+
+        }
+        // Proceed with deleting the user from the database
+        const deletedUser = await User.findByIdAndDelete(id);
+
+        if (!deletedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json({ message: "User and associated data deleted successfully" });
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-}
+};
 
 
 // Change user password
@@ -349,5 +379,6 @@ module.exports = {
     logout,
     login,
     changePassword,
+    deleteUser
     // Add other controller methods like loginUser, getUserProfile, etc.
 };

@@ -82,12 +82,6 @@ import Test from './pages/test/test.jsx';
 import { Toaster } from 'react-hot-toast';
 
 
-
-
-
-
-
-
 function App() {
 
   return (

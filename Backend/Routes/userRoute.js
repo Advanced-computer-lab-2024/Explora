@@ -14,7 +14,8 @@ const { registerUser,
         updateStatus,
         viewRequests,
         filterByStatus,
-        changePassword
+        changePassword,
+        deleteUser
     } = require('../controllers/userController'); // Import the controller
 
 const router = express.Router();
@@ -33,5 +34,6 @@ router.get('/downloadCertificate/:id', downloadCertificateFile )
 router.get('/downloadTax/:id', downloadTaxFile )
 router.put('/updateStatus/:id', updateStatus);
 router.post('/change-password', changePassword); // New route for changing password
+router.delete('/:id', deleteUser); // New route for deleting user
 
 module.exports = router;
