@@ -1,53 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Sample transportation data
-const transportationOptions = [
-  {
-    id: 1,
-    name: 'City Taxi',
-    description: 'Convenient city taxi service available 24/7.',
-    price: '15.00',
-  },
-  {
-    id: 2,
-    name: 'Airport Shuttle',
-    description: 'Fast and reliable airport shuttle service.',
-    price: '25.00',
-  },
-  {
-    id: 3,
-    name: 'Luxury Limousine',
-    description: 'Travel in style with our luxury limousine service.',
-    price: '100.00',
-  },
-  {
-    id: 4,
-    name: 'Public Bus',
-    description: 'Affordable public bus service for city travel.',
-    price: '2.00',
-  },
-];
-
 export default function TransportationBooking() {
+  const [transportationOptions, setTransportationOptions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const touristId = '672404b5711f4330c4103753'; // Replace this with the actual tourist ID if dynamic
 
-  const handleBookNow = (option) => {
-    // Here you would normally handle the booking logic or navigate to a booking details page
-    alert(`Booking for ${option.name} confirmed!`);
+  useEffect(() => {
+    const fetchTransportationOptions = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/transportation/');
+        const data = await response.json();
+
+        console.log('Fetched data:', data);
+
+        if (Array.isArray(data)) {
+          setTransportationOptions(data);
+        } else {
+          console.error('Expected data to be an array, but got:', data);
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching transportation options:', error);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchTransportationOptions();
+  }, []);
+
+  const handleBookNow = async (option) => {
+    const bookingData = {
+      touristId: touristId,
+      transportationId: option._id, // Get the transportationId directly from option
+      seats: 1, // Number of seats (modify as needed)
+    };
+
+    try {
+      const response = await fetch('http://localhost:4000/transportationBook/book', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Booking confirmed! Booking ID: ${data._id}`);
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+      }
+    } catch (error) {
+      alert(`Booking failed: ${error.message}`);
+    }
   };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div style={styles.container}>
       <div style={styles.cardContainer}>
         {transportationOptions.map((option) => (
-          <div key={option.id} style={styles.card}>
-            <h2 style={styles.cardTitle}>{option.name}</h2>
-            <p style={styles.cardDescription}>{option.description}</p>
-            <p style={styles.cardPrice}>Price: ${option.price}</p>
-            <button 
-              style={styles.bookButton} 
-              onClick={() => handleBookNow(option)}>
+          <div key={option._id} style={styles.card}>
+            <h2 style={styles.cardTitle}>{option.method}</h2>
+            <p style={styles.cardDescription}>From: {option.origin} To: {option.destination}</p>
+            <p style={styles.cardTime}>Date: {new Date(option.date).toLocaleDateString()}</p>
+            <p style={styles.cardTime}>Time: {option.time}</p>
+            <p style={styles.cardPrice}>Price: {option.currency} {option.price}</p>
+            <button
+              style={styles.bookButton}
+              onClick={() => handleBookNow(option)}
+            >
               Book Now
             </button>
           </div>
@@ -82,6 +111,10 @@ const styles = {
   cardDescription: {
     color: '#555',
     fontSize: '14px',
+  },
+  cardTime: {
+    color: '#777',
+    fontSize: '13px',
   },
   cardPrice: {
     fontWeight: 'bold',

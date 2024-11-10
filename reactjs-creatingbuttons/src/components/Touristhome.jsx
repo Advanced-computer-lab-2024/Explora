@@ -36,19 +36,21 @@ export default function Touristhome() {
     navigate('/tourist-previous-activities');
   };
 
-  // This is the new button handler for View Past Itineraries
   const handleViewPastItinerariesClick = () => {
     navigate('/tourist-past-itineraries');
   };
 
-  // This is the new button handler for View Past Activities (already added)
   const handleViewPastActivitiesClick = () => {
     navigate('/tourist-previous-activities');
   };
 
-  // New handler for booking a hotel
   const handleBookHotelClick = () => {
-    navigate('/book-hotel'); // Redirect to the BookHotel page
+    navigate('/book-hotel');
+  };
+
+  // New handler for viewing all booked transportations
+  const handleViewBookedTransportationsClick = () => {
+    navigate('/view-booked-transportations');
   };
 
   return (
@@ -64,9 +66,10 @@ export default function Touristhome() {
         <button onClick={handleBookTransportationClick}>Book Transportation</button>
         <button onClick={handleViewPastItinerariesClick}>View Past Itineraries</button>
         <button onClick={handleViewPastActivitiesClick}>View Past Activities</button>
-        
-        {/* New button for booking a hotel */}
         <button onClick={handleBookHotelClick}>Book Hotel</button>
+        
+        {/* New button for viewing all booked transportations */}
+        <button onClick={handleViewBookedTransportationsClick}>View All My Booked Transportations</button>
       </div>
     </header>
   );

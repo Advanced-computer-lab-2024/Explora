@@ -23,6 +23,8 @@ const categoryRoutes = require('./Routes/CategoryRoutes');
 const authRoute = require('./Routes/LoginRoute');
 const req = require('./Routes/deletionRequest');
 const preferences = require('./Routes/VacationPreferences');
+const transportationRoutes = require('./Routes/transportation'); // Adjust the path as needed
+const transBookRoutes = require('./Routes/transportationBook'); // Adjust the path as needed
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -58,6 +60,8 @@ app.use('/reviews', reviewRoutes);
 app.use('/api/auth', authRoute);
 app.use('/Request', req);
 app.use('/preferences', preferences);
+app.use('/transportation', transportationRoutes);   // For managing profiles
+app.use('/transportationBook', transBookRoutes);   // For managing profiles
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
