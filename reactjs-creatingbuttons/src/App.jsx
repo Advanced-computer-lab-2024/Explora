@@ -80,6 +80,7 @@ import BookHotel from './components/BookHotel';
 import AdminComplaints from './pages/AdminComplaints/AdminComplaints.jsx';
 import Test from './pages/test/test.jsx';
 import { Toaster } from 'react-hot-toast';
+import DeleteRequestsPage from './components/AdminDeleteRequests.jsx';
 
 
 function App() {
@@ -164,14 +165,7 @@ function App() {
         <Route path="/tourist-previous-activities" element={<PastItineraries />} /> {/* Add the route here */}
         <Route path="/book-hotel" element={<BookHotel />} />
         <Route path="/admin-complaints" element={<AdminComplaints />} /> {/* Admin Complaints route */}
-        
-
-
-
-
-
-
-
+        <Route path="/viewDeleteRequests" element={<DeleteRequestsPage />} /> {/* Test route */}
 
 
 
