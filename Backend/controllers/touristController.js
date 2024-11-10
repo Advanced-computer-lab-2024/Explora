@@ -132,7 +132,6 @@ const deleteTourist = async (req, res) => {
 
 // controllers/touristController.js
 
-const Tourist = require('../models/touristModel'); // Ensure the model is imported
 const calculateLoyaltyPoints = (amountPaid, level) => {
     switch (level) {
         case 1:

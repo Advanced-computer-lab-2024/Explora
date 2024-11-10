@@ -10,8 +10,19 @@ const UpcomingActivities = () => {
   const [cashBalance, setCashBalance] = useState(0);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
-  const [userId, setUserId] = useState(null); // Add state for storing user ID
 
+
+  const userId = "672404b5711f4330c4103753";
+
+
+  useEffect(() => {
+    // Retrieve loyalty points from localStorage on load
+    const savedPoints = localStorage.getItem('loyaltyPoints');
+    if (savedPoints) {
+      setLoyaltyPoints(Number(savedPoints));
+      setBadgeLevel(getBadgeLevel(Number(savedPoints)));
+    }
+  }, []);
   // Fetch the user ID based on the username
   useEffect(() => {
     const fetchUserId = async () => {
@@ -85,58 +96,41 @@ const UpcomingActivities = () => {
   // Book ticket and add loyalty points using Axios
   const handleBookTicket = async (place) => {
     try {
-      // Check if userId is available
       if (!userId) {
         alert('You must be logged in to book a ticket.');
         return;
       }
   
-      // Optimistically update booked tickets
+      // Adding ticket to booked list
       setBookedTickets((prev) => [...prev, place._id]);
   
-      // Determine points and level
-      let pointsToAdd = 0;
-      let level = "";
+      // Determine loyalty level based on price
+      const level = place.price > 500000 ? 3 : place.price > 100000 ? 2 : 1;
   
-      if (place.price <= 100000) {
-        pointsToAdd = place.price * 0.5;
-        level = "Level 1";
-      } else if (place.price <= 500000) {
-        pointsToAdd = place.price * 1;
-        level = "Level 2";
-      } else {
-        pointsToAdd = place.price * 1.5;
-        level = "Level 3";
-      }
-  
-      // Backend call to add loyalty points using Axios
+      // Add loyalty points after booking
       const response = await axios.post("http://localhost:4000/api/tourists/addLoyaltyPoints", {
-        touristId: userId, // Use the dynamically fetched tourist ID
+        touristId: userId,
         amountPaid: place.price,
-        level: level,
+        level,
       });
   
-      const data = response.data;
-  
       if (response.status === 200) {
-        // Update loyalty points and badge level
-        setLoyaltyPoints((prevPoints) => {
-          const newPoints = prevPoints + data.pointsEarned;
-          setBadgeLevel(getBadgeLevel(newPoints));
-          return newPoints;
-        });
-  
+        const data = response.data;
+        const newPoints = loyaltyPoints + data.pointsEarned;
+
+        // Save points to state and localStorage
+        setLoyaltyPoints(newPoints);
+        localStorage.setItem('loyaltyPoints', newPoints);
+
+        // Update badge level
+        setBadgeLevel(getBadgeLevel(newPoints));
+
         alert(`You booked "${place.name}" and earned ${data.pointsEarned} points!`);
-      } else {
-        console.error("Error adding loyalty points:", data.message);
-        alert(`Failed to add loyalty points: ${data.message}`);
       }
     } catch (error) {
-      console.error("Error booking ticket:", error);
       alert("An error occurred while booking the ticket.");
     }
   };
-
   // Cancel booking if within the allowed timeframe
   const handleCancelBooking = (place) => {
     const now = new Date();
@@ -152,16 +146,32 @@ const UpcomingActivities = () => {
   };
 
   // Redeem loyalty points for cash balance
-  const redeemPoints = () => {
-    const pointsRequired = 10000;
-    if (loyaltyPoints >= pointsRequired) {
-      const cashToAdd = (pointsRequired / 10000) * 100;
-      setCashBalance((prevBalance) => prevBalance + cashToAdd);
-      setLoyaltyPoints((prevPoints) => prevPoints - pointsRequired);
-      setBadgeLevel(getBadgeLevel(loyaltyPoints - pointsRequired));
-      alert(`You have successfully redeemed ${pointsRequired} points for ${cashToAdd} EGP!`);
-    } else {
-      alert('You do not have enough loyalty points to redeem for cash.');
+  const redeemPoints = async () => {
+    try {
+      if (loyaltyPoints < 10000) {
+        alert('Insufficient loyalty points.');
+        return;
+      }
+
+      const response = await axios.post("http://localhost:4000/api/tourists/redeemPoints", {
+        touristId: userId,
+        pointsToRedeem: 10000,
+      });
+
+      if (response.status === 200) {
+        const data = response.data;
+        const updatedPoints = data.remainingPoints;
+
+        // Update local state, localStorage, and badge level
+        setCashBalance(data.walletBalance);
+        setLoyaltyPoints(updatedPoints);
+        localStorage.setItem('loyaltyPoints', updatedPoints);
+        setBadgeLevel(getBadgeLevel(updatedPoints));
+
+        alert(`Successfully redeemed 10,000 points for ${data.cashAdded} EGP.`);
+      }
+    } catch (error) {
+      alert("Error during redemption.");
     }
   };
 
@@ -177,16 +187,7 @@ const UpcomingActivities = () => {
             <p className="activity-rating">Rating: {place.rating}/10</p>
 
             <div className="share-buttons">
-              <button onClick={() => shareLink(place)}>Share Link</button>
-              <button onClick={() => shareEmail(place)}>Share via Email</button>
-              {bookedTickets.includes(place._id) ? (
-                <button disabled>Ticket Already Booked</button>
-              ) : (
-                <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
-              )}
-              {bookedTickets.includes(place._id) && (
-                <button onClick={() => handleCancelBooking(place)}>Cancel Booking</button>
-              )}
+              <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
             </div>
           </div>
         ))}
@@ -200,7 +201,7 @@ const UpcomingActivities = () => {
           Cash Balance: {cashBalance} EGP
         </div>
       </div>
-      <button className="redeem-button" onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
+      <button onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
         Redeem 10,000 Points for 100 EGP
       </button>
       {message && <p className="message">{message}</p>}
