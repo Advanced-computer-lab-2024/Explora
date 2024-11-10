@@ -32,7 +32,7 @@ const Login = () => {
                 setData({ username: '', password: '' });
                 
                 // Get user role using username
-                const roleResponse = await axios.post(`http://localhost:4000/users/role/${username}`);
+                const roleResponse = await axios.get(`http://localhost:4000/users/role/${username}`);
                 const role = roleResponse.data.role; // assuming role is returned as `data.role`
 
                 if (role === 'Tourist') {

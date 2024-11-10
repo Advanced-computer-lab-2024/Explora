@@ -11,14 +11,12 @@ const Tourist = require('../models/touristModel');
 const Product = require('../models/Products');
 const Activity = require('../models/Activity');
 const maxAge = 3 * 24 * 60 * 60;
-const createToken = (name) => {
-    return jwt.sign({ name }, 'supersecret', {
+const createToken = (_id) => {
+    return jwt.sign({ _id }, 'supersecret', {
         expiresIn: maxAge
     });
 };
 
-const TourismGovernor = require('../models/Governor');
-const Admin = require('../models/Admin');
 
 // Register a new user
 const registerUser = asyncWrapper(async (req, res) => {
@@ -29,8 +27,6 @@ const registerUser = asyncWrapper(async (req, res) => {
     const certificatesFile = req.files['certificatesFile'] ? req.files['certificatesFile'][0].path : null;
     const taxFile = req.files['taxFile'] ? req.files['taxFile'][0].path : null;
     const imageFile = req.files['imageFile'] ? req.files['imageFile'][0].path : null;
-
-
 
     try {
         // Check if the username or email already exists
@@ -43,45 +39,68 @@ const registerUser = asyncWrapper(async (req, res) => {
             return res.status(400).json({ error: 'Email already exists' });
         }
 
-        // Hash the password and create the new user
+        // Hash the password
         const salt = await bcrypt.genSalt();
-        const hashedPassword = await bcrypt.hash(password, salt);        
+        const hash = await bcrypt.hash(password, salt);  // 'hash' contains the hashed password
+
         let newUser;
 
         if (role === "Tourist") {
             newUser = new Tourist({
                 username,
                 email,
-                password: hashedPassword,
+                password: hash,  // Use 'hash' here
                 role,
                 mobileNumber,
                 nationality,
                 job,
-                dateOfBirth: new Date(dateOfBirth) // Convert to Date object
+                dateOfBirth: new Date(dateOfBirth)  // Convert to Date object
             });
         } else if (role === "Seller") {
-            newUser = new Seller({ username, email, password: hashedPassword, role, idFile, taxFile, imageFile});
+            newUser = new Seller({
+                username,
+                email,
+                password: hash,  // Use 'hash' here
+                role,
+                idFile,
+                taxFile,
+                imageFile
+            });
         } else if (role === "TourGuide") {
-            newUser = new TourGuide({ 
-                username, 
-                email, 
-                password: hashedPassword, 
-                role, 
-                idFile, 
+            newUser = new TourGuide({
+                username,
+                email,
+                password: hash,  // Use 'hash' here
+                role,
+                idFile,
                 certificatesFile,
                 imageFile
             });
         } else if (role === "Advertiser") {
-            newUser = new Advertiser({ username, email, password: hashedPassword, role, idFile, taxFile, imageFile });
+            newUser = new Advertiser({
+                username,
+                email,
+                password: hash,  // Use 'hash' here
+                role,
+                idFile,
+                taxFile,
+                imageFile
+            });
         } else {
-            newUser = new User({ username, password: hashedPassword, role });
+            // If the role is not one of the above, fallback to a generic user
+            newUser = new User({ username, password: hash, role });
         }
-
 
         // Save the new user
         await newUser.save();
-        const token = createToken(newUser.name); 
+
+        // Generate a token for the new user
+        const token = createToken(newUser._id); 
+
+        // Set the JWT cookie
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 }); 
+        
+        // Send success response
         res.status(201).json({ message: 'User registered successfully!', user: newUser });
     } catch (err) {
         console.error("Registration error:", err); // Log the error
@@ -91,28 +110,34 @@ const registerUser = asyncWrapper(async (req, res) => {
 
 // Login a user
 
-const loginUser = async (req, res) => {
+const login = async (req, res) => {
+    const { username, password } = req.body;
+
     try {
-        const { username, password } = req.body;        
-        const user = await User.findOne({ username }); 
-        if (!user) {
-            return res.status(400).json({ error: 'User not found' });
-        }
+        const user = await User.findOne({ username: username });
+        if (!user) return res.status(400).json({ message: 'User not found' });
+
+        // Log the password from the request and the hashed password from the database
+        console.log('Password from request:', password);
+        console.log('Password stored in database (hashed):', user.password);
+
         const isMatch = await bcrypt.compare(password, user.password);
+
         if (!isMatch) {
-            return res.status(400).json({ error: 'Incorrect Username or Password' });
+            console.log('Password does not match');
+            return res.status(400).json({ message: 'Invalid password' });
         }
-        else{
-            const token = createToken(user.name);
-            res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
-            res.status(200).json({ message: 'Logged in successfully!', user });
-        }
-      
-    }
-    catch (err) {
-        res.status(500).json({ error: err.message });
+
+        const token = createToken(user.username);
+        res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });
+        res.status(200).json({ message: 'Logged in successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(400).json({ error: error.message });
     }
 };
+
+
 
 // Logout a user
 const logout = async (req, res) => {
@@ -315,7 +340,6 @@ module.exports = {
     viewUsers,
     getUserid,
     getRoleByUsername,
-    loginUser,
     downloadIDFile,
     downloadCertificateFile,
     downloadTaxFile,
@@ -323,7 +347,7 @@ module.exports = {
     viewRequests,
     filterByStatus,
     logout,
-    loginUser,
+    login,
     changePassword,
     // Add other controller methods like loginUser, getUserProfile, etc.
 };
