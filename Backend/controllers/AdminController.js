@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const Deleteequests = require("../models/deleteRequests");
+const DeletionRequest = require("../models/DeletionRequest");
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const {generateToken} = require('../middleware/AuthMiddleware');
@@ -104,7 +104,7 @@ const changePassword = async (req, res) => {
 
   const viewDeleteRequests = async (req, res) => {
     try {
-        const requests = await Deleteequests.find().populate('user');
+        const requests = await DeletionRequest.find().populate('user');
         res.status(200).json(requests);
     } catch (err) {
         res.status(500).json({ msg: err.message });
@@ -126,7 +126,7 @@ const changePassword = async (req, res) => {
         return res.status(400).json({ msg: "Invalid ID" });
     }
     try {
-        const request = await Deleteequests.findByIdAndUpdate(id, { status: "Resolved" }, { new: true });
+        const request = await DeletionRequest.findByIdAndUpdate(id, { status: "Resolved" }, { new: true });
         if (!request) {
             return res.status(404).json({ msg: "Request not found" });
         }
@@ -147,7 +147,7 @@ const changePassword = async (req, res) => {
         }
 
         // Delete the corresponding deletion request
-        await DeleteRequests.findOneAndDelete({ user: id });
+        await DeletionRequest.findOneAndDelete({ user: id });
 
         res.status(200).json({ msg: 'User and deletion request deleted successfully', user });
     } catch (err) {

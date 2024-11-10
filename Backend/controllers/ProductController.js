@@ -161,7 +161,7 @@ const createProduct = async (req, res) => {
             description: description,
             seller,
             image: image,
-            quantity: quantity
+            quantity: quantity,
             name, price, description, seller, image: picturePath, quantity
         });
         res.status(201).json({
@@ -366,7 +366,7 @@ module.exports = {
     sortProducts,
     updateProduct,
     addReview,
-    addRating
+    addRating,
     addReview,
     viewQuantityAndSales,
     archiveProduct,

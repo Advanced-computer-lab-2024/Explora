@@ -500,7 +500,6 @@ p {
 }
 
 .complaint-card h2 {
-.complaint-card h2 {
   text-align: center;
   font-size: 1.8em;
   color: #007bff;
@@ -517,7 +516,6 @@ p {
 }
 
 .form-group label {
-.form-group label {
   display: block;
   font-weight: bold;
   margin-bottom: 8px;
@@ -526,8 +524,7 @@ p {
   color: #333;
 }
 
-.form-group input,
-.form-group textarea {
+
 .form-group input,
 .form-group textarea {
   width: 100%;
@@ -586,3 +583,4 @@ p {
 
 
 
+}

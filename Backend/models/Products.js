@@ -61,20 +61,6 @@ const productSchema = new Schema({
         type: Number,
         default: 0
     }
-}, { timestamps: true });
-    },
-    archived: {
-        type: Boolean,
-        default: false
-    },
-    isDeleted: {
-        type: Boolean,
-        default: false
-    },
-    sales: {
-        type: Number,
-        default: 0 
-    }
 
 },
 
