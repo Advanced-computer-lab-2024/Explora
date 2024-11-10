@@ -38,11 +38,10 @@ catch(err){
 const createAdminAccount = async (req, res) => {
     const {username, email, password} = req.body;
     try{
-        const hashedPassword = await bcrypt.hash(password, 10);
         const newAdmin = await User.create({
             username,
             email,
-            password: hashedPassword,
+            password,
             role: 'Admin'
         });
         res.status(200).json({

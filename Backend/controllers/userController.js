@@ -7,6 +7,7 @@ const Advertiser = require('../models/Advertiser');
 const Tourist = require('../models/touristModel');
 const TourismGovernor = require('../models/Governor');
 const Admin = require('../models/Admin');
+const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -97,28 +98,32 @@ const loginUser = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
-// Change user password
-const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
 
+// Change user password
 const changePassword = async (req, res) => {
   const { username, password, newPassword } = req.body;
-  const userId = req.user._id; // assuming req.user is set in AuthMiddleware, which should contain the authenticated user's info
 
   try {
     // Find the user by username
-    const user = await User.findOne({ username }); // Use findOne to search by username
+    const user = await User.findOne({ username });
+
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
-    // Verify the current password
+
+    // Verify the current password (hashed password comparison)
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Current password is incorrect" });
     }
 
+    // Check if the new password is different from the old one
+    if (password === newPassword) {
+      return res.status(400).json({ message: "New password cannot be the same as the old one" });
+    }
+
     // Hash the new password
-    const salt = await bcrypt.genSalt(10); // Increase the salt rounds if needed
+    const salt = await bcrypt.genSalt(10);
     const hashedNewPassword = await bcrypt.hash(newPassword, salt);
 
     // Update the password in the database
@@ -130,7 +135,7 @@ const changePassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
+  
 // Additional user controller functions can be defined here...
 
 module.exports = {

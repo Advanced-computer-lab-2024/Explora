@@ -11,7 +11,7 @@ router.get('/', viewUsers)
 
 router.get('/:username', getUserid)
 router.get ('/login', loginUser)
-router.post('/change-password', changePassword); // New route for changing password
+router.post('/changePassword', changePassword); // New route for changing password
 
 // Additional user routes can go here...
 
