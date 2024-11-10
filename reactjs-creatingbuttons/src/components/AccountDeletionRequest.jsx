@@ -21,6 +21,7 @@ const AccountDeletionRequest = () => {
       // Send the deletion request to the backend
       const response = await axios.post('http://localhost:4000/Request/requestDeletion', {
         username,
+        email, // Sending email to backend as well
         reason: deletionReason,
       });
 
@@ -64,6 +65,7 @@ const AccountDeletionRequest = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </label>
 

@@ -5,14 +5,12 @@ const DeletionRequest = require('../models/DeletionRequest');
 const User = require('../models/User');
 
 router.post('/requestDeletion', async (req, res) => {
-    const { username, reason } = req.body;
-    console.log("Request Body:", req.body); // Debugging line
+    const { username, email, reason  } = req.body; // Destructure email as well
 
     try {
         // Find the user by username
         const user = await User.findOne({ username });
         if (!user) {
-            console.log("User not found for username:", username); // Debugging line
             return res.status(404).json({ message: 'User not found' });
         }
 
@@ -26,13 +24,13 @@ router.post('/requestDeletion', async (req, res) => {
         const existingRequest = await DeletionRequest.findOne({ user: user._id, status: 'pending' });
         if (existingRequest) return res.status(400).json({ message: 'Deletion request already exists' });
 
-        // Create the deletion request
-        const deletionRequest = new DeletionRequest({ user: user._id, reason });
+        // Create the deletion request with email included
+        const deletionRequest = new DeletionRequest({ user: user._id, reason, email });
         await deletionRequest.save();
 
         res.status(200).json({ message: 'Deletion request submitted' });
     } catch (error) {
-        console.error("Error occurred:", error.message); // Debugging line
+        console.error('Error occurred:', error.message);
         res.status(500).json({ message: error.message });
     }
 });
