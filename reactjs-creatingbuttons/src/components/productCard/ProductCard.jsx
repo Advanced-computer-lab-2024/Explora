@@ -115,7 +115,8 @@ const ProductCard = ({ product, onArchive }) => {
                     </p>
                     <p className="product-quantity">Available Quantity: {product.quantity}</p>
                     <p className="product-sales">Total Sales: {product.sales}</p>
-                    <p className="product-sales">State: {product.archived}</p>
+                    <p className="product-sales">    State: {product.archived ? 'Archived' : 'Active'}
+                    </p>
                 </>
             )}
 
