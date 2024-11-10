@@ -2,21 +2,25 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function MuseumsManager() {
-  const [museums, setMuseums] = useState([]); 
+  const [museums, setMuseums] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     location: '',
     openingHours: '',
     ticketPrices: { foreigner: '', native: '', student: '' },
+    tags: [],
   });
   const [isEditing, setIsEditing] = useState(false);
   const [currentMuseumId, setCurrentMuseumId] = useState(null);
+
+  const allowedTags = ['Monuments', 'Museums', 'Religious Sites', 'Palaces/Castles'];
 
   useEffect(() => {
     fetchMuseums();
   }, []);
 
+  // Fetch all museums
   const fetchMuseums = async () => {
     try {
       const response = await axios.get('http://localhost:4000/api/museums/museums');
@@ -30,9 +34,13 @@ export default function MuseumsManager() {
     }
   };
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (['foreigner', 'native', 'student'].includes(name)) {
+    if (name === 'tags') {
+      const selectedTags = Array.from(e.target.selectedOptions, (option) => option.value);
+      setFormData((prev) => ({ ...prev, tags: selectedTags }));
+    } else if (['foreigner', 'native', 'student'].includes(name)) {
       setFormData((prev) => ({
         ...prev,
         ticketPrices: { ...prev.ticketPrices, [name]: value },
@@ -42,6 +50,7 @@ export default function MuseumsManager() {
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -57,21 +66,24 @@ export default function MuseumsManager() {
     }
   };
 
+  // Edit a museum
   const handleEdit = (museum) => {
     setFormData(museum);
     setIsEditing(true);
     setCurrentMuseumId(museum._id);
   };
 
+  // Delete a museum
   const handleDelete = async (id) => {
     try {
-        await axios.delete(`http://localhost:4000/api/museums/${id}`);
-        fetchMuseums(); // Refresh the list after deletion
+      await axios.delete(`http://localhost:4000/api/museums/${id}`);
+      fetchMuseums();
     } catch (error) {
-        console.error('Error deleting museum:', error);
+      console.error('Error deleting museum:', error);
     }
-};
+  };
 
+  // Reset form data
   const resetForm = () => {
     setFormData({
       name: '',
@@ -79,6 +91,7 @@ export default function MuseumsManager() {
       location: '',
       openingHours: '',
       ticketPrices: { foreigner: '', native: '', student: '' },
+      tags: [],
     });
     setIsEditing(false);
     setCurrentMuseumId(null);
@@ -137,6 +150,18 @@ export default function MuseumsManager() {
           placeholder="Student Ticket Price"
           required
         />
+        <select
+          name="tags"
+          multiple
+          value={formData.tags}
+          onChange={handleChange}
+        >
+          {allowedTags.map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
+        </select>
         <button type="submit">{isEditing ? 'Update Museum' : 'Add Museum'}</button>
         {isEditing && <button type="button" onClick={resetForm}>Cancel</button>}
       </form>
@@ -150,6 +175,7 @@ export default function MuseumsManager() {
             <th style={{ padding: '8px', border: '1px solid #ddd' }}>Location</th>
             <th style={{ padding: '8px', border: '1px solid #ddd' }}>Opening Hours</th>
             <th style={{ padding: '8px', border: '1px solid #ddd' }}>Ticket Prices</th>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Tags</th>
             <th style={{ padding: '8px', border: '1px solid #ddd' }}>Actions</th>
           </tr>
         </thead>
@@ -162,9 +188,10 @@ export default function MuseumsManager() {
                 <td style={{ padding: '8px', border: '1px solid #ddd' }}>{museum.location}</td>
                 <td style={{ padding: '8px', border: '1px solid #ddd' }}>{museum.openingHours}</td>
                 <td style={{ padding: '8px', border: '1px solid #ddd' }}>
-                  Foreigner: ${museum.ticketPrices.foreigner} | Native: $
-                  {museum.ticketPrices.native} | Student: $
-                  {museum.ticketPrices.student}
+                  Foreigner: ${museum.ticketPrices.foreigner} | Native: ${museum.ticketPrices.native} | Student: ${museum.ticketPrices.student}
+                </td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                  {museum.tags && museum.tags.length > 0 ? museum.tags.join(', ') : 'No tags'}
                 </td>
                 <td style={{ padding: '8px', border: '1px solid #ddd' }}>
                   <button onClick={() => handleEdit(museum)}>Edit</button>
@@ -174,7 +201,7 @@ export default function MuseumsManager() {
             ))
           ) : (
             <tr>
-              <td colSpan="6" style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'center' }}>
+              <td colSpan="7" style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'center' }}>
                 No museums available
               </td>
             </tr>

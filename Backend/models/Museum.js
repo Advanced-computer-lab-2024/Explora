@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const allowedTags = ["Monuments", "Museums", "Religious Sites", "Palaces/Castles"];
+
 const museumSchema = new mongoose.Schema({
     name: { type: String, required: true, unique: true },
     description: { type: String, required: true },
@@ -11,13 +13,12 @@ const museumSchema = new mongoose.Schema({
         foreigner: { type: Number, required: true },
         student: { type: Number, required: true }
     },
-    //budget: { type: Number, required: true },
-    //ratings: { type: Number, required: true }
-    tags: [{ type: String }]
+    tags: {
+        type: [String],
+        enum: allowedTags, // Validates that tags are from the allowed list
+        default: []
+    }
 });
-
-
-
 
 const Museum = mongoose.model('Museum', museumSchema);
 
