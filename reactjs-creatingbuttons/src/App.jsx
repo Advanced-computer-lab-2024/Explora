@@ -77,6 +77,8 @@ import TransportationBooking from './components/TransportationBooking'; // Adjus
 import FlightBooking from './components/FlightBooking'; // import the new component
 import PastItineraries from './components/PastItineraries.jsx';
 import BookHotel from './components/BookHotel';
+import PastActivities from './components/PastActivities';  // Assuming this exists
+
 
 
 
@@ -164,8 +166,10 @@ function App() {
         <Route path="/flagged-events" element={<FlaggedEvents />} /> {/* New route */}
         <Route path="/book-transportation" element={<TransportationBooking />} />
         <Route path="/book-flight" element={<FlightBooking />} /> {/* Add the route here */}
-        <Route path="/tourist-previous-activities" element={<PastItineraries />} /> {/* Add the route here */}
+        <Route path="/tourist-past-itineraries" element={<PastItineraries />} />
         <Route path="/book-hotel" element={<BookHotel />} />
+        <Route path="/tourist-previous-activities" element={<PastActivities />} />
+
 
 
 

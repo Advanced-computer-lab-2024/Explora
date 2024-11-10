@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Import axios
 
 const UpcomingActivities = () => {
   const [places, setPlaces] = useState([]);
@@ -7,22 +8,68 @@ const UpcomingActivities = () => {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [badgeLevel, setBadgeLevel] = useState('');
   const [cashBalance, setCashBalance] = useState(0);
-  const [ratings, setRatings] = useState({}); // State for ratings
-  const [comments, setComments] = useState({}); // State for comments
+  const [ratings, setRatings] = useState({});
+  const [comments, setComments] = useState({});
+
+
+  const userId = "672404b5711f4330c4103753";
+
 
   useEffect(() => {
-    fetch('http://localhost:4000/api/activity/upcoming')
-      .then(response => response.json())
-      .then(data => {
-        const formattedData = data.map((place) => ({
-          ...place,
-          date: place.date.split('T')[0],
-          dateObject: new Date(place.date),
-        }));
-        setPlaces(formattedData);
-      });
+    // Retrieve loyalty points from localStorage on load
+    const savedPoints = localStorage.getItem('loyaltyPoints');
+    if (savedPoints) {
+      setLoyaltyPoints(Number(savedPoints));
+      setBadgeLevel(getBadgeLevel(Number(savedPoints)));
+    }
+  }, []);
+  // Fetch the user ID based on the username
+  useEffect(() => {
+    const fetchUserId = async () => {
+      try {
+        const username = localStorage.getItem("username"); // Assume the username is stored in localStorage
+        const response = await axios.get(`http://localhost:4000/api/users/${username}`);
+        
+        if (response.status === 200) {
+          setUserId(response.data._id); // Set user ID in the state
+          console.log("User ID fetched:", response.data._id);
+        } else {
+          console.error("User not found");
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+      }
+    };
+
+    fetchUserId();
+  }, []); // Empty dependency array to run once on component mount
+
+  // Fetch upcoming activities
+  useEffect(() => {
+    const fetchUpcomingActivities = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/activity/upcoming');
+        const data = await response.json();
+
+        if (response.ok) {
+          const formattedData = data.map((place) => ({
+            ...place,
+            date: place.date.split('T')[0],
+            dateObject: new Date(place.date),
+          }));
+          setPlaces(formattedData);
+        } else {
+          console.error("Failed to fetch activities:", data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching upcoming activities:", error);
+      }
+    };
+
+    fetchUpcomingActivities();
   }, []);
 
+  // Helper function to get the badge level based on points
   const getBadgeLevel = (points) => {
     if (points > 500000) return 'Level 3 Badge';
     else if (points > 100000) return 'Level 2 Badge';
@@ -30,6 +77,7 @@ const UpcomingActivities = () => {
     return '';
   };
 
+  // Share activity link
   const shareLink = (place) => {
     const link = `http://localhost:3000/activities/${place._id}`;
     navigator.clipboard.writeText(link)
@@ -37,6 +85,7 @@ const UpcomingActivities = () => {
       .catch(() => setMessage('Failed to copy link.'));
   };
 
+  // Share activity via email
   const shareEmail = (place) => {
     const subject = `Check out this activity: ${place.name}`;
     const body = `I thought you might be interested in this activity:\n\n${place.name}\nDate: ${place.date}\nPrice: ${place.price}$\nRating: ${place.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${place._id}`;
@@ -44,23 +93,45 @@ const UpcomingActivities = () => {
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  const handleBookTicket = (place) => {
-    setBookedTickets((prev) => [...prev, place._id]);
-    let pointsToAdd = 0;
+  // Book ticket and add loyalty points using Axios
+  const handleBookTicket = async (place) => {
+    try {
+      if (!userId) {
+        alert('You must be logged in to book a ticket.');
+        return;
+      }
+  
+      // Adding ticket to booked list
+      setBookedTickets((prev) => [...prev, place._id]);
+  
+      // Determine loyalty level based on price
+      const level = place.price > 500000 ? 3 : place.price > 100000 ? 2 : 1;
+  
+      // Add loyalty points after booking
+      const response = await axios.post("http://localhost:4000/api/tourists/addLoyaltyPoints", {
+        touristId: userId,
+        amountPaid: place.price,
+        level,
+      });
+  
+      if (response.status === 200) {
+        const data = response.data;
+        const newPoints = loyaltyPoints + data.pointsEarned;
 
-    if (place.price <= 100000) pointsToAdd = place.price * 0.5;
-    else if (place.price <= 500000) pointsToAdd = place.price * 1;
-    else pointsToAdd = place.price * 1.5;
+        // Save points to state and localStorage
+        setLoyaltyPoints(newPoints);
+        localStorage.setItem('loyaltyPoints', newPoints);
 
-    setLoyaltyPoints((prevPoints) => {
-      const newPoints = prevPoints + pointsToAdd;
-      setBadgeLevel(getBadgeLevel(newPoints));
-      return newPoints;
-    });
+        // Update badge level
+        setBadgeLevel(getBadgeLevel(newPoints));
 
-    alert(`Your ticket for "${place.name}" has been booked!`);
+        alert(`You booked "${place.name}" and earned ${data.pointsEarned} points!`);
+      }
+    } catch (error) {
+      alert("An error occurred while booking the ticket.");
+    }
   };
-
+  // Cancel booking if within the allowed timeframe
   const handleCancelBooking = (place) => {
     const now = new Date();
     const timeDifference = place.dateObject - now;
@@ -74,42 +145,34 @@ const UpcomingActivities = () => {
     }
   };
 
-  const redeemPoints = () => {
-    const pointsRequired = 10000;
-    if (loyaltyPoints >= pointsRequired) {
-      const cashToAdd = (pointsRequired / 10000) * 100;
-      setCashBalance((prevBalance) => prevBalance + cashToAdd);
-      setLoyaltyPoints((prevPoints) => prevPoints - pointsRequired);
-      setBadgeLevel(getBadgeLevel(loyaltyPoints - pointsRequired));
-      alert(`You have successfully redeemed ${pointsRequired} points for ${cashToAdd} EGP!`);
-    } else {
-      alert('You do not have enough loyalty points to redeem for cash.');
+  // Redeem loyalty points for cash balance
+  const redeemPoints = async () => {
+    try {
+      if (loyaltyPoints < 10000) {
+        alert('Insufficient loyalty points.');
+        return;
+      }
+
+      const response = await axios.post("http://localhost:4000/api/tourists/redeemPoints", {
+        touristId: userId,
+        pointsToRedeem: 10000,
+      });
+
+      if (response.status === 200) {
+        const data = response.data;
+        const updatedPoints = data.remainingPoints;
+
+        // Update local state, localStorage, and badge level
+        setCashBalance(data.walletBalance);
+        setLoyaltyPoints(updatedPoints);
+        localStorage.setItem('loyaltyPoints', updatedPoints);
+        setBadgeLevel(getBadgeLevel(updatedPoints));
+
+        alert(`Successfully redeemed 10,000 points for ${data.cashAdded} EGP.`);
+      }
+    } catch (error) {
+      alert("Error during redemption.");
     }
-  };
-
-  const handleRating = (placeId, rating) => {
-    setRatings((prevRatings) => ({
-      ...prevRatings,
-      [placeId]: rating,
-    }));
-
-    alert(`You rated "${placeId}" with ${rating} stars!`);
-  };
-
-  const handleCommentChange = (placeId, comment) => {
-    setComments((prevComments) => ({
-      ...prevComments,
-      [placeId]: comment,
-    }));
-  };
-
-  const handleCommentSubmit = (placeId) => {
-    alert(`Comment submitted for "${placeId}": ${comments[placeId]}`);
-    // Here you can implement any further logic, such as sending the comment to your backend.
-    setComments((prevComments) => ({
-      ...prevComments,
-      [placeId]: '', // Clear the comment field after submission
-    }));
   };
 
   return (
@@ -122,33 +185,23 @@ const UpcomingActivities = () => {
             <p className="activity-date">Date: {place.date}</p>
             <p className="activity-price">Price: {place.price}$</p>
             <p className="activity-rating">Rating: {place.rating}/10</p>
-            
-  
+
             <div className="share-buttons">
-              <button onClick={() => shareLink(place)}>Share Link</button>
-              <button onClick={() => shareEmail(place)}>Share via Email</button>
-              {bookedTickets.includes(place._id) ? (
-                <button disabled>Ticket Already Booked</button>
-              ) : (
-                <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
-              )}
-              {bookedTickets.includes(place._id) && (
-                <button onClick={() => handleCancelBooking(place)}>Cancel Booking</button>
-              )}
+              <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
             </div>
           </div>
         ))}
       </div>
       <div className="points-container">
         <div className="loyalty-points">
-          Loyalty Points: {loyaltyPoints} 
+          Loyalty Points: {loyaltyPoints}
           {badgeLevel && <span className="badge">{badgeLevel}</span>}
         </div>
         <div className="cash-balance">
           Cash Balance: {cashBalance} EGP
         </div>
       </div>
-      <button className="redeem-button" onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
+      <button onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
         Redeem 10,000 Points for 100 EGP
       </button>
       {message && <p className="message">{message}</p>}

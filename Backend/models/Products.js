@@ -1,6 +1,22 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const Schema = mongoose.Schema
+const reviewSchema = new Schema({
+    user: { 
+        type: Schema.Types.ObjectId,               
+        ref: 'User' 
+    },
+    comment: { 
+        type: String, 
+        required: false  // Made optional
+    },
+    rating: { 
+        type: Number, 
+        required: false, 
+        min: 1, 
+        max: 5 
+    }
+}, { timestamps: true });
 
 const productSchema = new Schema({
     image: {    
@@ -11,7 +27,6 @@ const productSchema = new Schema({
         type: String,
         required: true,
     },
-    
     price: {
         type: Number,
         required: true
@@ -25,45 +40,23 @@ const productSchema = new Schema({
         ref: 'Seller', 
         required: true 
     }, 
-  
-    
     quantity: {
         type: Number,
         required: true
     },
-
-    reviews: {
-        type: [{
-            user: {
-                type: Schema.Types.ObjectId,               
-                ref: 'User'
-            },
-            comment: {
-                type: String,
-                required: true
-            },
-            rating: {
-                type: Number,
-                required: true,
-                min: 1,
-                max: 5
-            }
-        }],
-        required: false
-    },
+    reviews: [reviewSchema],
     averageRating: {
         type: Number,
         default: 0
     }
-
 }, { timestamps: true });
 
-// Inside your Product model
+// Method to calculate average rating
 productSchema.methods.calculateAverageRating = function() {
-    if (this.reviews.length === 0) return 0;  // If there are no reviews, return 0
-    const totalRating = this.reviews.reduce((sum, review) => sum + review.rating, 0);
-    return totalRating / this.reviews.length;
+    if (this.reviews.length === 0) return 0;
+    const totalRating = this.reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    const validRatings = this.reviews.filter(review => review.rating).length;
+    return validRatings === 0 ? 0 : totalRating / validRatings;
 };
 
 module.exports = mongoose.model('Product', productSchema);
-
