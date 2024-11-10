@@ -648,6 +648,383 @@ p {
   font-weight: bold;
 }
 
+/* Ensure the form container is centered in the page */
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+/* Styling for the login form container */
+.login-form-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  /* Center the content vertically */
+  align-items: center;      /* Center the content horizontally */
+}
+
+/* Title styling */
+.form-title {
+  font-size: 24px;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Error message styling */
+.error-message {
+  color: #ff3b3b;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Group styling for each input set */
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;  /* Ensure inputs stretch to the full width of the container */
+}
+
+/* Label styling */
+label {
+  font-weight: 600;
+  margin-bottom: 5px;
+  display: block;  /* Ensure the label takes up its own line */
+}
+
+/* Wrapper for input fields */
+.input-wrapper {
+  position: relative;
+}
+
+/* Input field styling */
+.input-field {
+  width: 100%;
+  padding: 10px 35px 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-top: 5px;
+}
+
+/* Icon inside input field */
+.input-icon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #888;
+}
+
+/* Button styling */
+.login-button {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+  width: 100%;  /* Make the button span the full width of the form */
+}
+
+/* Hover effect for the button */
+.login-button:hover {
+  background-color: #0056b3;
+}
+
+/* Styling for links like "Forgot password" or "Create account" */
+.login-form-links {
+  text-align: center;
+}
+
+.link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.middle-form-container {
+  margin: 30px auto;
+  padding: 20px;
+}
+
+.middle-form {
+  padding: 20px;
+  text-align: center;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.button-group button {
+  font-size: 16px;
+  padding: 12px;
+  background-color: #000000;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.button-group button:hover {
+  background-color: #0056b3;
+  transform: translateY(-3px);
+}
+
+/* SignUpTourist component styles */
+
+.signup-tourist-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.signup-tourist-form {
+  width: 100%;
+  max-width: 500px;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.signup-tourist-form h2 {
+  text-align: center;
+  font-size: 2em;
+  color: #000000;
+  margin-bottom: 20px;
+  font-family: 'Press Start 2P', system-ui;  /* Consistent font */
+}
+
+.signup-tourist-form label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.signup-tourist-form input[type="text"],
+.signup-tourist-form input[type="email"],
+.signup-tourist-form input[type="password"] {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 1em;
+  background: #f9f9f9;
+  transition: border-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.signup-tourist-form input[type="text"]:focus,
+.signup-tourist-form input[type="email"]:focus,
+.signup-tourist-form input[type="password"]:focus {
+  border-color: #007bff;
+}
+
+.signup-tourist-form button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 15px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.signup-tourist-form button:hover {
+  background-color: #0056b3;
+}
+
+.signup-tourist-form .message {
+  text-align: center;
+  margin-top: 20px;
+  color: green;
+  font-weight: bold;
+}
+
+.signup-tourist-form .error-message {
+  text-align: center;
+  margin-top: 20px;
+  color: red;
+  font-weight: bold;
+}
+
+.signup-tourist-form .terms-and-conditions {
+  font-size: 0.9em;
+  color: #555;
+  text-align: center;
+}
+
+.signup-tourist-form .terms-and-conditions a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-tourist-form .terms-and-conditions a:hover {
+  text-decoration: underline;
+}
+
+/* Container for the signup form */
+.signup-tourguide-container {
+  max-width: 400px; /* Adjust to fit your design */
+  margin: auto; /* Center the form */
+  padding: 20px;
+  background-color: white; /* Use a white background to match the other forms */
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Form title */
+.form-title {
+  font-size: 1.8em;
+  margin-bottom: 20px;
+  color: #000000;
+  text-align: center;
+}
+
+/* Form group for input fields */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+/* Input field styling */
+.input-field {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 1em;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Button styling */
+.signup-button {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background 200ms;
+}
+
+.signup-button:hover {
+  background-color: #0056b3;
+}
+
+/* Success and error message styling */
+.message, .error-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 1.1em;
+}
+
+.message {
+  color: green;
+}
+
+.error-message {
+  color: #ff3b3b;
+}
+
+/* Styling for the SignupAdvertiser form */
+.signup-advertiser-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.signup-advertiser-form {
+  background-color: white;
+  border-radius: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.signup-advertiser-form h1 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.signup-advertiser-form .input-box {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.signup-advertiser-form .input-box input {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  font-size: 1em;
+}
+
+.signup-advertiser-form button {
+  width: 100%;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background-color: #007bff;  /* Your chosen button color */
+  color: white;
+  font-size: 1em;
+  cursor: pointer;
+  border: none;
+}
+
+.signup-advertiser-form button:hover {
+  background-color: #0056b3;
+}
+
+.signup-advertiser-form .error-message {
+  color: #ff3b3b;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+}
 
 
 

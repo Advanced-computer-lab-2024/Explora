@@ -78,6 +78,11 @@ import FlightBooking from './components/FlightBooking'; // import the new compon
 import PastItineraries from './components/PastItineraries.jsx';
 import BookHotel from './components/BookHotel';
 import PastActivities from './components/PastActivities';  // Assuming this exists
+import PlaceManager from './components/PlaceManager';
+import TagManagers from './components/TagManagers.jsx';
+import TourismDashboard from './components/TourismDashboard';
+
+
 
 
 
@@ -169,6 +174,11 @@ function App() {
         <Route path="/tourist-past-itineraries" element={<PastItineraries />} />
         <Route path="/book-hotel" element={<BookHotel />} />
         <Route path="/tourist-previous-activities" element={<PastActivities />} />
+        <Route path="/places" element={<PlaceManager />} />
+        <Route path="/tags" element={<TagManager />} />
+        <Route path="/tourism-dashboard" element={<TourismDashboard />} />
+
+
 
 
 

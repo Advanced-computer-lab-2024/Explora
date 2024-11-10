@@ -1,37 +1,68 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";  // Import useNavigate
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SignupAdvertiser = () => {
-    const navigate = useNavigate();  // Initialize useNavigate
+    const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
     const handleSubmit = (event) => {
-        event.preventDefault();  // Prevent the default form submission
-        // Here you can handle any form validation or state management before navigating
-        
-        // Navigate to TodoInput after successful sign up
+        event.preventDefault();
+
+        if (!username || !email || !password) {
+            setError('Please fill out all fields');
+            return;
+        }
+
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(email)) {
+            setError('Please enter a valid email address');
+            return;
+        }
+
+        setError('');
         navigate('/company');
     };
 
     return (
-        <div className='wrapper'>
-            <form onSubmit={handleSubmit}>  {/* Handle form submission with handleSubmit */}
-                <h1>Signup as an advertiser</h1>  
+        <div className="signup-advertiser-container">
+            <form onSubmit={handleSubmit} className="signup-advertiser-form">
+                <h1>Signup as an advertiser</h1>
+                {error && <div className="error-message">{error}</div>}
                 <div className="input-box">
-                    <input type="text" placeholder='Username' required />
-                </div> 
-                <div className="input-box">
-                    <input type="text" placeholder='Email' required />
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                    />
                 </div>
                 <div className="input-box">
-                    <input type="password" placeholder='Password' required />
+                    <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="input-box">
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
                 </div>
 
-                <button type="submit">Signup</button>  {/* When clicked, it will call handleSubmit */}
+                <button type="submit">Signup</button>
             </form>
         </div>
     );
 };
 
-
-
-export default SignupAdvertiser
+export default SignupAdvertiser;
