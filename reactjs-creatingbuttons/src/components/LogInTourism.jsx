@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import axios from 'axios';
 
 export default function LogInTourism() {
@@ -28,7 +29,6 @@ export default function LogInTourism() {
       console.log('Profile created:', response.data);
       setMessage('Profile successfully created!');
       // Redirect to CreatedPop component after form submission
-      
     }
     catch (error) {
       if (error.response && error.response.data) {
