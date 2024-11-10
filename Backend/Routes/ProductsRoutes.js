@@ -4,7 +4,7 @@ const {upload}= require('../middleware/upload');
 const{
     createProduct,
     allProducts,
-    productsByName ,
+    productsByName,
     availableProducts,
     searchProducts,
     filteredProducts,
@@ -15,7 +15,8 @@ const{
     archiveProduct,
     archivedProducts,
     unarchivedProducts,
-    deleteAllProducts
+    deleteAllProducts,
+    addRating
 } = require("../controllers/ProductController");
 
 router.get('/', allProducts);    
@@ -26,7 +27,6 @@ router.get('/filterByPrice', filteredProducts);
 
 router.get('/quantity&sales', viewQuantityAndSales);       
 router.post('/upload', upload.single('image'), createProduct);
-router.get('/', allProducts)
 router.get('/availableProducts', availableProducts)
 router.get('/:name', searchProducts);
 router.put('/updateProduct/:id',updateProduct )
@@ -34,7 +34,6 @@ router.get('/productByName/:name', productsByName)
 router.post('/addReview/:id', addReview); // Route for adding a review to a product  
 router.put('/archiveProduct/:id', archiveProduct);
 router.delete('/deleteAllProducts', deleteAllProducts);
-
+router.post('/addRating/:id', addRating);
 
 module.exports = router;
-

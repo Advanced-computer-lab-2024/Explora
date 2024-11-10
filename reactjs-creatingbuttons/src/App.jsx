@@ -81,6 +81,16 @@ import AdminComplaints from './pages/AdminComplaints/AdminComplaints.jsx';
 import Test from './pages/test/test.jsx';
 import { Toaster } from 'react-hot-toast';
 import DeleteRequestsPage from './components/AdminDeleteRequests.jsx';
+import PastActivities from './components/PastActivities';  // Assuming this exists
+
+
+
+
+
+
+
+
+
 
 
 function App() {
@@ -162,10 +172,19 @@ function App() {
         <Route path="/flagged-events" element={<FlaggedEvents />} /> {/* New route */}
         <Route path="/book-transportation" element={<TransportationBooking />} />
         <Route path="/book-flight" element={<FlightBooking />} /> {/* Add the route here */}
-        <Route path="/tourist-previous-activities" element={<PastItineraries />} /> {/* Add the route here */}
+        <Route path="/tourist-past-itineraries" element={<PastItineraries />} />
         <Route path="/book-hotel" element={<BookHotel />} />
         <Route path="/admin-complaints" element={<AdminComplaints />} /> {/* Admin Complaints route */}
         <Route path="/viewDeleteRequests" element={<DeleteRequestsPage />} /> {/* Test route */}
+        <Route path="/tourist-previous-activities" element={<PastActivities />} />
+
+
+
+
+
+
+
+
 
 
 

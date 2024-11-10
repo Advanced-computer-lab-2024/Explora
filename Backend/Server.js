@@ -22,6 +22,8 @@ const advertiserRoutes = require('./Routes/advertiserRoute');
 const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes');
 const authRoute = require('./Routes/LoginRoute');
+const req = require('./Routes/deletionRequest');
+const preferences = require('./Routes/VacationPreferences');
 const complaintsRoute = require('./Routes/ComplaintsRoutes');
 
 const mongoose = require('mongoose');
@@ -58,6 +60,8 @@ app.use('/api/tour_guide_profile', tour_guide_profileRoutes);
 app.use('/api/advertisers', advertiserRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/api/auth', authRoute);
+app.use('/Request', req);
+app.use('/preferences', preferences);
 app.use('/complaints',complaintsRoute);
 
 //connect to MongoDB

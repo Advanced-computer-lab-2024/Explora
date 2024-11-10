@@ -1,3 +1,4 @@
+// ProductCardTourist.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -7,7 +8,7 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [editedPrice, setEditedPrice] = useState(product.price);
     const [editedDescription, setEditedDescription] = useState(product.description);
     const [message, setMessage] = useState('');
-    const [userRating, setUserRating] = useState(0); // State to store user's selected rating
+    const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
 
     // Handle the edit button click
@@ -25,7 +26,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                 name: editedName,
                 price: editedPrice,
                 description: editedDescription,
-                reviews: product.reviews
             };
 
             const response = await axios.put(`http://localhost:4000/Products/updateProduct/${product._id}`, inputData);
@@ -45,7 +45,69 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         }
     };
 
-    // Function to render stars based on averageRating
+    // Separate function to submit a rating
+    const handleRatingSubmit = async () => {
+        if (userRating === 0) {
+            setMessage('Please provide a rating.');
+            return;
+        }
+
+        try {
+            const ratingData = {
+                rating: userRating,
+                comment: 'No comment provided' // Include a default comment
+            };
+
+            const response = await axios.post(`http://localhost:4000/Products/addRating/${product._id}`, ratingData);
+            console.log('Rating response:', response.data);
+
+            setProducts(prevProducts =>
+                prevProducts.map(prod =>
+                    prod._id === product._id ? response.data.product : prod
+                )
+            );
+
+            setUserRating(0);
+            setMessage('Thank you for your rating!');
+        } catch (error) {
+            console.error('Error submitting rating:', error);
+            setMessage('Error submitting rating: ' + error.message);
+        }
+    };
+
+    // Separate function to submit a review
+    const handleReviewSubmit = async () => {
+        if (userReview.trim() === '') {
+            setMessage('Please provide a review.');
+            return;
+        }
+
+        try {
+            const reviewData = {
+                user: '672404b5711f4330c4103753', // Replace with logged-in user's info if available
+                comment: userReview,
+                // Optionally include a rating if your UI allows it
+                // rating: userRatingForReview
+            };
+
+            const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
+            console.log('Review response:', response.data);
+
+            setProducts(prevProducts =>
+                prevProducts.map(prod =>
+                    prod._id === product._id ? response.data.product : prod
+                )
+            );
+
+            setUserReview('');
+            setMessage('Thank you for your review!');
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            setMessage('Error submitting review: ' + error.message);
+        }
+    };
+
+    // Render stars based on average rating
     const renderStars = (averageRating) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -61,43 +123,7 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         setUserRating(rating);
     };
 
-    // Handle review submission
-    const handleReviewSubmit = async () => {
-        if (userRating === 0 || userReview.trim() === '') {
-            setMessage('Please provide both a rating and a review.');
-            return;
-        }
-    
-        try {
-            const reviewData = {
-                user: 'Anonymous', // Change this to logged-in user if applicable
-                comment: userReview,
-                rating: userRating
-            };
-    
-            // Make POST request to backend to add the review
-            const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
-    
-            console.log('Review response:', response.data);
-    
-            // Update the product's reviews and average rating in the state
-            setProducts(prevProducts =>
-                prevProducts.map(prod =>
-                    prod._id === product._id ? response.data.product : prod
-                )
-            );
-    
-            // Reset the input fields after submitting the review
-            setUserRating(0);
-            setUserReview('');
-            setMessage('Thank you for your review!');
-        } catch (error) {
-            console.error('Error submitting review:', error);
-            setMessage('Error submitting review: ' + error.message);
-        }
-    };
-
-    // Function to render interactive star rating for user
+    // Render interactive star rating for user
     const renderUserRating = () => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -158,9 +184,11 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             {/* Rating input for the user */}
             <div className="user-rating">
                 <p>Rate this product:</p>
-                {renderUserRating()} {/* Display interactive rating stars */}
+                {renderUserRating()}
+                <button onClick={handleRatingSubmit}>Submit Rating</button>
             </div>
 
+            {/* Review input for the user */}
             <textarea
                 value={userReview}
                 onChange={(e) => setUserReview(e.target.value)}
@@ -179,7 +207,7 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                 ) : (
                     product.reviews.map(review => (
                         <div key={review._id} className="review">
-                            <p><strong>{review.user}</strong></p>
+                            <p><strong>{review.user ? review.user : 'Anonymous'}</strong></p>
                             <p>{review.comment}</p>
                             <p>Rating: {renderStars(review.rating)}</p>
                         </div>
