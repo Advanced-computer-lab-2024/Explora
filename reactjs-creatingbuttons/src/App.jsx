@@ -79,8 +79,27 @@ import TransportationBooking from './components/TransportationBooking';
 import FlightBooking from './components/FlightBooking';
 import PastItineraries from './components/PastItineraries.jsx';
 import BookHotel from './components/BookHotel';
+<<<<<<< HEAD
 import PastActivities from './components/PastActivities';
 import BookedTransportations from './components/BookedTransportations'; // New import
+=======
+import PastActivities from './components/PastActivities';  // Assuming this exists
+import PlaceManager from './components/PlaceManager';
+import TagManagers from './components/TagManagers.jsx';
+import TourismDashboard from './components/TourismDashboard';
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 9fb21a7b0e3164167246813a34f1495f7f5df114
 
 function App() {
   return (
@@ -107,6 +126,7 @@ function App() {
           <Route path="/create-profile" element={<CreateProfile />} />
           <Route path="/view-profile/:id" element={<ProfileView />} />
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
+<<<<<<< HEAD
           <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
           <Route path="/create-itinerary" element={<CreateItinerary />} />
           <Route path="/itinerary-view/:id" element={<ItineraryView />} />
@@ -164,6 +184,78 @@ function App() {
           <Route path="/museum" element={<MuseumForm />} />
           <Route path="/museum-list" element={<MuseumList />} />
           <Route path="/view-booked-transportations" element={<BookedTransportations />} /> {/* New route */}
+=======
+        <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
+        <Route path="/create-itinerary" element={<CreateItinerary />} />
+        <Route path="/itinerary-view/:id" element={<ItineraryView />} />
+        <Route path="/read-itinerary" element={<ReadItinerary />} />
+        <Route path="/itinerariesList" element={<ItineraryList />} />
+        <Route path="/update-itinerary" element={<UpdateItinerary />} />
+        <Route path="/delete-itinerary" element={<DeleteItinerary />} />
+        <Route path="/tourist-itinerary" element={<TouristItinerary />} />
+        <Route path="/create-itinerary-tourist" element={<CreateItineraryTourist />} />
+        <Route path="/read-itinerary-tourist" element={<ReadItineraryTourist />} />
+        <Route path="/update-itinerary-tourist" element={<UpdateItineraryTourist />} />
+        <Route path="/delete-itinerary-tourist" element={<DeleteItineraryTourist />} />
+        <Route path="/tourist-home" element={<Touristhome />} /> {/* Correct route for Touristhome */}
+        <Route path="/tourist-profile" element={<TouristProfile />} /> {/* Route for TouristProfile */}
+        <Route path="/tourist-search" element={<TouristSearch />} />  {/* Route for TouristSearch */}
+        <Route path="/company" element={<CompanyProfilePage/>} />
+        <Route path="/advertisers/create" element={<CompanyProfileForm/>} />
+        <Route path="/advertisers" element={<CompanyProfile/>} />
+        <Route path="/amanager" element={<ActivityManager/>} />
+        <Route path="/seller-home" element={<Sellerhome />} />
+        <Route path="/update-seller" element={<UpdateSeller />} />
+        <Route path="/company-update" element={<CompanyUpdateForm />} />
+        <Route path="/create-seller" element={<CreateSeller />} /> {/* Route for CreateSeller */}
+        <Route path="/ProfileDetailsPage" element={<ProfileDetailsPage/>}/>
+        <Route path="/SearchPageHeader" element={<SearchPageHeader/>} />
+        <Route path="/SiteSearchPage" element={<SiteSearchPage/>} />
+        <Route path="/ActivitySearchPage" element={<ActivitySearchPage/>} />
+        <Route path="/ItinerarySearchPage" element={<ItinerarySearchPage/>} />
+        <Route path="/UpcomingActivities" element={<UpcomingActivities/>} />
+        <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
+        <Route path="product-list-tourist" element={<ProductListTourist/>} />
+        <Route path="advact" element={<AdvActivity/>} />
+        <Route path="create-act" element={<CreateAdvAct/>} />
+        <Route path="list" element={<ActivityList2/>} />
+        
+        <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
+        <Route path="/product-card-tourist" element={<ProductCardTourist />} /> {/* Add this route */}
+        <Route path="/complaints" element={<ComplaintsTable />} /> {/* Complaints Page */}
+        <Route path="/file-complaint" element={<FileComplaint />} />  {/* Route for filing complaints */}
+        <Route path="/request-account-deletion" element={<AccountDeletionRequest />} /> {/* New route */}
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/upload-documents" element={<DocumentUpload />} />
+        <Route path="/guest-home" element={<GuestHome />} />
+        <Route path="/upload-image" element={<UploadImagePage />} />
+        <Route path="/archived-products" element={<ArchivedProducts />} />
+        <Route path="/admin-documents" element={<AdminDocumentViewer />} />
+        <Route path="/terms/:userId" element={<TermsAndConditionsPage />} /> {/* Add this line */}
+        <Route path="/itineraries-table" element={<ItinerariesTable />} /> {/* Itineraries table route */}
+        <Route path="/flagged-events" element={<FlaggedEvents />} /> {/* New route */}
+        <Route path="/book-transportation" element={<TransportationBooking />} />
+        <Route path="/book-flight" element={<FlightBooking />} /> {/* Add the route here */}
+        <Route path="/tourist-past-itineraries" element={<PastItineraries />} />
+        <Route path="/book-hotel" element={<BookHotel />} />
+        <Route path="/tourist-previous-activities" element={<PastActivities />} />
+        <Route path="/places" element={<PlaceManager />} />
+        <Route path="/tags" element={<TagManager />} />
+        <Route path="/tourism-dashboard" element={<TourismDashboard />} />
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> 9fb21a7b0e3164167246813a34f1495f7f5df114
         </Routes>
       </Router>
     </main>

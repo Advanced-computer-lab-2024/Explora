@@ -46,58 +46,63 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="login-form-container">
-      <form className="login-form" onSubmit={handleSubmit}>
-        <h2>Welcome Back!</h2>
-        {error && <p className="error-message">{error}</p>}
-        
-        <div className="form-group">
-        <label htmlFor="username">Username</label>
-          <div className="input-wrapper">
-            <input
-              type="text"
-              id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              className="input-field"
-            />
-            <i className="input-icon fas fa-user"></i>
+    <div className="wrapper"> {/* Centering wrapper */}
+      <div className="login-form-container">
+        <form className="login-form" onSubmit={handleSubmit}>
+          <h2 className="form-title">Welcome Back!</h2>
+          {error && <p className="error-message">{error}</p>}
+
+          <div className="form-group">
+            <label htmlFor="username">Username</label>
+            <div className="input-wrapper">
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                className="input-field"
+              />
+              <i className="input-icon fas fa-user"></i>
+            </div>
           </div>
-        </div>
 
-        <div className="form-group">
-        <label htmlFor="password">Password</label>
-          <div className="input-wrapper">
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="input-field"
-            />
-            <i className="input-icon fas fa-lock"></i>
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <div className="input-wrapper">
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="input-field"
+              />
+              <i className="input-icon fas fa-lock"></i>
+            </div>
           </div>
-        </div>
 
-        <button type="submit" className="login-button">Login</button>
+          <button type="submit" className="login-button">Login</button>
 
-        <div className="login-form-links">
-          <p>
-            <Link to="/reset-password">Forgot password?</Link>
-          </p>
-          <p>
-            Don't have an account? <Link to="/middle">Signup</Link>
-          </p>
-          <p>
-            <Link to="/tourist-search">Continue as a guest</Link>
-          </p>
-          <p>
-            <Link to="/acc-settings">Admin Access</Link>
-          </p>
-        </div>
-      </form>
+          <div className="login-form-links">
+            <p>
+              <Link to="/reset-password" className="link">Forgot password?</Link>
+            </p>
+            <p>
+              Don't have an account? <Link to="/middle" className="link">Signup</Link>
+            </p>
+            <p>
+              <Link to="/tourist-search" className="link">Continue as a guest</Link>
+            </p>
+            <p>
+              <Link to="/acc-settings" className="link">Admin Access</Link>
+            </p>
+            <p>
+              <Link to="/tourism-dashboard" className="link">Access to Tourism Governor</Link>
+            </p>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
