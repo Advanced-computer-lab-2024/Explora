@@ -32,7 +32,7 @@ const LoginForm = () => {
           navigate('/seller-dashboard');
           break;
         case 'Governor':
-          navigate('/');
+          navigate('/tourism-dashboard');
           break;
         case 'Admin':
           navigate('/');

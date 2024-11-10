@@ -1,111 +1,186 @@
-import React, { useState } from 'react';
-import DataTable from 'react-data-table-component';
-import { MdDelete, MdEdit } from 'react-icons/md';
-import PlaceForm from './PlaceForm';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-export default function PlaceManager() {
-  // Hardcoded initial data
-  const [places, setPlaces] = useState([
-    {
-      name: 'The Louvre',
-      description: 'Famous art museum in Paris, France.',
-      location: 'Paris, France',
-      openingHours: '9 AM - 6 PM',
-      ticketPrices: { foreigner: 17, native: 15, student: 12 },
-    },
-    {
-      name: 'Colosseum',
-      description: 'Ancient Roman gladiatorial arena.',
-      location: 'Rome, Italy',
-      openingHours: '8 AM - 5 PM',
-      ticketPrices: { foreigner: 16, native: 14, student: 10 },
-    },
-  ]);
-
-  const [currentPlace, setCurrentPlace] = useState(null);
+export default function MuseumsManager() {
+  const [museums, setMuseums] = useState([]); 
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    location: '',
+    openingHours: '',
+    ticketPrices: { foreigner: '', native: '', student: '' },
+  });
   const [isEditing, setIsEditing] = useState(false);
+  const [currentMuseumId, setCurrentMuseumId] = useState(null);
 
-  // Columns for the DataTable
-  const columns = [
-    {
-      name: 'Name',
-      selector: row => row.name,
-      sortable: true,
-    },
-    {
-      name: 'Description',
-      selector: row => row.description,
-    },
-    {
-      name: 'Location',
-      selector: row => row.location,
-      sortable: true,
-    },
-    {
-      name: 'Opening Hours',
-      selector: row => row.openingHours,
-    },
-    {
-      name: 'Ticket Prices',
-      selector: row => `Foreigner: $${row.ticketPrices.foreigner}, Native: $${row.ticketPrices.native}, Student: $${row.ticketPrices.student}`,
-    },
-    {
-      name: 'Edit',
-      cell: row => (
-        <button onClick={() => handleEdit(row)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-          <MdEdit color="blue" size={20} />
-        </button>
-      ),
-      ignoreRowClick: true,
-      button: true,
-    },
-    {
-      name: 'Delete',
-      cell: row => (
-        <button onClick={() => handleDelete(row.name)} style={{ border: 'none', background: 'none', cursor: 'pointer' }}>
-          <MdDelete color="red" size={20} />
-        </button>
-      ),
-      ignoreRowClick: true,
-      button: true,
-    },
-  ];
+  useEffect(() => {
+    fetchMuseums();
+  }, []);
 
-  // Delete Handler
-  const handleDelete = (name) => {
-    const confirmDelete = window.confirm(`Are you sure you want to delete ${name}?`);
-    if (confirmDelete) {
-      setPlaces(places.filter(place => place.name !== name));
+  const fetchMuseums = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/museums/museums');
+      if (Array.isArray(response.data)) {
+        setMuseums(response.data);
+      } else {
+        console.error('Response is not an array');
+      }
+    } catch (error) {
+      console.error('Error fetching museums:', error);
     }
   };
 
-  // Edit Handler
-  const handleEdit = (place) => {
-    setCurrentPlace(place);
-    setIsEditing(true);
-  };
-
-  // Add/Update Place
-  const savePlace = (place) => {
-    if (isEditing) {
-      setPlaces(places.map(p => (p.name === currentPlace.name ? place : p)));
-      setIsEditing(false);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (['foreigner', 'native', 'student'].includes(name)) {
+      setFormData((prev) => ({
+        ...prev,
+        ticketPrices: { ...prev.ticketPrices, [name]: value },
+      }));
     } else {
-      setPlaces([...places, place]);
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
-    setCurrentPlace(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isEditing) {
+        await axios.put(`http://localhost:4000/api/museums/${currentMuseumId}`, formData);
+      } else {
+        await axios.post('http://localhost:4000/api/museums/', formData);
+      }
+      fetchMuseums();
+      resetForm();
+    } catch (error) {
+      console.error('Error saving museum:', error);
+    }
+  };
+
+  const handleEdit = (museum) => {
+    setFormData(museum);
+    setIsEditing(true);
+    setCurrentMuseumId(museum._id);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+        await axios.delete(`http://localhost:4000/api/museums/${id}`);
+        fetchMuseums(); // Refresh the list after deletion
+    } catch (error) {
+        console.error('Error deleting museum:', error);
+    }
+};
+
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      description: '',
+      location: '',
+      openingHours: '',
+      ticketPrices: { foreigner: '', native: '', student: '' },
+    });
+    setIsEditing(false);
+    setCurrentMuseumId(null);
   };
 
   return (
-    <div>
-      <PlaceForm savePlace={savePlace} currentPlace={currentPlace} isEditing={isEditing} />
-      <DataTable
-        columns={columns}
-        data={places}
-        title="Museums & Historical Places"
-        pagination
-        dense
-      />
+    <div style={{ padding: '20px' }}>
+      <h2>{isEditing ? 'Edit Museum' : 'Add Museum'}</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          placeholder="Name"
+          required
+        />
+        <textarea
+          name="description"
+          value={formData.description}
+          onChange={handleChange}
+          placeholder="Description"
+          required
+        />
+        <input
+          name="location"
+          value={formData.location}
+          onChange={handleChange}
+          placeholder="Location"
+          required
+        />
+        <input
+          name="openingHours"
+          value={formData.openingHours}
+          onChange={handleChange}
+          placeholder="Opening Hours"
+          required
+        />
+        <input
+          name="foreigner"
+          value={formData.ticketPrices.foreigner}
+          onChange={handleChange}
+          placeholder="Foreigner Ticket Price"
+          required
+        />
+        <input
+          name="native"
+          value={formData.ticketPrices.native}
+          onChange={handleChange}
+          placeholder="Native Ticket Price"
+          required
+        />
+        <input
+          name="student"
+          value={formData.ticketPrices.student}
+          onChange={handleChange}
+          placeholder="Student Ticket Price"
+          required
+        />
+        <button type="submit">{isEditing ? 'Update Museum' : 'Add Museum'}</button>
+        {isEditing && <button type="button" onClick={resetForm}>Cancel</button>}
+      </form>
+
+      <h2>Museums</h2>
+      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+        <thead>
+          <tr style={{ backgroundColor: '#f2f2f2' }}>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Name</th>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Description</th>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Location</th>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Opening Hours</th>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Ticket Prices</th>
+            <th style={{ padding: '8px', border: '1px solid #ddd' }}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Array.isArray(museums) && museums.length > 0 ? (
+            museums.map((museum) => (
+              <tr key={museum._id}>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>{museum.name}</td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>{museum.description}</td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>{museum.location}</td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>{museum.openingHours}</td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                  Foreigner: ${museum.ticketPrices.foreigner} | Native: $
+                  {museum.ticketPrices.native} | Student: $
+                  {museum.ticketPrices.student}
+                </td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                  <button onClick={() => handleEdit(museum)}>Edit</button>
+                  <button onClick={() => handleDelete(museum._id)}>Delete</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6" style={{ padding: '8px', border: '1px solid #ddd', textAlign: 'center' }}>
+                No museums available
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   );
 }

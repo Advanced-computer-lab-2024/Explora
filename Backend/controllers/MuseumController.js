@@ -61,10 +61,10 @@ const getMuseumByName = async (req, res) => {
 };
 
 // Method to update a museum by name
-const updateMuseumByName = async (req, res) => {
+const updateMuseumById = async (req, res) => {
     try {
-        const { name } = req.params;
-        const museum = await Museum.findOneAndUpdate({ name }, req.body, { new: true });
+        const { id } = req.params;  // Use the ID to find the museum
+        const museum = await Museum.findByIdAndUpdate(id, req.body, { new: true });
         if (!museum) {
             return res.status(404).json({ message: 'Museum not found' });
         }
@@ -72,17 +72,17 @@ const updateMuseumByName = async (req, res) => {
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
-};
+  };  
 
-// Method to delete a museum by name
-const deleteMuseumByName = async (req, res) => {
+// Method to delete a museum by ID
+const deleteMuseumById = async (req, res) => {
     try {
-        const { name } = req.params;
-        const museum = await Museum.findOneAndDelete({ name });
+        const { id } = req.params;
+        const museum = await Museum.findByIdAndDelete(id);  // Use findByIdAndDelete instead
         if (!museum) {
             return res.status(404).json({ message: 'Museum not found' });
         }
-        res.status(204).send();
+        res.status(204).send(); // Successfully deleted
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -112,7 +112,7 @@ module.exports = {
     getAllMuseums,
     filterMuseums,
     getMuseumByName,
-    updateMuseumByName,
-    deleteMuseumByName,
+    updateMuseumById,
+    deleteMuseumById,
     getTicketPrice
 };

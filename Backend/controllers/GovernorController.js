@@ -5,10 +5,9 @@ const User = require("../models/User");
 const addTourismGovernorAccount = async (req, res) => {
     const { username, password } = req.body;
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
         const newGovernor = await User.create({
             username,
-            password: hashedPassword,
+            password,
             role: 'Governor'
         });
         res.status(200).json(newGovernor);
