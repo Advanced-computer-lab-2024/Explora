@@ -22,6 +22,7 @@ const reviewRoutes = require('./Routes/reviewRoutes');
 const categoryRoutes = require('./Routes/CategoryRoutes');
 const authRoute = require('./Routes/LoginRoute');
 const req = require('./Routes/deletionRequest');
+const preferences = require('./Routes/VacationPreferences');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -56,6 +57,7 @@ app.use('/api/advertisers', advertiserRoutes);
 app.use('/reviews', reviewRoutes);
 app.use('/api/auth', authRoute);
 app.use('/Request', req);
+app.use('/preferences', preferences);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)

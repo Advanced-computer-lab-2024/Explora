@@ -12,7 +12,7 @@ const LoginForm = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:4000/api/auth', { username, password });
+      const response = await axios.post('http://localhost:4000/api/auth/', { username, password });
 
       const { token, role } = response.data;
 
@@ -30,6 +30,12 @@ const LoginForm = () => {
           break;
         case 'Seller':
           navigate('/seller-dashboard');
+          break;
+        case 'Governor':
+          navigate('/');
+          break;
+        case 'Admin':
+          navigate('/');
           break;
         default:
           navigate('/dashboard');

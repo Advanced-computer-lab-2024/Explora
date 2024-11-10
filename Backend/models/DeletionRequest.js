@@ -10,6 +10,10 @@ const deletionRequestSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    email: {  // Added email field
+        type: String,
+        required: true,  // Make it required, or set it as optional
+    },
     status: {
         type: String,
         enum: ['pending', 'approved', 'rejected'],

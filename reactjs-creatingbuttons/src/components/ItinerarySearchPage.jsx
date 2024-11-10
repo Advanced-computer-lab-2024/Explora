@@ -1,254 +1,322 @@
 import React, { useEffect, useState } from 'react';
 import Select from 'react-select'; // Ensure this library is installed
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-
-const ItinerarySearchPage = () => {
-  const preferencesOptions = [
+const preferencesOptions = [
     { value: 'historic', label: 'Historic Areas' },
     { value: 'beach', label: 'Beaches' },
     { value: 'family', label: 'Family-Friendly' },
     { value: 'shopping', label: 'Shopping' },
-  ];
+];
 
-  // State to manage the search input, category, and additional filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [budgetSearchTerm, setBudgetSearchTerm] = useState('');
-  const [selectedRating, setSelectedRating] = useState('all');
-  const [selectedPrice, setSelectedPrice] = useState(299999000); // Default max price
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedPreferences, setSelectedPreferences] = useState([]);
-  const [selectedLanguage, setSelectedLanguage] = useState('');
-  const [sortOrder, setSortOrder] = useState('none');
-  const [currency, setCurrency] = useState('USD'); // Default currency
-  const [exchangeRates, setExchangeRates] = useState({ USD: 1, EUR: 0.85, EGP: 15.7 }); // Mock exchange rates
-  const [places, setPlaces] = useState([]); // State for storing fetched places
+const ItinerarySearchPage = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [selectedLanguage, setSelectedLanguage] = useState('');
+    const [selectedBudget, setSelectedBudget] = useState(100); // Default max budget
+    const [selectedDate, setSelectedDate] = useState('');
+    const [selectedPreferences, setSelectedPreferences] = useState([]);
+    const [sortByRating, setSortByRating] = useState('none');
+    const [sortByPrice, setSortByPrice] = useState('none');
+    const [itineraries, setItineraries] = useState([]);
+    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [exchangeRates, setExchangeRates] = useState({});
+    const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetch('http://localhost:4000/api/tour_guide_itinerary/')
-      .then(response => response.json())
-      .then(data => {
-        data = data.map((place) => {
-          return { ...place, date: place.date.split('T')[0] }
-        });
-        setPlaces(data);
-      });
-  }, []);
+    useEffect(() => {
+        setItineraries(dummyItineraries);
+    }, []);
 
-  // Dummy data with ratings, price, date, and preferences
-  // Replace with actual data if needed
-  const samplePlaces = [
-    {
-      id: 1,
-      name: "Eiffel Tower",
-      price: 50,
-      rating: 4.8,
-      date: "2024-11-10",
-      language: "French",
-      tags: ['historic', 'beach'],
-    },
-    {
-      id: 2,
-      name: "Louvre Museum",
-      price: 20,
-      rating: 4.7,
-      date: "2024-11-12",
-      language: "French",
-      tags: ['historic', 'shopping'],
-    },
-    {
-      id: 3,
-      name: "Disneyland",
-      price: 100,
-      rating: 4.9,
-      date: "2024-11-15",
-      language: "English",
-      tags: ['family', 'shopping'],
-    },
-    {
-      id: 4,
-      name: "Bondi Beach",
-      price: 0,
-      rating: 4.6,
-      date: "2024-11-18",
-      language: "English",
-      tags: ['beach'],
-    },
-  ];
+    useEffect(() => {
+        const fetchExchangeRates = async () => {
+            try {
+                const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/USD`);
+                setExchangeRates(response.data.rates);
+            } catch (err) {
+                setError('Failed to fetch exchange rates');
+            }
+        };
 
-  // Filtering logic
-  const filteredPlaces = samplePlaces.filter((place) => {
-    const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesBudget = place.price <= selectedPrice;
-    const matchesLanguage = place.language.toLowerCase().includes(selectedLanguage.toLowerCase());
-    const matchesRating = selectedRating === 'all' || place.rating >= Number(selectedRating);
-    const matchesDate = !selectedDate || place.date === selectedDate;
-    const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
-      place.tags?.includes(pref.value)
+        fetchExchangeRates();
+    }, [selectedCurrency]);
+
+    const convertPrice = (priceInUSD) => {
+        if (selectedCurrency === 'USD') return priceInUSD;
+        if (exchangeRates[selectedCurrency]) {
+            return priceInUSD * exchangeRates[selectedCurrency];
+        }
+        return priceInUSD;
+    };
+
+    const filteredItineraries = itineraries.filter((itinerary) => {
+        const matchesSearch = itinerary.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => itinerary.tags.includes(tag.value));
+        const matchesLanguage = !selectedLanguage || itinerary.language.toLowerCase() === selectedLanguage.toLowerCase();
+        const matchesBudget = itinerary.budget <= selectedBudget;
+        const matchesDate = !selectedDate || itinerary.date === selectedDate;
+        const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
+            itinerary.tags.includes(pref.value)
+        );
+
+        return matchesSearch && matchesTags && matchesLanguage && matchesBudget && matchesDate && matchesPreferences;
+    });
+
+    let sortedItineraries = [...filteredItineraries];
+    if (sortByPrice === 'low-to-high') {
+        sortedItineraries.sort((a, b) => a.budget - b.budget);
+    } else if (sortByPrice === 'high-to-low') {
+        sortedItineraries.sort((a, b) => b.budget - a.budget);
+    }
+
+    if (sortByRating === 'lowest-to-highest') {
+        sortedItineraries.sort((a, b) => a.rating - b.rating);
+    } else if (sortByRating === 'highest-to-lowest') {
+        sortedItineraries.sort((a, b) => b.rating - a.rating);
+    }
+
+    return (
+        <div className="search-page-container" style={styles.pageContainer}>
+            {error && <div style={styles.error}>{error}</div>}
+
+            <div style={styles.searchBarContainer}>
+                <input
+                    type="text"
+                    placeholder="Search by name..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    style={styles.inputField}
+                />
+                <input
+                    type="text"
+                    placeholder="Search tags..."
+                    value={selectedTags}
+                    onChange={(e) => setSelectedTags(e.target.value)}
+                    style={styles.inputField}
+                />
+            </div>
+
+            <div style={styles.filtersContainer}>
+                <div style={styles.filterGroup}>
+                    <label>Budget:</label>
+                    <input
+                        type="number"
+                        value={selectedBudget}
+                        onChange={(e) => setSelectedBudget(e.target.value)}
+                        style={styles.selectInput}
+                    />
+                </div>
+
+                <div style={styles.filterGroup}>
+                    <label>Language:</label>
+                    <input
+                        type="text"
+                        value={selectedLanguage}
+                        onChange={(e) => setSelectedLanguage(e.target.value)}
+                        placeholder="Search by language..."
+                        style={styles.selectInput}
+                    />
+                </div>
+
+                <div style={styles.filterGroup}>
+                    <label>Date:</label>
+                    <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        style={styles.selectInput}
+                    />
+                </div>
+
+                <div style={styles.filterGroup}>
+                    <label>Currency:</label>
+                    <select
+                        value={selectedCurrency}
+                        onChange={(e) => setSelectedCurrency(e.target.value)}
+                        style={styles.selectInput}
+                    >
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                        <option value="EGP">EGP</option>
+                    </select>
+                </div>
+
+                <div style={styles.filterGroup}>
+                    <label>Select Preferences:</label>
+                    <Select
+                        isMulti
+                        options={preferencesOptions}
+                        onChange={(selectedOptions) => setSelectedPreferences(selectedOptions || [])}
+                        styles={styles.reactSelect}
+                        placeholder="Select..."
+                    />
+                </div>
+
+                <div style={styles.filterGroup}>
+                    <label>Sort by Rating:</label>
+                    <select
+                        value={sortByRating}
+                        onChange={(e) => setSortByRating(e.target.value)}
+                        style={styles.selectInput}
+                    >
+                        <option value="none">None</option>
+                        <option value="lowest-to-highest">Low to High</option>
+                        <option value="highest-to-lowest">High to Low</option>
+                    </select>
+                </div>
+
+                <div style={styles.filterGroup}>
+                    <label>Sort by Price:</label>
+                    <select
+                        value={sortByPrice}
+                        onChange={(e) => setSortByPrice(e.target.value)}
+                        style={styles.selectInput}
+                    >
+                        <option value="none">None</option>
+                        <option value="low-to-high">Low to High</option>
+                        <option value="high-to-low">High to Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style={styles.resultsContainer}>
+                <h3>Upcoming Itineraries:</h3>
+                <ul style={styles.resultsList}>
+                    {sortedItineraries.map((itinerary) => (
+                        <li key={itinerary.id} style={styles.resultItem}>
+                            <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
+                                {itinerary.name} - {selectedCurrency} {convertPrice(itinerary.budget).toFixed(2)} (Rating: {itinerary.rating}) - Date: {itinerary.date}
+                            </Link>
+                        </li>
+                    ))}
+                </ul>
+
+                {/* View Upcoming Itineraries Button */}
+                <div style={styles.viewButtonContainer}>
+                    <Link to="/UpcomingItineraries" style={styles.viewButton}>
+                        View Upcoming Itineraries
+                    </Link>
+                </div>
+            </div>
+        </div>
     );
-    return matchesSearch && matchesRating && matchesDate && matchesPreferences && matchesLanguage && matchesBudget;
-  });
-
-  // Event handlers
-  const handleSearchChange = (e) => setSearchTerm(e.target.value);
-  const handleBudgetChange = (e) => setBudgetSearchTerm(e.target.value);
-  const handleLanguageChange = (e) => setSelectedLanguage(e.target.value);
-  const handlePriceChange = (e) => setSelectedPrice(e.target.value);
-  const handleDateChange = (e) => setSelectedDate(e.target.value);
-  const handlePreferencesChange = (selectedOptions) => {
-    setSelectedPreferences(selectedOptions || []);
-    console.log("Selected Preferences:", selectedOptions);
-  };
-
-  let sortedPlaces = [...filteredPlaces];
-
-  if (sortOrder === 'low-to-high') {
-    sortedPlaces.sort((a, b) => a.price - b.price);
-  } else if (sortOrder === 'high-to-low') {
-    sortedPlaces.sort((a, b) => b.price - a.price);
-  } else if (sortOrder === 'lowest-to-highest') {
-    sortedPlaces.sort((a, b) => a.rating - b.rating);
-  } else if (sortOrder === 'highest-to-lowest') {
-    sortedPlaces.sort((a, b) => b.rating - a.rating);
-  }
-
-  return (
-    <div>
-      <h2>Itinerary Search Page</h2>
-      
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '20px', 
-        border: '2px solid #ccc', 
-        borderRadius: '8px', 
-        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)', 
-        backgroundColor: '#f9f9f9' }}>
-        
-        {/* Search Bar */}
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          style={{ padding: '10px', width: '300px', marginRight: '15px' }}
-        />
-
-        {/* Tags Filter */}
-        <label style={{ marginLeft: '15px' }}>Tags:</label>
-        <input
-          type="text"
-          placeholder="Search tags..."
-          value={selectedPreferences.join(', ')}
-          onChange={(e) => setSelectedPreferences(e.target.value.split(',').map(tag => tag.trim()))}
-          style={{ padding: '10px', marginLeft: '10px', width: '200px' }}
-        />
-      </div>
-
-      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '20px', 
-        border: '2px solid #ccc', 
-        borderRadius: '8px', 
-        boxShadow: '2px 2px 5px rgba(0, 0, 0, 0.1)', 
-        backgroundColor: '#f9f9f9' }}>
-        
-        {/* Budget Filter */}
-        <label style={{ marginLeft: '15px' }}>Budget:</label>
-        <input 
-          type="number" 
-          placeholder="Max Price" 
-          value={selectedPrice} 
-          onChange={handlePriceChange} 
-          style={{ padding: '10px', marginLeft: '10px', width: '80px' }} 
-        />
-
-        {/* Language Dropdown */}
-        <label style={{ marginLeft: '15px' }}>Language: </label>
-        <input
-          type="text"
-          placeholder="Search by language..."
-          value={selectedLanguage}
-          onChange={handleLanguageChange}
-          style={{ padding: '10px', width: '300px', marginRight: '15px' }}
-        />
-
-        {/* Date Picker */}
-        <label style={{ marginLeft: '15px' }}>Date:</label>
-        <input type="date" value={selectedDate} onChange={handleDateChange} style={{ padding: '10px', marginLeft: '10px' }} />
-
-        <label style={{ marginLeft: '15px' }}>Currency:</label>
-        <select value={currency} onChange={(e) => setCurrency(e.target.value)} style={{ padding: '10px', marginLeft: '10px' }}>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="EGP">EGP</option>
-        </select>
-      </div>
-
-      {/* Preferences Selection */}
-      <div style={{ marginBottom: '15px' }}>
-        <h4>Select Your Preferences:</h4>
-        <Select
-          isMulti
-          options={preferencesOptions}
-          onChange={handlePreferencesChange}
-          styles={{
-            control: (provided) => ({
-              ...provided,
-              width: '300px',
-              marginTop: '10px',
-            }),
-          }}
-        />
-      </div>
-
-      {/* Sort by Rating */}
-      <label style={{ marginLeft: '15px' }}>Sort by Rating:</label>
-      <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '10px', marginLeft: '10px' }}>
-        <option value="none">None</option>
-        <option value="lowest-to-highest">Low to High</option>
-        <option value="highest-to-lowest">High to Low</option>
-      </select>
-
-      <label style={{ marginLeft: '15px' }}>Sort by Price:</label>
-      <select value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '10px', marginLeft: '10px' }}>
-        <option value="none">None</option>
-        <option value="low-to-high">Low to High</option>
-        <option value="high-to-low">High to Low</option>
-      </select>
-
-      {/* Button to View All Upcoming Itineraries */}
-      <div style={{ marginTop: '20px' }}>
-      <Link
-        to="/UpcomingItineraries"
-        style={{
-          padding: '10px 15px',
-          backgroundColor: '#000000',
-          color: 'white',
-          border: 'none',
-          borderRadius: '4px',
-          textDecoration: 'none',
-          display: 'inline-block',
-          cursor: 'pointer',
-        }}
-      >
-        View All Upcoming Itineraries
-      </Link>
-
-      </div>
-
-      {/* Results Section */}
-      <div style={{ marginTop: '20px' }}>
-        <h3>Results:</h3>
-        {sortedPlaces.length > 0 ? (
-          <ul>
-            {sortedPlaces.map((place, index) => (
-              <li key={index}>
-                {place.name} - {place.price} {currency} (Rating: {place.rating}) - Date: {place.date}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No results found.</p>
-        )}
-      </div>
-    </div>
-  );
 };
+
+const styles = {
+    pageContainer: {
+        fontFamily: 'Arial, sans-serif',
+        padding: '20px',
+        backgroundColor: '#f4f4f9',
+        minHeight: '100vh',
+    },
+    error: {
+        color: 'red',
+        marginBottom: '15px',
+        textAlign: 'center',
+    },
+    searchBarContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginBottom: '20px',
+    },
+    inputField: {
+        padding: '10px',
+        width: '48%',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+    },
+    filtersContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        marginBottom: '20px',
+    },
+    filterGroup: {
+        margin: '10px',
+        minWidth: '150px',
+    },
+    selectInput: {
+        padding: '10px',
+        borderRadius: '5px',
+        border: '1px solid #ccc',
+        width: '100%',
+    },
+    resultsContainer: {
+        marginTop: '30px',
+    },
+    resultsList: {
+        listStyleType: 'none',
+        padding: 0,
+    },
+    resultItem: {
+        backgroundColor: '#fff',
+        padding: '10px',
+        marginBottom: '15px',
+        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+    },
+    resultLink: {
+        fontSize: '18px',
+        textDecoration: 'none',
+        color: '#333',
+    },
+    viewButtonContainer: {
+        textAlign: 'center',
+        marginTop: '20px',
+    },
+    viewButton: {
+        backgroundColor: '#4CAF50',
+        color: 'white',
+        padding: '10px 20px',
+        textDecoration: 'none',
+        borderRadius: '5px',
+        fontSize: '16px',
+    },
+    reactSelect: {
+        control: (styles) => ({
+            ...styles,
+            width: '100%',
+            padding: '10px',
+            borderRadius: '5px',
+        }),
+    },
+};
+
+const dummyItineraries = [
+    {
+        id: 1,
+        name: 'Historic Cairo Tour',
+        budget: 80,
+        rating: 4.5,
+        date: '2024-12-01',
+        tags: ['historic', 'family'],
+        language: 'English',
+    },
+    {
+        id: 2,
+        name: 'Beach Holiday in Alexandria',
+        budget: 120,
+        rating: 4.7,
+        date: '2024-12-15',
+        tags: ['beach', 'shopping'],
+        language: 'Arabic',
+    },
+    {
+        id: 3,
+        name: 'Luxor Adventure',
+        budget: 100,
+        rating: 4.3,
+        date: '2024-11-30',
+        tags: ['historic', 'shopping'],
+        language: 'English',
+    },
+    {
+        id: 4,
+        name: 'Family Tour in Giza',
+        budget: 90,
+        rating: 4.6,
+        date: '2024-12-05',
+        tags: ['family', 'historic'],
+        language: 'Arabic',
+    },
+];
 
 export default ItinerarySearchPage;
