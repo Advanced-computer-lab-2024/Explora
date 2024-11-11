@@ -136,18 +136,24 @@ const changePassword = async (req, res) => {
     }
   }
   const deleteUser = async (req, res) => {
-    const { id } = req.params; // Get the user ID from the URL
+    const { username } = req.params; // Get the user ID from the URL
+
 
     try {
         // Find and delete the user
-        const user = await User.findByIdAndDelete(id);
+        const user = await User.findOneAndDelete({ username: username  });
 
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
 
         // Delete the corresponding deletion request
-        await DeletionRequest.findOneAndDelete({ user: id });
+       
+        const deletionRequest = await DeletionRequest.findOneAndDelete({ user: user._id });
+        
+        if (!deletionRequest) {
+            return res.status(404).json({ msg: 'Deletion request not found' });
+        }
 
         res.status(200).json({ msg: 'User and deletion request deleted successfully', user });
     } catch (err) {
