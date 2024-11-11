@@ -16,7 +16,7 @@ const UpcomingItineraries = () => {
       .then(data => {
         // Format the date if available
         const formattedData = data.map((itin) => {
-          const formattedDate = itin.date ? new Date(itin.date).toLocaleDateString('en-US', { 
+          const formattedDate = itin.availableDates ? new Date(itin.availableDates).toLocaleDateString('en-US', { 
             year: 'numeric', month: 'long', day: 'numeric' 
           }) : 'No Date Available';
           return { ...itin, date: formattedDate };
@@ -68,18 +68,18 @@ const UpcomingItineraries = () => {
 
   const handleCancelBooking = (itin) => {
     const now = new Date();
-    const itinDate = new Date(itin.date); // The date of the itinerary
-    const timeDifference = itinDate - now; // Time difference in milliseconds
+    const timeDifference = new Date(itin.availableDates) - now; // Time difference in milliseconds
     const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
-  
+
     // Check if the cancellation can happen based on the 48-hour rule
     if (hoursDifference >= 48) {
       setBookedTickets((prev) => prev.filter(ticketId => ticketId !== itin._id));
       alert(`Your booking for "${itin.name}" has been canceled.`);
     } else {
-      alert('You can not cancel your booking 48 hours before the event starts.');
+      alert('You can not cancel your booking less than 48 hours before the event starts.');
     }
   };
+  
 
   const redeemPoints = () => {
     const pointsRequired = 10000;
