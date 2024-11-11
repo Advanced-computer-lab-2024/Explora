@@ -11,9 +11,8 @@ const UpcomingActivities = () => {
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
   const [itins, setItins] = useState([]);
-
-
   const userId = "672404b5711f4330c4103753";
+
 
   useEffect(() => {
     const savedPoints = localStorage.getItem('loyaltyPoints');
@@ -95,6 +94,11 @@ const UpcomingActivities = () => {
         return;
       }
 
+      if (bookedTickets.includes(place._id)) {
+        alert('Ticket Already Booked');
+        return;
+      }
+
       setBookedTickets((prev) => [...prev, place._id]);
 
       const level = place.price > 500000 ? 3 : place.price > 100000 ? 2 : 1;
@@ -173,10 +177,18 @@ const UpcomingActivities = () => {
             <p className="activity-rating">Rating: {place.rating}/10</p>
 
             <div className="share-buttons">
-              <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
+              {bookedTickets.includes(place._id) ? (
+                <button disabled>Ticket Already Booked</button>
+              ) : (
+                <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
+              )}
               <button onClick={() => shareLink(place)}>Share Link</button>
               <button onClick={() => shareEmail(place)}>Share via Email</button>
             </div>
+
+            {bookedTickets.includes(place._id) && (
+              <button onClick={() => handleCancelBooking(place)}>Cancel Booking</button>
+            )}
           </div>
         ))}
       </div>

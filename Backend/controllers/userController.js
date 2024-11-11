@@ -51,7 +51,7 @@ const registerUser = asyncWrapper(async (req, res) => {
             newUser = new Tourist({
                 username,
                 email,
-                password: hash,  // Use 'hash' here
+                password,  // Use 'hash' here
                 role,
                 mobileNumber,
                 nationality,
@@ -62,7 +62,7 @@ const registerUser = asyncWrapper(async (req, res) => {
             newUser = new Seller({
                 username,
                 email,
-                password: hash,  // Use 'hash' here
+                password,  // Use 'hash' here
                 role,
                 idFile,
                 taxFile,
@@ -72,7 +72,7 @@ const registerUser = asyncWrapper(async (req, res) => {
             newUser = new TourGuide({
                 username,
                 email,
-                password: hash,  // Use 'hash' here
+                password,  // Use 'hash' here
                 role,
                 idFile,
                 certificatesFile,
@@ -82,7 +82,7 @@ const registerUser = asyncWrapper(async (req, res) => {
             newUser = new Advertiser({
                 username,
                 email,
-                password: hash,  // Use 'hash' here
+                password,  // Use 'hash' here
                 role,
                 idFile,
                 taxFile,
@@ -129,6 +129,13 @@ const login = async (req, res) => {
             console.log('Password does not match');
             return res.status(400).json({ message: 'Invalid password' });
         }
+        const payload = {
+            user: {
+                id: user._id, // Include relevant user information in the payload
+                role: user.role, // Include the role for role-based routing
+            },
+        };
+
 
         const token = createToken(user.username);
         res.cookie('jwt', token, { httpOnly: true, maxAge: maxAge * 1000 });

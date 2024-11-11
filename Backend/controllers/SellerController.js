@@ -62,7 +62,7 @@ const logout = async (req, res) => {
 
 const createSeller = async (req, res) => {
     try {
-        const { username, email,password, description, products, isAccepted } = req.body;
+        const { username, email, password, description, products, isAccepted } = req.body;
 
         const seller = new Seller({
             username,
