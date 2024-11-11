@@ -1,14 +1,18 @@
 // controllers/activityController.js
+const mongoose = require("mongoose");
 
 const Activity = require('../models/Activity');
 const ActivityCategory = require('../models/ActivityCategory');
 const PrefrenceTag = require('../models/PrefrenceTag');
 
 const createActivity = async (req, res) => {
-    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen, category } = req.body; // Adjusted
-    const advertiserId = req.params.id; // Get Id from URL parameter
-
     try {
+        const {
+            name, date, time, location, price, tags, specialDiscounts,
+            bookingOpen, category
+        } = req.body;
+        const { id } = req.params;
+
         // Validate required fields
         if (!name || !date || !time || !location || !price || !category) {
             return res.status(400).json({ message: 'All fields are required.' });
@@ -20,24 +24,36 @@ const createActivity = async (req, res) => {
             return res.status(400).json({ message: 'Activity already exists.' });
         }
 
-        // Validate the category (category must be an ObjectId)
-        const foundCategory = await ActivityCategory.findById(category);
+        // Find the category by name
+        const foundCategory = await ActivityCategory.findOne({ activityType: category });
         if (!foundCategory) {
             return res.status(404).json({ message: 'Category not found.' });
         }
+        const categoryId = foundCategory._id;
+
+        // Find tags by names and get their ObjectIds
+        const tagsId = [];
+for (const tagName of tags) { // Use `tagName` to avoid naming conflict
+    const tag = await PrefrenceTag.findOne({ tag: tagName }); // Use `PrefrenceTag` model
+    if (!tag) {
+        return res.status(404).json({ message: `Tag "${tagName}" not found.` });
+    }
+    tagsId.push(tag._id);
+}
 
         // Create a new activity instance
         const newActivity = new Activity({
+            advertiserId: id,
             name,
             date,
             time,
-            rating,
             location,
             price,
-            category, // Now storing the category ID directly
-            tags, // Assuming tags are already ObjectId references
+            category: categoryId,
+            tags: tagsId,
             specialDiscounts,
             bookingOpen,
+            
         });
 
         const savedActivity = await newActivity.save();
@@ -46,6 +62,7 @@ const createActivity = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 
 // Filter activities by tag, name, or category
@@ -93,14 +110,11 @@ const filterActivities = async (req, res) => {
 // Read all activities
 const getAllActivities = async (req, res) => {
     try {
-        const activities = await Activity.find()
-            .populate('category', 'activityType') // Populate category name
-            .populate('tags', 'tag') // Populate tags
-            .select('-createdAt -updatedAt'); // Exclude timestamps
+        const activities = await Activity.find().populate('category', 'activityType').populate('tags', 'tag').select('-createdAt -updatedAt');
         res.status(200).json(activities);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
 };
 
 // Get all upcoming activities
@@ -139,15 +153,48 @@ const getPreviousActivities = async (req, res) => {
 // Update an activity
 const updateActivity = async (req, res) => {
     try {
-        const updatedActivity = await Activity.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!updatedActivity) {
+        const { id } = req.params;
+        const { name, date, time, location, price, category, tags, specialDiscounts, bookingOpen } = req.body;
+        
+        // Check if activity exists
+        const existingActivity = await Activity.findById(id);
+        if (!existingActivity) {
             return res.status(404).json({ error: 'Activity not found.' });
         }
+
+        // Prepare the update object
+        const updateData = { name, date, time, location, price, specialDiscounts, bookingOpen };
+
+        // Handle category update if provided
+        if (category) {
+            const foundCategory = await ActivityCategory.findOne({ activityType: category });
+            if (!foundCategory) {
+                return res.status(404).json({ error: 'Category not found.' });
+            }
+            updateData.category = foundCategory._id;
+        }
+
+        // Handle tags update if provided
+        if (tags && tags.length) {
+            const tagsId = [];
+            for (const tagName of tags) {
+                const tag = await PrefrenceTag.findOne({ tag: tagName });
+                if (!tag) {
+                    return res.status(404).json({ error: `Tag "${tagName}" not found.` });
+                }
+                tagsId.push(tag._id);
+            }
+            updateData.tags = tagsId;
+        }
+
+        // Update the activity
+        const updatedActivity = await Activity.findByIdAndUpdate(id, updateData, { new: true });
         res.status(200).json(updatedActivity);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
+
 
 // Delete an activity
 const deleteActivity = async (req, res) => {

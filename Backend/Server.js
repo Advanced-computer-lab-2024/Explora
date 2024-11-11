@@ -15,6 +15,7 @@ const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
 const touristRoutes = require('./Routes/touristRouter'); // Route for tourists
 const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjusted path
 const activityRoutes = require('./Routes/activity');
+const AdvertiserActivityRoutes = require('./Routes/ActivityRoutes');
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary');
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile');
 const userRoutes = require('./Routes/userRoute');
@@ -63,6 +64,8 @@ app.use('/api/auth', authRoute);
 app.use('/Request', req);
 app.use('/preferences', preferences);
 app.use('/complaints',complaintsRoute);
+app.use('/Activity', AdvertiserActivityRoutes);
+
 
 //connect to MongoDB
 console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded

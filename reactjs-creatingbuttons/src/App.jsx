@@ -82,6 +82,7 @@ import Test from './pages/test/test.jsx';
 import { Toaster } from 'react-hot-toast';
 import DeleteRequestsPage from './components/AdminDeleteRequests.jsx';
 import PastActivities from './components/PastActivities';  // Assuming this exists
+import ActivityForm from './components/ActivityForm.jsx';
 
 
 
@@ -101,7 +102,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<Test />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
@@ -153,7 +154,7 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
         <Route path="advact" element={<AdvActivity/>} />
-        <Route path="create-act" element={<CreateAdvAct/>} />
+        <Route path="create-act" element={<ActivityForm/>} />
         <Route path="list" element={<ActivityList2/>} />
         
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
