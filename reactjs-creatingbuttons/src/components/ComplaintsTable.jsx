@@ -8,7 +8,7 @@ const ComplaintsTable = ({ userId }) => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const userId = '672e76a1725baf5ea88f0224'; // Example user ID
+        const userId = '67322cdfa472e2e7d22de84a'; // Example user ID
         // Fetch complaints for the provided user ID
         const response = await axios.get(`http://localhost:4000/complaints/user/${userId}`);
         setComplaints(response.data); // Assuming the backend sends back the complaints array
