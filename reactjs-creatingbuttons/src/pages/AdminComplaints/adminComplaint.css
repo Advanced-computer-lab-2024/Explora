@@ -1,43 +1,117 @@
+/* General Styles for Admin Complaints Page */
 .admin-complaints {
-    padding: 20px;
+    padding: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
 }
 
-.filters {
+.admin-complaints h2 {
+    text-align: center;
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+/* Filter Section */
+.admin-complaints .filters {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
+    padding: 15px 0;
+    border-bottom: 2px solid #ddd;
 }
 
-.filters label {
+.admin-complaints .filters label {
+    font-size: 1rem;
+    color: #555;
+    font-weight: 500;
     margin-right: 10px;
 }
 
-.filters select {
-    padding: 5px;
-}
-
-.admin-complaints complaint-card {
+.admin-complaints .filters select {
+    padding: 8px 15px;
+    font-size: 1rem;
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 10px;
-    margin: 10px 0;
+    background-color: #fff;
+    width: 180px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.admin-complaints .filters select:hover {
+    border-color: #666;
+}
+
+/* Complaint Cards */
+.admin-complaints .complaint-card {
     display: flex;
-    align-items: center;
+    flex-direction: row; /* Image and text side by side */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 25px;
+    transition: transform 0.3s, box-shadow 0.3s ease-in-out;
 }
 
-.image-container {
-    margin-right: 15px;
+.admin-complaints .complaint-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
-.image-container img {
-    width: 60px; /* Set a width for the image */
-    height: auto; /* Maintain aspect ratio */
+.admin-complaints .image-container {
+    margin-right: 20px;
+    flex-shrink: 0;
 }
 
-.info-container {
+.admin-complaints .image-container img {
+    width: 50px;  /* Set a smaller width for the image */
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.admin-complaints .info-container {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
+.admin-complaints .info-container .complaint-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.admin-complaints .info-container .complaint-body {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.admin-complaints .info-container .complaint-date {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 15px;
+}
+
+/* No Complaints Message */
+.no-complaints {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #888;
+    margin-top: 50px;
+}
+
+/* Details Panel (for showing complaint details) */
 .details-panel {
     position: fixed;
     top: 0;
@@ -49,20 +123,63 @@
     padding: 20px;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .panel-content {
     background: white;
     color: black;
     padding: 20px;
-    border-radius: 5px;
-    margin: auto;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
 .close-button {
     background: red;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 10px 15px;
     cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+    align-self: flex-start;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+    background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+    /* For mobile devices */
+    .filters {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-complaints .complaint-card {
+        flex-direction: column; /* Stack image and text vertically */
+        padding: 15px;
+    }
+
+    .admin-complaints .image-container {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+
+    .admin-complaints .info-container .complaint-title {
+        font-size: 1.1rem;
+    }
+
+    .admin-complaints .info-container .complaint-body {
+        font-size: 0.95rem;
+    }
+
+    .admin-complaints .info-container .complaint-date {
+        font-size: 0.85rem;
+    }
 }
