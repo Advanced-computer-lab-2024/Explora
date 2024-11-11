@@ -7,7 +7,7 @@ export default function BookedTransportations() {
     // Fetch data for booked transportations when the component mounts
     const fetchBookedTransportations = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/transportationBook/672404b5711f4330c4103753`); // Use your specific user ID here
+        const response = await fetch(`http://localhost:4000/transportationBook/67322cdfa472e2e7d22de84a`); // Use your specific user ID here
         const data = await response.json();
         
         console.log('Booked Transportations:', data); // Log the response to check its structure

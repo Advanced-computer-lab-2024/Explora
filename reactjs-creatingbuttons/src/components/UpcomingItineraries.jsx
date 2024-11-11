@@ -16,7 +16,9 @@ const UpcomingItineraries = () => {
       .then(data => {
         // Format the date if available
         const formattedData = data.map((itin) => {
-          const formattedDate = itin.date ? itin.date.split('T')[0] : 'No Date Available';
+          const formattedDate = itin.date ? new Date(itin.date).toLocaleDateString('en-US', { 
+            year: 'numeric', month: 'long', day: 'numeric' 
+          }) : 'No Date Available';
           return { ...itin, date: formattedDate };
         });
         setItins(formattedData);
@@ -38,9 +40,9 @@ const UpcomingItineraries = () => {
     navigator.clipboard.writeText(link)
         .then(() => setMessage('Link copied to clipboard!'))
         .catch((err) => setMessage(`Failed to copy link: ${err.message}`));
-};
+  };
 
-const shareEmail = (itin) => {
+  const shareEmail = (itin) => {
     const subject = `Check out this activity: ${itin.name}`;
     const body = `I thought you might be interested in this activity:\n\n${itin.name}\nDate: ${itin.date}\nPrice: ${itin.price}$\nRating: ${itin.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${itin._id}`;
     
@@ -66,14 +68,16 @@ const shareEmail = (itin) => {
 
   const handleCancelBooking = (itin) => {
     const now = new Date();
-    const timeDifference = new Date(itin.date) - now;
-    const hoursDifference = timeDifference / (1000 * 60 * 60);
-
+    const itinDate = new Date(itin.date); // The date of the itinerary
+    const timeDifference = itinDate - now; // Time difference in milliseconds
+    const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
+  
+    // Check if the cancellation can happen based on the 48-hour rule
     if (hoursDifference >= 48) {
       setBookedTickets((prev) => prev.filter(ticketId => ticketId !== itin._id));
       alert(`Your booking for "${itin.name}" has been canceled.`);
     } else {
-      alert('You can only cancel your booking 48 hours before the event starts.');
+      alert('You can not cancel your booking 48 hours before the event starts.');
     }
   };
 
@@ -120,10 +124,12 @@ const shareEmail = (itin) => {
       <div className="activities-list">
         {itins.map((itin) => (
           <div key={itin._id} className="activity-card">
-            <h2 className="activity-name">{itin.name}</h2>
-            <p className="activity-date">Date: {itin.date}</p>
+            <h2 className="activity-name">{itin.locations}</h2>
+            <p className="activity-rating">TourGuide: {itin.tourGuideName}</p>
+            <p className="activity-date">Date: {itin.availableDates}</p>
             <p className="activity-price">Price: {itin.price}$</p>
-            <p className="activity-rating">Rating: {itin.rating}/10</p>
+            <p className="activity-rating">language: {itin.language}</p>
+
 
             <div className="share-buttons">
               <button onClick={() => shareLink(itin)}>Share Link</button>

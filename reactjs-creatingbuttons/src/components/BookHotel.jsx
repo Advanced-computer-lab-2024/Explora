@@ -13,7 +13,7 @@ const HotelBooking = () => {
   const [cvv, setCvv] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [touristId] = useState("672e97f48a225c52217e99ac"); // Hardcoded for now
+  const [touristId] = useState("67322cdfa472e2e7d22de84a"); // Hardcoded for now
   const [searchId, setSearchId] = useState(null);
   const [hotelId, setHotelId] = useState(null); // Set after selecting the hotel
 

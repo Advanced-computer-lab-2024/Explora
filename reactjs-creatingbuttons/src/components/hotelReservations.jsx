@@ -7,7 +7,7 @@ export default function hotelReservations() {
     // Fetch data for hotel reservations when the component mounts
     const fetchHotelReservations = async () => {
       try {
-        const response = await fetch('http://localhost:4000/hotels/reservations/672e97f48a225c52217e99ac'); // Use your specific user ID here
+        const response = await fetch('http://localhost:4000/hotels/reservations/67322cdfa472e2e7d22de84a'); // Use your specific user ID here
         const data = await response.json();
 
         console.log('Hotel Reservations:', data); // Log the response to check its structure

@@ -66,11 +66,7 @@ const BookDropdown = () => {
   // Handle navigation based on selection
   const handleSelect = (option) => {
     setShowDropdown(false); // Close dropdown after selection
-    if (option === 'flight') {
-      navigate('/FlightBooking'); // Redirect to flight booking page
-    } else if (option === 'hotel') {
-      navigate('/HotelBooking'); // Redirect to hotel booking page
-    } else if (option === 'bookedFlights') {
+    if (option === 'bookedFlights') {
       navigate('/booked-flights'); // Redirect to booked flights page
     } else if (option === 'hotelReservations') {
       navigate('/hotel-reservations'); // Redirect to hotel reservations page
@@ -84,13 +80,7 @@ const BookDropdown = () => {
       </button>
       {showDropdown && (
         <div style={dropdownStyle}>
-          <button onClick={() => handleSelect('flight')} style={dropdownItemStyle}>
-            Book a Flight
-          </button>
 
-          <button onClick={() => handleSelect('hotel')} style={dropdownItemStyle}>
-            Book a Hotel
-          </button>
               {/* New buttons */}
               <button onClick={() => handleSelect('bookedFlights')} style={dropdownItemStyle}>
             Booked Flights
