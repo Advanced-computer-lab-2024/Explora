@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './test.css'; // Import your CSS file here
 import Register from '../Register/Register.jsx'; // Adjust path if necessary
 import Login from '../Login/Login.jsx'; // Adjust path if necessary
-
+import TestLogin from '../../components/testLogin.jsx'
 const Test = () => {
     const [isSignUp, setIsSignUp] = useState(true); // State to track the form
 
@@ -23,7 +23,7 @@ const Test = () => {
                 </div>
             ) : (
                 <div className="form-container sign-in">
-                    <Login />
+                    <TestLogin />
                 </div>
             )}
             <div className="toggle-container">
