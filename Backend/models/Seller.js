@@ -19,6 +19,22 @@ const SellerSchema = new mongoose.Schema({
     isAccepted: {
         type: Boolean,
         default: false  // For testing, default is false
+    },
+    idFile: {
+        type: String,
+        required: true // Path to the ID file for the advertiser
+    },
+    taxFile: {
+        type: String,
+        required: true // Path to the tax file for the advertiser
+    },
+    imageFile: {
+        type: String,
+        required: true // Path to the logo for the seller
+    },
+    status: {
+        type: String,
+        default: 'Pending' // Default status is 'pending'
     }
 });
 

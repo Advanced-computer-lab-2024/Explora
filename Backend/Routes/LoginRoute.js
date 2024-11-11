@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ msg: 'Invalid password' });
         }
-
+        
         // If the user is authenticated, create a JWT token
         const payload = {
             user: {

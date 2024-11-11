@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const moment = require('moment'); // Ensure you have moment.js installed
 const User = require('./User'); // Ensure correct import path
 
 // Define the main tourist schema
@@ -8,7 +9,7 @@ const touristSchema = new mongoose.Schema(
       type: String, 
       required: true, 
       unique: true 
-  },
+    },
     tours: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Tour_Guide_Profile' // Link to TourGuide model
@@ -41,10 +42,11 @@ const touristSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
 // Virtual field to calculate age
 touristSchema.virtual('age').get(function() {
   const currentDate = moment();
-  const birthDate = moment(this.dob);
+  const birthDate = moment(this.dateOfBirth); // Correct reference
   return currentDate.diff(birthDate, 'years');
 });
 

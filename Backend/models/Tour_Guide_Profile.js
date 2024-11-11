@@ -13,15 +13,15 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
   }],
   name:{
     type: String,
-    required: true
+    required: false
   },
   mobile: {
     type: String,
-    required: true,
+    required: false,
   },
   yearsOfExperience: {
     type: Number,
-    required: true,
+    required: false,
   },
   previousWork: {
     type: String, 
@@ -31,14 +31,35 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
     type: Boolean,
     default: true, // Default to false, can be updated when accepted as a guide
   },
-  image: {    
-    type: String,
-    required: true
-},
   termsAccepted: { // Field to track terms acceptance
     type: Boolean,
     default: false
+},
+  rating: { 
+    type: Number,
+     default: 0 
+},
+  comment: {
+     type: String,
+      required: true
+},
+idFile: {
+    type: String,
+    required: true, // URL of ID file (if available)
+  },
+  certificatesFile : {
+    type: String,
+    required: true, // URL of tax file (if available)
+  },
+  imageFile: {
+    type: String,
+    required: true, // URL of photo (if available)
+  },
+  status: {
+    type: String,
+    default: 'Pending' // Default status is 'pending'
 }
+
 });
 const TourGuide = User.discriminator('TourGuide', Tour_Guide_Profile_ProfileSchema);
 

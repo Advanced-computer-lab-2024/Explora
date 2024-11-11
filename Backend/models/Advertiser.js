@@ -7,11 +7,27 @@ const advertiserSchema = new mongoose.Schema({
         required: false, 
         unique: true 
     },
-    companyName: { type: String, required: true },
-    website: { type: String, required: true },
-    hotline: { type: String, required: true },
+    companyName: { type: String, required: false },
+    website: { type: String, required: false },
+    hotline: { type: String, required: false },
     profile: { type: String }, // Company profile description
-    isAccepted: { type: Boolean, default: false } // Acceptance status
+    isAccepted: { type: Boolean, default: false }, // Acceptance status
+    idFile: {
+        type: String,
+        required: true // Path to the ID file for the advertiser
+    },
+    taxFile: {
+        type: String,
+        required: true // Path to the tax file for the advertiser
+    },
+    imageFile: {
+        type: String,
+        required: true // Path to the logo for the seller
+    },
+    status: {
+        type: String,
+        default: 'Pending' // Default status is 'pending'
+    }
 });
 
 const Advertiser = User.discriminator('Advertiser', advertiserSchema);

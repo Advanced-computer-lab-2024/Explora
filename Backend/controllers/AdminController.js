@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const DeletionRequest = require("../models/DeletionRequest");
 const mongoose = require("mongoose");
 const bcrypt = require('bcrypt');
 const {generateToken} = require('../middleware/AuthMiddleware');
@@ -98,9 +99,69 @@ const changePassword = async (req, res) => {
     }
   };
 
+
+
+  const viewDeleteRequests = async (req, res) => {
+    try {
+        const requests = await DeletionRequest.find().populate('user');
+        res.status(200).json(requests);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+  }
+
+  const filterByStatus = async (req, res) => {
+    const { status } = req.params;
+    try {
+        const requests = await Deleteequests.find({ status });
+        res.status(200).json(requests);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+  }
+  const acceptRequest = async (req, res) => {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ msg: "Invalid ID" });
+    }
+    try {
+        const request = await DeletionRequest.findByIdAndUpdate(id, { status: "Resolved" }, { new: true });
+        if (!request) {
+            return res.status(404).json({ msg: "Request not found" });
+        }
+        res.status(200).json(request);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+  }
+  const deleteUser = async (req, res) => {
+    const { id } = req.params; // Get the user ID from the URL
+
+    try {
+        // Find and delete the user
+        const user = await User.findByIdAndDelete(id);
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+
+        // Delete the corresponding deletion request
+        await DeletionRequest.findOneAndDelete({ user: id });
+
+        res.status(200).json({ msg: 'User and deletion request deleted successfully', user });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
+
 module.exports = {
     createAdminAccount,
     deleteAdminAccount,
     getAllAdminAccounts,
-    changePassword
+    changePassword,
+    viewDeleteRequests,
+    filterByStatus,
+    acceptRequest,
+    deleteUser
 };

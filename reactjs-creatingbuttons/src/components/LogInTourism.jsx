@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';  // Import useNavigate
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function LogInTourism() {
   const [newUsername, setNewUsername] = useState('');

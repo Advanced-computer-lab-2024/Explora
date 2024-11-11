@@ -10,7 +10,7 @@ import CategoryList from './components/CategoryList.jsx';
 import TagManager from './components/TagManager.jsx';
 import TagForm from './components/TagForm.jsx';
 import TagList from './components/TagList.jsx';
-import ProductList from './components/ProductList.jsx';
+import ProductList from './components/productList/ProductList.jsx';
 import MiddleForm from './components/MiddleForm.jsx';
 import LoginForm from './components/LoginForm.jsx';
 import SignupTourist from './components/SignupTourist.jsx';
@@ -77,6 +77,10 @@ import TransportationBooking from './components/TransportationBooking'; // Adjus
 import FlightBooking from './components/FlightBooking'; // import the new component
 import PastItineraries from './components/PastItineraries.jsx';
 import BookHotel from './components/BookHotel';
+import AdminComplaints from './pages/AdminComplaints/AdminComplaints.jsx';
+import Test from './pages/test/test.jsx';
+import { Toaster } from 'react-hot-toast';
+import DeleteRequestsPage from './components/AdminDeleteRequests.jsx';
 import PastActivities from './components/PastActivities';  // Assuming this exists
 import PlaceManager from './components/PlaceManager';
 import TagManagers from './components/TagManagers.jsx';
@@ -85,14 +89,27 @@ import BookedTransportations from './components/BookedTransportations';
 import HotelBooking from './components/HotelBooking.jsx';
 import BookedFlights from './components/bookedFlights.jsx'; // Import your BookedFlights component
 import HotelReservations from './components/hotelReservations.jsx';
+import ActivityForm from './components/ActivityForm.jsx';
+
+
+
+
+
+
+
+
+
+
 
 function App() {
 
   return (
     <main>
       <Router>
+      <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
+
         <Routes>
-          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<Test />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
@@ -144,7 +161,7 @@ function App() {
         <Route path="/UpcomingItineraries" element={<UpcomingItineraries/>} />
         <Route path="product-list-tourist" element={<ProductListTourist/>} />
         <Route path="advact" element={<AdvActivity/>} />
-        <Route path="create-act" element={<CreateAdvAct/>} />
+        <Route path="create-act" element={<ActivityForm/>} />
         <Route path="list" element={<ActivityList2/>} />
         <Route path="/admin-view-users" element={<AdminViewUsers/>} /> {/* Route for AdminViewUsers */}
         <Route path="/product-card-tourist" element={<ProductCardTourist />} /> {/* Add this route */}
@@ -164,6 +181,8 @@ function App() {
         <Route path="/book-flight" element={<FlightBooking />} /> {/* Add the route here */}
         <Route path="/tourist-past-itineraries" element={<PastItineraries />} />
         <Route path="/book-hotel" element={<BookHotel />} />
+        <Route path="/admin-complaints" element={<AdminComplaints />} /> {/* Admin Complaints route */}
+        <Route path="/viewDeleteRequests" element={<DeleteRequestsPage />} /> {/* Test route */}
         <Route path="/tourist-previous-activities" element={<PastActivities />} />
         <Route path="/places" element={<PlaceManager />} />
         <Route path="/tags" element={<TagManagers />} />

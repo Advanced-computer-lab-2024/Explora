@@ -1,26 +1,124 @@
-import React from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import ProductCard from './productCard/ProductCard'; // Ensure correct path to ProductCard
 
 const ArchivedProducts = () => {
-    const location = useLocation();
-    const { archivedProducts = [] } = location.state || {}; // Retrieve archived products passed from ProductList
+    const [archivedProducts, setArchivedProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch archived products when the component mounts
+    useEffect(() => {
+        const fetchArchivedProducts = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/products/archiveProducts');
+                setArchivedProducts(response.data);
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching archived products:', err);
+                setError('Failed to fetch archived products');
+                setLoading(false);
+            }
+        };
+
+        fetchArchivedProducts();
+    }, []);
+
+    // Inline CSS styles
+    const styles = {
+        container: {
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: '20px',
+        },
+        heading: {
+            fontSize: '2rem',
+            color: '#333',
+            marginBottom: '20px',
+        },
+        productList: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-around',
+            gap: '20px',
+        },
+        productCard: {
+            backgroundColor: '#f9f9f9',
+            padding: '20px',
+            borderRadius: '8px',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+            width: '250px',
+            textAlign: 'center',
+            transition: 'transform 0.3s ease-in-out',
+        },
+        productCardHover: {
+            transform: 'translateY(-10px)',
+        },
+        productImage: {
+            width: '100%',
+            height: '200px',
+            objectFit: 'cover',
+            borderRadius: '5px',
+        },
+        productTitle: {
+            fontSize: '1.2rem',
+            color: '#333',
+            marginTop: '10px',
+        },
+        productDescription: {
+            fontSize: '1rem',
+            color: '#666',
+            marginTop: '5px',
+        },
+        productPrice: {
+            fontSize: '1.1rem',
+            color: '#00b300',
+            marginTop: '10px',
+        },
+        loading: {
+            textAlign: 'center',
+            fontSize: '1.2rem',
+            color: '#555',
+            marginTop: '20px',
+        },
+        error: {
+            textAlign: 'center',
+            fontSize: '1.2rem',
+            color: '#e53935',
+            marginTop: '20px',
+        },
+    };
+
+    if (loading) {
+        return <p style={styles.loading}>Loading archived products...</p>;
+    }
+
+    if (error) {
+        return <p style={styles.error}>{error}</p>;
+    }
 
     return (
-        <div>
-            <h1>Archived Products</h1>
+        <div style={styles.container}>
+            <h1 style={styles.heading}>Archived Products</h1>
             {archivedProducts.length > 0 ? (
-                <ul>
+                <div style={styles.productList}>
                     {archivedProducts.map((product) => (
-                        <li key={product._id}>
-                            <h2>{product.name}</h2>
-                            <p>{product.description}</p>
-                            <p>Price: ${product.price.toFixed(2)}</p>
-                            <p>Seller: {product.seller}</p>
-                            <p>Average Rating: {product.averageRating}</p>
-                            <p>{product.reviews?.length || 0} reviews</p>
-                        </li>
+                        <div
+                            key={product._id}
+                            style={styles.productCard}
+                            className="product-card"
+                        >
+                            <ProductCard
+                                product={product}
+                                products={archivedProducts}
+                                setProducts={setArchivedProducts}
+                                onArchive={() => {}}
+                                isArchived={true} // Pass isArchived prop as true
+                            />
+                        </div>
                     ))}
-                </ul>
+                </div>
             ) : (
                 <p>No archived products found.</p>
             )}
