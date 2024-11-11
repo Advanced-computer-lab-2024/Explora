@@ -338,28 +338,6 @@ router.get('/', async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  });
-
-  // Route to get previous activities
-  router.get('/getPreviousActivities', async (req, res) => {
-      const today = new Date(); // Get today's date
-  
-      try {
-          // Find activities that happened before today
-          const previousActivities = await Activity.find({ date: { $lt: today } });
-  
-          if (previousActivities.length === 0) {
-              return res.status(404).json({ message: 'No previous activities found.' });
-          }
-  
-          return res.status(200).json(previousActivities); // Return the found activities
-      } catch (error) {
-          // Handle any errors that occur during the database query
-          return res.status(500).json({ message: 'Server error', error: error.message });
-      }
-  });
-  
-  module.exports = router; // Export the router to use in the main app
-  
+  });  
 
 module.exports = router;

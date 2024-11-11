@@ -49,14 +49,6 @@ const TouristProfile = () => {
       <Link to="/product-list-tourist">
         <button style={buttonStyle}>View Products</button>
       </Link>
-      {/* New button to view completed activities */}
-      <Link to="/CompletedActivities">
-        <button style={buttonStyle}>Completed Activities</button>
-      </Link>
-      {/* New button to view completed itineraries */}
-      <Link to="/CompletedItineraries">
-        <button style={buttonStyle}>Completed Itineraries</button>
-      </Link>
       {/* Dropdown Button for Booking */}
       <BookDropdown />
     </div>

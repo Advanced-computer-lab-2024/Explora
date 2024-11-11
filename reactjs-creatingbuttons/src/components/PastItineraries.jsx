@@ -29,7 +29,7 @@ const PastItineraries = () => {
   }, []);
   
   const shareLink = (place) => {
-    const link = `http://localhost:3000/activities/${place._id}`;
+    const link = `http://localhost:4000/api/tour_guide_itinerary/${itin._id}`;
     navigator.clipboard.writeText(link)
       .then(() => setMessage('Link copied to clipboard!'))
       .catch(() => setMessage('Failed to copy link.'));

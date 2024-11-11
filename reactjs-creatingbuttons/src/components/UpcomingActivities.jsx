@@ -10,6 +10,8 @@ const UpcomingActivities = () => {
   const [cashBalance, setCashBalance] = useState(0);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
+  const [itins, setItins] = useState([]);
+
 
   const userId = "672404b5711f4330c4103753";
 

@@ -12,7 +12,7 @@ const PastActivities = () => {
   const [guideComments, setGuideComments] = useState({});
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/activity/getPreviousActivities')
+    axios.get('http://localhost:4000/api/activity/previous-activities')
       .then(response => {
         console.log(response.data); // Check if the tourGuide is available here
         const formattedData = response.data.map((place) => ({
@@ -23,13 +23,13 @@ const PastActivities = () => {
         setPlaces(formattedData);
       })
       .catch(error => {
-        console.error('Error fetching itineraries:', error);
-        setMessage('Failed to load itineraries.');
+        console.error('Error fetching activity:', error);
+        setMessage('Failed to load activity.');
       });
   }, []);
   
   const shareLink = (place) => {
-    const link = `http://localhost:3000/activities/${place._id}`;
+    const link = `http://localhost:4000/api/activity/${place._id}`;
     navigator.clipboard.writeText(link)
       .then(() => setMessage('Link copied to clipboard!'))
       .catch(() => setMessage('Failed to copy link.'));
