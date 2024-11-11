@@ -7,18 +7,12 @@ const TermsAndConditionsPage = ({ onAccept }) => {
 
   // This function will handle the acceptance action
   const handleAccept = () => {
-    alert("You have been accepted on the system!"); // Alert for acceptance
+    alert("You have accepted the terms and conditions!"); // Alert for acceptance
 
     // Perform the redirection based on role
-    if (role === 'TourGuide') {
+   
       navigate('/to-do'); // Redirect to /to-do for TourGuide
-    } else if (role === 'Advertiser') {
-      navigate('/company'); // Redirect to /company for Advertiser
-    } else if (role === 'Seller') {
-      navigate('/seller-home'); // Redirect to /seller-home for Seller
-    } else {
-      navigate('/'); // Default redirect, if no role matches
-    }
+    
 
     onAccept(); // Call the function passed as prop to handle any additional actions
   };

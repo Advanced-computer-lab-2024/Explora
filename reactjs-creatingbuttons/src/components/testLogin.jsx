@@ -19,21 +19,22 @@ const LoginForm = () => {
       localStorage.setItem('token', token);
 
       switch (role) {
+        case 'Governor':
+          navigate('/tourism-dashboard');
+          break;
         case 'TourGuide':
           navigate('/to-do');
           break;
         case 'Tourist':
-          navigate('/tourist-dashboard');
+          navigate('/tourist-home');
           break;
         case 'Advertiser':
-          navigate('/advertiser-dashboard');
+          navigate('/company');
           break;
         case 'Seller':
-          navigate('/seller-dashboard');
+          navigate('/seller-home');
           break;
-        case 'Governor':
-          navigate('/');
-          break;
+        
         case 'Admin':
           navigate('/');
           break;
@@ -88,7 +89,9 @@ const LoginForm = () => {
             <Link to="/reset-password">Forgot password?</Link>
           </p>
           <p>
-            <Link to="/tourist-search">Continue as a guest</Link>
+          <p>
+  <Link to="/guest-home" className="link">Continue as a guest</Link>
+</p>
           </p>
           <p>
             <Link to="/acc-settings">Admin Access</Link>

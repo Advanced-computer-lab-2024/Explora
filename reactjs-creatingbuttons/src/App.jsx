@@ -90,6 +90,12 @@ import HotelBooking from './components/HotelBooking.jsx';
 import BookedFlights from './components/bookedFlights.jsx'; // Import your BookedFlights component
 import HotelReservations from './components/hotelReservations.jsx';
 import ActivityForm from './components/ActivityForm.jsx';
+import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
+import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
+import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
+
+
+
 
 function App() {
 
@@ -181,7 +187,13 @@ function App() {
         <Route path="/flight-booking" element={<FlightBooking />} />
         <Route path="/hotel-booking" element={<HotelBooking />} />
         <Route path="/booked-flights" element={<BookedFlights />} />
-        <Route path="/hotel-reservations" element={<HotelReservations />} />]
+        <Route path="/hotel-reservations" element={<HotelReservations />} />
+        <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
+        <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
+        <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
+
+
+
         </Routes>
       </Router>
     </main>

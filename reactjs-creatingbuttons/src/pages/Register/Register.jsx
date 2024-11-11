@@ -39,20 +39,21 @@ function Register() {
 
     const registerUser = async (e) => {
         e.preventDefault();
+    
         const formData = new FormData();
-        
+    
         // Append text fields
         formData.append('username', data.username);
         formData.append('email', data.email);
         formData.append('password', data.password);
         formData.append('role', data.role);
-
+    
         // Append files if they exist
         if (data.idFile) formData.append('idFile', data.idFile);
         if (data.certificatesFile) formData.append('certificatesFile', data.certificatesFile);
         if (data.taxFile) formData.append('taxFile', data.taxFile);
-        if (data.imageFile) formData.append('imageFile', data.imageFile); // Append the image file
-
+        if (data.imageFile) formData.append('imageFile', data.imageFile);
+    
         // Append Tourist-specific fields
         if (data.role === 'Tourist') {
             formData.append('mobileNumber', data.mobileNumber);
@@ -60,42 +61,42 @@ function Register() {
             formData.append('job', data.job);
             formData.append('dateOfBirth', data.dateOfBirth);
         }
-
+    
         try {
             const response = await axios.post('http://localhost:4000/users/register', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
+    
             if (response.data.error) {
                 toast.error(response.data.error);
-            } 
-            else {
+            } else {
                 toast.success('Registration Successful');
-                // navigate('/home'); // Uncomment to navigate after successful registration
-                if(data.role === 'Tourist') {
-                    navigate('/tourist-home');
-                } else if(data.role === 'TourGuide') {
-                    navigate('/to-do');
-                } else if(data.role === 'Advertiser') {
-                    navigate('/company');
-                } else if(data.role === 'Seller') {
-                    navigate('/seller-home');
-                } else if(data.role === 'Governor') {
-                    navigate('/');
-                } else {
-                    toast.error('Role not found');
-            }
+                const userId = response.data.userId; // Assuming the userId is in the response
+    
+                // Redirect based on role
+                if (data.role === 'TourGuide') {
+                    navigate(`/terms-tour-guide/${userId}`);  // Redirect to the TermsTourGuide page
+                } else if (data.role === 'Advertiser') {
+                    navigate(`/terms-advertiser/${userId}`);  // Redirect to TermsAdvertiser page
+                } else if (data.role === 'Seller') {
+                    navigate(`/terms-seller/${userId}`);  // Redirect to TermsSeller page
+                }
+                else{
+                    navigate(`/tourist-home`);  // Redirect to TermsSeller page
 
-        }
+                }
+            }
         } catch (error) {
             console.error(error);
             toast.error(`Registration failed. Please try again. ${error.response?.data?.error || error.message}`);
         }
     };
+    
 
-    // Handle change for dropdown and other input fields
+    
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData((prevData) => ({
@@ -104,7 +105,6 @@ function Register() {
         }));
     };
 
-    // Preview image function
     const previewImage = (e) => {
         const { name, files } = e.target;
         setData((prevData) => ({
@@ -216,9 +216,6 @@ function Register() {
                 {/* File uploads based on role */}
                 {(data.role === 'Seller' || data.role === 'TourGuide' || data.role === 'Advertiser') && (
                     <>
-                        
-
-                        {/* Image upload for Seller, TourGuide, and Advertiser */}
                         <div className="register-formGroup">
                             <label className="register-label">Upload Profile Image</label>
                             <div className="image-upload" onClick={() => document.getElementById('imageFileInput').click()}>
