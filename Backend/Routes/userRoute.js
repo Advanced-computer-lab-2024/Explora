@@ -1,6 +1,7 @@
 // routes/user.js
 
 const express = require('express');
+const User = require('../models/User'); // Import the User model
 const {upload} = require('../middleware/upload');
 const { registerUser,
         viewUsers, 
@@ -29,11 +30,12 @@ router.post ('/login', login)
 router.get('/logout', logout)
 router.get('/:username', getUserid)
 router.get('/',viewUsers)
-router.get('/downloadID/:id', downloadIDFile )
-router.get('/downloadCertificate/:id', downloadCertificateFile )
-router.get('/downloadTax/:id', downloadTaxFile )
+router.get('/ID/:id', downloadIDFile )
+router.get('/Certificate/:id', downloadCertificateFile )
+router.get('/Tax/:id', downloadTaxFile )
 router.put('/updateStatus/:id', updateStatus);
 router.post('/change-password', changePassword); // New route for changing password
 router.delete('/:id', deleteUser); // New route for deleting user
+
 
 module.exports = router;

@@ -37,6 +37,13 @@ export default function AccsSettings() {
     navigate('/flagged-events');  // Navigate to the FlaggedEvents component
   };
 
+  const handleComplaintsClick = () => {
+    navigate('/admin-complaints');  // Navigate to the AdminComplaints component
+  }
+  const handleDeleteRequestsClick = () => {
+    navigate('/viewDeleteRequests');  // Navigate to the AdminDeleteRequests component
+  }
+
   return (
     <header>
       <div className="button-container">
@@ -47,7 +54,9 @@ export default function AccsSettings() {
         <button onClick={handleTagManagementClick}>Preference Tag Management System</button>
         <button onClick={handleViewProductsClick}>View Products</button>
         <button onClick={handleViewUploadedDocumentsClick}>View Uploaded Documents</button>
-        
+        <button onClick={handleComplaintsClick}>View Complaints</button>
+        <button onClick={handleDeleteRequestsClick}>View Delete Requests</button>
+
         {/* New Flag Event Button */}
         <button onClick={handleFlagEventClick}>Flag Event</button>
       </div>

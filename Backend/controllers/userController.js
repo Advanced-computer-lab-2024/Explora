@@ -225,6 +225,8 @@ const downloadTaxFile = asyncWrapper(async (req, res) => {
 
     const file = user.taxFile;  // Access the 'idFile' field of the user
     const filePath = path.join(__dirname, `../${file}`);  // Use proper path resolution
+    //res.contentType('application/pdf');  // Ensure the content type is PDF for a PDF file
+
     res.download(filePath);
 });
 

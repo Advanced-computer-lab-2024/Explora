@@ -41,7 +41,7 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
 },
   comment: {
      type: String,
-      required: true
+      required: false
 },
 idFile: {
     type: String,

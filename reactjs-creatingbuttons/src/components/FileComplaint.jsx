@@ -18,7 +18,7 @@ const FileComplaint = () => {
     e.preventDefault();
 
     try {
-      const userId = '67226ff0561640471cddb264'; // Example user ID
+      const userId = '67322cdfa472e2e7d22de84a'; // Example user ID
       const response = await axios.post(
         `http://localhost:4000/complaints/${userId}`,
         complaint,
