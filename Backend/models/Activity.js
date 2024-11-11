@@ -49,7 +49,7 @@ const activitySchema = new Schema({
     type: Boolean,
     default: false,  // By default, itineraries are not flagged
     required: false 
-  }
+  },
   isDeleted: {
     type: Boolean,
     default: false,  // Optional field

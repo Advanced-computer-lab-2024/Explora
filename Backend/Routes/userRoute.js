@@ -28,7 +28,7 @@ router.post('/register', upload.fields([{ name: 'idFile', maxCount: 1 }, { name:
 router.post ('/login', login)
 router.get('/logout', logout)
 router.get('/:username', getUserid)
-router.get ('/login', loginUser)
+router.get ('/login', login)
 router.post('/changePassword', changePassword); // New route for changing password
 
 // Additional user routes can go here...

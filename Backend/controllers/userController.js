@@ -10,7 +10,6 @@ const Advertiser = require('../models/Advertiser');
 const Tourist = require('../models/touristModel');
 const TourismGovernor = require('../models/Governor');
 const Admin = require('../models/Admin');
-const bcrypt = require('bcryptjs'); // Assuming bcryptjs is used for hashing
 const Product = require('../models/Products');
 const Activity = require('../models/Activity');
 const maxAge = 3 * 24 * 60 * 60;
