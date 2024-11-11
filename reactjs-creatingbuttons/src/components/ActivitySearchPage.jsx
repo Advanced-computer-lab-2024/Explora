@@ -14,7 +14,7 @@ const ActivitySearchPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedRating, setSelectedRating] = useState('');
-    const [selectedPrice, setSelectedPrice] = useState(100); // Default max price
+    const [selectedPrice, setSelectedPrice] = useState(9999999); // Default max price
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedPreferences, setSelectedPreferences] = useState([]);
     const [sortOrder, setSortOrder] = useState('none');
@@ -23,54 +23,33 @@ const ActivitySearchPage = () => {
     const [exchangeRates, setExchangeRates] = useState({});
     const [error, setError] = useState(null);
 
-    // Dummy data to simulate an API response
-    const dummyData = [
-        {
-            id: 1,
-            name: 'Beachside Paradise',
-            category: { activityType: 'Beach' },
-            rating: 4.5,
-            price: 50, // Price in USD
-            date: '2024-12-01',
-            tags: [{ tag: 'beach' }, { tag: 'family' }],
-        },
-        {
-            id: 2,
-            name: 'Historic Ruins Tour',
-            category: { activityType: 'Historic' },
-            rating: 4.8,
-            price: 70,
-            date: '2024-12-05',
-            tags: [{ tag: 'historic' }, { tag: 'shopping' }],
-        },
-        {
-            id: 3,
-            name: 'Family Fun Amusement Park',
-            category: { activityType: 'Family-Friendly' },
-            rating: 3.9,
-            price: 30,
-            date: '2024-12-10',
-            tags: [{ tag: 'family' }, { tag: 'shopping' }],
-        },
-        {
-            id: 4,
-            name: 'Shopping Extravaganza',
-            category: { activityType: 'Shopping' },
-            rating: 4.2,
-            price: 40,
-            date: '2024-12-15',
-            tags: [{ tag: 'shopping' }],
-        }
-    ];
-
     useEffect(() => {
-        setPlaces(dummyData);
+        const fetchActivities = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/activity');
+                const activities = response.data.map(activity => ({
+                    id: activity._id,
+                    name: activity.name,
+                    date: activity.date,
+                    time: activity.time,
+                    location: activity.location,
+                    price: activity.price,
+                    category: activity.category?.activityType || 'General',
+                    tags: activity.tags.map(tag => tag.tag),
+                }));
+                setPlaces(activities);
+            } catch (err) {
+                setError('Failed to fetch activities');
+            }
+        };
+
+        fetchActivities();
     }, []);
 
     useEffect(() => {
         const fetchExchangeRates = async () => {
             try {
-                const response = await axios.get(`https://api.exchangerate-api.com/v4/latest/USD`);
+                const response = await axios.get('https://api.exchangerate-api.com/v4/latest/USD');
                 setExchangeRates(response.data.rates);
             } catch (err) {
                 setError('Failed to fetch exchange rates');
@@ -90,12 +69,12 @@ const ActivitySearchPage = () => {
 
     const filteredPlaces = places.filter((place) => {
         const matchesSearch = place.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = !selectedCategory || place.category?.activityType === selectedCategory;
+        const matchesCategory = !selectedCategory || place.category === selectedCategory;
         const matchesRating = selectedRating === '' || place.rating?.toString() === selectedRating;
         const matchesPrice = place.price <= selectedPrice;
         const matchesDate = !selectedDate || place.date === selectedDate;
         const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
-            place.tags?.map(tag => tag.tag).includes(pref.value)
+            place.tags.includes(pref.value)
         );
 
         return matchesSearch && matchesCategory && matchesRating && matchesPrice && matchesDate && matchesPreferences;
@@ -172,7 +151,7 @@ const ActivitySearchPage = () => {
                     <input
                         type="number"
                         value={selectedPrice}
-                        onChange={(e) => setSelectedPrice(e.target.value)}
+                        onChange={(e) => setSelectedPrice(Number(e.target.value))}
                         style={styles.selectInput}
                     />
                 </div>
@@ -215,16 +194,15 @@ const ActivitySearchPage = () => {
                                 {place.name}
                             </Link>
                             <div style={styles.details}>
-                                <span>{place.category.activityType}</span> - 
+                                Category: <span>{place.category}</span> - Price 
                                 {selectedCurrency} {convertPrice(place.price).toFixed(2)} - 
-                                Rating: {place.rating}
+                                Rating: {place.rating || 'N/A'}/5 - tags: {place.tags.join(', ')}
                             </div>
                         </li>
                     ))}
                 </ul>
             </div>
 
-            {/* Add the "View Upcoming Activities" button */}
             <div style={{ marginTop: '20px' }}>
                 <Link to="/UpcomingActivities">
                     <button style={{ padding: '10px 15px' }}>View Upcoming Activities</button>
@@ -235,79 +213,19 @@ const ActivitySearchPage = () => {
 };
 
 const styles = {
-    pageContainer: {
-        fontFamily: 'Arial, sans-serif',
-        padding: '20px',
-        backgroundColor: '#f4f4f9',
-        minHeight: '100vh',
-    },
-    error: {
-        color: 'red',
-        marginBottom: '15px',
-        textAlign: 'center',
-    },
-    searchBarContainer: {
-        display: 'flex',
-        justifyContent: 'space-between',
-        marginBottom: '20px',
-    },
-    inputField: {
-        padding: '10px',
-        width: '48%',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-    },
-    selectContainer: {
-        marginBottom: '20px',
-    },
-    reactSelect: {
-        control: (styles) => ({
-            ...styles,
-            borderRadius: '5px',
-            border: '1px solid #ccc',
-        }),
-    },
-    filtersContainer: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '20px',
-        marginBottom: '20px',
-    },
-    filterGroup: {
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: '150px',
-    },
-    selectInput: {
-        padding: '8px',
-        borderRadius: '5px',
-        border: '1px solid #ccc',
-    },
-    resultsContainer: {
-        marginTop: '30px',
-    },
-    resultsList: {
-        listStyleType: 'none',
-        padding: '0',
-    },
-    resultItem: {
-        padding: '10px',
-        backgroundColor: '#fff',
-        marginBottom: '10px',
-        borderRadius: '5px',
-        border: '1px solid #ddd',
-    },
-    resultLink: {
-        fontSize: '16px',
-        fontWeight: 'bold',
-        color: '#333',
-        textDecoration: 'none',
-    },
-    details: {
-        fontSize: '14px',
-        color: '#777',
-        marginTop: '5px',
-    },
+    pageContainer: { maxWidth: '800px', padding: '20px', margin: '0 auto' },
+    error: { color: 'red' },
+    searchBarContainer: { display: 'flex', gap: '8px', marginBottom: '15px' },
+    inputField: { padding: '10px', flex: 1 },
+    selectContainer: { marginBottom: '15px' },
+    filtersContainer: { display: 'flex', gap: '15px', flexWrap: 'wrap', marginBottom: '15px' },
+    filterGroup: { display: 'flex', flexDirection: 'column', gap: '5px' },
+    selectInput: { padding: '10px' },
+    resultsContainer: { marginTop: '20px' },
+    resultsList: { listStyle: 'none', padding: 0 },
+    resultItem: { padding: '10px', borderBottom: '1px solid #ccc' },
+    resultLink: { fontWeight: 'bold', fontSize: '16px', color: 'blue', textDecoration: 'none' },
+    details: { marginTop: '5px', color: '#555' },
 };
 
 export default ActivitySearchPage;

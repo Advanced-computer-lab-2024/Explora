@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const SiteSearchPage = () => {
     // State to manage the search input, category, and additional filters
@@ -9,40 +10,14 @@ const SiteSearchPage = () => {
     const [sortOrder, setSortOrder] = useState('none');
     const [currency, setCurrency] = useState('USD'); // Default currency
     const [exchangeRates, setExchangeRates] = useState({ USD: 1, EUR: 0.85, EGP: 50 }); // Mock exchange rates
+    const [places, setPlaces] = useState([]);
 
-    // Dummy data with ratings, price, date, and preferences
-    const places = [
-        {
-            name: "Museum of Art",
-            description: "A great museum with historical art.",
-            tags: ["art", "history", "culture"],
-            ticketPrices: { native: 15 },
-        },
-        {
-            name: "Science Center",
-            description: "Explore the wonders of science with interactive exhibits.",
-            tags: ["science", "education", "interactive"],
-            ticketPrices: { native: 20 },
-        },
-        {
-            name: "Botanical Garden",
-            description: "Beautiful garden with rare species of plants.",
-            tags: ["nature", "plants", "outdoor"],
-            ticketPrices: { native: 10 },
-        },
-        {
-            name: "History Museum",
-            description: "Dive deep into the history of the world.",
-            tags: ["history", "culture", "museum"],
-            ticketPrices: { native: 25 },
-        },
-        {
-            name: "Aquarium",
-            description: "Experience the beauty of marine life.",
-            tags: ["animals", "water", "marine"],
-            ticketPrices: { native: 18 },
-        },
-    ];
+    // Fetch places data from API
+    useEffect(() => {
+        axios.get('http://localhost:4000/api/museums')
+            .then(response => setPlaces(response.data))
+            .catch(error => console.error('Error fetching places:', error));
+    }, []);
 
     // Filtering logic
     const filteredPlaces = places.filter((place) => {
@@ -84,7 +59,7 @@ const SiteSearchPage = () => {
                 {/* Search Bar for places */}
                 <input
                     type="text"
-                    placeholder="Search by name..."
+                    placeholder="Search by name or tags..."
                     value={searchTerm}
                     onChange={handleSearchChange}
                     style={styles.searchInput}
@@ -134,8 +109,10 @@ const SiteSearchPage = () => {
                             <li key={index} style={styles.resultItem}>
                                 <strong>{place.name || 'No Name Available'}</strong> - 
                                 {place.description || 'No Description Available'} - 
-                                tags: {place.tags?.join(', ') || 'No Tags'} - 
-                                {convertPrice(place.ticketPrices?.native || 0)} {currency}
+                                Tags: {place.tags?.join(', ') || 'No Tags'} - 
+                                Price: {convertPrice(place.ticketPrices?.native || 0)} {currency} - 
+                                Location: {place.location} - 
+                                Opening Hours: {place.openingHours}
                             </li>
                         ))}
                     </ul>
