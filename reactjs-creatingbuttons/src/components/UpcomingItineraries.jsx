@@ -15,7 +15,7 @@ const UpcomingItineraries = () => {
       {
         _id: '1',
         name: 'Historical Museum Tour',
-        date: '2024-11-15',
+        date: '2024-11-14',
         price: 500,
         rating: 8,
       },
