@@ -283,4 +283,42 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Flagging and unflagging the activity
+router.patch('/:id/flag', async (req, res) => {
+    try {
+      const activityId = req.params.id;
+      
+      // Find the activity first to check existence and current flag status
+      const activity = await Activity.findById(activityId);
+  
+      if (!activity) {
+        return res.status(404).json({ message: 'Activity not found' });
+      }
+  
+      // Toggle flagged status
+      const updatedActivity = await Activity.findByIdAndUpdate(
+        activityId,
+        { flagged: !activity.flagged },
+        { new: true, runValidators: false }
+      );
+  
+      res.json({ message: 'Flag status updated successfully', activity: updatedActivity });
+    } catch (err) {
+      console.error('Error updating flag status:', err);
+      res.status(500).json({ message: 'Failed to update flag status' });
+    }
+  });
+  
+// Example: Fetch activities for tourists/guests
+router.get('/', async (req, res) => {
+    try {
+      // Get itineraries excluding flagged ones
+      const activity = await Activity.find({ flagged: false });
+      
+      res.status(200).json(activity);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
 module.exports = router;

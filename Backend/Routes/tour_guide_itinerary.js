@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 const jwt = require('jsonwebtoken');
-
+const { checkAdmin } = require('../middleware/AuthMiddleware');
 
 // Middleware to verify JWT and get the user from token
 const auth = (req, res, next) => {
@@ -157,6 +157,17 @@ router.get('/', async (req, res) => {
 
 });
 
+// Example: Fetch itineraries for tourists/guests
+router.get('/', async (req, res) => {
+  try {
+    // Get itineraries excluding flagged ones
+    const itineraries = await TourGuideItinerary.find({ flagged: false });
+    
+    res.status(200).json(itineraries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 router.get('/tag/:tag', async (req, res) => {
@@ -448,5 +459,24 @@ router.put('/comment/:id', async (req, res) => {
   }
 });
 
+// Flagging and unflagging the itinerary
+router.patch('/:id/flag', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Find itinerary by ID
+    const itinerary = await Itinerary.findById(id);
+    if (!itinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    // Toggle the flagged status
+    itinerary.flagged = !itinerary.flagged;
+    await itinerary.save();
+    
+    res.status(200).json({ message: `Itinerary ${itinerary.flagged ? 'flagged' : 'unflagged'} successfully` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 module.exports = router;
