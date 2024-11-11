@@ -11,23 +11,20 @@ const UpcomingActivities = () => {
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
 
-
   const userId = "672404b5711f4330c4103753";
 
-
   useEffect(() => {
-    // Retrieve loyalty points from localStorage on load
     const savedPoints = localStorage.getItem('loyaltyPoints');
     if (savedPoints) {
       setLoyaltyPoints(Number(savedPoints));
       setBadgeLevel(getBadgeLevel(Number(savedPoints)));
     }
   }, []);
-  // Fetch the user ID based on the username
+
   useEffect(() => {
     const fetchUserId = async () => {
       try {
-        const username = localStorage.getItem("username"); // Assume the username is stored in localStorage
+        const username = localStorage.getItem("username");
         const response = await axios.get(`http://localhost:4000/api/users/${username}`);
         
         if (response.status === 200) {
@@ -42,9 +39,8 @@ const UpcomingActivities = () => {
     };
 
     fetchUserId();
-  }, []); // Empty dependency array to run once on component mount
+  }, []);
 
-  // Fetch upcoming activities
   useEffect(() => {
     const fetchUpcomingActivities = async () => {
       try {
@@ -69,7 +65,6 @@ const UpcomingActivities = () => {
     fetchUpcomingActivities();
   }, []);
 
-  // Helper function to get the badge level based on points
   const getBadgeLevel = (points) => {
     if (points > 500000) return 'Level 3 Badge';
     else if (points > 100000) return 'Level 2 Badge';
@@ -77,52 +72,43 @@ const UpcomingActivities = () => {
     return '';
   };
 
-  // Share activity link
   const shareLink = (place) => {
-    const link = `http://localhost:3000/activities/${place._id}`;
+    const link = `http://localhost:4000/api/activity/${place._id}`;
     navigator.clipboard.writeText(link)
       .then(() => setMessage('Link copied to clipboard!'))
       .catch(() => setMessage('Failed to copy link.'));
   };
 
-  // Share activity via email
   const shareEmail = (place) => {
     const subject = `Check out this activity: ${place.name}`;
     const body = `I thought you might be interested in this activity:\n\n${place.name}\nDate: ${place.date}\nPrice: ${place.price}$\nRating: ${place.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${place._id}`;
     
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
+};
 
-  // Book ticket and add loyalty points using Axios
   const handleBookTicket = async (place) => {
     try {
       if (!userId) {
         alert('You must be logged in to book a ticket.');
         return;
       }
-  
-      // Adding ticket to booked list
+
       setBookedTickets((prev) => [...prev, place._id]);
-  
-      // Determine loyalty level based on price
+
       const level = place.price > 500000 ? 3 : place.price > 100000 ? 2 : 1;
-  
-      // Add loyalty points after booking
+
       const response = await axios.post("http://localhost:4000/api/tourists/addLoyaltyPoints", {
         touristId: userId,
         amountPaid: place.price,
         level,
       });
-  
+
       if (response.status === 200) {
         const data = response.data;
         const newPoints = loyaltyPoints + data.pointsEarned;
 
-        // Save points to state and localStorage
         setLoyaltyPoints(newPoints);
         localStorage.setItem('loyaltyPoints', newPoints);
-
-        // Update badge level
         setBadgeLevel(getBadgeLevel(newPoints));
 
         alert(`You booked "${place.name}" and earned ${data.pointsEarned} points!`);
@@ -131,7 +117,7 @@ const UpcomingActivities = () => {
       alert("An error occurred while booking the ticket.");
     }
   };
-  // Cancel booking if within the allowed timeframe
+
   const handleCancelBooking = (place) => {
     const now = new Date();
     const timeDifference = place.dateObject - now;
@@ -145,7 +131,6 @@ const UpcomingActivities = () => {
     }
   };
 
-  // Redeem loyalty points for cash balance
   const redeemPoints = async () => {
     try {
       if (loyaltyPoints < 10000) {
@@ -162,7 +147,6 @@ const UpcomingActivities = () => {
         const data = response.data;
         const updatedPoints = data.remainingPoints;
 
-        // Update local state, localStorage, and badge level
         setCashBalance(data.walletBalance);
         setLoyaltyPoints(updatedPoints);
         localStorage.setItem('loyaltyPoints', updatedPoints);
@@ -188,6 +172,8 @@ const UpcomingActivities = () => {
 
             <div className="share-buttons">
               <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
+              <button onClick={() => shareLink(place)}>Share Link</button>
+              <button onClick={() => shareEmail(place)}>Share via Email</button>
             </div>
           </div>
         ))}

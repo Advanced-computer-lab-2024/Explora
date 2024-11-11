@@ -23,6 +23,16 @@ router.post('/book', async (req, res) => {
             return res.status(404).json({ message: 'Transportation not found' });
         }
 
+        // Check if the tourist has already booked this transportation
+        const existingBooking = await transportBook.findOne({
+            tourist: touristId,
+            transportation: transportationId,
+        });
+        
+        if (existingBooking) {
+            return res.status(400).json({ message: 'Booking already exists for this transportation method' });
+        }
+
         // Calculate the total price (seats booked * price of the transportation)
         const totalPrice = transportation.price * seats;
 
@@ -31,7 +41,7 @@ router.post('/book', async (req, res) => {
             tourist: tourist._id,
             transportation: transportation._id,
             seatsBooked: seats,
-            totalPrice: totalPrice, // Include totalPrice here
+            totalPrice: totalPrice,
         });
 
         // Save the booking
@@ -46,7 +56,6 @@ router.post('/book', async (req, res) => {
         res.status(500).json({ message: 'Error creating booking', error: err.message });
     }
 });
-
 
 //http://localhost:4000/transportationBook/:touristId
 //gets all bookings for a tourist

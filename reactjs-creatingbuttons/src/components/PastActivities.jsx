@@ -12,7 +12,7 @@ const PastActivities = () => {
   const [guideComments, setGuideComments] = useState({});
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/activity/previous-activities')
+    axios.get('http://localhost:4000/api/activity/getPreviousActivities')
       .then(response => {
         console.log(response.data); // Check if the tourGuide is available here
         const formattedData = response.data.map((place) => ({

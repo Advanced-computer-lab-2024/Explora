@@ -1,180 +1,233 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
-const BookHotel = () => {
-  const [location, setLocation] = useState('');
+const HotelBooking = () => {
+  const [cityCode, setCityCode] = useState('');
   const [checkInDate, setCheckInDate] = useState('');
   const [checkOutDate, setCheckOutDate] = useState('');
-  const [guests, setGuests] = useState(1);
-  const [hotels, setHotels] = useState([]);
-  const [error, setError] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedHotel, setSelectedHotel] = useState(null);
+  const [bookedHotels, setBookedHotels] = useState([]);
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiryDate, setCardExpiryDate] = useState('');
+  const [cvv, setCvv] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [touristId] = useState("672e97f48a225c52217e99ac"); // Hardcoded for now
+  const [searchId, setSearchId] = useState(null);
+  const [hotelId, setHotelId] = useState(null); // Set after selecting the hotel
 
-  const handleSearch = async () => {
-    setError('');
+  // Handle search submission
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch( ` http://localhost:4000/hotels/hotels?cityCode=${cityCode}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}`
+  );
+    const data = await response.json();
+
+    if (data.hotels) {
+      setSearchResults(data.hotels)
+      setSearchId(data.searchId);
+      setHotelId(data.hotels.hotelId);
+    } else {
+      console.error('Error fetching hotel data');
+    }
+  };
+  // Select a hotel
+  const handleHotelSelect = (hotel) => {
+    setSelectedHotel(hotel);
+    setHotelId(hotel.hotelId); // Set hotelId after selection
+  };
+
+  // Confirm booking for the selected hotel
+  const handleConfirmBooking = async () => {
+    if (!cardNumber || !cardExpiryDate || !cvv) {
+      setErrorMessage('Please fill in all payment details');
+      return;
+    }
+
     try {
-      const response = await fetch(`https://api.example.com/hotels?location=${location}&checkInDate=${checkInDate}&checkOutDate=${checkOutDate}&guests=${guests}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer YOUR_API_KEY`, // Replace with your API key
-        },
+      const response = await axios.post('http://localhost:4000/hotels/book', {
+        touristId,
+        searchId,
+        hotelId,
+        cardNumber,
+        cardExpiryDate,
+        cvv,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch hotels');
-      }
-
-      const data = await response.json();
-      setHotels(data.hotels);
+      setSuccessMessage(response.data.message);
+      setErrorMessage('');
+      setBookedHotels([...bookedHotels, response.data.bookingDetails]);
+      setSelectedHotel(null); // Clear selected hotel after booking
+      setCardNumber('');
+      setCardExpiryDate('');
+      setCvv('');
     } catch (error) {
-      setError(error.message);
+      setErrorMessage(error.response?.data?.message || 'Error booking hotel');
+      setSuccessMessage('');
     }
   };
 
+  // Cancel booking
+  const handleCancelBooking = (hotelId) => {
+    const updatedBookings = bookedHotels.filter(hotel => hotel.id !== hotelId);
+    setBookedHotels(updatedBookings);
+  };
+
+
+
   return (
-    <div className="book-hotel-container">
-      <h1>Book a Hotel</h1>
-      <div className="input-group">
+    <div style={{ padding: '20px' }}>
+      <h3>Hotel Booking</h3>
+
+      {/* Search Form */}
+      <form onSubmit={handleSearchSubmit} style={{ marginBottom: '20px' }}>
         <label>
-          Location
+          City Code:
           <input
             type="text"
-            placeholder="Enter location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Enter city code"
+            value={cityCode}
+            onChange={(e) => setCityCode(e.target.value)}
+            style={inputStyle}
           />
         </label>
         <label>
-          Check-in Date
+          Check-In Date:
           <input
             type="date"
             value={checkInDate}
             onChange={(e) => setCheckInDate(e.target.value)}
+            style={inputStyle}
           />
         </label>
         <label>
-          Check-out Date
+          Check-Out Date:
           <input
             type="date"
             value={checkOutDate}
             onChange={(e) => setCheckOutDate(e.target.value)}
+            style={inputStyle}
           />
         </label>
-        <label>
-          Guests
-          <input
-            type="number"
-            value={guests}
-            min="1"
-            onChange={(e) => setGuests(e.target.value)}
-          />
-        </label>
-        <button onClick={handleSearch}>Search Hotels</button>
-      </div>
+        <button type="submit" style={buttonStyle}>Search</button>
+      </form>
 
-      {error && <p className="error">{error}</p>}
+      {/* Search Results */}
+      {searchResults.length > 0 && (
+        <div>
+          <h4>Search Results:</h4>
+          <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+            {searchResults.map((hotelData) => (
+              <li key={hotelData.hotelId} style={listItemStyle}>
+                {hotelData.name} from {hotelData.checkInDate} to {hotelData.checkOutDate}
+                <div><strong>Price:</strong> {hotelData.price}</div>
+                <button onClick={() => handleHotelSelect(hotelData)} style={buttonStyle}>
+                  Select
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
-      <h2>Available Hotels</h2>
-      <ul className="hotel-list">
-        {hotels.map((hotel) => (
-          <li key={hotel.id} className="hotel-item">
-            {hotel.name} - ${hotel.price} per night
-          </li>
-        ))}
-      </ul>
+      {/* Selected Hotel Details with Booking Form */}
+      {selectedHotel && (
+        <div style={{ marginTop: '20px' }}>
+          <h4>Selected Hotel:</h4>
+          <p>
+            {selectedHotel.name} from {selectedHotel.checkInDate} to {selectedHotel.checkOutDate}
+            <br />
+            <strong>Price:</strong> {selectedHotel.price}
+          </p>
+          <h4>Payment Details:</h4>
+          <label>
+            Card Number:
+            <input
+              type="text"
+              placeholder="Enter card number"
+              value={cardNumber}
+              onChange={(e) => setCardNumber(e.target.value)}
+              style={inputStyle}
+            />
+          </label>
+          <label>
+            CVV:
+            <input
+              type="text"
+              placeholder="Enter CVV"
+              value={cvv}
+              onChange={(e) => setCvv(e.target.value)}
+              style={inputStyle}
+            />
+          </label>
+          <label>
+            Expiry Date (MM/YY):
+            <input
+              type="text"
+              placeholder="MM/YY"
+              value={cardExpiryDate}
+              onChange={(e) => setCardExpiryDate(e.target.value)}
+              style={inputStyle}
+            />
+          </label>
+          <button onClick={handleConfirmBooking} style={buttonStyle}>Confirm Booking</button>
+        </div>
+      )}
+     {successMessage && (
+  <div style={{ color: 'green', fontWeight: 'bold', marginTop: '20px' }}>
+    {successMessage}
+  </div>
+)}
+{errorMessage && (
+  <div style={{ color: 'red', fontWeight: 'bold', marginTop: '20px' }}>
+    {errorMessage}
+  </div>
+)}
 
-      <style jsx>{`
-        .book-hotel-container {
-          max-width: 600px;
-          margin: 0 auto;
-          padding: 20px;
-          background-color: #f5f7fa;
-          border-radius: 8px;
-          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-          font-family: Arial, sans-serif;
-          color: #333;
-        }
-
-        h1 {
-          font-size: 24px;
-          color: #007bff;
-          text-align: center;
-        }
-
-        .input-group {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin-bottom: 20px;
-        }
-
-        label {
-          display: flex;
-          flex-direction: column;
-          font-size: 16px;
-          color: #555;
-        }
-
-        input[type="text"],
-        input[type="date"],
-        input[type="number"] {
-          padding: 10px;
-          font-size: 16px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          transition: border-color 0.2s;
-        }
-
-        input:focus {
-          border-color: #007bff;
-          outline: none;
-        }
-
-        button {
-          padding: 12px;
-          font-size: 16px;
-          font-weight: bold;
-          color: #fff;
-          background-color: #007bff;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
-          transition: background-color 0.2s;
-        }
-
-        button:hover {
-          background-color: #0056b3;
-        }
-
-        .error {
-          color: #d9534f;
-          text-align: center;
-          margin-top: 10px;
-        }
-
-        h2 {
-          font-size: 20px;
-          color: #555;
-          margin-top: 30px;
-          text-align: center;
-        }
-
-        .hotel-list {
-          list-style-type: none;
-          padding: 0;
-          margin: 0;
-        }
-
-        .hotel-item {
-          background: #e9ecef;
-          margin: 10px 0;
-          padding: 15px;
-          border-radius: 4px;
-          font-size: 16px;
-          color: #333;
-          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-      `}</style>
+      {/* Booked Hotels List */}
+      {bookedHotels.length > 0 && (
+        <div style={{ marginTop: '20px' }}>
+          <h4>Booked Hotels:</h4>
+          <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+            {bookedHotels.map((hotelData) => (
+              <li key={hotelData.id} style={listItemStyle}>
+                {hotelData.hotelName} from {hotelData.checkInDate} to {hotelData.checkOutDate} - Booked
+             
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
 
-export default BookHotel;
+// Styles for buttons, inputs, and list items
+const buttonStyle = {
+  margin: '10px',
+  padding: '5px 10px',
+  fontSize: '14px',
+  cursor: 'pointer',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+  backgroundColor: '#f0f0f0',
+};
+
+const inputStyle = {
+  display: 'block',
+  marginBottom: '10px',
+  padding: '5px',
+  fontSize: '14px',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+};
+
+const listItemStyle = {
+  padding: '10px',
+  borderBottom: '1px solid #ddd',
+};
+
+
+export default HotelBooking;

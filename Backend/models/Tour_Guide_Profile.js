@@ -41,19 +41,19 @@ const Tour_Guide_Profile_ProfileSchema = new mongoose.Schema({
 },
   comment: {
      type: String,
-      required: true
+      required: false,
 },
 idFile: {
     type: String,
-    required: true, // URL of ID file (if available)
+    required: false, // URL of ID file (if available)
   },
   certificatesFile : {
     type: String,
-    required: true, // URL of tax file (if available)
+    required: false, // URL of tax file (if available)
   },
   imageFile: {
     type: String,
-    required: true, // URL of photo (if available)
+    required: false, // URL of photo (if available)
   },
   status: {
     type: String,

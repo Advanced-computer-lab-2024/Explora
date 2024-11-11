@@ -32,13 +32,15 @@ const UpcomingItineraries = () => {
   };
 
   const shareLink = (itin) => {
-    const link = `http://localhost:3000/activities/${itin._id}`;
+    const link = `http://localhost:4000/api/tour_guide_itinerary/${itin._id}`;
+    
+    // Ensure user feedback on successful copy
     navigator.clipboard.writeText(link)
-      .then(() => setMessage('Link copied to clipboard!'))
-      .catch(() => setMessage('Failed to copy link.'));
-  };
+        .then(() => setMessage('Link copied to clipboard!'))
+        .catch((err) => setMessage(`Failed to copy link: ${err.message}`));
+};
 
-  const shareEmail = (itin) => {
+const shareEmail = (itin) => {
     const subject = `Check out this activity: ${itin.name}`;
     const body = `I thought you might be interested in this activity:\n\n${itin.name}\nDate: ${itin.date}\nPrice: ${itin.price}$\nRating: ${itin.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${itin._id}`;
     

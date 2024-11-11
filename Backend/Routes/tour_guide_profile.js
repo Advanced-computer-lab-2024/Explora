@@ -74,6 +74,9 @@ const createProfile = async (req, res) => {
 
     // Create profile
     const newProfile = new Profile({
+      username,
+      email,
+      password,
       name,
       mobile,
       yearsOfExperience,

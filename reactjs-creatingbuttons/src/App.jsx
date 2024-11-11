@@ -91,16 +91,6 @@ import BookedFlights from './components/bookedFlights.jsx'; // Import your Booke
 import HotelReservations from './components/hotelReservations.jsx';
 import ActivityForm from './components/ActivityForm.jsx';
 
-
-
-
-
-
-
-
-
-
-
 function App() {
 
   return (

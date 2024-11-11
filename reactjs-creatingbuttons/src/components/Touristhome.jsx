@@ -8,10 +8,6 @@ export default function Touristhome() {
     navigate('/tourist-profile');
   };
 
-  const handleViewActivitiesClick = () => {
-    navigate('/tourist-search');
-  };
-
   const handleViewComplaintsClick = () => {
     navigate('/complaints');
   };
@@ -57,7 +53,6 @@ export default function Touristhome() {
     <header>
       <div className="button-container">
         <button onClick={handleUpdateProfileClick}>Update my profile</button>
-        <button onClick={handleViewActivitiesClick}>View upcoming activities</button>
         <button onClick={handleViewComplaintsClick}>View Issued Complaints</button>
         <button onClick={handleFileComplaintClick}>File a Complaint</button>
         <button onClick={handleAccountDeletionClick}>Request Account Deletion</button>

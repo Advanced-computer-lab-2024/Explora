@@ -265,6 +265,117 @@ p {
   border-radius: 4px;
 }
 
+.upcoming-activities {
+  padding: 20px;
+  background-color: #f9f9f9; /* Light background color */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  max-width: 800px; /* Maximum width for the container */
+  margin: auto; /* Center the container */
+}
+
+.header {
+  text-align: center; /* Center the header text */
+  color: #333; /* Dark color for the header */
+}
+
+.activities-list {
+  display: flex; /* Use flexbox to layout activity cards */
+  flex-wrap: wrap; /* Allow cards to wrap onto multiple lines */
+  justify-content: space-between; /* Space between cards */
+}
+
+.activity-card {
+  background-color: #fff; /* White background for each card */
+  border: 1px solid #ddd; /* Light border for card */
+  border-radius: 8px; /* Rounded corners */
+  padding: 15px; /* Padding inside card */
+  margin: 10px; /* Margin around card */
+  flex: 1 0 calc(30% - 20px); /* Responsive card width */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.2s; /* Smooth hover effect */
+}
+
+.activity-card:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
+}
+
+.activity-name {
+  font-size: 1.5em; /* Larger font size for the name */
+  color: #000000; /* Blue color for the name */
+}
+
+.activity-date,
+.activity-price,
+.activity-rating {
+  color: #666; /* Gray color for the other texts */
+}
+
+
+
+.message {
+  text-align: center; /* Center the message */
+  color: green; /* Color for success messages */
+  margin-top: 20px; /* Spacing above the message */
+}
+
+.share-buttons {
+  display: flex; /* Use Flexbox to arrange items in a row */
+  gap: 10px; /* Space between buttons */
+  margin-top: 10px; /* Margin above the buttons */
+}
+
+.share-buttons button {
+  padding: 8px 12px;
+  background-color: #000000; /* Blue background */
+  color: white; /* White text */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+}
+
+.share-buttons button:hover {
+  background-color: #000000; /* Darker blue on hover */
+}
+
+.loyalty-points {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: #f0f0f0;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.badge {
+  margin-left: 10px;
+  font-weight: bold;
+  color: #FFD700; /* Gold color for badges */
+}
+
+.redeem-button {
+  background-color: #4CAF50; /* Green background */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.redeem-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+}
+
+.redeem-button:disabled {
+  background-color: #cccccc; /* Gray background for disabled button */
+  cursor: not-allowed; /* Change cursor for disabled button */
+}
+
+
+
 /* Account Deletion Request */
 .account-deletion-request-container {
   max-width: 500px;

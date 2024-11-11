@@ -135,22 +135,6 @@ const getUpcomingActivities = async (req, res) => {
     }
 };
 
-const getPreviousActivities = async (req, res) => {
-    const today = new Date(); // Get today's date
-
-    try {
-        const previousActivities = await Activity.find({ date: { $lt: today } }); // Find activities that happened before today
-
-        if (previousActivities.length === 0) {
-            return res.status(404).json({ message: 'No previous activities found.' });
-        }
-
-        return res.status(200).json(previousActivities);
-    } catch (error) {
-        return res.status(500).json({ message: 'Server error', error: error.message });
-    }
-};
-
 // Update an activity
 const updateActivity = async (req, res) => {
     try {
@@ -312,4 +296,5 @@ module.exports = {
     searchActivities,
     sortActivitiesByPrice,
     sortActivitiesByRating,
+    
 };

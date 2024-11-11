@@ -146,7 +146,26 @@ router.get('/previous-activities', async (req, res) => {
     }
 });
 
-  
+router.get('/:id', async (req, res) => {
+    const { id } = req.params;  // Extract the activity ID from the request parameters
+
+    try {
+        // Find the activity by ID, populate the category and tags fields
+        const activity = await Activity.findById(id)
+            .populate('category', 'activityType')  // Populate category with only 'activityType'
+            .populate('tags', 'tag')               // Populate tags with only 'tag'
+            .select('-createdAt -updatedAt');       // Exclude createdAt and updatedAt fields
+
+        if (!activity) {
+            return res.status(404).json({ message: 'Activity not found.' });  // If no activity is found
+        }
+
+        return res.status(200).json(activity);  // Return the activity if found
+    } catch (err) {
+        return res.status(500).json({ error: err.message });  // Return a server error message if something goes wrong
+    }
+});
+
 
 // Update an activity
 router.put('/:id', async (req, res) => {
@@ -320,5 +339,27 @@ router.get('/', async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   });
+
+  // Route to get previous activities
+  router.get('/getPreviousActivities', async (req, res) => {
+      const today = new Date(); // Get today's date
+  
+      try {
+          // Find activities that happened before today
+          const previousActivities = await Activity.find({ date: { $lt: today } });
+  
+          if (previousActivities.length === 0) {
+              return res.status(404).json({ message: 'No previous activities found.' });
+          }
+  
+          return res.status(200).json(previousActivities); // Return the found activities
+      } catch (error) {
+          // Handle any errors that occur during the database query
+          return res.status(500).json({ message: 'Server error', error: error.message });
+      }
+  });
+  
+  module.exports = router; // Export the router to use in the main app
+  
 
 module.exports = router;

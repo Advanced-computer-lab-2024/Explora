@@ -79,9 +79,9 @@ const BookDropdown = () => {
     } else if (option === 'hotel') {
       navigate('/HotelBooking'); // Redirect to hotel booking page
     } else if (option === 'bookedFlights') {
-      navigate('/bookedFlights'); // Redirect to booked flights page
+      navigate('/booked-flights'); // Redirect to booked flights page
     } else if (option === 'hotelReservations') {
-      navigate('/hotelReservations'); // Redirect to hotel reservations page
+      navigate('/hotel-reservations'); // Redirect to hotel reservations page
     }
   };
 
