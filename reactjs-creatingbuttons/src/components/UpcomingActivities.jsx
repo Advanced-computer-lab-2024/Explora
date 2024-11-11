@@ -13,7 +13,7 @@ const UpcomingActivities = () => {
   const [itins, setItins] = useState([]);
 
 
-  const userId = "672404b5711f4330c4103753";
+  const userId = "67322cdfa472e2e7d22de84a";
 
   useEffect(() => {
     const savedPoints = localStorage.getItem('loyaltyPoints');
