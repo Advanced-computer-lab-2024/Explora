@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 const UpcomingItineraries = () => {
-  const [places, setPlaces] = useState([]);
+  const [itins, setItins] = useState([]);
   const [message, setMessage] = useState('');
   const [bookedTickets, setBookedTickets] = useState([]);
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
@@ -11,35 +11,17 @@ const UpcomingItineraries = () => {
   const [comments, setComments] = useState({});
 
   useEffect(() => {
-    const sampleData = [
-      {
-        _id: '1',
-        name: 'Historical Museum Tour',
-        date: '2024-11-15',
-        price: 500,
-        rating: 8,
-      },
-      {
-        _id: '2',
-        name: 'City Walking Tour',
-        date: '2024-12-05',
-        price: 1200,
-        rating: 9,
-      },
-      {
-        _id: '3',
-        name: 'Mountain Hiking Adventure',
-        date: '2025-01-10',
-        price: 800,
-        rating: 7,
-      },
-    ];
-
-    const formattedData = sampleData.map((place) => ({
-      ...place,
-      dateObject: new Date(place.date),
-    }));
-    setPlaces(formattedData);
+    fetch('http://localhost:4000/api/tour_guide_itinerary/upcoming')
+      .then(response => response.json())
+      .then(data => {
+        // Format the date if available
+        const formattedData = data.map((itin) => {
+          const formattedDate = itin.date ? itin.date.split('T')[0] : 'No Date Available';
+          return { ...itin, date: formattedDate };
+        });
+        setItins(formattedData);
+      })
+      .catch(error => console.error('Error fetching data:', error));
   }, []);
 
   const getBadgeLevel = (points) => {
@@ -49,27 +31,27 @@ const UpcomingItineraries = () => {
     return '';
   };
 
-  const shareLink = (place) => {
-    const link = `http://localhost:3000/activities/${place._id}`;
+  const shareLink = (itin) => {
+    const link = `http://localhost:3000/activities/${itin._id}`;
     navigator.clipboard.writeText(link)
       .then(() => setMessage('Link copied to clipboard!'))
       .catch(() => setMessage('Failed to copy link.'));
   };
 
-  const shareEmail = (place) => {
-    const subject = `Check out this activity: ${place.name}`;
-    const body = `I thought you might be interested in this activity:\n\n${place.name}\nDate: ${place.date}\nPrice: ${place.price}$\nRating: ${place.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${place._id}`;
+  const shareEmail = (itin) => {
+    const subject = `Check out this activity: ${itin.name}`;
+    const body = `I thought you might be interested in this activity:\n\n${itin.name}\nDate: ${itin.date}\nPrice: ${itin.price}$\nRating: ${itin.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${itin._id}`;
     
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  const handleBookTicket = (place) => {
-    setBookedTickets((prev) => [...prev, place._id]);
+  const handleBookTicket = (itin) => {
+    setBookedTickets((prev) => [...prev, itin._id]);
     let pointsToAdd = 0;
 
-    if (place.price <= 100000) pointsToAdd = place.price * 0.5;
-    else if (place.price <= 500000) pointsToAdd = place.price * 1;
-    else pointsToAdd = place.price * 1.5;
+    if (itin.price <= 100000) pointsToAdd = itin.price * 0.5;
+    else if (itin.price <= 500000) pointsToAdd = itin.price * 1;
+    else pointsToAdd = itin.price * 1.5;
 
     setLoyaltyPoints((prevPoints) => {
       const newPoints = prevPoints + pointsToAdd;
@@ -77,17 +59,17 @@ const UpcomingItineraries = () => {
       return newPoints;
     });
 
-    alert(`Your ticket for "${place.name}" has been booked!`);
+    alert(`Your ticket for "${itin.name}" has been booked!`);
   };
 
-  const handleCancelBooking = (place) => {
+  const handleCancelBooking = (itin) => {
     const now = new Date();
-    const timeDifference = place.dateObject - now;
+    const timeDifference = new Date(itin.date) - now;
     const hoursDifference = timeDifference / (1000 * 60 * 60);
 
     if (hoursDifference >= 48) {
-      setBookedTickets((prev) => prev.filter(ticketId => ticketId !== place._id));
-      alert(`Your booking for "${place.name}" has been canceled.`);
+      setBookedTickets((prev) => prev.filter(ticketId => ticketId !== itin._id));
+      alert(`Your booking for "${itin.name}" has been canceled.`);
     } else {
       alert('You can only cancel your booking 48 hours before the event starts.');
     }
@@ -106,27 +88,27 @@ const UpcomingItineraries = () => {
     }
   };
 
-  const handleRating = (placeId, rating) => {
+  const handleRating = (itinId, rating) => {
     setRatings((prevRatings) => ({
       ...prevRatings,
-      [placeId]: rating,
+      [itinId]: rating,
     }));
 
-    alert(`You rated "${placeId}" with ${rating} stars!`);
+    alert(`You rated "${itinId}" with ${rating} stars!`);
   };
 
-  const handleCommentChange = (placeId, comment) => {
+  const handleCommentChange = (itinId, comment) => {
     setComments((prevComments) => ({
       ...prevComments,
-      [placeId]: comment,
+      [itinId]: comment,
     }));
   };
 
-  const handleCommentSubmit = (placeId) => {
-    alert(`Comment submitted for "${placeId}": ${comments[placeId]}`);
+  const handleCommentSubmit = (itinId) => {
+    alert(`Comment submitted for "${itinId}": ${comments[itinId]}`);
     setComments((prevComments) => ({
       ...prevComments,
-      [placeId]: '',
+      [itinId]: '',
     }));
   };
 
@@ -134,27 +116,23 @@ const UpcomingItineraries = () => {
     <div className="UpcomingItineraries">
       <h1 className="header">Upcoming Itineraries</h1>
       <div className="activities-list">
-        {places.map((place) => (
-          <div key={place._id} className="activity-card">
-            <h2 className="activity-name">{place.name}</h2>
-            <p className="activity-date">Date: {place.date}</p>
-            <p className="activity-price">Price: {place.price}$</p>
-            <p className="activity-rating">Rating: {place.rating}/10</p>
-            
-  
-
-            
+        {itins.map((itin) => (
+          <div key={itin._id} className="activity-card">
+            <h2 className="activity-name">{itin.name}</h2>
+            <p className="activity-date">Date: {itin.date}</p>
+            <p className="activity-price">Price: {itin.price}$</p>
+            <p className="activity-rating">Rating: {itin.rating}/10</p>
 
             <div className="share-buttons">
-              <button onClick={() => shareLink(place)}>Share Link</button>
-              <button onClick={() => shareEmail(place)}>Share via Email</button>
-              {bookedTickets.includes(place._id) ? (
+              <button onClick={() => shareLink(itin)}>Share Link</button>
+              <button onClick={() => shareEmail(itin)}>Share via Email</button>
+              {bookedTickets.includes(itin._id) ? (
                 <button disabled>Ticket Already Booked</button>
               ) : (
-                <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
+                <button onClick={() => handleBookTicket(itin)}>Book Ticket</button>
               )}
-              {bookedTickets.includes(place._id) && (
-                <button onClick={() => handleCancelBooking(place)}>Cancel Booking</button>
+              {bookedTickets.includes(itin._id) && (
+                <button onClick={() => handleCancelBooking(itin)}>Cancel Booking</button>
               )}
             </div>
           </div>

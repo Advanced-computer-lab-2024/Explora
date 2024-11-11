@@ -12,23 +12,28 @@ const AdminDocumentViewer = () => {
   const navigate = useNavigate(); // Initialize the navigate function
 
   // Function to handle Accept action
-  const handleAccept = (userId) => {
-    // Update the state to reflect the accepted status
-    setUsers(prevUsers =>
-      prevUsers.map(user =>
-        user.id === userId ? { ...user, status: 'Accepted' } : user
-      )
-    );
+ // Function to handle Accept action
+const handleAccept = (userId) => {
+  // Update the state to reflect the accepted status
+  setUsers(prevUsers =>
+    prevUsers.map(user =>
+      user.id === userId ? { ...user, status: 'Accepted' } : user
+    )
+  );
 
-    // Navigate to the Terms and Conditions page
-    navigate(`/terms/${userId}`); // Assuming you'll pass the userId as a parameter
-  };
+  // Show alert for acceptance
+  alert(`User with ID ${userId} has been accepted.`);
+};
 
-  // Function to handle Reject action
-  const handleReject = (userId) => {
-    // Update the state to filter out the rejected user
-    setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-  };
+// Function to handle Reject action
+const handleReject = (userId) => {
+  // Update the state to filter out the rejected user
+  setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
+
+  // Show alert for rejection
+  alert(`User with ID ${userId} has been rejected.`);
+};
+
 
   return (
     <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px', background: '#f9f9f9', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>

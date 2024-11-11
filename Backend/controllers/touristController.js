@@ -1,4 +1,4 @@
-const touristModel = require('../models/touristModel');
+const Tourist = require('../models/touristModel');
 
 // controllers/touristController.js
 
