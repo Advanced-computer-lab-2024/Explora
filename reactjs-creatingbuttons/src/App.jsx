@@ -82,6 +82,9 @@ import PlaceManager from './components/PlaceManager';
 import TagManagers from './components/TagManagers.jsx';
 import TourismDashboard from './components/TourismDashboard';
 import BookedTransportations from './components/BookedTransportations'; 
+import HotelBooking from './components/HotelBooking.jsx';
+import BookedFlights from './components/bookedFlights.jsx'; // Import your BookedFlights component
+import HotelReservations from './components/hotelReservations.jsx';
 
 function App() {
 
@@ -166,6 +169,10 @@ function App() {
         <Route path="/tags" element={<TagManagers />} />
         <Route path="/tourism-dashboard" element={<TourismDashboard />} />
         <Route path="/view-booked-transportations" element={<BookedTransportations />} />
+        <Route path="/flight-booking" element={<FlightBooking />} />
+        <Route path="/hotel-booking" element={<HotelBooking />} />
+        <Route path="/booked-flights" element={<BookedFlights />} />
+        <Route path="/hotel-reservations" element={<HotelReservations />} />]
         </Routes>
       </Router>
     </main>

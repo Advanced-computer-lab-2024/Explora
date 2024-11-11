@@ -54,6 +54,11 @@ const activitySchema = new Schema({
     type: Boolean,
     default: true,  // Optional field with default value
   },
+  flagged: {
+    type: Boolean,
+    default: false,  // By default, itineraries are not flagged
+    required: false 
+  }
 }, { timestamps: true });
 
 const Activity = mongoose.model('Activity', activitySchema);

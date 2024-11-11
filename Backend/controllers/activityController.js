@@ -3,6 +3,7 @@
 const Activity = require('../models/Activity');
 const ActivityCategory = require('../models/ActivityCategory');
 const PrefrenceTag = require('../models/PrefrenceTag');
+const { checkAdmin } = require('../middleware/AuthMiddleware');
 
 const createActivity = async (req, res) => {
     const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen, category } = req.body; // Adjusted
@@ -251,7 +252,7 @@ const sortActivitiesByRating = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Server error', error: error.message });
     }
-};
+};  
 
 module.exports = {
     createActivity,

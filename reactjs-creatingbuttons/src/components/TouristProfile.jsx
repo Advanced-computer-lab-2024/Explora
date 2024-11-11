@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const TouristProfile = () => {
   // State to store the profile data
@@ -36,9 +36,9 @@ const TouristProfile = () => {
   };
 
   return (
-    <div> 
+    <div>
       <h2>Tourist Profile</h2>
-      
+
       <Link to="/ProfileDetailsPage">
         <button style={buttonStyle}>View Profile Details</button>
       </Link>
@@ -49,18 +49,102 @@ const TouristProfile = () => {
       <Link to="/product-list-tourist">
         <button style={buttonStyle}>View Products</button>
       </Link>
+      {/* New button to view completed activities */}
+      <Link to="/CompletedActivities">
+        <button style={buttonStyle}>Completed Activities</button>
+      </Link>
+      {/* New button to view completed itineraries */}
+      <Link to="/CompletedItineraries">
+        <button style={buttonStyle}>Completed Itineraries</button>
+      </Link>
+      {/* Dropdown Button for Booking */}
+      <BookDropdown />
+    </div>
+  );
+};
+
+// Dropdown Button Component for Booking
+const BookDropdown = () => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
+
+  // Toggle dropdown visibility
+  const toggleDropdown = () => setShowDropdown(!showDropdown);
+
+  // Handle navigation based on selection
+  const handleSelect = (option) => {
+    setShowDropdown(false); // Close dropdown after selection
+    if (option === 'flight') {
+      navigate('/FlightBooking'); // Redirect to flight booking page
+    } else if (option === 'hotel') {
+      navigate('/HotelBooking'); // Redirect to hotel booking page
+    } else if (option === 'bookedFlights') {
+      navigate('/bookedFlights'); // Redirect to booked flights page
+    } else if (option === 'hotelReservations') {
+      navigate('/hotelReservations'); // Redirect to hotel reservations page
+    }
+  };
+
+  return (
+    <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
+      <button onClick={toggleDropdown} style={buttonStyle}>
+        Book ▼
+      </button>
+      {showDropdown && (
+        <div style={dropdownStyle}>
+          <button onClick={() => handleSelect('flight')} style={dropdownItemStyle}>
+            Book a Flight
+          </button>
+
+          <button onClick={() => handleSelect('hotel')} style={dropdownItemStyle}>
+            Book a Hotel
+          </button>
+              {/* New buttons */}
+              <button onClick={() => handleSelect('bookedFlights')} style={dropdownItemStyle}>
+            Booked Flights
+          </button>
+
+          <button onClick={() => handleSelect('hotelReservations')} style={dropdownItemStyle}>
+            Hotel Reservations
+          </button>
+        </div>
+      )}
     </div>
   );
 };
 
 // Add some basic button styling
 const buttonStyle = {
-    margin: '0 10px',
-    padding: '10px 20px',
-    fontSize: '16px',
-    cursor: 'pointer',
-    borderRadius: '5px',
-    border: '1px solid #ccc',
+  margin: '0 10px',
+  padding: '10px 20px',
+  fontSize: '16px',
+  cursor: 'pointer',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+  backgroundColor: '#202124',
+  color: 'white',
+};
+
+const dropdownStyle = {
+  position: 'absolute',
+  top: '100%',
+  left: 0,
+  backgroundColor: 'white',
+  border: '1px solid #ccc',
+  borderRadius: '5px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  zIndex: 1,
+};
+
+const dropdownItemStyle = {
+  display: 'block',
+  width: '100%',
+  padding: '10px 20px',
+  fontSize: '14px',
+  cursor: 'pointer',
+  border: 'none',
+  backgroundColor: 'white',
+  textAlign: 'left',
 };
 
 export default TouristProfile;

@@ -22,6 +22,11 @@ const itinerarySchema = new mongoose.Schema({
   tags: { type: [String], required: false },
   rating: { type: Number, default: 0 },
   comment: { type: String, required: false },
+  flagged: {
+    type: Boolean,
+    default: false,  // By default, itineraries are not flagged
+    required: false 
+  }
 })
 
 const Itinerary = mongoose.model('Itinerary', itinerarySchema);

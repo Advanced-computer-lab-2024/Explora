@@ -34,4 +34,13 @@ router.post('/api/auth', async (req, res) => {
   }
 });
 
-module.exports = router;
+const checkAdmin = (req, res, next) => {
+  // Your logic to check if the user is an admin
+  if (req.user && req.user.role === 'Admin') {
+    next();  // Continue to the next middleware or route handler
+  } else {
+    return res.status(403).json({ message: 'Unauthorized: Admins only' });
+  }
+};
+
+module.exports = router, { checkAdmin };
