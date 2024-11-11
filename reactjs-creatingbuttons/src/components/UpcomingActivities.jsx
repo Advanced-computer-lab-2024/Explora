@@ -134,7 +134,7 @@ const UpcomingActivities = () => {
       setBookedTickets((prev) => prev.filter(ticketId => ticketId !== place._id));
       alert(`Your booking for "${place.name}" has been canceled.`);
     } else {
-      alert('You can only cancel your booking 48 hours before the event starts.');
+      alert('You can not cancel your booking 48 hours before the event starts.');
     }
   };
 

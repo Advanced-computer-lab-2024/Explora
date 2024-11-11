@@ -8,7 +8,7 @@ const FlightBooking = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [bookedFlights, setBookedFlights] = useState([]);
-  const [touristId] = useState("672e97f48a225c52217e99ac"); // Hardcoded for now
+  const [touristId] = useState("67322cdfa472e2e7d22de84a"); // Hardcoded for now
   const [searchId, setSearchId] = useState(null); // Assume this gets set after the search
   const [flightId, setFlightId] = useState(null); // Set after selecting the flight
   const [cardNumber, setCardNumber] = useState('');

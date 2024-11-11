@@ -35,15 +35,6 @@ export default function TodoInput() {
         Request Account Deletion
       </button>
 
-     
-
-      {/* New button for Activate / De-activate Itinerary */}
-      <button
-        style={{ width: '220px', height: '60px', margin: '10px' }}
-        onClick={() => navigate('/itineraries-table')}
-      >
-        Activate / De-activate Itinerary
-      </button>
-    </header>
+         </header>
   );
 }

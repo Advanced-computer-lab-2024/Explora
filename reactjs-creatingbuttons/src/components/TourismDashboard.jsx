@@ -7,7 +7,6 @@ export default function TourismDashboard() {
 
   // Navigation handlers
   const goToPlaces = () => navigate('/places');
-  const goToTags = () => navigate('/tags');
 
   return (
     <div style={styles.container}>
@@ -15,9 +14,6 @@ export default function TourismDashboard() {
       <div style={styles.buttonContainer}>
         <button style={styles.button} onClick={goToPlaces}>
           Manage Museums & Historical Places
-        </button>
-        <button style={styles.button} onClick={goToTags}>
-          Manage Tags for Historical Locations
         </button>
       </div>
     </div>

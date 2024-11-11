@@ -48,7 +48,7 @@ const CompanyProfileForm = () => {
     try {
       if (isEditing && selectedAdvertiser._id) {
         // Update existing profile
-        const response = await axios.put(`http://localhost:4000/api/advertisers/update/${selectedAdvertiser._id}`, selectedAdvertiser);
+        const response = await axios.put(`http://localhost:4000/api/advertisers/${selectedAdvertiser._id}`, selectedAdvertiser);
         alert(response.data.message || 'Advertiser updated successfully');
         setAdvertisers(advertisers.map(ad => (ad._id === selectedAdvertiser._id ? selectedAdvertiser : ad))); // Update the advertiser list
       } else {
