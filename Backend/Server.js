@@ -25,6 +25,8 @@ const req = require('./Routes/deletionRequest');
 const preferences = require('./Routes/VacationPreferences');
 const transportationRoutes = require('./Routes/transportation'); // Adjust the path as needed
 const transBookRoutes = require('./Routes/transportationBook'); // Adjust the path as needed
+const flightRoutes = require('./Routes/flightRoutes'); // Adjust the path as needed
+const hotelRoutes = require('./Routes/hotelRoutes');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -62,6 +64,8 @@ app.use('/Request', req);
 app.use('/preferences', preferences);
 app.use('/transportation', transportationRoutes);   // For managing profiles
 app.use('/transportationBook', transBookRoutes);   // For managing profiles
+app.use('/flights', flightRoutes);   // For managing profiles
+app.use('/hotels', hotelRoutes);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
