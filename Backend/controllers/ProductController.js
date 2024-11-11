@@ -37,29 +37,110 @@ const availableProducts = async (req, res) => {
     }
 };
 
+// get archived products
+
+const archivedProducts = async (req, res) => {
+    try {
+        const products = await Product.find({ archived: true });
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No archived products found' });
+        }
+        const updatedProducts = products.map(product => {
+            return {
+                ...product._doc,
+                image: `${req.protocol}://${req.get('host')}/${product.image}`
+            };
+        });
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+}
+
+// get unarchived products
+
+const unarchivedProducts = async (req, res) => {
+    try {
+        const products = await Product.find({ archived: false });
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No unarchived products found' });
+        }
+
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`
+        }));
+
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+}
+
+// delete all products 
+
+const deleteAllProducts = async (req, res) => {
+    try {
+        await Product.deleteMany();
+        res.status(200).json({ msg: 'All products deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
+
 
 
 // get product by name
 const productsByName = async (req, res) => {
-    const  {name}  = req.params;
-    const products = await Product.find({ name: new RegExp(name, 'i') });
-    if(!products){
-        return res.status(404).json({msg: 'No products found'});
-    }
-    res.status(200).json(products);
+    const { name } = req.params;
+    try {
+        const products = await Product.find({ name: new RegExp(name, 'i') });
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No products found' });
+        }
 
-}
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`
+        }));
+
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
 
 // filter product by price 
 
 const filteredProducts = async (req, res) => {
     try {
-        const {min, max } = req.query;
-        const products = await Product.find({ price: { $gte: min, $lte: max } });
-        if(!products){
-            return res.status(404).json({msg: 'No products found'});
+        let { min, max } = req.query;
+
+        // Convert to numbers and validate
+        min = Number(min);
+        max = Number(max);
+
+        if (isNaN(min) || isNaN(max)) {
+            return res.status(400).json({ msg: 'Invalid price range' });
         }
-        res.status(200).json(products);
+
+        const products = await Product.find({
+            price: { $gte: min, $lte: max }
+        });
+
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No products found' });
+        }
+
+        // Update product image URL
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}`
+        }));
+
+        res.status(200).json(updatedProducts);
     } catch (err) {
         res.status(500).json({ msg: err.message });
     }
@@ -72,7 +153,15 @@ const createProduct = async (req, res) => {
     const picturePath = req.file ? `uploads/${req.file.filename}` : null;
 
     try {
+        const image = req.file ? req.file.path : null; // Use req.file instead of req.files
+
         const newProduct = await Product.create({
+            name,
+            price,
+            description: description,
+            seller,
+            image: image,
+            quantity: quantity,
             name, price, description, seller, image: picturePath, quantity
         });
         res.status(201).json({
@@ -130,12 +219,20 @@ const searchProducts = async (req, res) => {
 
 // sort product by rating 
 const sortProducts = async (req, res) => {
-    const { order } = req.query; 
-    let sortOrder = order === 'high' ? -1 : 1; 
+    const { order } = req.query;
+    let sortOrder;
+
+    if (order === 'high-to-low') {
+        sortOrder = -1; // Descending order
+    } else if (order === 'low-to-high') {
+        sortOrder = 1;  // Ascending order
+    } else {
+        sortOrder = 1;  // Default to ascending order if no valid value
+    }
 
     try {
         const allProducts = await Product.find();
-        console.log('All Products:', allProducts); 
+        console.log('All Products:', allProducts);
 
         const sortedProducts = await Product.find().sort({ averageRating: sortOrder });
 
@@ -215,6 +312,50 @@ const addReview = async (req, res) => {
     }
 };
 
+// view qnatity and sales 
+
+const viewQuantityAndSales = async (req, res) => {
+        try {
+            const products = await Product.find().select('name quantity sales');
+            if (!products || products.length === 0) {
+                return res.status(404).json({ msg: 'No products found' });
+            }
+            res.status(200).json(products);
+        } catch (err) {
+            res.status(500).json({ msg: err.message });
+        }
+    };
+
+// archive and unarchive products 
+
+const archiveProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ msg: 'Invalid product ID' });
+        }
+        const product = await Product.findById(id);
+        if (!product) {
+            return res.status(404).json({ msg: 'Product not found' });
+        }
+        const newArchivedStatus = !product.archived;
+        const updatedProduct = await Product.findByIdAndUpdate(
+            id, 
+            { archived: newArchivedStatus }, 
+            { new: true, runValidators: true }
+        );
+        if (!updatedProduct) {
+            return res.status(404).json({ msg: 'Product not found after update' });
+        }
+        console.log("Updated Product:", updatedProduct);
+        res.status(200).json(updatedProduct);
+    } catch (err) {
+        console.error("Error during update:", err);  // Log full error stack for debugging
+        res.status(400).json({ msg: err.message });
+    }
+};
+
+
 module.exports = {
     createProduct,
     allProducts, 
@@ -225,5 +366,11 @@ module.exports = {
     sortProducts,
     updateProduct,
     addReview,
-    addRating
+    addRating,
+    addReview,
+    viewQuantityAndSales,
+    archiveProduct,
+    archivedProducts,
+    unarchivedProducts,
+    deleteAllProducts
 };

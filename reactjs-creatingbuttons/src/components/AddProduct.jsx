@@ -59,20 +59,19 @@ export default function AddProduct() {
           'Content-Type': 'multipart/form-data'
         }
       });
-      setMessage('Product successfully created!');
+        setProductName('');
+        setProductDetails('');
+        setPrice('');
+        setQuantity('');
+        setSellerUsername(''); // Reset username
+        setImage(null);
+        setImagePreview(null);
+        setMessage('Product successfully created!');
     } catch (error) {
       console.error('Error:', error);
       setMessage('Failed to create product, please try again.' + error);
     }
-    if (response.status==200){
-    setProductName('');
-    setProductDetails('');
-    setPrice('');
-    setQuantity('');
-    setSellerUsername(''); // Reset username
-    setImage(null);
-    setImagePreview(null);
-    }
+    
   };
 
   return (

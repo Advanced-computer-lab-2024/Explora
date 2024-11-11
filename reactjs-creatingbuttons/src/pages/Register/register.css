@@ -1,0 +1,146 @@
+General Page Styles
+
+/* Container Styling */
+.register-container {
+    background-color: #fff;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 650px;
+    max-height: 80vh; /* Limit height to viewport */
+    overflow: hidden; /* Prevent scrolling on the container */
+}
+
+/* Form Styling */
+.register-form {
+    margin-top: 5px;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: calc(80vh - 30px); /* Max height inside container */
+}
+
+.register-title {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: #05668D;
+}
+
+/* Form Group Styling */
+.register-formGroup {
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+}
+
+.register-label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+    display: flex;
+    align-items:flex-start;
+}
+
+/* Input and Button Styling */
+.registerr-input,
+.register-dropdownlist,
+.register-button {
+    width: 100%;
+    padding: 8px;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.register-input:focus,
+.register-dropdownlist:focus {
+    border-color: #05668D;
+    outline: none;
+}
+
+.register-button {
+    border-radius: 5px;
+    background-color: #05668D;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    height: 40px;
+    width: 235px;
+    margin-top: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: none;
+}
+
+.register-button:hover {
+    background-color: #028090;
+}
+
+.register-button:active {
+    transform: scale(0.98);
+}
+
+/* Link Styling */
+.register-container a {
+    text-decoration: none;
+    color: #05668D;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+.register-container a:hover {
+    font-weight: bold;
+}
+
+/* Tourist-Specific Field Styling */
+.register-tourist-fields .register-formGroup {
+    margin-bottom: 15px;
+}
+
+.image-upload {
+    width: 100px; /* Desired width */
+    height: 100px; /* Desired height */
+    border-radius: 50%; /* Makes it circular */
+    overflow: hidden; /* Hides overflow */
+    border: 2px dashed #ccc; /* Dashed border for upload area */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Pointer cursor to indicate it's clickable */
+    margin-top: 10px; /* Space above the preview */
+}
+
+.image-preview {
+    width: 100%; /* Full width for the preview */
+    height: 100%; /* Full height for the preview */
+    border-radius: 50%; /* Makes it circular */
+    overflow: hidden; /* Hides overflow */
+}
+
+.image-preview img {
+    width: 100%; /* Makes the image cover the entire circle */
+    height: 100%; /* Makes the image cover the entire circle */
+    object-fit: cover; /* Ensures the image maintains aspect ratio */
+}
+
+.image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #aaa; /* Placeholder text color */
+    text-align: center;
+}

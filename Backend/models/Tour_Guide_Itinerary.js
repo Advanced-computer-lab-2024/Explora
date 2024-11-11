@@ -21,6 +21,8 @@ const itinerarySchema = new mongoose.Schema({
   isActive: { type: Boolean, default: true },
   tags: { type: [String], required: false },
   rating: { type: Number, default: 0 },
+  isDeleted: { type: Boolean, default: false },
+  // Default to false, can be updated when deleted by admin
   comment: { type: String, required: false },
   flagged: {
     type: Boolean,

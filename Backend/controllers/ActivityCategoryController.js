@@ -3,23 +3,20 @@ const mongoose = require("mongoose");
 
 // Create a new ActivityCategory
 const createActivityCategory = async (req, res) => {
-    const { categoryName } = req.params; // The category name from URL params
-    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
-
-    try {
-        // Check if the activity category already exists
-        const activityCategory = await ActivityCategory.findOne({ activityType }); // Use findOne for a single document
-        if (activityCategory) {
+    const { activityType} = req.body;
+    try{
+        const category = await ActivityCategory.findOne({ activityType });
+        if (category) {
             return res.status(400).json({ message: "Activity category already exists" });
         }
+        const newCategory = new ActivityCategory({ activityType });
+        const savedCategory = await newCategory.save();
+        res.status(201).json(savedCategory);
 
-        // Create a new activity category if it doesn't exist
-        const newActivityCategory = await ActivityCategory.create({ activityType });
-        
-        // Respond with the new category
-        res.status(201).json(newActivityCategory); // Use 201 for resource creation
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    }
+    catch (err) {
+        console.error('Error creating category:', err);
+        res.status(500).json({ message: err.message });
     }
 };
 
@@ -86,3 +83,4 @@ module.exports = {
     updateActivityCategory,
     deleteActivityCategory
 };
+

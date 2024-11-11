@@ -1,0 +1,68 @@
+.admin-complaints {
+    padding: 20px;
+}
+
+.filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.filters label {
+    margin-right: 10px;
+}
+
+.filters select {
+    padding: 5px;
+}
+
+.admin-complaints complaint-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+}
+
+.image-container {
+    margin-right: 15px;
+}
+
+.image-container img {
+    width: 60px; /* Set a width for the image */
+    height: auto; /* Maintain aspect ratio */
+}
+
+.info-container {
+    flex-grow: 1;
+}
+
+.details-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-content {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 5px;
+    margin: auto;
+}
+
+.close-button {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}

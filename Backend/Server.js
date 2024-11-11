@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+
 const express = require("express");
 const path = require('path');
 const cors = require('cors');
@@ -14,6 +15,7 @@ const PrefrenceTagRoute = require('./Routes/PrefrenceTagRoute');
 const touristRoutes = require('./Routes/touristRouter'); // Route for tourists
 const MuseumRoutes = require('./Routes/MuseumRoutes'); // Adjusted path
 const activityRoutes = require('./Routes/activity');
+const AdvertiserActivityRoutes = require('./Routes/ActivityRoutes');
 const tour_guide_itineraryRoutes = require('./Routes/tour_guide_itinerary');
 const tour_guide_profileRoutes = require('./Routes/tour_guide_profile');
 const userRoutes = require('./Routes/userRoute');
@@ -27,12 +29,15 @@ const transportationRoutes = require('./Routes/transportation'); // Adjust the p
 const transBookRoutes = require('./Routes/transportationBook'); // Adjust the path as needed
 const flightRoutes = require('./Routes/flightRoutes'); // Adjust the path as needed
 const hotelRoutes = require('./Routes/hotelRoutes');
+const complaintsRoute = require('./Routes/ComplaintsRoutes');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
 
 // Express application
 const app = express();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Middleware
 app.use(express.json());
@@ -66,7 +71,12 @@ app.use('/transportation', transportationRoutes);   // For managing profiles
 app.use('/transportationBook', transBookRoutes);   // For managing profiles
 app.use('/flights', flightRoutes);   // For managing profiles
 app.use('/hotels', hotelRoutes);
+app.use('/complaints',complaintsRoute);
+app.use('/Activity', AdvertiserActivityRoutes);
 
+
+//connect to MongoDB
+console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {

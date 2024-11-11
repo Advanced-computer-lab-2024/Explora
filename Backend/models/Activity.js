@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const User = require('./User');
+const ActivityCategory = require('./ActivityCategory');
+const PrefrenceTag = require('./PrefrenceTag');
 
 const activitySchema = new Schema({
   advertiserId: { 
@@ -22,7 +25,7 @@ const activitySchema = new Schema({
   },
   rating: {
     type: Number,
-    required: true,
+    required: false,
   },
   location: {
     type: String,
@@ -32,24 +35,12 @@ const activitySchema = new Schema({
     type: Number,   // Price as a Number for arithmetic operations
     required: true,
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'ActivityCategory',
-    required: true,
-  },
-  tags: {
-    type: 
-    [{
-      type: mongoose.Schema.Types.ObjectId,   // Reference the PrefrenceTag model
-      ref: 'PrefrenceTag'
-    }], 
-    default: [],
-  
-  },
-  specialDiscounts: {
-    type: String,
-    default: null,  // Optional field
-  },
+  category: { type: Schema.Types.ObjectId, ref: 'ActivityCategory' },
+    tags: [{ type: Schema.Types.ObjectId, ref: 'PrefrenceTag' }],
+    specialDiscounts: {
+      type: String,  // Assuming your discount model is named 'Discount'
+      required: false,  // Optional field
+    },
   bookingOpen: {
     type: Boolean,
     default: true,  // Optional field with default value
@@ -58,7 +49,11 @@ const activitySchema = new Schema({
     type: Boolean,
     default: false,  // By default, itineraries are not flagged
     required: false 
-  }
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,  // Optional field
+  },
 }, { timestamps: true });
 
 const Activity = mongoose.model('Activity', activitySchema);

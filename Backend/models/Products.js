@@ -48,8 +48,24 @@ const productSchema = new Schema({
     averageRating: {
         type: Number,
         default: 0
+    },
+    archived: {
+        type: Boolean,
+        default: false
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    sales: {
+        type: Number,
+        default: 0
     }
-}, { timestamps: true });
+
+},
+
+
+{ timestamps: true });
 
 // Method to calculate average rating
 productSchema.methods.calculateAverageRating = function() {
