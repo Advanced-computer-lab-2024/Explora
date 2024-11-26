@@ -30,6 +30,7 @@ const transBookRoutes = require('./Routes/transportationBook'); // Adjust the pa
 const flightRoutes = require('./Routes/flightRoutes'); // Adjust the path as needed
 const hotelRoutes = require('./Routes/hotelRoutes');
 const complaintsRoute = require('./Routes/ComplaintsRoutes');
+const wishListRoute = require('./Routes/WishListRoutes'); // Adjust the path as needed
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -73,6 +74,7 @@ app.use('/flights', flightRoutes);   // For managing profiles
 app.use('/hotels', hotelRoutes);
 app.use('/complaints',complaintsRoute);
 app.use('/Activity', AdvertiserActivityRoutes);
+app.use('/wishList', wishListRoute);
 
 
 //connect to MongoDB
