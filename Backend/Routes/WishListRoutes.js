@@ -12,10 +12,10 @@ router.post("/add/:touristId", addToWishlist);
 
 // GET - Get the wishlist
 
-router.get("/", getWishlist);
+router.get("/:id", getWishlist);
 
 // DELETE - Delete an item from the wishlist
 
-router.delete("/delete/:itemId", deleteFromWishlist);
+router.delete("/delete/:id/:productId", deleteFromWishlist);
 
 module.exports = router;

@@ -8,18 +8,12 @@ const addToWishlist = async (req, res) => {
     const { productId} = req.body;
   
     try {
-      // Find the wishlist for the given tourist
       let wishlist = await WishList.findOne({ touristId });
-  
-      // If the wishlist doesn't exist, create a new one
       if (!wishlist) {
         wishlist = new WishList({ touristId, items: [] });
       }
   
-      // Add the new product to the items list
       wishlist.items.push({ productId });
-  
-      // Save the updated wishlist
       await wishlist.save();
   
       res.status(201).json({ message: 'Product added to wishlist', wishlist });
@@ -27,17 +21,16 @@ const addToWishlist = async (req, res) => {
       res.status(500).json({ error: error.message });
     }
       };
+
 // GET wishlist by user 
 
 const getWishlist = async (req, res) => {
     try {
-        const id = req.params;
-        const wishlist = await WishList.findOne({ userId: id });
-
+        const { id } = req.params;
+        const wishlist = await WishList.findOne({ touristId: id }).populate('items.productId');
         if (!wishlist) {
             return res.status(404).json({ message: "Wishlist not found" });
         }
-
         res.status(200).json(wishlist);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -49,13 +42,22 @@ const getWishlist = async (req, res) => {
 
 const deleteFromWishlist = async (req, res) => {
     const { productId, id } = req.params;
+
     try {
-        const wishlist = await WishList.findOneAndDelete({ userId: id , productId: productId });
+        const wishlist = await WishList.findOneAndUpdate(
+            { touristId: id },
+            { $pull: { items: { productId: productId } } },
+            { new: true } 
+        );
+
         if (!wishlist) {
             return res.status(404).json({ message: "Wishlist not found" });
         }
 
-        res.status(200).json(wishlist);
+        res.status(200).json({
+            message: "Product removed from wishlist",
+            wishlist,
+        });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
