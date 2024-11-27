@@ -93,6 +93,8 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
+import FlightCreditCardPayment from './components/FlightCreditCardPayment.jsx';
+import PayOnline from './components/PayOnline.jsx';
 
 
 
@@ -125,22 +127,22 @@ function App() {
           <Route path="/create-profile" element={<CreateProfile />} />
           <Route path="/view-profile/:id" element={<ProfileView />} />
           <Route path="/update-profile/:id" element={<UpdateProfile />} />
-        <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
-        <Route path="/create-itinerary" element={<CreateItinerary />} />
-        <Route path="/itinerary-view/:id" element={<ItineraryView />} />
-        <Route path="/read-itinerary" element={<ReadItinerary />} />
-        <Route path="/itinerariesList" element={<ItineraryList />} />
-        <Route path="/update-itinerary" element={<UpdateItinerary />} />
-        <Route path="/delete-itinerary" element={<DeleteItinerary />} />
-        <Route path="/tourist-itinerary" element={<TouristItinerary />} />
-        <Route path="/create-itinerary-tourist" element={<CreateItineraryTourist />} />
-        <Route path="/read-itinerary-tourist" element={<ReadItineraryTourist />} />
-        <Route path="/update-itinerary-tourist" element={<UpdateItineraryTourist />} />
-        <Route path="/delete-itinerary-tourist" element={<DeleteItineraryTourist />} />
-        <Route path="/tourist-home" element={<Touristhome />} /> {/* Correct route for Touristhome */}
-        <Route path="/tourist-profile" element={<TouristProfile />} /> {/* Route for TouristProfile */}
-        <Route path="/tourist-search" element={<TouristSearch />} />  {/* Route for TouristSearch */}
-        <Route path="/company" element={<CompanyProfilePage/>} />
+          <Route path="/tour-guide-itinerary" element={<TourGuideItinerary />} />
+          <Route path="/create-itinerary" element={<CreateItinerary />} />
+          <Route path="/itinerary-view/:id" element={<ItineraryView />} />
+          <Route path="/read-itinerary" element={<ReadItinerary />} />
+          <Route path="/itinerariesList" element={<ItineraryList />} />
+          <Route path="/update-itinerary" element={<UpdateItinerary />} />
+          <Route path="/delete-itinerary" element={<DeleteItinerary />} />
+          <Route path="/tourist-itinerary" element={<TouristItinerary />} />
+          <Route path="/create-itinerary-tourist" element={<CreateItineraryTourist />} />
+          <Route path="/read-itinerary-tourist" element={<ReadItineraryTourist />} />
+          <Route path="/update-itinerary-tourist" element={<UpdateItineraryTourist />} />
+          <Route path="/delete-itinerary-tourist" element={<DeleteItineraryTourist />} />
+          <Route path="/tourist-home" element={<Touristhome />} /> {/* Correct route for Touristhome */}
+          <Route path="/tourist-profile" element={<TouristProfile />} /> {/* Route for TouristProfile */}
+          <Route path="/tourist-search" element={<TouristSearch />} />  {/* Route for TouristSearch */}
+          <Route path="/company" element={<CompanyProfilePage/>} />
         <Route path="/advertisers/create" element={<CompanyProfileForm/>} />
         <Route path="/advertisers" element={<CompanyProfile/>} />
         <Route path="/amanager" element={<ActivityManager/>} />
@@ -191,8 +193,9 @@ function App() {
         <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
         <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
-
-
+        <Route path="/FlightCreditCardPayment" element={<FlightCreditCardPayment />} />
+        <Route path="/PayOnline" element={<PayOnline />} />
+ 
 
         </Routes>
       </Router>
