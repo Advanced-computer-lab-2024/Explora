@@ -103,22 +103,28 @@ const FlightBooking = () => {
     setSelectedFlight(null);
   };
 
-  // Handle wallet payment
+  // Handle Wallet Payment
   const handleWalletPayment = () => {
-    // Handle wallet payment logic here
-    if (selectedFlight){
-      navigate('/FlightWalletPayment',{state:{selectedFlight}});
-     }
-      setIsPaymentModalOpen(false);
+    alert(`Payment via Wallet for ${selectedItem.name} successful!`);
+    setIsPaymentModalOpen(false);
+    setSelectedItem(null);
   };
 
   // Handle credit card payment
-  const handleCreditCardPayment = () => {
-    // Redirect to credit card payment component
-   if (selectedFlight){
-    navigate('/FlightCreditCardPayment',{state:{flight:selectedFlight}});
-   }
-    setIsPaymentModalOpen(false);
+  const handleCreditCardPayment = async () => {
+    try {
+      // Create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+        itemName: selectedItem.name,
+        itemPrice: selectedItem.price,
+      });
+
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
   };
 
 
