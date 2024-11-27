@@ -93,7 +93,6 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
-import FlightCreditCardPayment from './components/FlightCreditCardPayment.jsx';
 import PayOnline from './components/PayOnline.jsx';
 
 
@@ -193,7 +192,6 @@ function App() {
         <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
         <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
-        <Route path="/FlightCreditCardPayment" element={<FlightCreditCardPayment />} />
         <Route path="/PayOnline" element={<PayOnline />} />
  
 
