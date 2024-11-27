@@ -1,12 +1,11 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const PayOnline = () => {
   const [selection, setSelection] = useState(""); // User selection: activity, itinerary, or event
   const [items, setItems] = useState([]); // List of items to display
   const [selectedItem, setSelectedItem] = useState(null); // Currently selected item for payment
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   // Handle category selection (Activity, Itinerary, or Event)
   const handleSelectionChange = (e) => {
@@ -45,10 +44,21 @@ const PayOnline = () => {
     setSelectedItem(null);
   };
 
-  // Handle Credit Card Payment (Redirect to payment page)
-  const handleCreditCardPayment = () => {
-    navigate("/credit-card-payment", { state: { selectedItem } });
-    setIsPaymentModalOpen(false);
+  // Handle Credit Card Payment (Stripe Redirection)
+  const handleCreditCardPayment = async () => {
+    try {
+      // Create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+        itemName: selectedItem.name,
+        itemPrice: selectedItem.price,
+      });
+
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
   };
 
   return (
