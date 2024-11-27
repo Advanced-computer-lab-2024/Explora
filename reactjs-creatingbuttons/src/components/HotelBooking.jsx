@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const HotelBooking = () => {
   const [cityCode, setCityCode] = useState('');
@@ -16,6 +16,8 @@ const HotelBooking = () => {
   const [touristId] = useState("672e97f48a225c52217e99ac"); // Hardcoded for now
   const [searchId, setSearchId] = useState(null);
   const [hotelId, setHotelId] = useState(null); // Set after selecting the hotel
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false); // Payment modal state
+  const navigate = useNavigate();
 
   // Handle search submission
   const handleSearchSubmit = async (e) => {
@@ -33,10 +35,12 @@ const HotelBooking = () => {
       console.error('Error fetching hotel data');
     }
   };
+
   // Select a hotel
   const handleHotelSelect = (hotel) => {
     setSelectedHotel(hotel);
-    setHotelId(hotel.hotelId); // Set hotelId after selection
+    setHotelId(hotel.hotelId);
+    setIsPaymentModalOpen(true); // Open payment modal
   };
 
   // Confirm booking for the selected hotel
@@ -76,13 +80,36 @@ const HotelBooking = () => {
   };
 
 
+  //Handle Wallet Payment
+  const handleWalletPayment = () => {
+    alert(`Payment via Wallet for ${selectedItem.name} successful!`);
+    setIsPaymentModalOpen(false);
+    setSelectedItem(null);
+  };
+
+  // Handle credit card payment
+  const handleCreditCardPayment = async () => {
+    try {
+      // Create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+        itemName: selectedItem.name,
+        itemPrice: selectedItem.price,
+      });
+
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
+  };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div style={{ padding: "20px" }}>
       <h3>Hotel Booking</h3>
 
       {/* Search Form */}
-      <form onSubmit={handleSearchSubmit} style={{ marginBottom: '20px' }}>
+      <form onSubmit={handleSearchSubmit} style={{ marginBottom: "20px" }}>
         <label>
           City Code:
           <input
@@ -111,19 +138,27 @@ const HotelBooking = () => {
             style={inputStyle}
           />
         </label>
-        <button type="submit" style={buttonStyle}>Search</button>
+        <button type="submit" style={buttonStyle}>
+          Search
+        </button>
       </form>
 
       {/* Search Results */}
       {searchResults.length > 0 && (
         <div>
           <h4>Search Results:</h4>
-          <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+          <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
             {searchResults.map((hotelData) => (
               <li key={hotelData.hotelId} style={listItemStyle}>
-                {hotelData.name} from {hotelData.checkInDate} to {hotelData.checkOutDate}
-                <div><strong>Price:</strong> {hotelData.price}</div>
-                <button onClick={() => handleHotelSelect(hotelData)} style={buttonStyle}>
+                {hotelData.name} from {hotelData.checkInDate} to{" "}
+                {hotelData.checkOutDate}
+                <div>
+                  <strong>Price:</strong> {hotelData.price}
+                </div>
+                <button
+                  onClick={() => handleHotelSelect(hotelData)}
+                  style={buttonStyle}
+                >
                   Select
                 </button>
               </li>
@@ -132,69 +167,42 @@ const HotelBooking = () => {
         </div>
       )}
 
-      {/* Selected Hotel Details with Booking Form */}
-      {selectedHotel && (
-        <div style={{ marginTop: '20px' }}>
+      {/* Payment Modal */}
+      {isPaymentModalOpen && selectedHotel && (
+        <div style={modalStyle}>
           <h4>Selected Hotel:</h4>
           <p>
-            {selectedHotel.name} from {selectedHotel.checkInDate} to {selectedHotel.checkOutDate}
-            <br />
-            <strong>Price:</strong> {selectedHotel.price}
+            {selectedHotel.name} from {selectedHotel.checkInDate} to{" "}
+            {selectedHotel.checkOutDate}
           </p>
-          <h4>Payment Details:</h4>
-          <label>
-            Card Number:
-            <input
-              type="text"
-              placeholder="Enter card number"
-              value={cardNumber}
-              onChange={(e) => setCardNumber(e.target.value)}
-              style={inputStyle}
-            />
-          </label>
-          <label>
-            CVV:
-            <input
-              type="text"
-              placeholder="Enter CVV"
-              value={cvv}
-              onChange={(e) => setCvv(e.target.value)}
-              style={inputStyle}
-            />
-          </label>
-          <label>
-            Expiry Date (MM/YY):
-            <input
-              type="text"
-              placeholder="MM/YY"
-              value={cardExpiryDate}
-              onChange={(e) => setCardExpiryDate(e.target.value)}
-              style={inputStyle}
-            />
-          </label>
-          <button onClick={handleConfirmBooking} style={buttonStyle}>Confirm Booking</button>
+          <p>
+            <strong>Amount to Pay:</strong> {selectedHotel.price}
+          </p>
+          <h4>Choose Payment Method:</h4>
+          <button onClick={handleCreditCardPayment} style={buttonStyle}>
+            Pay with Credit Card
+          </button>
+          <button onClick={handleWalletPayment} style={buttonStyle}>
+            Pay with Wallet
+          </button>
+          <button
+            onClick={() => setIsPaymentModalOpen(false)}
+            style={buttonStyle}
+          >
+            Cancel
+          </button>
         </div>
       )}
-     {successMessage && (
-  <div style={{ color: 'green', fontWeight: 'bold', marginTop: '20px' }}>
-    {successMessage}
-  </div>
-)}
-{errorMessage && (
-  <div style={{ color: 'red', fontWeight: 'bold', marginTop: '20px' }}>
-    {errorMessage}
-  </div>
-)}
 
       {/* Booked Hotels List */}
       {bookedHotels.length > 0 && (
-        <div style={{ marginTop: '20px' }}>
+        <div style={{ marginTop: "20px" }}>
           <h4>Booked Hotels:</h4>
-          <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+          <ul style={{ listStyleType: "none", paddingLeft: 0 }}>
             {bookedHotels.map((hotelData) => (
               <li key={hotelData.id} style={listItemStyle}>
-                {hotelData.hotelName} from {hotelData.checkInDate} to {hotelData.checkOutDate} - Booked
-             
+                {hotelData.hotelName} from {hotelData.checkInDate} to{" "}
+                {hotelData.checkOutDate} - Booked
               </li>
             ))}
           </ul>
@@ -206,28 +214,39 @@ const HotelBooking = () => {
 
 // Styles for buttons, inputs, and list items
 const buttonStyle = {
-  margin: '10px',
-  padding: '5px 10px',
-  fontSize: '14px',
-  cursor: 'pointer',
-  borderRadius: '5px',
-  border: '1px solid #ccc',
-  backgroundColor: '#f0f0f0',
+  margin: "10px",
+  padding: "5px 10px",
+  fontSize: "14px",
+  cursor: "pointer",
+  borderRadius: "5px",
+  border: "1px solid #ccc",
+  backgroundColor: "#f0f0f0",
 };
 
 const inputStyle = {
-  display: 'block',
-  marginBottom: '10px',
-  padding: '5px',
-  fontSize: '14px',
-  borderRadius: '5px',
-  border: '1px solid #ccc',
+  display: "block",
+  marginBottom: "10px",
+  padding: "5px",
+  fontSize: "14px",
+  borderRadius: "5px",
+  border: "1px solid #ccc",
 };
 
 const listItemStyle = {
-  padding: '10px',
-  borderBottom: '1px solid #ddd',
+  padding: "10px",
+  borderBottom: "1px solid #ddd",
 };
 
+const modalStyle = {
+  position: "fixed",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  backgroundColor: "#fff",
+  padding: "20px",
+  border: "2px solid #ccc",
+  borderRadius: "10px",
+  zIndex: 1000,
+};
 
 export default HotelBooking;
