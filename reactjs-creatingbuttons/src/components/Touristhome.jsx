@@ -41,7 +41,7 @@ export default function Touristhome() {
   };
 
   const handleBookHotelClick = () => {
-    navigate('/book-hotel');
+    navigate('/hotel-booking');
   };
 
   const handlePayOnlineClick = () => {
