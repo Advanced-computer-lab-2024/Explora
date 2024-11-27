@@ -1,4 +1,3 @@
-// ProductCardTourist.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -10,6 +9,26 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
+
+    // Function to handle adding a product to the cart
+    const handleAddToCart = async () => {
+        try {
+            const cartItem = {
+                productId: product._id,
+                name: product.name,
+                price: product.price,
+                quantity: 1, // Default quantity
+            };
+
+            const response = await axios.post(`http://localhost:4000/Cart/addToCart`, cartItem);
+            console.log('Add to cart response:', response.data);
+
+            setMessage('Product added to cart successfully!');
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            setMessage('Error adding product to cart: ' + error.message);
+        }
+    };
 
     // Handle the edit button click
     const handleEditClick = () => {
@@ -181,6 +200,11 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             <p className="product-seller">Seller: {product.seller}</p>
             <p className="product-reviews">{product.reviews.length} reviews</p>
 
+            {/* Add to Cart Button */}
+            <button onClick={handleAddToCart} className="add-to-cart-btn">
+                Add to Cart
+            </button>
+
             {/* Rating input for the user */}
             <div className="user-rating">
                 <p>Rate this product:</p>
@@ -219,3 +243,5 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
 };
 
 export default ProductCardTourist;
+
+
