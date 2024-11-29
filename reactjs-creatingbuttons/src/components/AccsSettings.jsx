@@ -44,6 +44,14 @@ export default function AccsSettings() {
     navigate('/viewDeleteRequests');  // Navigate to the AdminDeleteRequests component
   }
 
+  const handleCreatePromoCodeClick = () => {
+    navigate('/promo-code');  // Navigate to the PromoCode component
+  };
+
+  const handleSalesReportClick = () => {
+    navigate('/sales-report'); // Navigate to the Sales Report component
+  };
+
   return (
     <header>
       <div className="button-container">
@@ -59,6 +67,9 @@ export default function AccsSettings() {
 
         {/* New Flag Event Button */}
         <button onClick={handleFlagEventClick}>Flag Event</button>
+        <button onClick={handleCreatePromoCodeClick}>Create Promo Code</button>
+        <button onClick={handleSalesReportClick}>Sales Report</button>
+
       </div>
     </header>
   );

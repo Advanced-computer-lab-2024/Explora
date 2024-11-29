@@ -1,8 +1,20 @@
-import React from 'react';
+// Touristhome.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 
 export default function Touristhome() {
   const navigate = useNavigate();
+  const [showPromoModal, setShowPromoModal] = useState(true); // Initially show the modal
+
+  const handleClosePromoModal = () => {
+    setShowPromoModal(false);
+  };
+
+  useEffect(() => {
+    // Simulating it always being the user's birthday to show the modal
+    setShowPromoModal(true); 
+  }, []);
 
   const handleUpdateProfileClick = () => {
     navigate('/tourist-profile');
@@ -44,13 +56,15 @@ export default function Touristhome() {
     navigate('/book-hotel');
   };
 
-  // New handler for viewing all booked transportations
   const handleViewBookedTransportationsClick = () => {
     navigate('/view-booked-transportations');
   };
 
   return (
     <header>
+      {/* Show the promo modal if showPromoModal is true */}
+      {showPromoModal && <BirthdayPromoModal onClose={handleClosePromoModal} />}
+
       <div className="button-container">
         <button onClick={handleUpdateProfileClick}>Update my profile</button>
         <button onClick={handleViewComplaintsClick}>View Issued Complaints</button>
@@ -62,8 +76,6 @@ export default function Touristhome() {
         <button onClick={handleViewPastItinerariesClick}>View Past Itineraries</button>
         <button onClick={handleViewPastActivitiesClick}>View Past Activities</button>
         <button onClick={handleBookHotelClick}>Book Hotel</button>
-        
-        {/* New button for viewing all booked transportations */}
         <button onClick={handleViewBookedTransportationsClick}>View All My Booked Transportations</button>
       </div>
     </header>

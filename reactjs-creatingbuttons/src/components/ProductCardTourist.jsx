@@ -1,6 +1,7 @@
-// ProductCardTourist.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import Modal from './Modal'; // Import the Modal component
+
 
 const ProductCardTourist = ({ product, products, setProducts }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -10,6 +11,25 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
+
+
+    const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
+    const [showModal, setShowModal] = useState(false); // State for modal visibility
+
+
+
+    // Handle wishlist toggle
+    const handleWishlistToggle = () => {
+        setIsInWishlist(!isInWishlist);
+        setShowModal(true); // Show the modal when the heart is clicked
+
+    };
+
+    const closeModal = () => {
+        setShowModal(false); // Close the modal
+    };
+
+
 
     // Handle the edit button click
     const handleEditClick = () => {
@@ -86,8 +106,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             const reviewData = {
                 user: '672404b5711f4330c4103753', // Replace with logged-in user's info if available
                 comment: userReview,
-                // Optionally include a rating if your UI allows it
-                // rating: userRatingForReview
             };
 
             const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
@@ -198,6 +216,25 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             <button onClick={handleReviewSubmit}>Submit Review</button>
 
             {message && <p className="message">{message}</p>}
+
+            {/* Wishlist Icon */}
+            <div className="wishlist-icon" onClick={handleWishlistToggle}>
+                <i className={isInWishlist ? "fa-solid fa-heart" : "fa-regular fa-heart"}></i>
+            </div>
+            {showModal && (
+                <Modal onClose={closeModal}>
+                    <h2>Added to Wishlist</h2>
+                    <img src={product.image} alt={product.name} className="modal-product-image" />
+                    <p className="modal-product-title">{product.name}</p>
+                    <p className="modal-product-price">${product.price.toFixed(2)}</p>
+                    <button className="modal-close-button" onClick={closeModal}>
+                        Close
+                    </button>
+                </Modal>
+                   )}
+
+
+          
 
             {/* Display all reviews */}
             <div className="product-reviews">

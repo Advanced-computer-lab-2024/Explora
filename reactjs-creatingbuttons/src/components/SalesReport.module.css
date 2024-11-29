@@ -1,0 +1,91 @@
+.sales-report {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+  }
+  
+  h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .chart-container {
+    margin-bottom: 30px;
+  }
+  
+  .sales-summary {
+    margin-top: 20px;
+  }
+  
+  .sales-summary h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .sales-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .sales-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .sales-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sales-info strong {
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .sales-info span {
+    font-size: 14px;
+    color: #666;
+  }
+  
+  /* Table Styles */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  table th,
+  table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  table th {
+    background-color: #f4f4f4;
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+  }
+  
+  table td {
+    font-size: 14px;
+    color: #333;
+  }
+  
