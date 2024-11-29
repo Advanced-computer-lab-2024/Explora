@@ -36,7 +36,11 @@ router.post('/', async (req, res) => {
             { expiresIn: '100h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, role: user.role });
+                res.json({
+                    token,
+                    role: user.role,
+                    userId: user._id  // Send userId in the response
+                });
             }
         );
 

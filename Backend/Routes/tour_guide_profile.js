@@ -295,6 +295,22 @@ router.put('/comment/:id', async (req, res) => {
   }
 });
 
+// Endpoint to get the total number of tourists for a given itinerary
+router.get('/tourist-count/:itineraryId', async (req, res) => {
+  try {
+    const { itineraryId } = req.params;
+
+    // Count the number of bookings for the specific itinerary
+    const count = await Booking.countDocuments({ itineraryId });
+
+    res.json({ totalTourists: count });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error fetching tourist count' });
+  }
+});
+
+
 router.put("/me/:id/change-password", changePassword);
 router.post("/login", login);
 router.get("/logout", logout);

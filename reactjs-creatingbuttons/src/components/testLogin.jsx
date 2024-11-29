@@ -14,9 +14,11 @@ const LoginForm = () => {
     try {
       const response = await axios.post('http://localhost:4000/api/auth/', { username, password });
 
-      const { token, role } = response.data;
-
+      const { token, role, userId } = response.data;
+      console.log('Received userId:', userId);  // Log to check if userId is present
+      
       localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);  // Store userId
 
       switch (role) {
         case 'Governor':
