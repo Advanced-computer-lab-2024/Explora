@@ -23,6 +23,9 @@ const ItinerarySearchPage = () => {
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [exchangeRates, setExchangeRates] = useState({});
     const [error, setError] = useState(null);
+    const [isPaymentModalOpen, setIsPaymentModalOpen]= useState(false);
+    const [selectedItinerary, setSelectedItinerary] = useState(null);
+
 
     useEffect(() => {
         setItineraries(dummyItineraries);
@@ -74,6 +77,37 @@ const ItinerarySearchPage = () => {
     } else if (sortByRating === 'highest-to-lowest') {
         sortedItineraries.sort((a, b) => b.rating - a.rating);
     }
+
+     // Select an Itinerary
+  const handleItinerarySelect = (Itinerary) => {
+    setSelectedItinerary(Itinerary);
+    setIsPaymentModalOpen(true); // Open payment modal
+  };
+
+  //Handle Wallet Payment
+  const handleWalletPayment = () => {
+    alert(`Payment via Wallet for ${selectedItinerary.name} successful!`);
+    setIsPaymentModalOpen(false);
+    setSelectedItinerary(null);
+  };
+
+
+    // Handle credit card payment
+  const handleCreditCardPayment = async () => {
+    try {
+      // Create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+        itemName: selectedItinerary.name,
+        itemPrice: selectedItinerary.price,
+      });
+
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
+  };
 
     return (
         <div className="search-page-container" style={styles.pageContainer}>
@@ -180,16 +214,50 @@ const ItinerarySearchPage = () => {
             </div>
 
             <div style={styles.resultsContainer}>
-                <h3>Upcoming Itineraries:</h3>
+                <h3>Available Itineraries:</h3>
                 <ul style={styles.resultsList}>
                     {sortedItineraries.map((itinerary) => (
                         <li key={itinerary.id} style={styles.resultItem}>
                             <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
                                 {itinerary.name} - {selectedCurrency} {convertPrice(itinerary.budget).toFixed(2)} (Rating: {itinerary.rating}) - Date: {itinerary.date}
                             </Link>
+                            <button
+                             onClick={() => handleItinerarySelect(itinerary)}
+                             style={styles.bookButton}
+                            >
+                                 Book
+                            </button>
                         </li>
                     ))}
                 </ul>
+
+                {/* Payment Modal */}
+{isPaymentModalOpen && selectedItinerary && (
+        <div style={styles.modal}>
+          <h4>Selected Itinerary:</h4>
+          <p>
+            {selectedItinerary.name} on {selectedItinerary.date}
+          </p>
+          <p>
+            <strong>Amount to Pay:</strong> {selectedItinerary.price}
+          </p>
+          <h4>Choose Payment Method:</h4>
+          <div style={styles.modalButtonContainer}>
+          <button onClick={handleCreditCardPayment} style={styles.creditCardButton}>
+            Pay with Credit Card
+          </button>
+          <button onClick={handleWalletPayment} style={styles.bookButton}>
+            Pay with Wallet
+          </button>
+          <button
+            onClick={() => setIsPaymentModalOpen(false)}
+            style={styles.cancelButton}
+          >
+            Cancel
+          </button>
+          </div>
+        </div>
+      )}
 
                 {/* View Upcoming Itineraries Button */}
                 <div style={styles.viewButtonContainer}>
@@ -278,6 +346,65 @@ const styles = {
             borderRadius: '5px',
         }),
     },
+    details: {
+        fontSize: '14px',
+        color: '#777',
+        marginTop: '5px',
+    },
+    bookButton: {
+        padding: '10px 15px',
+        backgroundColor: '#28a745',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+      },   
+      modal: {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        zIndex: 1000,
+        textAlign: 'center',
+      },
+      modalButtonContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        gap: '10px',
+        marginTop: '20px',
+      },
+      modalButton: {
+        flex: '1',
+        padding: '10px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        border: 'none',
+        color: 'white',
+        transition: 'background-color 0.3s',
+      },
+      creditCardButton: {
+        padding: '10px 15px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        margin: '10px',
+      },
+      cancelButton: {
+        padding: '10px 15px',
+        backgroundColor: '#dc3545',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+      },
 };
 
 const dummyItineraries = [
