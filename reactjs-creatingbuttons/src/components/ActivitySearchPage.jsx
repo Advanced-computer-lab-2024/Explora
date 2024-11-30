@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 
 const preferencesOptions = [
     { value: 'historic', label: 'Historic Areas' },
@@ -11,7 +12,7 @@ const preferencesOptions = [
 ];
 
 const ActivitySearchPage = () => {
-     const [searchTerm, setSearchTerm] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedRating, setSelectedRating] = useState('');
     const [selectedPrice, setSelectedPrice] = useState(9999999); // Default max price
@@ -22,6 +23,9 @@ const ActivitySearchPage = () => {
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [exchangeRates, setExchangeRates] = useState({});
     const [error, setError] = useState(null);
+    const [isPaymentModalOpen, setIsPaymentModalOpen]= useState(false);
+    const [selectedActivity, setSelectedActivity] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchActivities = async () => {
@@ -96,6 +100,40 @@ const ActivitySearchPage = () => {
     } else if (sortOrder === 'highest-to-lowest') {
         sortedPlaces.sort((a, b) => b.rating - a.rating);
     }
+
+    // Select an Activity
+  const handleActivitySelect = (Activity) => {
+    setSelectedActivity(Activity);
+    setIsPaymentModalOpen(true); // Open payment modal
+  };
+
+  //Handle Wallet Payment
+  const handleWalletPayment = () => {
+    alert(`Payment via Wallet for ${selectedActivity.name} successful!`);
+    setIsPaymentModalOpen(false);
+    setSelectedActivity(null);
+  };
+
+
+    // Handle credit card payment
+  const handleCreditCardPayment = async () => {
+    try {
+      // Create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+        itemName: selectedActivity.name,
+        itemPrice: selectedActivity.price,
+      });
+
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
+  };
+    
+      
+      if (error) return <div>Error: {error}</div>;
 
     return (
         <div className="search-page-container" style={styles.pageContainer}>
@@ -201,14 +239,48 @@ const ActivitySearchPage = () => {
                                 {place.name}
                             </Link>
                             <div style={styles.details}>
-                               Category: <span>{place.category}</span> - Price 
+                                Category: <span>{place.category}</span> - Price 
                                 {selectedCurrency} {convertPrice(place.price).toFixed(2)} - 
                                 Rating: {place.rating}/5 - tags: {place.tags.join(', ')}
                             </div>
+                            <button
+                             onClick={() => handleActivitySelect(place)}
+                             style={styles.bookButton}
+                            >
+                                 Book
+                            </button>
                         </li>
                     ))}
                 </ul>
             </div>
+
+{/* Payment Modal */}
+{isPaymentModalOpen && selectedActivity && (
+        <div style={styles.modal}>
+          <h4>Selected Activity:</h4>
+          <p>
+            {selectedActivity.name} on {selectedActivity.date}
+          </p>
+          <p>
+            <strong>Amount to Pay:</strong> {selectedActivity.price}
+          </p>
+          <h4>Choose Payment Method:</h4>
+          <div style={styles.modalButtonContainer}>
+          <button onClick={handleCreditCardPayment} style={styles.creditCardButton}>
+            Pay with Credit Card
+          </button>
+          <button onClick={handleWalletPayment} style={styles.bookButton}>
+            Pay with Wallet
+          </button>
+          <button
+            onClick={() => setIsPaymentModalOpen(false)}
+            style={styles.cancelButton}
+          >
+            Cancel
+          </button>
+          </div>
+        </div>
+      )}
 
             <div style={{ marginTop: '20px' }}>
                 <Link to="/UpcomingActivities">
@@ -216,6 +288,8 @@ const ActivitySearchPage = () => {
                 </Link>
             </div>
         </div>
+    
+        
     );
 };
 
@@ -293,6 +367,65 @@ const styles = {
         color: '#777',
         marginTop: '5px',
     },
-};
+    bookButton: {
+        padding: '10px 15px',
+        backgroundColor: '#28a745',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+      },   
+      modal: {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        backgroundColor: 'white',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+        zIndex: 1000,
+        textAlign: 'center',
+      },
+      modalButtonContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        gap: '10px',
+        marginTop: '20px',
+      },
+      modalButton: {
+        flex: '1',
+        padding: '10px',
+        fontSize: '14px',
+        fontWeight: 'bold',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        border: 'none',
+        color: 'white',
+        transition: 'background-color 0.3s',
+      },
+      creditCardButton: {
+        padding: '10px 15px',
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        margin: '10px',
+      },
+      cancelButton: {
+        padding: '10px 15px',
+        backgroundColor: '#dc3545',
+        color: 'white',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+      },
+    };
+
+
+  
 
 export default ActivitySearchPage;
+
+
