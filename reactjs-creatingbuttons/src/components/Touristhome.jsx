@@ -44,9 +44,7 @@ export default function Touristhome() {
     navigate('/hotel-booking');
   };
 
-  const handlePayOnlineClick = () => {
-    navigate('/PayOnline');
-  };
+  
 
   // New handler for viewing all booked transportations
   const handleViewBookedTransportationsClick = () => {
@@ -66,7 +64,7 @@ export default function Touristhome() {
         <button onClick={handleViewPastItinerariesClick}>View Past Itineraries</button>
         <button onClick={handleViewPastActivitiesClick}>View Past Activities</button>
         <button onClick={handleBookHotelClick}>Book Hotel</button>
-        <button onClick={handlePayOnlineClick}>Pay Online for Activities/Itineraries/Events</button>
+       
         
         {/* New button for viewing all booked transportations */}
         <button onClick={handleViewBookedTransportationsClick}>View All My Booked Transportations</button>
