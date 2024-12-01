@@ -1,0 +1,129 @@
+/* Main container for the page */
+.main-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh; /* Ensure the container stretches to at least the height of the viewport */
+    overflow: auto; /* Enable scrolling */
+  }
+  
+/* Background image */
+.background-image {
+    background-image: url('../assets/bg-hero.jpg'); /* Path to your image */
+    background-size: cover; /* Ensure the image covers the area */
+    background-position: center -70px; /* Shift the image up by 20px */
+    background-attachment: fixed; /* Make the background fixed during scrolling */
+    width: 100%;
+    height: 60vh; /* Set height to 60% of the viewport height */
+    position: relative; /* Ensure the background doesn't overlap with content */
+  }
+  
+  
+  /* Header Styling */
+  .custom-header {
+    position: absolute; /* Overlay the header on the image */
+    top: 20px; /* Adjust as needed */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: transparent; /* Make header background transparent */
+    color: white; /* White text */
+    z-index: 10; /* Ensure header is above the image */
+  }
+  
+  /* Left side buttons */
+  .header-left {
+    display: flex;
+    gap: 15px;
+  }
+  
+  .header-left button {
+    padding: 10px 15px;
+    font-weight: bold;
+    background-color: transparent; /* No background color */
+    color: white; /* White text */
+    border: 2px solid white; /* White border */
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .header-left button:hover {
+    background-color: white; /* White background on hover */
+    color: #28a745; /* Green text color on hover */
+  }
+  
+  /* Right side "Explora" text */
+  .header-right h1 {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  /* Services Section Styling */
+.services-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px; /* Space from the background image */
+    font-size: 24px;
+    color: white;
+  }
+  
+  .services-text {
+    margin: 0 10px;
+    font-weight: bold;
+  }
+  
+  .service-icon {
+    font-size: 30px; /* Icon size */
+    color: #28a745;
+  }
+
+  /* Button container below header */
+  .button-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 80px; /* Space between the header and buttons */
+  }
+  
+  /* Button styles */
+  .button-container button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .button-container button:hover {
+    background-color: #28a745;
+    color: #fff;
+    transform: scale(1.05);
+  }
+  
+  .button-container button svg {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #28a745;
+  }
+  
+  .button-container button:hover svg {
+    color: #fff;
+  }
+  
