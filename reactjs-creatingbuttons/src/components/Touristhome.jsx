@@ -48,10 +48,16 @@ export default function Touristhome() {
   const handleViewBookedTransportationsClick = () => {
     navigate('/view-booked-transportations');
   };
-
+  const handleUseGuideClick = () => {
+    navigate('/vacation-guide'); // Navigate to the VacationGuide component
+  };
+  
   return (
+
     <header>
       <div className="button-container">
+      <button onClick={handleUseGuideClick}>User Guide</button>
+
         <button onClick={handleUpdateProfileClick}>Update my profile</button>
         <button onClick={handleViewComplaintsClick}>View Issued Complaints</button>
         <button onClick={handleFileComplaintClick}>File a Complaint</button>

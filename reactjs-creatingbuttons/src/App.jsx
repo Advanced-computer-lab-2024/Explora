@@ -93,8 +93,10 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
-
-
+import ViewCartTourist from './components/ViewCartTourist';
+import Checkout from './components/Checkout'; // Create a new checkout component
+import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
+import VacationGuide from "./components/VacationGuide";
 
 
 function App() {
@@ -191,9 +193,10 @@ function App() {
         <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
         <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
-
-
-
+        <Route path="/view-cart" element={<ViewCartTourist />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
+        <Route path="/vacation-guide" element={<VacationGuide />} />
         </Routes>
       </Router>
     </main>

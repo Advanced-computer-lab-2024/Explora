@@ -9,7 +9,7 @@ const TouristProfile = () => {
     nationality: 'USA',
     dob: '1990-01-01',
     jobStatus: 'job',
-    wallet: '1000.00$' // Non-editable
+    wallet: '1000.00$', // Non-editable
   });
 
   // State to toggle between edit mode and view mode
@@ -35,18 +35,28 @@ const TouristProfile = () => {
     setIsEditable(false); // Stop editing after saving
   };
 
+  const navigate = useNavigate();
+
+  // Redirect to the Vacation Guide
+  const handleUserGuideClick = () => {
+    navigate('/vacation-guide');
+  };
+
   return (
     <div>
+      <div style={{ marginBottom: '20px' }}>
+        <button onClick={handleUserGuideClick} style={buttonStyle}>
+          User Guide
+        </button>
+      </div>
 
-      
       <Link to="/SearchPageHeader">
         <button style={buttonStyle}>Sites/Activities/Itineraries</button>
       </Link>
-      {/* New button to view products */}
+
       <Link to="/product-list-tourist">
         <button style={buttonStyle}>View Products</button>
       </Link>
-      
     </div>
   );
 };
@@ -83,15 +93,12 @@ const BookDropdown = () => {
           <button onClick={() => handleSelect('flight')} style={dropdownItemStyle}>
             Book a Flight
           </button>
-
           <button onClick={() => handleSelect('hotel')} style={dropdownItemStyle}>
             Book a Hotel
           </button>
-              {/* New buttons */}
-              <button onClick={() => handleSelect('bookedFlights')} style={dropdownItemStyle}>
+          <button onClick={() => handleSelect('bookedFlights')} style={dropdownItemStyle}>
             Booked Flights
           </button>
-
           <button onClick={() => handleSelect('hotelReservations')} style={dropdownItemStyle}>
             Hotel Reservations
           </button>
