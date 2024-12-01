@@ -1,144 +1,129 @@
-/* Professional Tourist Home Page Styles */
-
-.tourist-home-container {
-    display: flex;
-    height: 100vh;
-    font-family: "Poppins", sans-serif;
-    background-color: #f8f9fc;
+/* Main container for the page */
+.main-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh; /* Ensure the container stretches to at least the height of the viewport */
+    overflow: auto; /* Enable scrolling */
   }
   
-  /* Sidebar Styling */
-  .sidebar {
-    width: 260px;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 20px;
+/* Background image */
+.background-image {
+    background-image: url('../assets/bg-hero.jpg'); /* Path to your image */
+    background-size: cover; /* Ensure the image covers the area */
+    background-position: center -70px; /* Shift the image up by 20px */
+    background-attachment: fixed; /* Make the background fixed during scrolling */
+    width: 100%;
+    height: 60vh; /* Set height to 60% of the viewport height */
+    position: relative; /* Ensure the background doesn't overlap with content */
+  }
+  
+  
+  /* Header Styling */
+  .custom-header {
+    position: absolute; /* Overlay the header on the image */
+    top: 20px; /* Adjust as needed */
+    left: 0;
+    width: 100%;
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    align-items: center;
+    padding: 20px;
+    background-color: transparent; /* Make header background transparent */
+    color: white; /* White text */
+    z-index: 10; /* Ensure header is above the image */
   }
   
-  .sidebar-header {
-    margin-bottom: 30px;
+  /* Left side buttons */
+  .header-left {
+    display: flex;
+    gap: 15px;
   }
   
-  .sidebar-header h2 {
-    font-size: 20px;
-    font-weight: 600;
-    color: #1abc9c;
-    text-align: center;
-    letter-spacing: 1px;
+  .header-left button {
+    padding: 10px 15px;
+    font-weight: bold;
+    background-color: transparent; /* No background color */
+    color: white; /* White text */
+    border: 2px solid white; /* White border */
+    border-radius: 5px;
+    cursor: pointer;
   }
   
-  .nav-menu {
+  .header-left button:hover {
+    background-color: white; /* White background on hover */
+    color: #28a745; /* Green text color on hover */
+  }
+  
+  /* Right side "Explora" text */
+  .header-right h1 {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  /* Services Section Styling */
+.services-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px; /* Space from the background image */
+    font-size: 24px;
+    color: white;
+  }
+  
+  .services-text {
+    margin: 0 10px;
+    font-weight: bold;
+  }
+  
+  .service-icon {
+    font-size: 30px; /* Icon size */
+    color: #28a745;
+  }
+
+  /* Button container below header */
+  .button-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 80px; /* Space between the header and buttons */
+  }
+  
+  /* Button styles */
+  .button-container button {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-  }
-  
-  .nav-menu button {
-    background-color: transparent;
-    color: #ecf0f1;
-    border: 1px solid #34495e;
-    padding: 12px 20px;
-    border-radius: 8px;
-    text-align: left;
-    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
     font-size: 14px;
-    transition: all 0.3s ease;
-  }
-  
-  .nav-menu button:hover {
-    background-color: #1abc9c;
-    color: #ffffff;
-    transform: scale(1.02);
-    box-shadow: 0 4px 10px rgba(26, 188, 156, 0.2);
-  }
-  
-  .nav-menu button:focus {
-    outline: none;
-    background-color: #16a085;
-  }
-  
-  /* Footer for Sidebar */
-  .sidebar-footer {
+    font-weight: bold;
     text-align: center;
-    font-size: 12px;
-    color: #bdc3c7;
-    margin-top: auto;
-  }
-  
-  /* Main Content Styling */
-  .main-content {
-    flex: 1;
-    background-color: #ffffff;
-    padding: 40px;
-    overflow-y: auto;
-    border-left: 1px solid #dcdde1;
-  }
-  
-  .main-content h1 {
-    font-size: 26px;
-    color: #2c3e50;
-    margin-bottom: 20px;
-    font-weight: 700;
-  }
-  
-  .main-content p {
-    font-size: 16px;
-    color: #7f8c8d;
-    margin-bottom: 30px;
-    line-height: 1.6;
-  }
-  
-  /* Buttons in Main Content */
-  .main-content button {
-    background-color: #1abc9c;
-    color: #ffffff;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-size: 14px;
     cursor: pointer;
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
   }
   
-  .main-content button:hover {
-    background-color: #16a085;
-    transform: translateY(-2px);
+  .button-container button:hover {
+    background-color: #28a745;
+    color: #fff;
+    transform: scale(1.05);
   }
   
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .tourist-home-container {
-      flex-direction: column;
-    }
-  
-    .sidebar {
-      width: 100%;
-      padding: 15px;
-      text-align: center;
-    }
-  
-    .nav-menu button {
-      text-align: center;
-      padding: 10px;
-    }
-  
-    .main-content {
-      padding: 20px;
-    }
+  .button-container button svg {
+    font-size: 40px;
+    margin-bottom: 10px;
+    color: #28a745;
   }
   
-  @media (max-width: 480px) {
-    .main-content h1 {
-      font-size: 22px;
-    }
-  
-    .main-content p {
-      font-size: 14px;
-    }
+  .button-container button:hover svg {
+    color: #fff;
   }
   

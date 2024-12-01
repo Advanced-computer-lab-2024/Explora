@@ -93,7 +93,9 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
-import ViewCartTourist from './components/ViewCartTourist';
+import Wishlist from './components/Wishlist';
+import PromoCodeComponent from './components/PromoCodeComponent.jsx';
+import SalesReport from "./components/SalesReport"; // Adjust path based on your file structureimport ViewCartTourist from './components/ViewCartTourist';
 import Checkout from './components/Checkout'; // Create a new checkout component
 import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
 import VacationGuide from "./components/VacationGuide";
@@ -193,6 +195,12 @@ function App() {
         <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
         <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/promo-code" element={<PromoCodeComponent />} />
+        <Route path="/sales-report" element={<SalesReport />} />
+
+
+
         <Route path="/view-cart" element={<ViewCartTourist />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
