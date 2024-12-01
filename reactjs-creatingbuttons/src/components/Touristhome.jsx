@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 import './Touristhome.css'; // Import the CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faExclamation, faCircleXmark, faLock, faPlane, faBus, faCity, faBinoculars, faHotel, faCar, faGripLines } from '@fortawesome/free-solid-svg-icons'; // Import the grip lines icon
+import { faUser, faExclamation, faCircleXmark, faLock, faPlane, faBus, faCity, faBinoculars, faHotel, faCar, faGripLines } from '@fortawesome/free-solid-svg-icons'; // Import the grip lines icon\
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+
 
 export default function Touristhome() {
   const navigate = useNavigate();
@@ -25,6 +27,9 @@ export default function Touristhome() {
   const handleViewPastActivitiesClick = () => navigate('/tourist-previous-activities');
   const handleBookHotelClick = () => navigate('/book-hotel');
   const handleViewBookedTransportationsClick = () => navigate('/view-booked-transportations');
+  const handleUseGuideClick = () => {
+    navigate('/vacation-guide'); // Navigate to the VacationGuide component
+  };
   
   const handleHomeClick = () => navigate('/home');
   const handleLogoutClick = () => navigate('/logout');
@@ -94,6 +99,11 @@ export default function Touristhome() {
           <FontAwesomeIcon icon={faCar} />
           View All My Booked Transportations
         </button>
+        <button onClick={handleUseGuideClick}>
+  <FontAwesomeIcon icon={faGlobe} />
+  User Guide
+</button>
+
       </div>
     </div>
   );

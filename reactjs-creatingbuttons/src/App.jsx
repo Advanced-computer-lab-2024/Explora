@@ -99,6 +99,7 @@ import SalesReport from "./components/SalesReport"; // Adjust path based on your
 import Checkout from './components/Checkout'; // Create a new checkout component
 import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
 import VacationGuide from "./components/VacationGuide";
+import ViewCartTourist from "./components/ViewCartTourist.jsx"
 
 
 function App() {
