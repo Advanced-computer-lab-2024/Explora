@@ -138,7 +138,7 @@ const UpcomingItineraries = () => {
   };
 
   const handleBookmarkClick = () => {
-    navigate('/Bookmarks');
+    //function to handle bookmarking logic
   };
 
   return (
