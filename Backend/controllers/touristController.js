@@ -5,7 +5,7 @@ const Tourist = require('../models/touristModel');
 const getTourist = async (req, res) => {
     try {
         const { email } = req.params;
-        const tourist = await touristModel.findOne({ email }).lean(); // `.lean()` to get plain JS object
+        const tourist = await Tourist.findOne({ email }).lean(); // `.lean()` to get plain JS object
 
         if (!tourist) {
             return res.status(404).json({ message: "Tourist not found" });
@@ -23,7 +23,7 @@ const getTourist = async (req, res) => {
 
 const allTourists = async (req, res) => {
     try {
-        const tourist = await touristModel.find({ });
+        const tourist = await Tourist.find({ });
 
         if (!tourist) {
             return res.status(404).json({ message: "Tourist not found" });
@@ -40,15 +40,15 @@ const createTourist = async (req, res) => {
     try {
         const { email, username, password, mobileNumber, nationality, dateOfBirth, job } = req.body;
 
-        const existingTourist = await touristModel.findOne({ email });
+        const existingTourist = await Tourist.findOne({ email });
         if (existingTourist) {
             return res.status(400).json({ message: "Tourist with the same email already exists" });
         }
-        const existingUsername = await touristModel.findOne({ username });
+        const existingUsername = await Tourist.findOne({ username });
         if (existingUsername) {
             return res.status(400).json({ message: "Tourist with the same username already exists" });
         }
-        const newTourist = await touristModel.create({
+        const newTourist = await Tourist.create({
             email,
             username,
             password,
@@ -71,7 +71,7 @@ const updateTourist = async (req, res) => {
     try {
         const { password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
 
-        const updatedTourist = await touristModel.findByIdAndUpdate(
+        const updatedTourist = await Tourist.findByIdAndUpdate(
             req.params.id,
             { password, mobileNumber, nationality, dateOfBirth, job, wallet },
             { new: true, runValidators: true }

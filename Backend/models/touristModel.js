@@ -10,10 +10,12 @@ const touristSchema = new mongoose.Schema(
       required: true, 
       unique: true 
     },
-    tours: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Tour_Guide_Profile' // Link to TourGuide model
-     }],
+    tours: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tour_Guide_Profile', // Link to TourGuide model
+      }
+    ],
     mobileNumber: {
       type: String, // Changed to String to accommodate various formats (e.g., international)
       required: true,
@@ -25,7 +27,7 @@ const touristSchema = new mongoose.Schema(
     dateOfBirth: {
       type: Date,
       required: true,
-      immutable: true
+      immutable: true,
     },
     job: {
       type: String,
@@ -38,7 +40,13 @@ const touristSchema = new mongoose.Schema(
     loyaltyPoints: {
       type: Number,
       default: 0,
-  },
+    },
+    orderHistory: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Orders', // Link to the Orders schema
+      }
+    ],
   },
   { timestamps: true }
 );
@@ -46,40 +54,37 @@ const touristSchema = new mongoose.Schema(
 // Virtual field to calculate age
 touristSchema.virtual('age').get(function() {
   const currentDate = moment();
-  const birthDate = moment(this.dateOfBirth); // Correct reference
+  const birthDate = moment(this.dateOfBirth);
   return currentDate.diff(birthDate, 'years');
 });
 
-
-
+// Virtual field for level calculation
 touristSchema.virtual('level').get(function () {
   if (this.loyaltyPoints > 500000) {
-      return 3;
+    return 3;
   } else if (this.loyaltyPoints > 100000) {
-      return 2;
+    return 2;
   } else {
-      return 1;
+    return 1;
   }
 });
 
+// Virtual field for badge assignment
 touristSchema.virtual('badge').get(function () {
   const level = this.level;
   switch (level) {
-      case 3:
-          return 'Gold';
-      case 2:
-          return 'Silver';
-      case 1:
-          return 'Bronze';
-      default:
-          return 'No Badge';
+    case 3:
+      return 'Gold';
+    case 2:
+      return 'Silver';
+    case 1:
+      return 'Bronze';
+    default:
+      return 'No Badge';
   }
 });
-
-
 
 // Use the discriminator method to create a Tourist model
 const Tourist = User.discriminator('Tourist', touristSchema);
 
-// Export the model
 module.exports = Tourist;
