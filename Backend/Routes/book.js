@@ -24,15 +24,24 @@ router.post('/book', async (req, res) => {
 
     // Calculate total price
     const totalPrice = itinerary.price * numberOfTickets;
+    let loyaltyPoints;
 
-    // Create a new booking
-    const booking = new Book({
-      tourist: tourist._id,
-      itinerary: itinerary._id,
-      numberOfTickets,
-      totalPrice,
-      tourGuideId: itinerary.tourGuideId,  // Set the tourGuideId from the itinerary
-    });
+    if (tourist.loyaltyLevel === 1) {
+      loyaltyPoints = totalPrice * 0.5;
+    } else if (tourist.loyaltyLevel === 2) {
+      loyaltyPoints = totalPrice * 1;
+    } else {
+      loyaltyPoints = totalPrice * 1.5;
+    }
+
+// Create a new booking
+const booking = new Book({
+  tourist: tourist._id,
+  itinerary: itinerary._id,
+  numberOfTickets,
+  totalPrice,
+  tourGuideId: itinerary.tourGuideId,  // Set the tourGuideId from the itinerary
+});
 
     await booking.save();
 
@@ -50,6 +59,16 @@ router.post('/book', async (req, res) => {
     itinerary.hasBookings = true;
     await itinerary.save();
 
+    // Update the tourist's loyalty points and level
+    tourist.loyaltyPoints += loyaltyPoints;
+    tourist.loyaltyLevel =
+      tourist.loyaltyPoints > 500000
+        ? 3
+        : tourist.loyaltyPoints > 100000
+        ? 2
+        : 1;
+    await tourist.save();
+
     console.log("Booking details:", booking);
     console.log("Sale details:", sale);
     console.log("Itinerary updated:", itinerary);
@@ -59,11 +78,13 @@ router.post('/book', async (req, res) => {
       message: 'Booking and sale recorded successfully',
       booking,
       sale,
+      loyaltyPoints: tourist.loyaltyPoints,
     });
   } catch (error) {
     return res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
+
 
 // DELETE route to cancel booking
 router.delete('/cancel/:bookingId', async (req, res) => {
