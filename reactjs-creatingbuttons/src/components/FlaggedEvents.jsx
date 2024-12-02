@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { MdFlag, MdOutlineFlag } from 'react-icons/md';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ItineraryList = () => {
   const [itineraries, setItineraries] = useState([]);
@@ -11,7 +13,7 @@ const ItineraryList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const itineraryResponse = await axios.get('http://localhost:4000/api/tour_guide_itinerary', {
+        const itineraryResponse = await axios.get('http://localhost:4000/api/tour_guide_itinerary/all', {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
         });
         setItineraries(itineraryResponse.data);
@@ -49,10 +51,10 @@ const ItineraryList = () => {
         )
       );
 
-      alert(`Itinerary ${newStatus ? 'flagged' : 'unflagged'} successfully!`);
+      toast.success(`Itinerary ${newStatus ? 'flagged' : 'unflagged'} successfully!`);
     } catch (err) {
       console.error('Error toggling flag status:', err);
-      alert('Failed to update itinerary flag status.');
+      toast.error('Failed to update itinerary flag status.');
     }
   };
 
@@ -74,10 +76,10 @@ const ItineraryList = () => {
         )
       );
 
-      alert(`Activity ${newStatus ? 'flagged' : 'unflagged'} successfully!`);
+      toast.success(`Activity ${newStatus ? 'flagged' : 'unflagged'} successfully!`);
     } catch (err) {
       console.error('Error toggling flag status:', err);
-      alert('Failed to update activity flag status.');
+      toast.error('Failed to update activity flag status.');
     }
   };
 

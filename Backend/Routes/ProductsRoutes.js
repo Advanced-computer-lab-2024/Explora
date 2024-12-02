@@ -16,6 +16,7 @@ const{
     archivedProducts,
     unarchivedProducts,
     deleteAllProducts,
+    productsBySeller,
     addRating
 } = require("../controllers/ProductController");
 
@@ -24,6 +25,7 @@ router.get('/archiveProducts', archivedProducts);
 router.get('/unarchivedProducts', unarchivedProducts);
 router.get('/sortByRating', sortProducts)
 router.get('/filterByPrice', filteredProducts);
+router.get('/seller/:sellerId', productsBySeller);
 
 router.get('/quantity&sales', viewQuantityAndSales);       
 router.post('/upload', upload.single('image'), createProduct);
