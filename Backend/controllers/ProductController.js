@@ -354,12 +354,34 @@ const archiveProduct = async (req, res) => {
         res.status(400).json({ msg: err.message });
     }
 };
+// get products of a specific seller
+const productsBySeller = async (req, res) => {
+    const { sellerId } = req.params;  // assuming seller's ID is passed in the route parameter
+    try {
+        const products = await Product.find({ seller: sellerId });
+        
+        if (!products.length) {
+            return res.status(404).json({ msg: 'No products found for this seller' });
+        }
+
+        const updatedProducts = products.map(product => ({
+            ...product._doc,
+            image: `${req.protocol}://${req.get('host')}/${product.image}` // Include the full URL for the image
+        }));
+
+        res.status(200).json(updatedProducts);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
 
 
 module.exports = {
     createProduct,
     allProducts, 
     productsByName,
+    productsBySeller,
     availableProducts,
     searchProducts,
     filteredProducts,

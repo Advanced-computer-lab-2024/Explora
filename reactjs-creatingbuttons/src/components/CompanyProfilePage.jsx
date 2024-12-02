@@ -13,14 +13,14 @@ export default function TodoInput() {
     }}>
       
       <button
-        style={{ width: '220px', height: '60px', margin: '10px' }}
+        style={{ width: '220px', height: '75px', margin: '10px' }}
         onClick={() => navigate('/advertisers/create')}
       >
         Create new Profile
       </button>
 
       <button
-        style={{ width: '220px', height: '60px', margin: '10px' }}
+        style={{ width: '220px', height: '75px', margin: '10px' }}
         onClick={() => navigate('/advact')}
       >
         Create new activity
@@ -41,7 +41,12 @@ export default function TodoInput() {
       >
         Request Account Deletion
       </button>
-      <button onClick={() => navigate('/change-password')}>Change My Password</button>
+      <button
+        style={{ width: '220px', height: '73px', margin: '10px' }}
+        onClick={() => navigate('/change-password')}
+      >
+        Change My Password
+      </button>
       <button onClick={() => navigate('/upload-image')}>
           Upload Logo
         </button>

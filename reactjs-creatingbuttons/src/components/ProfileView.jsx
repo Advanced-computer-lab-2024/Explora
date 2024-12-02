@@ -6,7 +6,7 @@ export default function ProfileView() {
   const { id } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  
+
   const initialProfile = state?.profile;
   const [profile, setProfile] = useState(initialProfile);
   const [message, setMessage] = useState('');
@@ -41,6 +41,9 @@ export default function ProfileView() {
 
   return (
     <div>
+      <button onClick={() => navigate(-2)} style={{ padding: '10px', marginBottom: '20px', cursor: 'pointer' }}>
+        Back
+      </button>
       <h1>Profile Details</h1>
       <form onSubmit={handleSubmit}>
         <table>
@@ -59,16 +62,16 @@ export default function ProfileView() {
             <tr>
               <td>Password</td>
               <td>
-<label>
-  <input
-    type="password"
-    name="newPassword"
-    value={profile.newPassword || ""}
-    onChange={handleEdit}
-    placeholder="Enter a new password"
-  />
-</label>
-    </td>
+                <label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={profile.newPassword || ""}
+                    onChange={handleEdit}
+                    placeholder="Enter a new password"
+                  />
+                </label>
+              </td>
             </tr>
             <tr>
               <td>Username</td>
@@ -123,7 +126,7 @@ export default function ProfileView() {
             <tr>
               <td>IsAccepted</td>
               <td>
-                <span>{profile.IsAccepted ? "Accepted" : "Accepted"}</span> {/* Display based on the boolean value */}
+                <span>{profile.IsAccepted ? "Accepted" : "Not Accepted"}</span> {/* Display based on the boolean value */}
               </td>
             </tr>
           </tbody>
@@ -132,7 +135,6 @@ export default function ProfileView() {
       </form>
       
       {message && <p style={{ color: message.includes("success") ? 'green' : 'red' }}>{message}</p>}
-
     </div>
   );
 }

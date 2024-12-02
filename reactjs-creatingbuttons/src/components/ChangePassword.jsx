@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function ChangePassword() {
   const [username, setUsername] = useState('');
@@ -8,6 +9,7 @@ export default function ChangePassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,6 +36,24 @@ export default function ChangePassword() {
 
   return (
     <div style={{ maxWidth: '400px', margin: 'auto', padding: '20px', background: '#f9f9f9', borderRadius: '10px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+      {/* Add "Return to previous page" button */}
+      <button
+  onClick={() => navigate(-1)}
+  style={{
+    position: 'absolute',
+    top: '20px',        // Adjust as needed for spacing
+    left: '20px',       // Adjust as needed for spacing
+    padding: '10px 20px',
+    fontSize: '16px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  }}
+>
+  Go Back
+</button>
       <h2>Change Password</h2>
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {message && <p style={{ color: 'green' }}>{message}</p>}

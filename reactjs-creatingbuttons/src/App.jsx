@@ -11,6 +11,7 @@ import TagManager from './components/TagManager.jsx';
 import TagForm from './components/TagForm.jsx';
 import TagList from './components/TagList.jsx';
 import ProductList from './components/productList/ProductList.jsx';
+import ProductListSeller from './components/productList/ProductListSeller.jsx';
 import MiddleForm from './components/MiddleForm.jsx';
 import LoginForm from './components/LoginForm.jsx';
 import SignupTourist from './components/SignupTourist.jsx';
@@ -93,9 +94,10 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
-import Sales from './components/sales.jsx';
+import Sales from './components/Tour_Guide_Sales.jsx';
 import Viewing from './components/NoUsed';
-
+import Notification from './components/FlagNotifications';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
 
@@ -114,6 +116,7 @@ function App() {
           <Route path="/category-manager" element={<CategoryManager />} /> {/* Add this route */}
           <Route path="/tag-manager" element={<TagManager />} /> {/* Add this route */}
           <Route path="/product-list" element={<ProductList />} />  {/* Route for ProductList */}
+          <Route path="/product-list-seller" element={<ProductListSeller />} />  {/* Route for ProductList */}
           <Route path="/add-product" element={<AddProduct />} />  {/* Route for AddProduct */}
           <Route path="/to-do" element={<TodoInput />} />  {/* Route for TodoInput */}
           <Route path="/middle" element={<MiddleForm />} />
@@ -193,8 +196,8 @@ function App() {
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
         <Route path="/sales" element={<Sales />} />
         <Route path="/view-number-of-tourists" element={<Viewing />} />
+        <Route path="/flag-notification" element={<Notification />} />
 
-        
 
 
         </Routes>

@@ -1,47 +1,48 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-const TermsAndConditionsPage = ({ onAccept }) => {
+const TermsTourGuidePage = () => {
   const navigate = useNavigate();
-  const { userId, role } = useParams(); // Get userId and role from the URL parameters
+  const { userId } = useParams(); // Get userId from URL parameters
 
   // This function will handle the acceptance action
   const handleAccept = () => {
-    alert("You have accepted the terms and conditions!"); // Alert for acceptance
+    alert("You have accepted the terms for Tour Guide!"); // Alert to confirm acceptance
 
-    // Perform the redirection based on role
-   
-      navigate('/to-do'); // Redirect to /to-do for TourGuide
-    
-
-    onAccept(); // Call the function passed as prop to handle any additional actions
+    // Redirect to the Tour Guide dashboard or any relevant page
+    navigate('/to-do'); // Or replace with the page you want to redirect to after acceptance
   };
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.header}>Terms and Conditions</h2>
-      <p style={styles.intro}>Please read the terms and conditions carefully before accepting.</p>
+      <h2 style={styles.header}>Tour Guide Terms and Conditions</h2>
+      <p style={styles.intro}>Please read the Tour Guide-specific terms and conditions carefully before accepting.</p>
       <div style={styles.termsContainer}>
-        <h3 style={styles.subHeader}>1. Acceptance of Terms</h3>
+        <h3 style={styles.subHeader}>1. Tour Guide Responsibilities</h3>
         <p style={styles.term}>
-          By accessing or using our services, you agree to comply with and be bound by these terms and conditions.
+          As a Tour Guide, you agree to conduct tours in a professional manner, ensuring customer safety and satisfaction.
         </p>
 
-        <h3 style={styles.subHeader}>2. User Responsibilities</h3>
+        <h3 style={styles.subHeader}>2. Licensing and Certifications</h3>
         <p style={styles.term}>
-          Users are responsible for maintaining the confidentiality of their account information and for all activities that occur under their account.
+          You acknowledge the requirement to maintain any necessary certifications or licenses to guide tours as per local regulations.
         </p>
 
-        <h3 style={styles.subHeader}>3. Modification of Terms</h3>
+        <h3 style={styles.subHeader}>3. Tour Cancellations</h3>
         <p style={styles.term}>
-          We reserve the right to modify these terms at any time. Changes will be posted on this page with an updated effective date.
+          You agree to notify customers promptly in case of any tour cancellations or changes.
         </p>
 
-        <h3 style={styles.subHeader}>4. Limitation of Liability</h3>
+        <h3 style={styles.subHeader}>4. Payment Structure</h3>
         <p style={styles.term}>
-          Our liability is limited to the fullest extent permitted by law. We are not liable for any indirect, incidental, or consequential damages arising from your use of our services.
+          You understand and agree to the payment structure for your services as a Tour Guide, including commission and payout schedules.
         </p>
-        
+
+        <h3 style={styles.subHeader}>5. Code of Conduct</h3>
+        <p style={styles.term}>
+          You agree to adhere to our code of conduct, which includes respectful behavior toward clients and colleagues and maintaining professional integrity.
+        </p>
+
         {/* Add more sections as needed */}
       </div>
       <button style={styles.acceptButton} onClick={handleAccept}>Accept Terms</button>
@@ -93,4 +94,4 @@ const styles = {
   },
 };
 
-export default TermsAndConditionsPage;
+export default TermsTourGuidePage;

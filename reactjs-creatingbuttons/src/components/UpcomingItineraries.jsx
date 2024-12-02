@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './NoUsed.css';  // Import the CSS file for styling
 
 const UpcomingItineraries = () => {
   const [itins, setItins] = useState([]);
@@ -9,12 +10,14 @@ const UpcomingItineraries = () => {
   const [cashBalance, setCashBalance] = useState(0);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
+  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token');
+  const userRole = localStorage.getItem('role'); // Retrieve the role from localStorage
 
   useEffect(() => {
     fetch('http://localhost:4000/api/tour_guide_itinerary/upcoming')
       .then(response => response.json())
       .then(data => {
-        // Format the date if available
         const formattedData = data.map((itin) => {
           const formattedDate = itin.availableDates ? new Date(itin.availableDates).toLocaleDateString('en-US', { 
             year: 'numeric', month: 'long', day: 'numeric' 
@@ -26,6 +29,27 @@ const UpcomingItineraries = () => {
       .catch(error => console.error('Error fetching data:', error));
   }, []);
 
+  // Fetch initial loyalty points and badge level
+  useEffect(() => {
+    // Fetch initial loyalty points (assumed to be available in user profile)
+    fetch(`http://localhost:4000/users/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.loyaltyPoints) {
+        setLoyaltyPoints(data.loyaltyPoints);
+        setBadgeLevel(getBadgeLevel(data.loyaltyPoints));
+      }
+    })
+    .catch(error => {
+      console.error('Error fetching user data:', error);
+    });
+  }, [userId, token]);
+
   const getBadgeLevel = (points) => {
     if (points > 500000) return 'Level 3 Badge';
     else if (points > 100000) return 'Level 2 Badge';
@@ -33,89 +57,86 @@ const UpcomingItineraries = () => {
     return '';
   };
 
-  const shareLink = (itin) => {
-    const link = `http://localhost:4000/api/tour_guide_itinerary/${itin._id}`;
-    
-    // Ensure user feedback on successful copy
-    navigator.clipboard.writeText(link)
-        .then(() => setMessage('Link copied to clipboard!'))
-        .catch((err) => setMessage(`Failed to copy link: ${err.message}`));
-  };
-
-  const shareEmail = (itin) => {
-    const subject = `Check out this activity: ${itin.name}`;
-    const body = `I thought you might be interested in this activity:\n\n${itin.name}\nDate: ${itin.date}\nPrice: ${itin.price}$\nRating: ${itin.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${itin._id}`;
-    
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
   const handleBookTicket = (itin) => {
-    setBookedTickets((prev) => [...prev, itin._id]);
-    let pointsToAdd = 0;
+    const numberOfTickets = 1; // Assume 1 ticket for simplicity
+    fetch('http://localhost:4000/ticket/book', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userId: localStorage.getItem('userId'),
+        itineraryId: itin._id,
+        numberOfTickets,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'Booking successful') {
+          setBookedTickets((prev) => [...prev, itin._id]);
+          let pointsToAdd = 0;
 
-    if (itin.price <= 100000) pointsToAdd = itin.price * 0.5;
-    else if (itin.price <= 500000) pointsToAdd = itin.price * 1;
-    else pointsToAdd = itin.price * 1.5;
+          if (itin.price <= 100000) pointsToAdd = itin.price * 0.5;
+          else if (itin.price <= 500000) pointsToAdd = itin.price * 1;
+          else pointsToAdd = itin.price * 1.5;
 
-    setLoyaltyPoints((prevPoints) => {
-      const newPoints = prevPoints + pointsToAdd;
-      setBadgeLevel(getBadgeLevel(newPoints));
-      return newPoints;
-    });
-
-    alert(`Your ticket for "${itin.name}" has been booked!`);
+          setLoyaltyPoints((prevPoints) => {
+            const newPoints = prevPoints + pointsToAdd;
+            setBadgeLevel(getBadgeLevel(newPoints));  // Update badge level based on new points
+            return newPoints;
+          });
+          alert(`Your ticket has been booked!`);
+        } else {
+          alert(`Booking failed: ${data.message}`);
+        }
+      })
+      .catch((error) => {
+        console.error('Error booking ticket:', error);
+        alert('An error occurred while booking the ticket.');
+      });
   };
 
   const handleCancelBooking = (itin) => {
-    const now = new Date();
-    const timeDifference = new Date(itin.availableDates) - now; // Time difference in milliseconds
-    const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
-
-    // Check if the cancellation can happen based on the 48-hour rule
-    if (hoursDifference >= 48) {
-      setBookedTickets((prev) => prev.filter(ticketId => ticketId !== itin._id));
-      alert(`Your booking for "${itin.name}" has been canceled.`);
-    } else {
-      alert('You can not cancel your booking less than 48 hours before the event starts.');
-    }
+    const bookingId = itin._id; // Assuming each itinerary has a unique _id for booking
+    fetch(`http://localhost:4000/ticket/cancel/${bookingId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message === 'Booking successfully canceled') {
+          setBookedTickets((prev) => prev.filter((ticketId) => ticketId !== itin._id));
+          alert('Your booking has been canceled.');
+        } else {
+          alert(`Cancellation failed: ${data.message}`);
+        }
+      })
+      .catch((error) => {
+        console.error('Error canceling booking:', error);
+        alert('An error occurred while canceling the booking.');
+      });
   };
-  
 
   const redeemPoints = () => {
     const pointsRequired = 10000;
     if (loyaltyPoints >= pointsRequired) {
       const cashToAdd = (pointsRequired / 10000) * 100;
-      setCashBalance((prevBalance) => prevBalance + cashToAdd);
-      setLoyaltyPoints((prevPoints) => prevPoints - pointsRequired);
-      setBadgeLevel(getBadgeLevel(loyaltyPoints - pointsRequired));
+      // Use the functional form of the setter to ensure the latest state
+      setCashBalance((prevBalance) => {
+        const newBalance = prevBalance + cashToAdd;
+        return newBalance;
+      });
+      setLoyaltyPoints((prevPoints) => {
+        const newPoints = prevPoints - pointsRequired;
+        setBadgeLevel(getBadgeLevel(newPoints));  // Update badge level based on new points
+        return newPoints;
+      });
       alert(`You have successfully redeemed ${pointsRequired} points for ${cashToAdd} EGP!`);
     } else {
       alert('You do not have enough loyalty points to redeem for cash.');
     }
-  };
-
-  const handleRating = (itinId, rating) => {
-    setRatings((prevRatings) => ({
-      ...prevRatings,
-      [itinId]: rating,
-    }));
-
-    alert(`You rated "${itinId}" with ${rating} stars!`);
-  };
-
-  const handleCommentChange = (itinId, comment) => {
-    setComments((prevComments) => ({
-      ...prevComments,
-      [itinId]: comment,
-    }));
-  };
-
-  const handleCommentSubmit = (itinId) => {
-    alert(`Comment submitted for "${itinId}": ${comments[itinId]}`);
-    setComments((prevComments) => ({
-      ...prevComments,
-      [itinId]: '',
-    }));
   };
 
   return (
@@ -129,7 +150,6 @@ const UpcomingItineraries = () => {
             <p className="activity-date">Date: {itin.availableDates}</p>
             <p className="activity-price">Price: {itin.price}$</p>
             <p className="activity-rating">language: {itin.language}</p>
-
 
             <div className="share-buttons">
               <button onClick={() => shareLink(itin)}>Share Link</button>

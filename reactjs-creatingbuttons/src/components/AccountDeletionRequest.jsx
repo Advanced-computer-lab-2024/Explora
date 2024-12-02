@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const AccountDeletionRequest = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [deletionReason, setDeletionReason] = useState('');
@@ -21,7 +23,7 @@ const AccountDeletionRequest = () => {
       // Send the deletion request to the backend
       const response = await axios.post('http://localhost:4000/Request/requestDeletion', {
         username,
-        email, // Sending email to backend as well
+        email,
         reason: deletionReason,
       });
 
@@ -44,8 +46,28 @@ const AccountDeletionRequest = () => {
 
   return (
     <header>
-      <div className="account-deletion-request-container">
+      {/* Go Back Button - Fixed to Top Left of Main Screen */}
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+          position: 'fixed',
+          top: '10px',
+          left: '10px',
+          padding: '10px 20px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          zIndex: 1000, // Ensures it's above all other elements
+        }}
+      >
+        Go Back
+      </button>
+
+      <div className="account-deletion-request-container" style={{ textAlign: 'center', marginTop: '50px' }}>
         <h2>Request Account Deletion</h2>
+
         <form onSubmit={handleSubmit}>
           {/* Username Input */}
           <label>

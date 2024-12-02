@@ -1,0 +1,72 @@
+.UpcomingItineraries {
+    margin: 20px auto;
+    max-width: 900px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .header {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .activities-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .activity-card {
+    border: 1px solid #ddd;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+  }
+  
+  .activity-name {
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .activity-date, .activity-price, .activity-rating, .activity-language {
+    font-size: 14px;
+  }
+  
+  .share-buttons button, .redeem-button, .rating-section button, .comment-section button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .share-buttons button:disabled, .redeem-button:disabled {
+    background-color: #ccc;
+  }
+  
+  .share-buttons button:hover, .redeem-button:hover {
+    background-color: #45a049;
+  }
+  
+  .redeem-button {
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  .loyalty-points, .cash-balance {
+    font-size: 16px;
+  }
+  
+  .badge {
+    color: #f39c12;
+    font-weight: bold;
+  }
+  
+  .message {
+    color: green;
+    text-align: center;
+    margin-top: 10px;
+  }
+  

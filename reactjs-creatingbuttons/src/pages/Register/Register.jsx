@@ -75,25 +75,24 @@ function Register() {
                 toast.success('Registration Successful');
                 const userId = response.data.userId; // Assuming the userId is in the response
     
-                // Redirect based on role
-                if (data.role === 'TourGuide') {
-                    navigate(`/terms-tour-guide/${userId}`);  // Redirect to the TermsTourGuide page
-                } else if (data.role === 'Advertiser') {
-                    navigate(`/terms-advertiser/${userId}`);  // Redirect to TermsAdvertiser page
-                } else if (data.role === 'Seller') {
-                    navigate(`/terms-seller/${userId}`);  // Redirect to TermsSeller page
-                }
-                else{
-                    navigate(`/tourist-home`);  // Redirect to TermsSeller page
-
+                // Check if the user is a TourGuide, Advertiser, or Seller
+                if (['TourGuide', 'Advertiser', 'Seller'].includes(data.role)) {
+                    // Show message indicating approval is pending
+                    toast.info('Your registration is pending approval from an admin. You will be notified once approved.');
+                    
+                    // Redirect the user to the home page or a pending approval page
+                    navigate(`/pending-approval`);
+                } else {
+                    // If the user is a Tourist, navigate to the Tourist home page
+                    navigate(`/tourist-home`);
                 }
             }
         } catch (error) {
             console.error(error);
-            toast.error(`Registration failed. Please try again. ${error.response?.data?.error || error.message}`);
+          //  toast.error(`Registration failed. Please try again. ${error.response?.data?.error || error.message}`);
         }
     };
-    
+        
 
     
 

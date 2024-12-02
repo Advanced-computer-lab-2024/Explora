@@ -104,6 +104,23 @@ export default function ItineraryView() {
   return (
     <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px' }}>
       <h1>{isEditing ? 'Edit Itinerary' : 'View Itinerary'}</h1>
+      <button
+  onClick={() => navigate(-1)}
+  style={{
+    position: 'absolute',
+    top: '20px',        // Adjust as needed for spacing
+    left: '20px',       // Adjust as needed for spacing
+    padding: '10px 20px',
+    fontSize: '16px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  }}
+>
+  Go Back
+</button>
       <label>Tour Guide Name:</label>
       <input
         type="text"

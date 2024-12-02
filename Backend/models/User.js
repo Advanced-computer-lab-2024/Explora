@@ -13,6 +13,14 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    loyaltyPoints: {
+        type: Number,
+        default: 0, // Initializes loyalty points to 0
+      },
+      loyaltyLevel: {
+        type: Number,
+        default: 0, // Initializes level to 0
+      },
     role: { 
         type: String,
         enum: ['Tourist','Seller','TourGuide','Advertiser','Governor', 'Admin'],
