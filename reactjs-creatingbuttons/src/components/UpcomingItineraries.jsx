@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const UpcomingItineraries = () => {
   const [itins, setItins] = useState([]);
@@ -9,6 +10,10 @@ const UpcomingItineraries = () => {
   const [cashBalance, setCashBalance] = useState(0);
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
+  const [error, setError] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen]= useState(false);
+  const [selectedItinerary, setSelectedItinerary] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:4000/api/tour_guide_itinerary/upcoming')
@@ -49,24 +54,38 @@ const UpcomingItineraries = () => {
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
-  const handleBookTicket = (itin) => {
-    setBookedTickets((prev) => [...prev, itin._id]);
-    let pointsToAdd = 0;
-
-    if (itin.price <= 100000) pointsToAdd = itin.price * 0.5;
-    else if (itin.price <= 500000) pointsToAdd = itin.price * 1;
-    else pointsToAdd = itin.price * 1.5;
-
-    setLoyaltyPoints((prevPoints) => {
-      const newPoints = prevPoints + pointsToAdd;
-      setBadgeLevel(getBadgeLevel(newPoints));
-      return newPoints;
-    });
-
-    alert(`Your ticket for "${itin.name}" has been booked!`);
+  const handleItinerarySelect = (Itinerary) => {
+    setSelectedItinerary(Itinerary);
+    setIsPaymentModalOpen(true); // Open payment modal
+  };
+  
+    
+  //Handle Wallet Payment
+  const handleWalletPayment = () => {
+    alert(`Payment via Wallet for ${selectedItinerary.name} successful!`);
+    setIsPaymentModalOpen(false);
+    setSelectedItinerary(null);
+  };
+  
+  
+    // Handle credit card payment
+  const handleCreditCardPayment = async () => {
+    try {
+      // Create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+        itemName: selectedItinerary.name,
+        itemPrice: selectedItinerary.price,
+      });
+  
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
   };
 
-  const handleCancelBooking = (itin) => {
+  /* const handleCancelBooking = (itin) => {
     const now = new Date();
     const timeDifference = new Date(itin.availableDates) - now; // Time difference in milliseconds
     const hoursDifference = timeDifference / (1000 * 60 * 60); // Convert milliseconds to hours
@@ -78,7 +97,7 @@ const UpcomingItineraries = () => {
     } else {
       alert('You can not cancel your booking less than 48 hours before the event starts.');
     }
-  };
+  }; */
   
 
   const redeemPoints = () => {
@@ -118,6 +137,10 @@ const UpcomingItineraries = () => {
     }));
   };
 
+  const handleBookmarkClick = () => {
+    navigate('/Bookmarks');
+  };
+
   return (
     <div className="UpcomingItineraries">
       <h1 className="header">Upcoming Itineraries</h1>
@@ -134,17 +157,46 @@ const UpcomingItineraries = () => {
             <div className="share-buttons">
               <button onClick={() => shareLink(itin)}>Share Link</button>
               <button onClick={() => shareEmail(itin)}>Share via Email</button>
+              <button onClick={handleBookmarkClick}>Bookmark</button>
               {bookedTickets.includes(itin._id) ? (
                 <button disabled>Ticket Already Booked</button>
               ) : (
-                <button onClick={() => handleBookTicket(itin)}>Book Ticket</button>
+                <button onClick={() => handleItinerarySelect(itin)}>Book Ticket</button>
+                
               )}
-              {bookedTickets.includes(itin._id) && (
+              {/* {bookedTickets.includes(itin._id) && (
                 <button onClick={() => handleCancelBooking(itin)}>Cancel Booking</button>
-              )}
+              )} */}
             </div>
           </div>
         ))}
+        {/* Payment Modal */}
+{isPaymentModalOpen && selectedItinerary && (
+        <div style={styles.modal}>
+          <h4>Selected Itinerary:</h4>
+          <p>
+            {selectedItinerary.name} on {selectedItinerary.date}
+          </p>
+          <p>
+            <strong>Amount to Pay:</strong> {selectedItinerary.price}
+          </p>
+          <h4>Choose Payment Method:</h4>
+          <div style={styles.modalButtonContainer}>
+          <button onClick={handleCreditCardPayment} style={styles.creditCardButton}>
+            Pay with Credit Card
+          </button>
+          <button onClick={handleWalletPayment} style={styles.bookButton}>
+            Pay with Wallet
+          </button>
+          <button
+            onClick={() => setIsPaymentModalOpen(false)}
+            style={styles.cancelButton}
+          >
+            Cancel
+          </button>
+          </div>
+        </div>
+      )}
       </div>
       <div className="points-container">
         <div className="loyalty-points">
@@ -163,4 +215,135 @@ const UpcomingItineraries = () => {
   );
 };
 
+const styles = {
+  pageContainer: {
+      fontFamily: 'Arial, sans-serif',
+      padding: '20px',
+      backgroundColor: '#f4f4f9',
+      minHeight: '100vh',
+  },
+  error: {
+      color: 'red',
+      marginBottom: '15px',
+      textAlign: 'center',
+  },
+  searchBarContainer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      marginBottom: '20px',
+  },
+  inputField: {
+      padding: '10px',
+      width: '48%',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+  },
+  selectContainer: {
+      marginBottom: '20px',
+  },
+  reactSelect: {
+      control: (styles) => ({
+          ...styles,
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+      }),
+  },
+  filtersContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '20px',
+      marginBottom: '20px',
+  },
+  filterGroup: {
+      display: 'flex',
+      flexDirection: 'column',
+      minWidth: '150px',
+  },
+  selectInput: {
+      padding: '8px',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+  },
+  resultsContainer: {
+      marginTop: '30px',
+  },
+  resultsList: {
+      listStyleType: 'none',
+      padding: '0',
+  },
+  resultItem: {
+      padding: '10px',
+      backgroundColor: '#fff',
+      marginBottom: '10px',
+      borderRadius: '5px',
+      border: '1px solid #ddd',
+  },
+  resultLink: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#333',
+      textDecoration: 'none',
+  },
+  details: {
+      fontSize: '14px',
+      color: '#777',
+      marginTop: '5px',
+  },
+  bookButton: {
+      padding: '10px 15px',
+      backgroundColor: '#28a745',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+    },   
+    modal: {
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: 'white',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      zIndex: 1000,
+      textAlign: 'center',
+    },
+    modalButtonContainer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      gap: '10px',
+      marginTop: '20px',
+    },
+    modalButton: {
+      flex: '1',
+      padding: '10px',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      border: 'none',
+      color: 'white',
+      transition: 'background-color 0.3s',
+    },
+    creditCardButton: {
+      padding: '10px 15px',
+      backgroundColor: '#007bff',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      margin: '10px',
+    },
+    cancelButton: {
+      padding: '10px 15px',
+      backgroundColor: '#dc3545',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+    },
+  };
+
 export default UpcomingItineraries;
+
