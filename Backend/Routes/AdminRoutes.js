@@ -10,7 +10,9 @@ const{
     viewDeleteRequests,
     filterByStatus,
     acceptRequest,
-    deleteUser
+    deleteUser,
+    getTotalUsers,
+    getNewUsersPerMonth
 } = require("../controllers/AdminController");
 
 router.delete("/:username",deleteAdminAccount)
@@ -22,6 +24,9 @@ router.get("/delete-requests", viewDeleteRequests);
 router.get("/delete-requests/filter/:status", filterByStatus);
 router.put("/accept-request/:id", acceptRequest);
 router.delete("/delete-user/:username", deleteUser);
+router.get('/total-users', getTotalUsers);
+router.get('/new-users-per-month', getNewUsersPerMonth);
+
 
 router.delete("/all", (req, res) => {
 

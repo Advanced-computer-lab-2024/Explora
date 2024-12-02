@@ -20,21 +20,7 @@ catch(err){
     res.status(500).json({msg: err.message});
 }
 }
-//delete admin account using id 
-/* const deleteAdminAccount = async (req, res) => {
-    const {id} = req.params
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(400).json({msg: 'Invalid ID'});
-    }
-    const admin = await User.findOneAndDelete({_id: id});
-    if(!admin){
-        return res.status(404).json({msg: 'Admin not found'});
-    }
-    res.json({msg: 'Admin deleted successfully' , admin});
-}  
-*/
 
-// create admin account
 
 const createAdminAccount = async (req, res) => {
     const {username, email, password} = req.body;
@@ -160,6 +146,42 @@ const changePassword = async (req, res) => {
     }
 };
 
+// Get the total number of users
+const getTotalUsers = async (req, res) => {
+    try {
+        const totalUsers = await User.countDocuments(); // Count all users
+        res.status(200).json({ totalUsers });
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
+// Get the number of new users per month
+const getNewUsersPerMonth = async (req, res) => {
+    try {
+        const newUsersPerMonth = await User.aggregate([
+            {
+                $project: {
+                    month: { $month: "$createdAt" }, // Extract the month from the createdAt field
+                    year: { $year: "$createdAt" } // Extract the year from the createdAt field
+                }
+            },
+            {
+                $group: {
+                    _id: { year: "$year", month: "$month" }, // Group by year and month
+                    count: { $sum: 1 } // Count the number of users per group
+                }
+            },
+            {
+                $sort: { "_id.year": -1, "_id.month": -1 } // Sort the results by year and month in descending order
+            }
+        ]);
+        res.status(200).json(newUsersPerMonth);
+    } catch (err) {
+        res.status(500).json({ msg: err.message });
+    }
+};
+
 
 module.exports = {
     createAdminAccount,
@@ -169,5 +191,7 @@ module.exports = {
     viewDeleteRequests,
     filterByStatus,
     acceptRequest,
-    deleteUser
+    deleteUser,
+    getTotalUsers,
+    getNewUsersPerMonth
 };
