@@ -175,7 +175,7 @@ if (error) return <div>Error: {error}</div>;
   };
 
   const handleBookmarkClick = () => {
-    navigate('/Bookmarks');
+    //function to handle bookmarking logic
   };
  
   return (
