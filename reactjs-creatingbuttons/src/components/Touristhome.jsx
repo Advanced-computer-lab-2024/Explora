@@ -44,6 +44,15 @@ export default function Touristhome() {
     navigate('/hotel-booking');
   };
 
+  const handleBookmarkedeventsClick = () => {
+    navigate('/Bookmarks');
+  };
+
+  const handleViewNotificationsClick = () => {
+      navigate('/Notifications');
+  }; 
+
+  
   
 
   // New handler for viewing all booked transportations
@@ -64,8 +73,10 @@ export default function Touristhome() {
         <button onClick={handleViewPastItinerariesClick}>View Past Itineraries</button>
         <button onClick={handleViewPastActivitiesClick}>View Past Activities</button>
         <button onClick={handleBookHotelClick}>Book Hotel</button>
-       
-        
+        <button onClick={handleBookmarkedeventsClick}>Bookmarked Events</button>
+        <button onClick={handleViewNotificationsClick}>View Notifications</button>
+
+
         {/* New button for viewing all booked transportations */}
         <button onClick={handleViewBookedTransportationsClick}>View All My Booked Transportations</button>
       </div>
