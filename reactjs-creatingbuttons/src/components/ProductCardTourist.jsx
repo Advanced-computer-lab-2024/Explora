@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
+import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+
 
 
 const ProductCardTourist = ({ product, products, setProducts }) => {

@@ -51,7 +51,7 @@
   
   .header-left button:hover {
     background-color: white; /* White background on hover */
-    color: #28a745; /* Green text color on hover */
+    color: #008080; /* Green text color on hover */
   }
   
   /* Right side "Explora" text */
@@ -72,14 +72,16 @@
   }
   
   .services-text {
-    margin: 0 10px;
-    font-weight: bold;
+    color: #000000; /* Teal color */
+    font-weight: bold; /* Optional: To make it bold */
   }
   
-  .service-icon {
-    font-size: 30px; /* Icon size */
-    color: #28a745;
+  
+  .services-section .service-icon {
+    color: #008080 !important; /* Use !important to override any conflicting styles */
   }
+  
+  
 
   /* Button container below header */
   .button-container {
@@ -99,7 +101,7 @@
     justify-content: center;
     width: 150px;
     height: 150px;
-    border: 2px solid #28a745;
+    border: 2px solid #008080;
     border-radius: 10px;
     background-color: #fff;
     color: #333;
@@ -112,7 +114,7 @@
   }
   
   .button-container button:hover {
-    background-color: #28a745;
+    background-color: #008080;
     color: #fff;
     transform: scale(1.05);
   }
@@ -120,10 +122,145 @@
   .button-container button svg {
     font-size: 40px;
     margin-bottom: 10px;
-    color: #28a745;
+    color: #008080;
   }
   
   .button-container button:hover svg {
     color: #fff;
+  }
+  
+  .testimonials-section {
+    text-align: center;
+    margin: 50px 0;
+    padding: 20px;
+    background-color: #ffffff;
+  }
+  
+  .testimonials-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .testimonial {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+  }
+  
+  .testimonial-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .testimonial.highlight {
+    color: white;
+  }
+  
+  .testimonial h3 {
+    margin: 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .testimonial p {
+    margin: 5px 0;
+    color: #666;
+  }
+
+  .footer {
+    background-color: #008080; /* Teal background */
+    color: #ffffff; /* White text color */
+    padding: 40px 20px;
+    margin-top: 50px;
+  }
+  
+  .footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .footer-column {
+    flex: 1;
+    margin: 10px;
+    min-width: 200px;
+  }
+  
+  .footer-column h3 {
+    color: #ffffff; /* White section titles */
+    margin-bottom: 20px;
+  }
+  
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .footer-column ul li {
+    margin-bottom: 10px;
+    color: #ffffff; /* White list items */
+  }
+  
+  .footer-column ul li a {
+    color: #ffffff; /* White links */
+    text-decoration: none;
+  }
+  
+  .footer-column ul li a:hover {
+    text-decoration: underline; /* Underline links on hover */
+  }
+  
+  .gallery {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .gallery img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+  
+  .footer-bottom {
+    text-align: center;
+    margin-top: 20px;
+    border-top: 1px solid #006666; /* Slightly darker teal for border */
+    padding-top: 20px;
+    font-size: 14px;
+    color: #ffffff; /* White text */
+  }
+  
+  .footer-column form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .footer-column form input {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #004d4d; /* Darker teal for input background */
+    color: #ffffff; /* White input text */
+  }
+  
+  .footer-column form button {
+    padding: 10px;
+    background-color: #006666; /* Dark teal button background */
+    border: none;
+    border-radius: 5px;
+    color: #ffffff; /* White button text */
+    cursor: pointer;
+  }
+  
+  .footer-column form button:hover {
+    background-color: #004d4d; /* Darker teal on hover */
   }
   

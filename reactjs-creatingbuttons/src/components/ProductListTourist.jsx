@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCardTourist from './ProductCardTourist';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -116,10 +119,22 @@ const ProductList = () => {
                 </label>
             </div>
             <div className="add-product-btn">
-    <button onClick={handleWishlistClick}>
-        <i className="fa-solid fa-heart"></i>
-    </button>
+  <div className="icon-container">
+    {/* Cart Icon */}
+    <div className="cart-icon" onClick={() => navigate('/view-cart')}>
+  <FontAwesomeIcon icon={faCartShopping} />
 </div>
+
+
+    {/* Heart Icon */}
+    <button className="wishlist-btn" onClick={handleWishlistClick}>
+      <FontAwesomeIcon icon={faHeart} />
+    </button>
+  </div>
+</div>
+
+
+
 
 
             <div className="sort-filter">

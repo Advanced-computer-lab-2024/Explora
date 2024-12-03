@@ -16,7 +16,7 @@ button {
 
 /* Apply uniform background color */
 body {
-  background-color: #eff6ff; /* Your desired background color */
+  background-color: #ffffff; /* Your desired background color */
 }
 
 #root {
@@ -218,9 +218,41 @@ p {
 
 /* Add to your existing CSS file */
 .add-product-btn {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
   position: absolute;
   top: 20px;
   right: 20px;
+}
+
+.icon-container {
+  display: flex;
+  gap: 10px; /* Adjust spacing between icons */
+  align-items: center;
+}
+
+.cart-icon, .wishlist-btn {
+  font-size: 1.5rem; /* Icon size */
+  cursor: pointer;
+  color: #008080; /* Teal color for both icons */
+  transition: color 0.3s ease;
+}
+
+.cart-icon:hover, .wishlist-btn:hover {
+  color: #005757; /* Darker teal on hover */
+}
+
+.wishlist-btn {
+  background: none; /* Remove button background */
+  border: none; /* Remove border */
+  padding: 0; /* Remove padding */
+}
+
+.cart-icon {
+  display: flex;
+  align-items: center;
 }
 
 .add-product-btn button {
