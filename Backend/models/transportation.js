@@ -34,7 +34,7 @@ const transportationSchema = new Schema({
   },
   capacity: {
     type: Number,
-    required: false,
+    required: true,
   },
 }, { timestamps: true });
 

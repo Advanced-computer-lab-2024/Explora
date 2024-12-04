@@ -33,6 +33,20 @@ router.post('/api/auth', async (req, res) => {
     res.status(500).json({ message: 'Server error.' });
   }
 });
+const authenticateUser = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1]; // Extract Bearer token
+  if (!token) {
+    return res.status(401).json({ message: 'Authorization token is missing' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // Add user info from the token to the request object
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid or expired token' });
+  }
+};
 
 const checkAdmin = (req, res, next) => {
   // Your logic to check if the user is an admin
@@ -43,4 +57,4 @@ const checkAdmin = (req, res, next) => {
   }
 };
 
-module.exports = router, { checkAdmin };
+module.exports = { authRouter: router, checkAdmin, authenticateUser };

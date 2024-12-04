@@ -34,11 +34,14 @@ const touristSchema = new mongoose.Schema(
     wallet: {
       type: Number,
       default: 0, // Optional: Initialize wallet with a default value
+      currency: 'USD', // Optional: Add currency field
     },
     loyaltyPoints: {
       type: Number,
       default: 0,
   },
+  bookmarksActivity: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Activity' }] ,// Array of bookmarked event IDs
+  bookmarksItinerary: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' }] // Array of bookmarked event IDs
   },
   { timestamps: true }
 );

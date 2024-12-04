@@ -1,0 +1,248 @@
+/* Scoped styles for PromoCodeComponent */
+.promo-code-component {
+    display: flex;
+    justify-content: center; /* Horizontally center */
+    align-items: center;     /* Vertically center */
+    height: 100vh;           /* Full viewport height */
+    padding: 0 20px;         /* Optional: Prevents overflow on small screens */
+  }
+  
+  .promo-code-component body {
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(to bottom right, #f8f9fa, #eceef1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  
+  .promo-code-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    width: 550px;
+    box-sizing: border-box;
+  }
+  
+  .promo-code-component h3 {
+    margin-top: 30px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .promo-code-component .form-group {
+    margin-bottom: 25px;
+  }
+  .promo-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .promo-card {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+    width: 120px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .promo-card p {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+  }
+  
+  
+  .promo-code-component .form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #444;
+    font-size: 14px;
+  }
+  
+  .promo-code-component input,
+  .promo-code-component select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+  }
+  
+  .promo-code-component input[type="number"] {
+    width: 100px;
+  }
+  
+  .promo-code-component input:disabled {
+    background: #f5f5f5;
+  }
+  
+  .promo-code-component .valid-till,
+  .promo-code-component .promotion-details {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .promo-code-component .rules {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .promo-code-component .rule {
+    background: #f9f9f9;
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #555;
+    border: 1px solid #ccc;
+  }
+  
+  .promo-code-component .add-rule-btn,
+  .promo-code-component .save-btn {
+    background: black;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background 0.3s ease;
+  }
+  
+  .promo-code-component .add-rule-btn:hover,
+  .promo-code-component .save-btn:hover {
+    background: #333;
+  }
+  
+  .promo-code-component .add-rule-btn {
+    margin-top: 15px;
+  }
+  
+  .promo-code-component .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px;
+  }
+  
+  .promo-code-component .cancel-btn {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    color: #555;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-right: 10px;
+  }
+  
+  .promo-code-component .cancel-btn:hover {
+    background: #e9e9e9;
+  }
+  
+  /* Toggle switch container */
+  .promo-code-component .toggle-switch {
+    width: 60px;
+    height: 30px;
+    background: #bbb;
+    border-radius: 30px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+    margin-left: 10px;
+    box-sizing: border-box;
+  }
+  
+  .promo-code-component .toggle-switch.active {
+    background: #000;
+  }
+  
+  .promo-code-component .toggle-thumb {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .promo-code-component .toggle-switch.active .toggle-thumb {
+    transform: translateX(30px);
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  .promo-code-component .toggle-switch:hover .toggle-thumb {
+    box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4);
+  }
+  
+  .promo-code-component .toggle-switch:hover {
+    background: #999;
+  }
+  
+  .promo-code-component label {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .promo-code-component .valid-till {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .promo-code-component .toggle-button {
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px;
+  }
+  
+  .promo-code-component .toggle-button:hover {
+    opacity: 0.8;
+  }
+  
+  .promo-code-component form label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .promo-code-component .promotion-details select,
+  .promo-code-component .promotion-details input {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+  }
+  
+  .promo-code-component .add-rule-btn,
+  .promo-code-component .save-btn {
+    background: black;
+    border: none;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .promo-code-component .add-rule-btn:hover,
+  .promo-code-component .save-btn:hover {
+    background: #333;
+  }
+  

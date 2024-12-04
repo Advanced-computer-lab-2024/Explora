@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
+
 
 const FlightBooking = () => {
   const [origin, setOrigin] = useState('');
@@ -8,17 +11,16 @@ const FlightBooking = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [bookedFlights, setBookedFlights] = useState([]);
-  const [touristId] = useState("67322cdfa472e2e7d22de84a"); // Hardcoded for now
+  const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded for now
   const [searchId, setSearchId] = useState(null); // Assume this gets set after the search
   const [flightId, setFlightId] = useState(null); // Set after selecting the flight
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiryDate, setCardExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false); // Added this state
+  const navigate = useNavigate();
 
-  // Handle search submission
-  const handleSearchSubmit = async (e) => {
+   // Handle search submission
+   const handleSearchSubmit = async (e) => {
     e.preventDefault();
 
     try {
@@ -58,38 +60,62 @@ const FlightBooking = () => {
   const handleFlightSelect = (flight) => {
     setSelectedFlight(flight);
     setFlightId(flight.id);
+    console.log(flight.id);
+    setIsPaymentModalOpen(true); // Open the payment modal
   };
-
-  // Confirm booking for the selected flight
-  const handleConfirmBooking = async () => {
-    if (!cardNumber || !cardExpiryDate || !cvv) {
-      setErrorMessage('Please fill in all payment details');
-      return;
-    }
-
-    try {
-      const response = await axios.post('http://localhost:4000/flights/book', {
-        touristId,
-        searchId,
-        flightId,
-        cardNumber,
-        cardExpiryDate,
-        cvv
-      });
-
-      setSuccessMessage(response.data.message);
-      setErrorMessage('');
-    } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Error booking flight');
-      setSuccessMessage('');
-    }
-  };
-
-  // Cancel booking
-  const handleCancelBooking = (flightId) => {
+   // Cancel booking
+   const handleCancelBooking = (flightId) => {
     const updatedBookings = bookedFlights.filter(flight => flight.id !== flightId);
     setBookedFlights(updatedBookings);
   };
+
+  // Close the payment modal
+  const handleCloseModal = () => {
+    setIsPaymentModalOpen(false);
+    setSelectedFlight(null);
+  };
+
+  // Handle Wallet Payment
+  const handleWalletPayment = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/flights/bookWallet', {
+        touristId,
+        searchId,
+        flightId,
+      });
+  
+      setSuccessMessage(response.data.message); // Show success message
+      setErrorMessage(''); // Clear any previous errors
+      setBookedFlights([...bookedFlights, selectedFlight]); // Add the booked flight to the list
+      setIsPaymentModalOpen(false); // Close the payment modal
+      setSelectedFlight(null); // Clear the selected flight
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Error booking flight'); // Show error message
+      setSuccessMessage(''); // Clear any previous success messages
+    }
+  };
+  // Handle credit card payment
+  const handleCreditCardPayment = async () => {
+    try {
+      const frontendUrl = window.location.origin;
+      console.log("Frontend URL:", frontendUrl); // Log it for debugging
+      // Send request to the backend to create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/flights/bookStripe", {
+        touristId,
+        searchId,
+        flightId,
+        frontendUrl // Pass the URL to the backend
+      });
+  
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
+  };
+
+
 
   return (
     <div style={{ padding: '20px' }}>
@@ -129,13 +155,14 @@ const FlightBooking = () => {
         <button type="submit" style={buttonStyle}>Search</button>
       </form>
 
-      {/* Display Error or Success Message */}
-      {errorMessage && (
-  <div style={errorMessageStyle}>{errorMessage}</div>
-)}
-{successMessage && (
-  <div style={successMessageStyle}>{successMessage}</div>
-)}
+       {/* Display Error or Success Message */}
+       {errorMessage && (
+       <div style={errorMessageStyle}>{errorMessage}</div>
+       )}
+       {successMessage && (
+       <div style={successMessageStyle}>{successMessage}</div>
+       )}
+
       {/* Search Results */}
       {searchResults.length > 0 && (
         <div>
@@ -145,7 +172,7 @@ const FlightBooking = () => {
               <li key={flight.id} style={listItemStyle}>
                 <p>Last Ticketing Date: {flight.lastTicketingDate}</p>
                 <p>Duration: {flight.duration}</p>
-                <p>Price: {flight.price} EUR</p>
+                <p>Price: {flight.price} USD</p>
                 <button onClick={() => handleFlightSelect(flight)} style={buttonStyle}>
                   Select
                 </button>
@@ -155,50 +182,25 @@ const FlightBooking = () => {
         </div>
       )}
 
-      {/* Selected Flight Details */}
-      {selectedFlight && (
-        <div style={{ marginTop: '20px' }}>
-          <h4>Selected Flight:</h4>
+      {/* Payment Modal */}
+      {isPaymentModalOpen && selectedFlight && (
+        <div style={modalStyle}>
+           <h4>Selected Flight:</h4>
           <p>Last Ticketing Date: {selectedFlight.lastTicketingDate}</p>
           <p>Duration: {selectedFlight.duration}</p>
-          <p>Price: {selectedFlight.price} EUR</p>
+          <p>Price: {selectedFlight.price} USD</p>
 
-          {/* Payment Details Form */}
-          <div style={{ marginTop: '20px' }}>
-            <label>
-              Card Number:
-              <input
-                type="text"
-                placeholder="Enter card number"
-                value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
-                style={inputStyle}
-              />
-            </label>
-            <label>
-              Expiry Date:
-              <input
-                type="text"
-                placeholder="MM/YY"
-                value={cardExpiryDate}
-                onChange={(e) => setCardExpiryDate(e.target.value)}
-                style={inputStyle}
-              />
-            </label>
-            <label>
-              CVV:
-              <input
-                type="text"
-                placeholder="Enter CVV"
-                value={cvv}
-                onChange={(e) => setCvv(e.target.value)}
-                style={inputStyle}
-              />
-            </label>
-            <button onClick={handleConfirmBooking} style={buttonStyle}>
-              Confirm Booking
-            </button>
-          </div>
+          <h4>Payment Options</h4>
+          <p>Amount to pay: {selectedFlight.price} USD</p>
+          <button onClick={handleWalletPayment} style={buttonStyle}>
+            Pay with Wallet
+          </button>
+          <button onClick={handleCreditCardPayment} style={buttonStyle}>
+            Pay with Credit Card
+          </button>
+          <button onClick={handleCloseModal} style={closeButtonStyle}>
+            Close
+          </button>
         </div>
       )}
 
@@ -207,7 +209,7 @@ const FlightBooking = () => {
         <li key={flight.id} style={listItemStyle}>
           <p>Last Ticketing Date: {flight.lastTicketingDate}</p>
           <p>Duration: {flight.duration}</p>
-          <p>Price: {flight.price} EUR - Booked</p>
+          <p>Price: {flight.price} USD - Booked</p>
           <button onClick={() => handleCancelBooking(flight.id)} style={buttonStyle}>
             Cancel Booking
           </button>
@@ -217,7 +219,7 @@ const FlightBooking = () => {
   );
 };
 
-// Styles for buttons, inputs, and list items
+// Styles
 const buttonStyle = {
   margin: '10px',
   padding: '5px 10px',
@@ -225,7 +227,13 @@ const buttonStyle = {
   cursor: 'pointer',
   borderRadius: '5px',
   border: '1px solid #ccc',
-  backgroundColor: '#f0f0f0',
+  backgroundColor: '#4CAF50',
+  color: '#fff',
+};
+
+const closeButtonStyle = {
+  ...buttonStyle,
+  backgroundColor: '#f44336', // Red for close button
 };
 
 const inputStyle = {
@@ -235,11 +243,25 @@ const inputStyle = {
   fontSize: '14px',
   borderRadius: '5px',
   border: '1px solid #ccc',
+  width: '100%',
 };
 
 const listItemStyle = {
   padding: '10px',
   borderBottom: '1px solid #ddd',
+};
+
+const modalStyle = {
+  position: 'fixed',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  backgroundColor: 'white',
+  padding: '20px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  zIndex: 1000,
+  textAlign: 'center',
 };
 
 const errorMessageStyle = {
