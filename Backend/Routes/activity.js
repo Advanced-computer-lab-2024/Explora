@@ -106,7 +106,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get all upcoming itineraries
 // Get all upcoming activities
 router.get('/upcoming', async (req, res) => {
     const today = new Date(); // Get today's date

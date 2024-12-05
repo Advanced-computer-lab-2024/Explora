@@ -35,7 +35,10 @@ const SalesReport = () => {
           const { sales, totalRevenue } = response.data;
           setSales(sales || []);
           setFilteredSales(sales || []);
-          setTotalRevenue(totalRevenue || 0);
+          
+          // Calculate and set the total revenue
+          const total = sales.reduce((sum, sale) => sum + sale.amount, 0);
+          setTotalRevenue(total || 0);
         } catch (err) {
           setError('Failed to fetch sales data.');
         } finally {
@@ -45,7 +48,7 @@ const SalesReport = () => {
       fetchSalesData();
     }
   }, [userId]);
-
+  
   // Filter sales data based on the selected filters
   const filterSales = () => {
     let filtered = sales;
