@@ -19,7 +19,10 @@ router.post('/', async (req, res) => {
         if (user.status === 'Rejected') {
             return res.status(400).json({ msg: 'Your account has been rejected. You cannot log in.' });
         }
-
+        if (user.status === 'Pending') {
+            return res.status(400).json({ msg: 'Your account is currently under review. Please wait for approval before logging in.' });
+        }
+        
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
