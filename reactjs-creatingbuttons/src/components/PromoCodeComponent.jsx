@@ -1,34 +1,49 @@
-import React, { useState } from "react";
-import { MdToggleOn, MdToggleOff } from "react-icons/md"; // Import toggle icons
-import "./PromoCodeComponent.css"; // Ensure the scoped CSS is imported
+import React, { useState, useEffect } from "react";
+import axios from "axios"; // Import axios for HTTP requests
+import "./PromoCodeComponent.css";
 
 const PromoCodeComponent = () => {
   const [promotionName, setPromotionName] = useState("");
-  const [validTill, setValidTill] = useState("");
-  const [noEnd, setNoEnd] = useState(false);
-  const [discountType, setDiscountType] = useState("Percentage discount");
   const [discountValue, setDiscountValue] = useState("");
-  const [limit, setLimit] = useState("No limits");
-  const [rules, setRules] = useState(["All members of Organisation", "Prime time Only"]);
+  const [promoCodes, setPromoCodes] = useState([]); // State to store promo codes
 
-  const handleAddRule = () => {
-    const newRule = prompt("Enter a new rule:");
-    if (newRule) {
-      setRules([...rules, newRule]);
+  // Fetch all promo codes
+  const fetchPromoCodes = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/promoCode/");
+      setPromoCodes(response.data.adminPromoCodes); // Access the array of promo codes
+    } catch (error) {
+      console.error("Error fetching promo codes:", error);
+      alert("Failed to load promo codes. Please try again.");
     }
   };
 
-  const handleSave = () => {
-    alert("Promotion saved!");
-    console.log({
-      promotionName,
-      validTill,
-      noEnd,
-      discountType,
-      discountValue,
-      limit,
-      rules,
-    });
+  // Fetch promo codes on component mount
+  useEffect(() => {
+    fetchPromoCodes();
+  }, []);
+
+  const handleSave = async () => {
+    try {
+      // Send POST request to backend
+      const response = await axios.post("http://localhost:4000/promoCode/admin/create", {
+        code: promotionName,
+        discount: parseFloat(discountValue), // Ensure discount is a number
+      });
+
+      // Handle success response
+      alert("Promotion saved successfully!");
+      console.log("Saved Promotion:", response.data);
+      setPromotionName("");
+      setDiscountValue("");
+
+      // Refresh promo codes after saving
+      fetchPromoCodes();
+    } catch (error) {
+      // Handle error response
+      console.error("Error saving promotion:", error);
+      alert(error.response?.data?.message || "Failed to save promotion. Please try again.");
+    }
   };
 
   return (
@@ -36,7 +51,7 @@ const PromoCodeComponent = () => {
       <div className="promo-code-card">
         <form>
           <div className="form-group">
-            <label>Promotion name</label>
+            <label>Promotion Name</label>
             <input
               type="text"
               value={promotionName}
@@ -45,75 +60,40 @@ const PromoCodeComponent = () => {
             />
           </div>
           <div className="form-group">
-            <label>Valid till</label>
-            <div className="valid-till">
-              <input
-                type="date"
-                value={validTill}
-                onChange={(e) => setValidTill(e.target.value)}
-                disabled={noEnd}
-              />
-              <div
-                className="toggle-button"
-                onClick={() => setNoEnd(!noEnd)}
-              >
-                {noEnd ? (
-                  <MdToggleOn color="green" size={30} />
-                ) : (
-                  <MdToggleOff color="gray" size={30} />
-                )}
-              </div>
-              <label>No end</label>
-            </div>
-          </div>
-          <h3>Promotion details:</h3>
-          <div className="form-group">
-            <label>Create</label>
-            <div className="promotion-details">
-              <select
-                value={discountType}
-                onChange={(e) => setDiscountType(e.target.value)}
-              >
-                <option value="Percentage discount">Percentage discount</option>
-                <option value="Fixed amount discount">Fixed amount discount</option>
-              </select>
-              <input
-                type="number"
-                value={discountValue}
-                onChange={(e) => setDiscountValue(e.target.value)}
-                placeholder="Value"
-              />
-              <label>%</label>
-            </div>
-          </div>
-          <div className="form-group">
-            <label>Limit</label>
-            <select
-              value={limit}
-              onChange={(e) => setLimit(e.target.value)}
-            >
-              <option value="No limits">No limits</option>
-              <option value="Minimum fee">Minimum fee</option>
-              <option value="Maximum fee">Maximum fee</option>
-            </select>
-          </div>
-          <button type="button" className="add-rule-btn" onClick={handleAddRule}>
-            Add rule
-          </button>
-          <h3>Rules and exceptions:</h3>
-          <div className="rules">
-            {rules.map((rule, index) => (
-              <span key={index} className="rule">
-                {rule}
-              </span>
-            ))}
+            <label>Promotion Value</label>
+            <input
+              type="number"
+              value={discountValue}
+              onChange={(e) => setDiscountValue(e.target.value)}
+              placeholder="Enter promotion value (0 to 1)"
+            />
           </div>
           <div className="action-buttons">
-            <button type="button" className="save-btn" onClick={handleSave}>
-              Save promotion
+            <button
+              type="button"
+              className="save-btn"
+              onClick={handleSave}
+            >
+              Save Promotion
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Display promo codes */}
+      <div className="promo-code-list">
+        <h3>Existing Promo Codes</h3>
+        <div className="promo-cards-container">
+          {promoCodes.length > 0 ? (
+            promoCodes.map((promo) => (
+              <div className="promo-card" key={promo._id}>
+                <p>{promo.code}</p>
+              </div>
+            ))
+          ) : (
+            <p>No promo codes found.</p>
+          )}
+        </div>
       </div>
     </div>
   );

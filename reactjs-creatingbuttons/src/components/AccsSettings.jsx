@@ -11,7 +11,9 @@ export default function AccsSettings() {
   const handleAddTourismGovernorClick = () => {
     navigate('/login-tourism');  // Navigate to the LogInTourism component
   };
-
+  const handleCreatePromoCodeClick = () => {
+    navigate('/promo-code');  // Navigate to the PromoCode component
+  };
   const handleAddAdminClick = () => {
     navigate('/login-admin');  // Navigate to the LogInAdmin component
   };
@@ -66,6 +68,8 @@ export default function AccsSettings() {
         <button onClick={handleDeleteRequestsClick}>View Delete Requests</button>
 
         {/* New Flag Event Button */}
+        <button onClick={handleCreatePromoCodeClick}>Create Promo Code</button>
+
         <button onClick={handleFlagEventClick}>Flag Event</button>
         <button onClick={handleCreatePromoCodeClick}>Create Promo Code</button>
         <button onClick={handleSalesReportClick}>Sales Report</button>

@@ -1,12 +1,27 @@
 // THIS FILE HAS THE ROUTE IN THE CONTROLLER
-
 const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
 const ActivityCategory = require('../models/ActivityCategory'); // Import your ActivityCategory model
 const PrefrenceTag = require('../models/PrefrenceTag');
 const mongoose = require('mongoose');
+const User = require('../models/User');
+const TouristPromoCode = require('../models/touristPromoCode');
+const BookedActivity = require('../models/bookedActivities');
+const nodemailer = require('nodemailer');
+const stripe = require('stripe')(process.env.STRIPE_API_SECRET);
+const cron = require('node-cron');
+const moment = require('moment');
+const Notification = require('../models/notification');
+const transporter = nodemailer.createTransport({
+    service: 'Gmail', // Or another email service
+    auth: {
+      user: 'explora.donotreply@gmail.com', // Replace with your email
+      pass: 'goiz pldj kpjy clsh'  // Use app-specific password if necessary
+    }
+  });
 
+// http://localhost:4000/api/activity/create/Adventure
 // Create an activity
 router.post('/create/:categoryName', async (req, res) => {
     // Extract the category name from request parameters
@@ -57,6 +72,275 @@ router.post('/create/:categoryName', async (req, res) => {
     }
 });
 
+//http://localhost:4000/api/activity/testdelete
+router.delete('/testdelete', async (req, res) => {
+    const { touristId } = req.body;
+
+    if (!touristId) {
+        return res.status(400).json({ error: 'Tourist ID is required' });
+    }
+
+    try {
+        const result = await BookedActivity.deleteMany({ tourist: touristId });
+        return res.status(200).json({
+            message: `Deleted ${result.deletedCount} activities for tourist.`,
+        });
+    } catch (error) {
+        console.error(error.message);
+        return res.status(500).json({ error: 'An error occurred while deleting activities.' });
+    }
+});
+const sendUpcomingActivityReminders = async () => {
+    try {
+        const today = moment().utc().startOf('day'); // Ensure UTC for today's date
+        const tomorrow = today.clone().add(1, 'days'); // Define the next day's start
+
+        console.log(`Checking for activities between ${today.format('YYYY-MM-DD')} and ${tomorrow.format('YYYY-MM-DD')}`);
+
+        // Find all booked activities that are scheduled for tomorrow
+        const upcomingActivities = await BookedActivity.find({
+            date: { $gte: tomorrow, $lt: tomorrow.clone().add(1, 'days') }
+        }).populate('tourist'); // Populate tourist data
+
+        if (upcomingActivities.length === 0) {
+            console.log('No upcoming activities found for tomorrow.');
+            return;
+        }
+
+        for (const activity of upcomingActivities) {
+            const { tourist, name, date, time, location } = activity;
+
+            // Ensure the tourist has opted for email notifications
+            if (tourist) {
+                console.log(`Sending reminder email to ${tourist.username} (${tourist.email}) for activity: ${name}`);
+
+                // Create email content
+                const mailOptions = {
+                    from: 'explora.donotreply@gmail.com',
+                    to: tourist.email,
+                    subject: 'Reminder: Upcoming Activity Tomorrow! 📅',
+                    text: `Dear ${tourist.username},\n\nThis is a friendly reminder about your upcoming activity:\n\n` +
+                        `- Activity: ${name}\n` +
+                        `- Date: ${moment(date).format('MMMM Do YYYY')}\n` +
+                        `- Time: ${time}\n` +
+                        `- Location: ${location}\n\n` +
+                        `We hope you have a great time!\n\nBest regards,\nExplora Team`
+                };
+
+                // Send the email
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email:', error);
+                    } else {
+                        console.log('Email sent:', info.response);
+                    }
+                });
+
+                // Create a notification for the tourist
+                const notification = new Notification({
+                    tourist: tourist._id,
+                    event: 'activity',
+                    date: date,
+                    message: `Reminder: Your activity '${name}' is scheduled for tomorrow at ${time} in ${location}.`
+                });
+
+                // Save the notification to the database
+                await notification.save();
+                console.log('Notification created for tourist:', tourist.username);
+            }
+        }
+    } catch (error) {
+        console.error('Error in sending activity reminders:', error);
+    }
+};
+
+// Schedule the task to run every day at 19:12
+cron.schedule('28 22 * * *', () => {
+    console.log('Running scheduled task to send activity reminders and create notifications...');
+    sendUpcomingActivityReminders();
+});
+
+
+//http://localhost:4000/api/activity/pastBookedActivities/60f3b3b3b3b3b3b3b3b3b3
+router.get('/pastBookedActivities/:id', async (req, res) => {
+    const { id: touristId } = req.params;
+
+    try {
+        // Validate the user exists and is a tourist
+        const tourist = await User.findById(touristId);
+        if (!tourist || tourist.role !== 'Tourist') {
+            return res.status(400).json({ message: 'Invalid tourist ID' });
+        }
+
+        // Find past booked activities for the user
+        const pastBookedActivities = await BookedActivity.find({
+            tourist: touristId,
+            date: { $lt: new Date() } // Ensure the activity date is in the past
+        })
+            .populate('activity') // Populate details from the Activity model
+            .populate('activity.category') // Optionally populate the category field
+            .populate('activity.tags'); // Optionally populate the tags field
+
+        // Respond with the past booked activities
+        res.status(200).json(pastBookedActivities);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving past booked activities', error: err.message });
+    }
+});
+
+//http://localhost:4000/api/activity/upcomingBookedActivities/60f3b3b3b3b3b3b3b3b3b3
+router.get('/upcomingBookedActivities/:id', async (req, res) => {
+    const { id: touristId } = req.params;
+
+    try {
+        // Validate the user exists and is a tourist
+        const tourist = await User.findById(touristId);
+        if (!tourist || tourist.role !== 'Tourist') {
+            return res.status(400).json({ message: 'Invalid tourist ID' });
+        }
+
+        // Find upcoming booked activities for the user
+        const upcomingBookedActivities = await BookedActivity.find({
+            tourist: touristId,
+            date: { $gte: new Date() } // Ensure the activity date is today or in the future
+        })
+            .populate('activity') // Populate details from the Activity model
+            .populate('activity.category') // Optionally populate the category field
+            .populate('activity.tags'); // Optionally populate the tags field
+
+        // Respond with the upcoming booked activities
+        res.status(200).json(upcomingBookedActivities);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving upcoming booked activities', error: err.message });
+    }
+});
+
+
+//http://localhost:4000/api/activity/bookedActivities/60f3b3b3b3b3b3b3b3b3b3b3
+router.get('/bookedActivities/:id', async (req, res) => {
+    const { id: touristId } = req.params;
+
+    try {
+        // Validate the user exists and is a tourist
+        const tourist = await User.findById(touristId);
+        if (!tourist || tourist.role !== 'Tourist') {
+            return res.status(400).json({ message: 'Invalid tourist ID' });
+        }
+
+        // Find booked activities for the user
+        const bookedActivities = await BookedActivity.find({ tourist: touristId })
+            .populate('activity') // Populate details from the Activity model
+            .populate('activity.category') // Optionally populate the category field
+            .populate('activity.tags'); // Optionally populate the tags field
+
+        // Respond with the booked activities
+        res.status(200).json(bookedActivities);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error retrieving booked activities', error: err.message });
+    }
+});
+
+//http://localhost:4000/api/activity/bookWallet
+router.post('/bookWallet', async (req, res) => {
+    const { touristId, activityId, promoCode } = req.body;
+
+    try {
+        // Find the tourist user
+        const tourist = await User.findById(touristId);
+        if (!tourist || tourist.role !== 'Tourist') {
+            return res.status(400).json({ message: 'Invalid tourist user' });
+        }
+        const touristEmail = tourist.email; // Get the tourist's email dynamically
+
+        // Find the activity
+        const activity = await Activity.findById(activityId);
+        if (!activity || activity.isDeleted || !activity.bookingOpen) {
+            return res.status(404).json({ message: 'Activity not found or not open for booking' });
+        }
+
+        // Check if the tourist already booked the activity (optional logic)
+        const existingBooking = await BookedActivity.findOne({ tourist: touristId, activity: activityId });
+        if (existingBooking) {
+            return res.status(400).json({ message: 'You have already booked this activity' });
+        }
+
+        // Calculate the total price
+        let totalPrice = activity.price;
+
+        // Check for promo code and apply discount if valid
+        if (promoCode) {
+            const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+            if (!promoCodeRecord) {
+                return res.status(400).json({ message: 'Invalid or expired promo code' });
+            }
+
+            // Apply the discount
+            const discountAmount = promoCodeRecord.discount * totalPrice;
+            totalPrice -= discountAmount;
+
+            // Ensure discounted price is valid
+            if (totalPrice < 0) {
+                return res.status(400).json({ message: 'Discounted price is invalid' });
+            }
+
+            // Delete the promo code since it's used
+            await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+        }
+
+        // Check if the tourist has enough balance in their wallet
+        if (tourist.wallet < totalPrice) {
+            return res.status(400).json({ message: 'Insufficient funds in wallet' });
+        }
+
+        // Deduct the price from the tourist's wallet
+        tourist.wallet -= totalPrice;
+        await tourist.save(); // Save the updated tourist to the database
+
+        // Create a new booked activity
+        const bookedActivity = new BookedActivity({
+            tourist: tourist._id,
+            activity: activity._id,
+            name: activity.name,
+            date: activity.date,
+            time: activity.time,
+            rating: activity.rating,
+            location: activity.location,
+            price: totalPrice,
+            category: activity.category,
+            tags: activity.tags,
+        });
+
+        // Save the booked activity
+        const savedBooking = await bookedActivity.save();
+
+        // Send a booking receipt email to the tourist
+        const mailOptions = {
+            from: 'explora.donotreply@gmail.com', // Sender address
+            to: touristEmail, // Dynamic email based on the tourist's record
+            subject: 'Activity Booking Receipt',
+            text: `Dear ${tourist.username},\n\nYour activity has been successfully booked!\n\nDetails:\n- Activity Name: ${activity.name}\n- Date: ${activity.date}\n- Time: ${activity.time}\n- Location: ${activity.location}\n- Price: ${totalPrice} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
+
+        res.status(201).json(savedBooking);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error creating booking', error: err.message });
+    }
+});
+
+
 // Filter activities by tag, name, or category
 router.get('/filter', async (req, res) => {
     const { tag, name, category } = req.query;
@@ -101,6 +385,7 @@ router.get('/filter', async (req, res) => {
 });
 
 // Read all activities
+//http://localhost:4000/api/activity
 router.get('/', async (req, res) => {
     try {
     const activities = await Activity.find().populate('category', 'activityType').populate('tags', 'tag').select('-createdAt -updatedAt');
@@ -292,6 +577,7 @@ router.get('/sortrate', async (req, res) => {
     }
 });
 
+//http://localhost:4000/api/activity/
 // Get all activities
 router.get('/', async (req, res) => {
     try {

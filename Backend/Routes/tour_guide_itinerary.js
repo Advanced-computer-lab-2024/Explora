@@ -4,6 +4,23 @@ const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 const jwt = require('jsonwebtoken');
 const { checkAdmin } = require('../middleware/AuthMiddleware');
+const User = require('../models/User');
+const TouristPromoCode = require('../models/touristPromoCode');
+const BookedItinerary = require('../models/bookedItineraries');
+const nodemailer = require('nodemailer');
+const stripe = require('stripe')(process.env.STRIPE_API_SECRET);
+const cron = require('node-cron');
+const moment = require('moment');
+const Notification = require('../models/notification');
+const Activity = require('../models/Activity');
+const Tourist = require('../models/touristModel');
+const transporter = nodemailer.createTransport({
+    service: 'Gmail', // Or another email service
+    auth: {
+      user: 'explora.donotreply@gmail.com', // Replace with your email
+      pass: 'goiz pldj kpjy clsh'  // Use app-specific password if necessary
+    }
+  });
 
 // Middleware to verify JWT and get the user from token
 const auth = (req, res, next) => {
@@ -19,7 +36,510 @@ const auth = (req, res, next) => {
   }
 };
 
+//http://localhost:4000/api/tour_guide_itinerary/notification/5f9b1b3b7b3b3b3b3b3b3b3b
+router.delete('/notification/:id', async (req, res) => {
+  const { id } = req.params;
 
+  try {
+    // Attempt to delete the notification by ID
+    const notification = await Notification.findByIdAndDelete(id);
+
+    // Check if the notification exists
+    if (!notification) {
+      return res.status(404).json({ message: 'Notification not found.' });
+    }
+
+    // Return success message if deleted
+    res.status(200).json({ message: 'Notification deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    res.status(500).json({ error: 'An error occurred while deleting the notification.' });
+  }
+});
+//http://localhost:4000/api/tour_guide_itinerary/bookmark/5f9b1b3b7b3b3b3b3b3b3b3b/5f9b1b3b7b3b3b3b3b3b3b3b
+router.delete('/bookmark/:touristId/:eventId', async (req, res) => {
+  try {
+    const { touristId, eventId } = req.params;
+
+    // Find the tourist by ID
+    const tourist = await Tourist.findById(touristId);
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Check if the event ID belongs to an itinerary or activity
+    const activityExists = tourist.bookmarksActivity.includes(eventId);
+    const itineraryExists = tourist.bookmarksItinerary.includes(eventId);
+
+    // If the event is found in bookmarksActivity, remove it
+    if (activityExists) {
+      tourist.bookmarksActivity = tourist.bookmarksActivity.filter(
+        (activityId) => !activityId.equals(eventId)
+      );
+    }
+
+    // If the event is found in bookmarksItinerary, remove it
+    if (itineraryExists) {
+      tourist.bookmarksItinerary = tourist.bookmarksItinerary.filter(
+        (itineraryId) => !itineraryId.equals(eventId)
+      );
+    }
+
+    // If the event is not found in either array
+    if (!activityExists && !itineraryExists) {
+      return res.status(400).json({ message: 'Event not found in bookmarks' });
+    }
+
+    // Save the updated tourist document
+    await tourist.save();
+
+    res.status(200).json({ message: 'Bookmarked event removed successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// /http://localhost:4000/api/tour_guide_itinerary/bookmark/5f9b1b3b7b3b3b3b3b3b3b3b
+router.post('/bookmark/:touristId', async (req, res) => {
+  try {
+    const { touristId } = req.params;
+    const { eventId } = req.body; // Assumes eventId is passed in the request body
+    const tourist = await Tourist.findById(touristId);
+    
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Check if the eventId corresponds to an Activity or an Itinerary
+    const activity = await Activity.findById(eventId);
+    const itinerary = await Itinerary.findById(eventId);
+
+    if (activity) {
+      if (tourist.bookmarksActivity.includes(eventId)) {
+        return res.status(400).json({ message: 'Activity is already bookmarked' });
+      }
+      // It's an Activity, so push it to bookmarksActivity
+      tourist.bookmarksActivity.push(eventId);
+      await tourist.save();
+      
+      // Create notification if the event has started taking bookings
+      if (activity.bookingOpen) {
+        setTimeout(async () => {
+          try {
+            const notificationMessage = "The event that you bookmarked has started taking bookings!";
+            const notification = new Notification({
+              tourist: tourist._id,
+              event: 'activity',
+              date: activity.date,
+              message: notificationMessage
+            });
+            await notification.save();
+          } catch (error) {
+            console.error("Error creating notification:", error);
+          }
+        }, 3 * 60 * 1000); // 3 minutes in milliseconds
+      }
+
+      return res.status(200).json({ message: 'Activity bookmarked successfully' });
+
+    } else if (itinerary) {
+      if (tourist.bookmarksItinerary.includes(eventId)) {
+        return res.status(400).json({ message: 'Itinerary is already bookmarked' });
+      }
+      // It's an Itinerary, so push it to bookmarksItinerary
+      tourist.bookmarksItinerary.push(eventId);
+      await tourist.save();
+      
+      // Create notification if the event has started taking bookings
+      if (itinerary.bookingOpen) {
+        setTimeout(async () => {
+          try {
+        const notificationMessage = `The event that you bookmarked has started taking bookings!`;
+        const notification = new Notification({
+          tourist: tourist._id, // Use the tourist's ID
+          event: 'itinerary',
+          date: itinerary.date, // Use the itinerary's date for the notification
+          message: notificationMessage
+        });
+
+        // Save the notification
+        await notification.save();
+      }
+      catch (error) {
+        console.error("Error creating notification:", error);
+      }
+    }, 3 * 60 * 1000); // 3 minutes in milliseconds
+  }
+
+      return res.status(200).json({ message: 'Itinerary bookmarked successfully' });
+
+    } else {
+      return res.status(400).json({ message: 'Invalid event ID' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+// /http://localhost:4000/api/tour_guide_itinerary/bookmark/5f9b1b3b7b3b3b3b3b3b3b3b
+router.get('/bookmark/:touristId', async (req, res) => {
+  try {
+    const { touristId } = req.params;
+    const tourist = await Tourist.findById(touristId)
+      .populate('bookmarksActivity')
+      .populate('bookmarksItinerary'); // Populate the arrays with actual Activity and Itinerary documents
+    
+    if (!tourist) {
+      return res.status(404).json({ message: 'Tourist not found' });
+    }
+
+    // Check if both bookmark arrays are empty
+    if (tourist.bookmarksActivity.length === 0 && tourist.bookmarksItinerary.length === 0) {
+      return res.status(200).json({ message: 'You currently have no bookmarked events' });
+    }
+
+    // Combine both arrays of bookmarked events
+    const allBookmarks = {
+      activities: tourist.bookmarksActivity,
+      itineraries: tourist.bookmarksItinerary,
+    };
+
+    res.status(200).json(allBookmarks);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// http://localhost:4000/api/tour_guide_itinerary/bookWallet
+router.post('/bookWallet', async (req, res) => {
+  const { touristId, itineraryId, promoCode } = req.body;
+
+  try {
+      // Validate the tourist
+      const tourist = await User.findById(touristId);
+      if (!tourist || tourist.role !== 'Tourist') {
+          return res.status(400).json({ message: 'Invalid tourist user' });
+      }
+      const touristEmail = tourist.email; // Get the tourist's email dynamically
+
+      // Validate the itinerary
+      const itinerary = await Itinerary.findById(itineraryId);
+      if (!itinerary || itinerary.isDeleted || !itinerary.isActive) {
+          return res.status(404).json({ message: 'Itinerary not found or not available for booking' });
+      }
+
+      // Check if the tourist already booked the itinerary (optional logic)
+      const existingBooking = await BookedItinerary.findOne({ tourist: touristId, itinerary: itineraryId });
+      if (existingBooking) {
+          return res.status(400).json({ message: 'You have already booked this itinerary' });
+      }
+
+      // Initialize totalPrice with itinerary price
+      let totalPrice = itinerary.price;
+
+      // Apply promo code if provided
+      if (promoCode) {
+          const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+          if (!promoCodeRecord) {
+              return res.status(400).json({ message: 'Invalid or expired promo code' });
+          }
+        
+          // Apply discount
+          const discountAmount = promoCodeRecord.discount * totalPrice;
+          totalPrice -= discountAmount;
+
+          // Ensure discounted price is valid
+          if (totalPrice < 0) {
+              return res.status(400).json({ message: 'Discounted price is invalid' });
+          }
+
+          // Delete the promo code since it's used
+          await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+      }
+
+      // Check if the tourist has enough funds in their wallet
+      if (tourist.wallet < totalPrice) {
+          return res.status(400).json({ message: 'Insufficient funds in wallet' });
+      }
+
+      // Deduct the price from wallet
+      tourist.wallet -= totalPrice;
+      await tourist.save(); // Save updated wallet balance
+
+      // Create a new booked itinerary
+      const bookedItinerary = new BookedItinerary({
+          itinerary: itinerary._id,
+          tourist: tourist._id,
+          tourGuideName: itinerary.tourGuideName,
+          activities: itinerary.activities,
+          locations: itinerary.locations,
+          timeline: itinerary.timeline,
+          duration: itinerary.duration,
+          language: itinerary.language,
+          price: totalPrice,
+          pickupLocation: itinerary.pickupLocation,
+          dropoffLocation: itinerary.dropoffLocation,
+          tags: itinerary.tags,
+          rating: itinerary.rating,
+      });
+
+      // Save the booked itinerary
+      const savedBooking = await bookedItinerary.save();
+
+      // Send a booking receipt email
+      const mailOptions = {
+          from: 'explora.donotreply@gmail.com',
+          to: touristEmail,
+          subject: 'Itinerary Booking Receipt',
+          text: `Dear ${tourist.username},\n\nYour itinerary has been successfully booked!\n\nDetails:\n- Itinerary Name: ${itinerary.tourGuideName}'s Tour\n- Locations: ${itinerary.locations}\n- Duration: ${itinerary.duration} days\n- Price: ${totalPrice} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+              console.error('Error sending email:', error);
+          } else {
+              console.log('Email sent:', info.response);
+          }
+      });
+
+      res.status(201).json(savedBooking);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error creating booking', error: err.message });
+  }
+});
+
+
+//http://localhost:4000/api/tour_guide_itinerary/testdelete
+router.delete('/testdelete', async (req, res) => {
+  const { touristId } = req.body;
+
+  if (!touristId) {
+    return res.status(400).json({ error: 'Tourist ID is required' });
+  }
+
+  try {
+    // Use the model to delete all booked itineraries for the given tourist
+    const result = await BookedItinerary.deleteMany({ tourist: touristId });
+
+    return res.status(200).json({
+      message: `Deleted ${result.deletedCount} booked itineraries for tourist.`,
+    });
+  } catch (error) {
+    console.error(error.message);
+    return res.status(500).json({ error: 'An error occurred while deleting itineraries.' });
+  }
+});
+//http://localhost:4000/api/tour_guide_itinerary/pastBookedItineraries/5f9b1b3b7b3b3b3b3b3b3b3b
+router.get('/pastBookedItineraries/:touristId', async (req, res) => {
+  const { touristId } = req.params;
+
+  try {
+      // Validate the tourist
+      const tourist = await User.findById(touristId);
+      if (!tourist || tourist.role !== 'Tourist') {
+          return res.status(400).json({ message: 'Invalid tourist user' });
+      }
+
+      // Fetch all booked itineraries for the tourist
+      const pastBookedItineraries = await BookedItinerary.find({ tourist: touristId })
+          .populate('itinerary', 'tourGuideName locations duration price') // Populate itinerary fields
+          .select('-__v -createdAt -updatedAt'); // Exclude unnecessary fields
+
+      // Filter itineraries based on the latest date in the activities array
+      const pastItineraries = pastBookedItineraries.filter(itinerary => {
+          const latestActivityDate = itinerary.activities[itinerary.activities.length - 1].date;
+          return latestActivityDate < new Date(); // If the latest activity date is in the past
+      });
+
+      // Check if no past bookings were found
+      if (pastItineraries.length === 0) {
+          return res.status(404).json({ message: 'No past booked itineraries found for this tourist' });
+      }
+
+      // Return the past booked itineraries
+      res.status(200).json(pastItineraries);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error fetching past booked itineraries', error: err.message });
+  }
+});
+
+//http://localhost:4000/api/tour_guide_itinerary/upcomingBookedItineraries/5f9b1b3b7b3b3b3b3b3b3b3b
+router.get('/upcomingBookedItineraries/:touristId', async (req, res) => {
+  const { touristId } = req.params;
+
+  try {
+      // Validate the tourist
+      const tourist = await User.findById(touristId);
+      if (!tourist || tourist.role !== 'Tourist') {
+          return res.status(400).json({ message: 'Invalid tourist user' });
+      }
+
+      // Fetch all booked itineraries for the tourist
+      const upcomingBookedItineraries = await BookedItinerary.find({ tourist: touristId })
+          .populate('itinerary', 'tourGuideName locations duration price') // Populate itinerary fields
+          .select('-__v -createdAt -updatedAt'); // Exclude unnecessary fields
+
+      // Filter itineraries based on the latest date in the activities array
+      const upcomingItineraries = upcomingBookedItineraries.filter(itinerary => {
+          const latestActivityDate = itinerary.activities[itinerary.activities.length - 1].date;
+          return latestActivityDate >= new Date(); // If the latest activity date is in the present or future
+      });
+
+      // Check if no upcoming bookings were found
+      if (upcomingItineraries.length === 0) {
+          return res.status(404).json({ message: 'No upcoming booked itineraries found for this tourist' });
+      }
+
+      // Return the upcoming booked itineraries
+      res.status(200).json(upcomingItineraries);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error fetching upcoming booked itineraries', error: err.message });
+  }
+});
+
+
+// http://localhost:4000/api/tour_guide_itinerary/booked
+router.get('/booked/:touristId', async (req, res) => {
+  const { touristId } = req.params;
+
+  try {
+      // Validate the tourist
+      const tourist = await User.findById(touristId);
+      if (!tourist || tourist.role !== 'Tourist') {
+          return res.status(400).json({ message: 'Invalid tourist user' });
+      }
+
+      // Fetch all booked itineraries for the tourist
+      const bookedItineraries = await BookedItinerary.find({ tourist: touristId })
+          .populate('itinerary', 'tourGuideName locations duration price') // Populate referenced itinerary fields
+          .select('-__v -createdAt -updatedAt'); // Exclude unnecessary fields
+
+      // Check if no bookings were found
+      if (bookedItineraries.length === 0) {
+          return res.status(404).json({ message: 'No booked itineraries found for this tourist' });
+      }
+
+      // Return the booked itineraries
+      res.status(200).json(bookedItineraries);
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error fetching booked itineraries', error: err.message });
+  }
+});
+
+const sendUpcomingItineraryReminders = async () => {
+    try {
+        const today = moment().utc().startOf('day'); // Ensure UTC for today's date
+        const tomorrow = today.clone().add(2, 'days'); // Define the next day's start
+
+        console.log(`Checking for itineraries between ${today.format('YYYY-MM-DD')} and ${tomorrow.format('YYYY-MM-DD')}`);
+
+        // Find all booked itineraries that are scheduled for tomorrow
+        const upcomingItineraries = await BookedItinerary.find({
+            'activities.date': { $gte: today, $lt: tomorrow }
+        }).populate('tourist'); // Populate tourist data
+
+        if (upcomingItineraries.length === 0) {
+            console.log('No upcoming itineraries found for tomorrow.');
+            return;
+        }
+
+        for (const itinerary of upcomingItineraries) {
+            const { tourist, tourGuideName, activities, locations, duration, language } = itinerary;
+
+            // Ensure the tourist data is present
+            if (tourist) {
+                console.log(`Sending reminder email to ${tourist.username} (${tourist.email}) for itinerary: ${tourGuideName}`);
+
+                // Extract the first activity date and time
+                const firstActivity = activities.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+                const { date, time } = firstActivity;
+
+                // Create email content
+                const mailOptions = {
+                    from: 'explora.donotreply@gmail.com',
+                    to: tourist.email,
+                    subject: 'Reminder: Upcoming Itinerary Tomorrow! 📅',
+                    text: `Dear ${tourist.username},\n\nThis is a friendly reminder about your upcoming itinerary:\n\n` +
+                        `- Itinerary by: ${tourGuideName}\n` +
+                        `- Location: ${locations}\n` +
+                        `- Start Date: ${moment(date).format('MMMM Do YYYY')}\n` +
+                        `- Start Time: ${time}\n` +
+                        `- Duration: ${duration} days\n` +
+                        `- Language: ${language}\n\n` +
+                        `We hope you have a wonderful experience!\n\nBest regards,\nExplora Team`
+                };
+
+                // Send the email
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email:', error);
+                    } else {
+                        console.log('Email sent:', info.response);
+                    }
+                });
+
+                // Create a notification
+                const notificationMessage = `Reminder: Your itinerary is scheduled for tomorrow at ${time}. Don't miss it!`;
+                const notification = new Notification({
+                    tourist: tourist._id, // Use the tourist's ID
+                    event: 'itinerary',
+                    date: date, // Date of the first activity
+                    message: notificationMessage
+                });
+
+                // Save the notification
+                await notification.save();
+                console.log(`Notification created for tourist ${tourist.username} (${tourist.email}): ${notificationMessage}`);
+            } else {
+                console.warn('Tourist information is missing for a booked itinerary.');
+            }
+        }
+    } catch (error) {
+        console.error('Error in sending itinerary reminders:', error);
+    }
+};
+
+// Schedule the task to run every day at 20:36
+cron.schedule('21 22 * * *', () => {
+    console.log('Running scheduled task to send itinerary reminders...');
+    sendUpcomingItineraryReminders();
+});
+//http://localhost:4000/api/tour_guide_itinerary/notification/5f9b1b3b7b3b3b3b3b3b3b3b
+router.get('/notification/:id', async (req, res) => {
+  const { id: touristId } = req.params;
+
+  try {
+      // Validate that the touristId is provided
+      if (!touristId) {
+          return res.status(400).json({ error: 'Tourist ID is required.' });
+      }
+
+      // Fetch all notifications for the given tourist ID
+      const notifications = await Notification.find({ tourist: touristId })
+          .sort({ createdAt: -1 }) // Sort by the newest notifications first
+          .exec();
+
+      // If no notifications are found
+      if (notifications.length === 0) {
+          return res.status(404).json({ message: 'No notifications found for this tourist.' });
+      }
+
+      // Return the notifications
+      res.status(200).json({ notifications });
+  } catch (error) {
+      console.error('Error fetching notifications:', error);
+      res.status(500).json({ error: 'An error occurred while fetching notifications.' });
+  }
+});
 
 // Sort itineraries by price (high to low or low to high)
 router.get('/sortprice', async (req, res) => {
@@ -158,7 +678,7 @@ router.get('/', async (req, res) => {
 });
 
 // Example: Fetch itineraries for tourists/guests
-router.get('/', async (req, res) => {
+router.get('/fetch', async (req, res) => {
   try {
     // Get itineraries excluding flagged ones
     const itineraries = await TourGuideItinerary.find({ flagged: false });

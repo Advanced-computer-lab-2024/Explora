@@ -103,6 +103,9 @@ import Checkout from './components/Checkout'; // Create a new checkout component
 import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
 import VacationGuide from "./components/VacationGuide";
 import ViewCartTourist from "./components/ViewCartTourist.jsx"
+import Notifications from './components/Notifications.jsx';
+import BookMarks from './components/BookMarks.jsx';
+import PromoCodeComponent from './components/PromoCodeComponent.jsx';
 
 
 function App() {
@@ -206,6 +209,9 @@ function App() {
         <Route path="/sales-report" element={<SalesReport />} />
 
 
+        <Route path="/Notifications" element={<Notifications />} />
+        <Route path="/Bookmarks" element={<BookMarks />} />
+        <Route path="/promo-code" element={<PromoCodeComponent />} />
 
         <Route path="/view-cart" element={<ViewCartTourist />} />
         <Route path="/checkout" element={<Checkout />} />

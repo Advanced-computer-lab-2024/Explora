@@ -16,10 +16,10 @@ const bookingSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-    status: {
-        type: String,
-        enum: ['pending', 'confirmed', 'cancelled'],
-        default: 'pending',
+    method: {
+      type: String,
+      enum: ['bus', 'car', 'microbus', 'train', 'plane', 'bike', 'other'],
+      required: true,
     },
     seatsBooked: {
         type: Number,
@@ -32,19 +32,7 @@ const bookingSchema = new Schema({
 }, { timestamps: true });
 
 // Adding a method to process the booking payment
-bookingSchema.methods.processPayment = async function() {
-    const Tourist = require('./touristModel'); // Ensure correct import path
-    const tourist = await Tourist.findById(this.tourist);
-    
-    // Check if tourist has enough wallet balance
-    if (tourist.wallet >= this.totalPrice) {
-        tourist.wallet -= this.totalPrice; // Deduct the total price from wallet
-        await tourist.save(); // Save the updated tourist data
-        return true; // Payment successful
-    } else {
-        throw new Error('Insufficient funds in wallet'); // Handle insufficient funds
-    }
-};
+
 
 const Booking = mongoose.model('Booking', bookingSchema);
 module.exports = Booking;

@@ -11,12 +11,9 @@ const FlightBooking = () => {
   const [searchResults, setSearchResults] = useState([]);
   const [selectedFlight, setSelectedFlight] = useState(null);
   const [bookedFlights, setBookedFlights] = useState([]);
-  const [touristId] = useState("67322cdfa472e2e7d22de84a"); // Hardcoded for now
+  const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded for now
   const [searchId, setSearchId] = useState(null); // Assume this gets set after the search
   const [flightId, setFlightId] = useState(null); // Set after selecting the flight
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiryDate, setCardExpiryDate] = useState('');
-  const [cvv, setCvv] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false); // Added this state
@@ -63,34 +60,9 @@ const FlightBooking = () => {
   const handleFlightSelect = (flight) => {
     setSelectedFlight(flight);
     setFlightId(flight.id);
+    console.log(flight.id);
     setIsPaymentModalOpen(true); // Open the payment modal
   };
-
-  // Confirm booking for the selected flight
-  const handleConfirmBooking = async () => {
-    if (!cardNumber || !cardExpiryDate || !cvv) {
-      setErrorMessage('Please fill in all payment details');
-      return;
-    }
-
-    try {
-      const response = await axios.post('http://localhost:4000/flights/book', {
-        touristId,
-        searchId,
-        flightId,
-        cardNumber,
-        cardExpiryDate,
-        cvv
-      });
-
-      setSuccessMessage(response.data.message);
-      setErrorMessage('');
-    } catch (error) {
-      setErrorMessage(error.response?.data?.message || 'Error booking flight');
-      setSuccessMessage('');
-    }
-  };
-
    // Cancel booking
    const handleCancelBooking = (flightId) => {
     const updatedBookings = bookedFlights.filter(flight => flight.id !== flightId);
@@ -103,22 +75,44 @@ const FlightBooking = () => {
     setSelectedFlight(null);
   };
 
-  // Handle wallet payment
-  const handleWalletPayment = () => {
-    // Handle wallet payment logic here
-    if (selectedFlight){
-      navigate('/FlightWalletPayment',{state:{selectedFlight}});
-     }
-      setIsPaymentModalOpen(false);
+  // Handle Wallet Payment
+  const handleWalletPayment = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/flights/bookWallet', {
+        touristId,
+        searchId,
+        flightId,
+      });
+  
+      setSuccessMessage(response.data.message); // Show success message
+      setErrorMessage(''); // Clear any previous errors
+      setBookedFlights([...bookedFlights, selectedFlight]); // Add the booked flight to the list
+      setIsPaymentModalOpen(false); // Close the payment modal
+      setSelectedFlight(null); // Clear the selected flight
+    } catch (error) {
+      setErrorMessage(error.response?.data?.message || 'Error booking flight'); // Show error message
+      setSuccessMessage(''); // Clear any previous success messages
+    }
   };
-
   // Handle credit card payment
-  const handleCreditCardPayment = () => {
-    // Redirect to credit card payment component
-   if (selectedFlight){
-    navigate('/FlightCreditCardPayment',{state:{flight:selectedFlight}});
-   }
-    setIsPaymentModalOpen(false);
+  const handleCreditCardPayment = async () => {
+    try {
+      const frontendUrl = window.location.origin;
+      console.log("Frontend URL:", frontendUrl); // Log it for debugging
+      // Send request to the backend to create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/flights/bookStripe", {
+        touristId,
+        searchId,
+        flightId,
+        frontendUrl // Pass the URL to the backend
+      });
+  
+      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+    } catch (error) {
+      console.error("Error creating Stripe session:", error);
+      alert("Failed to redirect to Stripe. Please try again.");
+    }
   };
 
 
@@ -178,7 +172,7 @@ const FlightBooking = () => {
               <li key={flight.id} style={listItemStyle}>
                 <p>Last Ticketing Date: {flight.lastTicketingDate}</p>
                 <p>Duration: {flight.duration}</p>
-                <p>Price: {flight.price} EUR</p>
+                <p>Price: {flight.price} USD</p>
                 <button onClick={() => handleFlightSelect(flight)} style={buttonStyle}>
                   Select
                 </button>
@@ -194,10 +188,10 @@ const FlightBooking = () => {
            <h4>Selected Flight:</h4>
           <p>Last Ticketing Date: {selectedFlight.lastTicketingDate}</p>
           <p>Duration: {selectedFlight.duration}</p>
-          <p>Price: {selectedFlight.price} EUR</p>
+          <p>Price: {selectedFlight.price} USD</p>
 
           <h4>Payment Options</h4>
-          <p>Amount to pay: {selectedFlight.price} EUR</p>
+          <p>Amount to pay: {selectedFlight.price} USD</p>
           <button onClick={handleWalletPayment} style={buttonStyle}>
             Pay with Wallet
           </button>
@@ -215,7 +209,7 @@ const FlightBooking = () => {
         <li key={flight.id} style={listItemStyle}>
           <p>Last Ticketing Date: {flight.lastTicketingDate}</p>
           <p>Duration: {flight.duration}</p>
-          <p>Price: {flight.price} EUR - Booked</p>
+          <p>Price: {flight.price} USD - Booked</p>
           <button onClick={() => handleCancelBooking(flight.id)} style={buttonStyle}>
             Cancel Booking
           </button>

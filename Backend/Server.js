@@ -1,5 +1,5 @@
 require('dotenv').config();
-
+const bodyParser = require('body-parser');
 
 const express = require("express");
 const path = require('path');
@@ -34,6 +34,7 @@ const wishListRoute = require('./Routes/WishListRoutes'); // Adjust the path as 
 const cartRoutes = require('./Routes/cartRoutes');
 const ordersRoute = require('./Routes/ordersRoute'); // Adjust the path as needed
 const AddressRoute = require('./Routes/AddressRoutes'); // Adjust the path as needed
+const promoCodeRoutes = require('./Routes/promoCodeRoutes');
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -82,6 +83,7 @@ app.use('/cart', cartRoutes);
 app.use('/orders', ordersRoute);
 app.use('/addresses', AddressRoute);
 
+app.use('/promoCode', promoCodeRoutes);
 
 
 //connect to MongoDB

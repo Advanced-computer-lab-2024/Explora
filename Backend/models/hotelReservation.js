@@ -12,9 +12,7 @@ const hotelReservationSchema = new mongoose.Schema({
     hotelName: { type: String, required: true },
     reservationNumber: { type: String, required: true },
     price: { type: Number, required: true },
-    cardNumber: { type: String, required: true },
-    cvv: { type: String, required: true },
-    cardExpiryDate: { type: String, required: true },
+    paymentIntentId: { type: String, required: false },  // Optional field for payment intent ID
 });
 
 module.exports = mongoose.model('HotelReservation', hotelReservationSchema);
