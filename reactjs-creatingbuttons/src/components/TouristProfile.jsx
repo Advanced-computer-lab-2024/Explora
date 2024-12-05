@@ -49,6 +49,12 @@ const TouristProfile = () => {
       <Link to="/product-list-tourist">
         <button style={buttonStyle}>View Products</button>
       </Link>
+      {/* New button for View Cart */}
+      <Link to="/view-cart">
+       <button style={buttonStyle}>View Cart</button>
+      </Link>
+
+    
       {/* Dropdown Button for Booking */}
       <BookDropdown />
     </div>
@@ -80,9 +86,8 @@ const BookDropdown = () => {
       </button>
       {showDropdown && (
         <div style={dropdownStyle}>
-
-              {/* New buttons */}
-              <button onClick={() => handleSelect('bookedFlights')} style={dropdownItemStyle}>
+          {/* New buttons */}
+          <button onClick={() => handleSelect('bookedFlights')} style={dropdownItemStyle}>
             Booked Flights
           </button>
 
@@ -130,3 +135,4 @@ const dropdownItemStyle = {
 };
 
 export default TouristProfile;
+

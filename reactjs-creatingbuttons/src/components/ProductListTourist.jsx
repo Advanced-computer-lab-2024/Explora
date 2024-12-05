@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProductCardTourist from './ProductCardTourist';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
@@ -9,8 +12,13 @@ const ProductList = () => {
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(1000);
     const [sortOrder, setSortOrder] = useState('');
+    const [wishlist, setWishlist] = useState([]); // Wishlist state
 
     const navigate = useNavigate();
+
+    const handleWishlistClick = () => {
+        navigate('/wishlist', { state: { wishlist } }); // Pass wishlist state to the new page
+    };
 
     const fetchAllProducts = async () => {
         try {
@@ -63,32 +71,28 @@ const ProductList = () => {
     };
 
     const handleSortChange = (e) => {
-      const order = e.target.value;
-      setSortOrder(order);
-      if (order) {
-          fetchSortedProducts(order); 
-      } else {
-          fetchAllProducts(); 
-      }
-  };
+        const order = e.target.value;
+        setSortOrder(order);
+        if (order) {
+            fetchSortedProducts(order); 
+        } else {
+            fetchAllProducts(); 
+        }
+    };
 
     useEffect(() => {
         fetchAllProducts(); 
     }, []);
 
-    const handleAddProductClick = () => {
-        navigate('/add-product');
-    };
-
     return (
         <div className="product-list">
+    
             <h1>Available Products</h1>
-
             <input
                 type="text"
                 placeholder="Search for a product..."
                 value={searchTerm}
-                onChange={handleSearchChange} 
+                onChange={handleSearchChange}
                 className="search-input"
             />
 
@@ -98,8 +102,8 @@ const ProductList = () => {
                     <input
                         type="number"
                         value={minPrice}
-                        onChange={(e) => setMinPrice(Number(e.target.value))} 
-                        onBlur={handlePriceChange} 
+                        onChange={(e) => setMinPrice(Number(e.target.value))}
+                        onBlur={handlePriceChange}
                         className="price-input"
                     />
                 </label>
@@ -108,21 +112,37 @@ const ProductList = () => {
                     <input
                         type="number"
                         value={maxPrice}
-                        onChange={(e) => setMaxPrice(Number(e.target.value))} 
-                        onBlur={handlePriceChange} 
+                        onChange={(e) => setMaxPrice(Number(e.target.value))}
+                        onBlur={handlePriceChange}
                         className="price-input"
                     />
                 </label>
             </div>
+            <div className="add-product-btn">
+  <div className="icon-container">
+    {/* Cart Icon */}
+    <div className="cart-icon" onClick={() => navigate('/view-cart')}>
+  <FontAwesomeIcon icon={faCartShopping} />
+</div>
 
-       
+
+    {/* Heart Icon */}
+    <button className="wishlist-btn" onClick={handleWishlistClick}>
+      <FontAwesomeIcon icon={faHeart} />
+    </button>
+  </div>
+</div>
+
+
+
+
 
             <div className="sort-filter">
                 <label>
                     Sort by Ratings:
                     <select
                         value={sortOrder}
-                        onChange={handleSortChange} // Use the handleSortChange
+                        onChange={handleSortChange}
                         className="sort-input"
                     >
                         <option value="">Select</option>
@@ -135,10 +155,16 @@ const ProductList = () => {
             <div className="product-cards-container">
                 {products.length > 0 ? (
                     products.map((product) => (
-                        <ProductCardTourist key={product._id} product={product} products={products} setProducts={setProducts} />
+                        <ProductCardTourist
+                            key={product._id}
+                            product={product}
+                            products={products}
+                            setProducts={setProducts}
+                            setWishlist={setWishlist}
+                        />
                     ))
                 ) : (
-                    <p>No products found.</p> // Display message if no products are available
+                    <p>No products found.</p>
                 )}
             </div>
         </div>

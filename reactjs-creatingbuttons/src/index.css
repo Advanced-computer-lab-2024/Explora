@@ -16,7 +16,7 @@ button {
 
 /* Apply uniform background color */
 body {
-  background-color: #eff6ff; /* Your desired background color */
+  background-color: #ffffff; /* Your desired background color */
 }
 
 #root {
@@ -218,9 +218,41 @@ p {
 
 /* Add to your existing CSS file */
 .add-product-btn {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
   position: absolute;
   top: 20px;
   right: 20px;
+}
+
+.icon-container {
+  display: flex;
+  gap: 10px; /* Adjust spacing between icons */
+  align-items: center;
+}
+
+.cart-icon, .wishlist-btn {
+  font-size: 1.5rem; /* Icon size */
+  cursor: pointer;
+  color: #008080; /* Teal color for both icons */
+  transition: color 0.3s ease;
+}
+
+.cart-icon:hover, .wishlist-btn:hover {
+  color: #005757; /* Darker teal on hover */
+}
+
+.wishlist-btn {
+  background: none; /* Remove button background */
+  border: none; /* Remove border */
+  padding: 0; /* Remove padding */
+}
+
+.cart-icon {
+  display: flex;
+  align-items: center;
 }
 
 .add-product-btn button {
@@ -1068,6 +1100,347 @@ label {
   text-align: center;
   margin-bottom: 20px;
 }
+
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popup-container {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.product-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Wishlist Popup Styles */
+.wishlist-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 400px;
+  background-color: white;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+}
+
+.wishlist-popup-content {
+  padding: 20px;
+  text-align: center;
+}
+
+.wishlist-popup-close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.popup-product-image {
+  width: 100%;
+  height: auto;
+  border-radius: 10px 10px 0 0;
+}
+
+.popup-product-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.popup-product-price {
+  font-size: 16px;
+  color: #27ae60;
+  margin: 5px 0;
+}
+
+.popup-product-description {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.wishlist-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.wishlist-button:hover {
+  background-color: #2980b9;
+}
+
+.wishlist-icon-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.wishlist-icon {
+  background-color: transparent;
+  color: black;
+  border: none;
+  width: auto;
+  height: auto;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wishlist-icon:hover {
+  color: darkred;
+}
+
+
+  
+.valid-till,
+.promotion-details {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.rule {
+  background: #f9f9f9;
+  padding: 10px 15px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #555;
+  border: 1px solid #ccc;
+}
+
+.add-rule-btn,
+.save-btn {
+  background: black;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background 0.3s ease;
+}
+
+.add-rule-btn:hover,
+.save-btn:hover {
+  background: #333;
+}
+
+.add-rule-btn {
+  margin-top: 15px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+}
+
+.cancel-btn {
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  color: #555;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-right: 10px;
+}
+
+.cancel-btn:hover {
+  background: #e9e9e9;
+}
+
+/* Toggle switch container */
+.toggle-switch {
+  width: 60px;
+  height: 30px;
+  background: #bbb;
+  border-radius: 30px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline-block;
+  margin-left: 10px;
+  box-sizing: border-box;
+}
+
+.toggle-switch.active {
+  background: #000; /* Black color when active */
+}
+
+.toggle-thumb {
+  width: 26px;
+  height: 26px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;  /* Center the thumb vertically */
+  left: 2px; /* Start position on the left side */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.toggle-switch.active .toggle-thumb {
+  transform: translateX(30px); /* Moves the thumb to the right when active */
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3); /* Stronger shadow when active */
+}
+
+.toggle-switch:hover .toggle-thumb {
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.4); /* Shadow on hover for better feedback */
+}
+
+/* Optional: Add a smooth hover effect */
+.toggle-switch:hover {
+  background: #999;
+}
+  label {
+  font-size: 14px;
+  color: #555;
+}
+/* Adjusting the layout for the toggle button */
+.valid-till {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toggle-button {
+  cursor: pointer;
+  display: inline-block;
+  padding: 5px;
+}
+
+.toggle-button:hover {
+  opacity: 0.8;
+}
+
+/* Styling for labels and form elements */
+form label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* For promotion details section */
+.promotion-details select, .promotion-details input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* Optional: Add a smooth hover effect for the button */
+.add-rule-btn, .save-btn {
+  background: black;
+  border: none;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.add-rule-btn:hover, .save-btn:hover {
+  background: #333;
+}
+
+/* BirthdayPromoModal.css */
+.promo-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it stays on top */
+}
+
+.promo-modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  width: 400px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.promo-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.promo-modal-message {
+  font-size: 18px;
+  color: #ff6b6b;
+}
+
+.close-promo-modal {
+  background: none;
+  border: none;
+  color: #ff6b6b;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.close-promo-modal:hover {
+  color: #ff3b3b;
+}
+
+.promo-modal-body {
+  margin-top: 20px;
+  font-size: 16px;
+}
+
+.promo-modal-body p {
+  margin: 0;
+  color: #333;
+}
+
+
+
 
 
 

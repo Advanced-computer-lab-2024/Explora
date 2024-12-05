@@ -1,6 +1,9 @@
-// ProductCardTourist.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import Modal from './Modal'; // Import the Modal component
+import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+
+
 
 const ProductCardTourist = ({ product, products, setProducts }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -10,6 +13,45 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
+
+    // Function to handle adding a product to the cart
+    const handleAddToCart = async () => {
+        try {
+            const cartItem = {
+                productId: product._id,
+                name: product.name,
+                price: product.price,
+                quantity: 1, // Default quantity
+            };
+
+            const response = await axios.post(`http://localhost:4000/Cart/addToCart`, cartItem);
+            console.log('Add to cart response:', response.data);
+
+            setMessage('Product added to cart successfully!');
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            setMessage('Error adding product to cart: ' + error.message);
+        }
+    };
+
+
+    const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
+    const [showModal, setShowModal] = useState(false); // State for modal visibility
+
+
+
+    // Handle wishlist toggle
+    const handleWishlistToggle = () => {
+        setIsInWishlist(!isInWishlist);
+        setShowModal(true); // Show the modal when the heart is clicked
+
+    };
+
+    const closeModal = () => {
+        setShowModal(false); // Close the modal
+    };
+
+
 
     // Handle the edit button click
     const handleEditClick = () => {
@@ -86,8 +128,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             const reviewData = {
                 user: '672404b5711f4330c4103753', // Replace with logged-in user's info if available
                 comment: userReview,
-                // Optionally include a rating if your UI allows it
-                // rating: userRatingForReview
             };
 
             const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
@@ -181,6 +221,11 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             <p className="product-seller">Seller: {product.seller}</p>
             <p className="product-reviews">{product.reviews.length} reviews</p>
 
+            {/* Add to Cart Button */}
+            <button onClick={handleAddToCart} className="add-to-cart-btn">
+                Add to Cart
+            </button>
+
             {/* Rating input for the user */}
             <div className="user-rating">
                 <p>Rate this product:</p>
@@ -198,6 +243,25 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             <button onClick={handleReviewSubmit}>Submit Review</button>
 
             {message && <p className="message">{message}</p>}
+
+            {/* Wishlist Icon */}
+            <div className="wishlist-icon" onClick={handleWishlistToggle}>
+                <i className={isInWishlist ? "fa-solid fa-heart" : "fa-regular fa-heart"}></i>
+            </div>
+            {showModal && (
+                <Modal onClose={closeModal}>
+                    <h2>Added to Wishlist</h2>
+                    <img src={product.image} alt={product.name} className="modal-product-image" />
+                    <p className="modal-product-title">{product.name}</p>
+                    <p className="modal-product-price">${product.price.toFixed(2)}</p>
+                    <button className="modal-close-button" onClick={closeModal}>
+                        Close
+                    </button>
+                </Modal>
+                   )}
+
+
+          
 
             {/* Display all reviews */}
             <div className="product-reviews">
@@ -219,3 +283,5 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
 };
 
 export default ProductCardTourist;
+
+

@@ -96,6 +96,13 @@ import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdve
 import Success from './pages/success.jsx';
 import Fail from './pages/fail.jsx';
 import Home from './pages/Home.jsx';
+import Wishlist from './components/Wishlist';
+import PromoCodeComponent from './components/PromoCodeComponent.jsx';
+import SalesReport from "./components/SalesReport"; // Adjust path based on your file structureimport ViewCartTourist from './components/ViewCartTourist';
+import Checkout from './components/Checkout'; // Create a new checkout component
+import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
+import VacationGuide from "./components/VacationGuide";
+import ViewCartTourist from "./components/ViewCartTourist.jsx"
 
 
 function App() {
@@ -194,8 +201,16 @@ function App() {
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
         <Route path="/success" element={<Success/>} />
         <Route path="/fail" element={<Fail />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/promo-code" element={<PromoCodeComponent />} />
+        <Route path="/sales-report" element={<SalesReport />} />
 
 
+
+        <Route path="/view-cart" element={<ViewCartTourist />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
+        <Route path="/vacation-guide" element={<VacationGuide />} />
         </Routes>
       </Router>
     </main>
