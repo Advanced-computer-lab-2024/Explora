@@ -60,6 +60,10 @@ const productSchema = new Schema({
     sales: {
         type: Number,
         default: 0
+    },
+    stripePriceId : {
+        type: String,
+        required: false
     }
 
 },

@@ -93,8 +93,9 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
-
-
+import Success from './pages/success.jsx';
+import Fail from './pages/fail.jsx';
+import Home from './pages/Home.jsx';
 
 
 function App() {
@@ -105,7 +106,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<Test />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<Home />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
@@ -191,7 +192,8 @@ function App() {
         <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
         <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
-
+        <Route path="/success" element={<Success/>} />
+        <Route path="/fail" element={<Fail />} />
 
 
         </Routes>

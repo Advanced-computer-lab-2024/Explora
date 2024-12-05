@@ -33,7 +33,7 @@ const touristSchema = new mongoose.Schema(
     },
     wallet: {
       type: Number,
-      default: 0, // Optional: Initialize wallet with a default value
+      default: 0, 
     },
     loyaltyPoints: {
       type: Number,

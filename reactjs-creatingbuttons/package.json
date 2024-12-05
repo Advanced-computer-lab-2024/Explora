@@ -21,6 +21,7 @@
     "@nivo/geo": "^0.87.0",
     "@nivo/pie": "^0.87.0",
     "@react-google-maps/api": "^2.19.3",
+    "@stripe/stripe-js": "^5.2.0",
     "axios": "^1.7.7",
     "cors": "^2.8.5",
     "express-session": "^1.18.0",
