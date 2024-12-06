@@ -11,21 +11,38 @@ const UpcomingItineraries = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
+    // Fetch upcoming itineraries
     fetch('http://localhost:4000/api/tour_guide_itinerary/upcoming')
       .then(response => response.json())
       .then(data => {
-        // Format the date if available
         const formattedData = data.map((itin) => {
-          const formattedDate = itin.availableDates ? new Date(itin.availableDates).toLocaleDateString('en-US', { 
-            year: 'numeric', month: 'long', day: 'numeric' 
-          }) : 'No Date Available';
+          const formattedDate = itin.availableDates
+            ? new Date(itin.availableDates).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })
+            : 'No Date Available';
           return { ...itin, date: formattedDate };
         });
         setItins(formattedData);
       })
-      .catch(error => console.error('Error fetching data:', error));
+      .catch(error => console.error('Error fetching itineraries:', error));
+  
+    // Fetch user loyalty points
+    fetch(`http://localhost:4000/users/loyalty-points/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the token for authentication
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        setLoyaltyPoints(data.loyaltyPoints || 0); // Set loyalty points or default to 0
+        setBadgeLevel(getBadgeLevel(data.loyaltyPoints || 0)); // Set badge level
+      })
+      .catch(error => console.error('Error fetching loyalty points:', error));
   }, []);
-
+  
   const handleBookTicket = (itin) => {
     const numberOfTickets = 1; // Assume 1 ticket for simplicity
   
@@ -47,6 +64,7 @@ const UpcomingItineraries = () => {
   
       // Update the loyalty points and badge level based on the response
       if (data.booking && data.sale) {
+        setBookedTickets((prev) => [...prev, itin._id]); 
         const pointsToAdd = data.loyaltyPoints; // Use the loyaltyPoints returned from the backend
         
         // Ensure that pointsToAdd is a valid number before updating
@@ -99,7 +117,7 @@ const UpcomingItineraries = () => {
     // Check if the cancellation can happen based on the 48-hour rule
     if (hoursDifference >= 48) {
       setBookedTickets((prev) => prev.filter(ticketId => ticketId !== itin._id));
-      alert(`Your booking for "${itin.name}" has been canceled.`);
+      alert(`Your booking for "${itin.locations}" has been canceled.`);
     } else {
       alert('You can not cancel your booking less than 48 hours before the event starts.');
     }
@@ -119,46 +137,49 @@ const UpcomingItineraries = () => {
   };
 
   return (
-    <div className="UpcomingItineraries">
-      <h1 className="header">Upcoming Itineraries</h1>
-      <div className="activities-list">
-        {itins.map((itin) => (
-          <div key={itin._id} className="activity-card">
-            <h2 className="activity-name">{itin.locations}</h2>
-            <p className="activity-rating">TourGuide: {itin.tourGuideName}</p>
-            <p className="activity-date">Date: {itin.availableDates}</p>
-            <p className="activity-price">Price: {itin.price}$</p>
-            <p className="activity-rating">language: {itin.language}</p>
+<div className="UpcomingItineraries">
+  <h1 className="header">Upcoming Itineraries</h1>
+  <div className="activities-list">
+    {itins.map((itin) => (
+      <div key={itin._id} className="activity-card">
+        <h2 className="activity-name">{itin.locations}</h2>
+        <p className="activity-rating">Tour Guide: {itin.tourGuideName}</p>
+        <p className="activity-date">Date: {itin.date}</p>
+        <p className="activity-price">Price: {itin.price}$</p>
+        <p className="activity-language">Language: {itin.language}</p>
+        <p className="activity-timeline">Timeline: {itin.timeline}</p>
+        <p className="activity-pickup">Pickup Location: {itin.pickupLocation}</p>
+        <p className="activity-dropoff">Dropoff Location: {itin.dropoffLocation}</p>
 
-            <div className="share-buttons">
-              <button onClick={() => shareLink(itin)}>Share Link</button>
-              <button onClick={() => shareEmail(itin)}>Share via Email</button>
-              {bookedTickets.includes(itin._id) ? (
-                <button disabled>Ticket Already Booked</button>
-              ) : (
-                <button onClick={() => handleBookTicket(itin)}>Book Ticket</button>
-              )}
-              {bookedTickets.includes(itin._id) && (
-                <button onClick={() => handleCancelBooking(itin)}>Cancel Booking</button>
-              )}
+        <div className="share-buttons">
+          <button onClick={() => shareLink(itin)}>Share Link</button>
+          <button onClick={() => shareEmail(itin)}>Share via Email</button>
+          {bookedTickets.includes(itin._id) ? (
+            <button disabled>Ticket Already Booked</button>
+          ) : (
+            <button onClick={() => handleBookTicket(itin)}>Book Ticket</button>
+          )}
             </div>
-          </div>
-        ))}
+          {bookedTickets.includes(itin._id) && (
+            <button onClick={() => handleCancelBooking(itin)}>Cancel Booking</button>
+          )}
       </div>
-      <div className="points-container">
-        <div className="loyalty-points">
-          Loyalty Points: {loyaltyPoints} 
-          {badgeLevel && <span className="badge">{badgeLevel}</span>}
-        </div>
-        <div className="cash-balance">
-          Cash Balance: {cashBalance} EGP
-        </div>
-      </div>
-      <button className="redeem-button" onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
-        Redeem 10,000 Points for 100 EGP
-      </button>
-      {message && <p className="message">{message}</p>}
+    ))}
+  </div>
+  <div className="points-container">
+    <div className="loyalty-points">
+      Loyalty Points: {loyaltyPoints}
+      {badgeLevel && <span className="badge">{badgeLevel}</span>}
     </div>
+    <div className="cash-balance">
+      Cash Balance: {cashBalance} EGP
+    </div>
+  </div>
+  <button className="redeem-button" onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
+    Redeem 10,000 Points for 100 EGP
+  </button>
+  {message && <p className="message">{message}</p>}
+</div>
   );
 };
 

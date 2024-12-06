@@ -371,38 +371,11 @@ const changePassword = async (req, res) => {
   }
 };
 
-// Controller method to update loyalty points
-const updateLoyaltyPoints = async (req, res) => {
-    const { points } = req.body;  // Points to add or subtract
-    const { userId } = req.query; // Extract userId from the URL parameter
-
-    try {
-        const user = await User.findById(userId); // Find the user by ID
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });  // If user doesn't exist, return error
-        }
-
-        // Call method to update loyalty points
-        await user.updateLoyaltyPoints(points);
-
-        // Return the updated loyalty points and level
-        res.status(200).json({
-            message: 'Loyalty points updated successfully',
-            loyaltyPoints: user.loyaltyPoints,
-            loyaltyLevel: user.loyaltyLevel
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
-    }
-};
-
 // Additional user controller functions can be defined here...
 
 module.exports = {
     registerUser,
     viewUsers,
-    updateLoyaltyPoints,
     getUserid,
     getRoleByUsername,
     downloadIDFile,

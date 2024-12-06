@@ -25,7 +25,23 @@ const ItinerarySearchPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        setItineraries(dummyItineraries);
+        const fetchitineraries = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/upcoming');
+                const itineraries = response.data.map(itinerary => ({
+                    id: itinerary._id,
+                    name: itinerary.locations,
+                    date: itinerary.date,
+                    price: itinerary.price,
+                    tags: itinerary.tags.map(tag => tag.tag),
+                }));
+                setItineraries(itineraries);
+            } catch (err) {
+                setError('Failed to fetch itineraries');
+            }
+        };
+
+        fetchitineraries();
     }, []);
 
     useEffect(() => {
@@ -180,17 +196,21 @@ const ItinerarySearchPage = () => {
             </div>
 
             <div style={styles.resultsContainer}>
-                <h3>Upcoming Itineraries:</h3>
+                <h3>Available Itineraries:</h3>
                 <ul style={styles.resultsList}>
-                    {sortedItineraries.map((itinerary) => (
-                        <li key={itinerary.id} style={styles.resultItem}>
-                            <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
-                                {itinerary.name} - {selectedCurrency} {convertPrice(itinerary.budget).toFixed(2)} (Rating: {itinerary.rating}) - Date: {itinerary.date}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+                {sortedItineraries.map((itinerary) => (
+    <li key={itinerary.id} style={styles.resultItem}>
+        <Link to={`/itineraries/${itinerary.id}`} style={styles.resultLink}>
+            {itinerary.name}
+        </Link>
+        <div style={styles.details}>
+            Category: <span>{itinerary.category}</span> - Price {selectedCurrency} {convertPrice(itinerary.price).toFixed(2)} - Rating: {itinerary.rating}/5 - tags: {itinerary.tags.join(', ')}
+        </div>
+    </li>
+))}
 
+                </ul>
+            </div>
                 {/* View Upcoming Itineraries Button */}
                 <div style={styles.viewButtonContainer}>
                     <Link to="/UpcomingItineraries" style={styles.viewButton}>
@@ -198,7 +218,6 @@ const ItinerarySearchPage = () => {
                     </Link>
                 </div>
             </div>
-        </div>
     );
 };
 
@@ -279,44 +298,5 @@ const styles = {
         }),
     },
 };
-
-const dummyItineraries = [
-    {
-        id: 1,
-        name: 'Historic Cairo Tour',
-        budget: 80,
-        rating: 4.5,
-        date: '2024-12-01',
-        tags: ['historic', 'family'],
-        language: 'English',
-    },
-    {
-        id: 2,
-        name: 'Beach Holiday in Alexandria',
-        budget: 120,
-        rating: 4.7,
-        date: '2024-12-15',
-        tags: ['beach', 'shopping'],
-        language: 'Arabic',
-    },
-    {
-        id: 3,
-        name: 'Luxor Adventure',
-        budget: 100,
-        rating: 4.3,
-        date: '2024-11-30',
-        tags: ['historic', 'shopping'],
-        language: 'English',
-    },
-    {
-        id: 4,
-        name: 'Family Tour in Giza',
-        budget: 90,
-        rating: 4.6,
-        date: '2024-12-05',
-        tags: ['family', 'historic'],
-        language: 'Arabic',
-    },
-];
 
 export default ItinerarySearchPage;
