@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import './test.css'; // Import your CSS file here
 import Register from '../Register/Register.jsx'; // Adjust path if necessary
-import Login from '../Login/Login.jsx'; // Adjust path if necessary
-import TestLogin from '../../components/testLogin.jsx'
+import TestLogin from '../../components/testLogin.jsx'; // Adjust path if necessary
+
 const Test = () => {
     const [isSignUp, setIsSignUp] = useState(true); // State to track the form
 
@@ -16,27 +16,41 @@ const Test = () => {
     console.log('isSignUp:', isSignUp); // Log current state
 
     return (
-        <div className={`container ${isSignUp ? '' : 'active'}`} id="container">
+        <div className={`test-container ${isSignUp ? '' : 'active'}`} id="test-container">
             {isSignUp ? ( // Conditionally render based on state
-                <div className="form-container sign-up">
+                <div className="test-form-container test-sign-up">
                     <Register />
                 </div>
             ) : (
-                <div className="form-container sign-in">
+                <div className="test-form-container test-sign-in">
                     <TestLogin />
                 </div>
             )}
-            <div className="toggle-container">
-                <div className="toggle">
-                    <div className="toggle-panel toggle-left">
+            <div className="test-toggle-container">
+                <div className="test-toggle">
+                    <div className="test-toggle-panel test-toggle-left">
                         <h1>Welcome Back!</h1>
                         <p>Enter your personal details to use all of the site features</p>
-                        <button type="button" onClick={toggleForm} id="login" className='test_button'>Sign up</button>
+                        <button
+                            type="button"
+                            onClick={toggleForm}
+                            id="login"
+                            className="test-button"
+                        >
+                            Sign up
+                        </button>
                     </div>
-                    <div className="toggle-panel toggle-right">
+                    <div className="test-toggle-panel test-toggle-right">
                         <h1>Hello, Friend!</h1>
                         <p>Register with your personal details to use all of the site features</p>
-                        <button type="button" onClick={toggleForm} id="register" className='test_button'>Sign In</button>
+                        <button
+                            type="button"
+                            onClick={toggleForm}
+                            id="register"
+                            className="test-button"
+                        >
+                            Sign In
+                        </button>
                     </div>
                 </div>
             </div>

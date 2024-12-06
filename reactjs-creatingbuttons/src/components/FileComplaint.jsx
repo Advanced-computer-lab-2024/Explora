@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios'; // Make sure axios is imported
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 
 const FileComplaint = () => {
   const [complaint, setComplaint] = useState({
@@ -41,12 +43,15 @@ const FileComplaint = () => {
   };
 
   return (
-    <div className="file-complaint-container">
-      <div className="complaint-card">
-        <h2>File a Complaint</h2>
+    <div style={containerStyle}>
+      <div style={headerStyle}>
+        <FontAwesomeIcon icon={faCircleExclamation} size="lg" style={{ marginRight: '10px', color: '#008080' }} />
+        <h2 style={titleStyle}>File a Complaint</h2>
+      </div>
+      <div style={formCardStyle}>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Title:</label>
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Title:</label>
             <input
               type="text"
               name="title"
@@ -54,10 +59,11 @@ const FileComplaint = () => {
               onChange={handleChange}
               placeholder="Enter complaint title"
               required
+              style={inputStyle}
             />
           </div>
-          <div className="form-group">
-            <label>Problem:</label>
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Problem:</label>
             <textarea
               name="body"
               value={complaint.body}
@@ -65,24 +71,105 @@ const FileComplaint = () => {
               placeholder="Describe your issue"
               rows="4"
               required
+              style={textareaStyle}
             />
           </div>
-          <div className="form-group">
-            <label>Date:</label>
+          <div style={formGroupStyle}>
+            <label style={labelStyle}>Date:</label>
             <input
               type="date"
               name="date"
               value={complaint.date}
               onChange={handleChange}
               required
+              style={inputStyle}
             />
           </div>
-          <button type="submit" className="submit-button">Submit Complaint</button>
+          <button type="submit" style={buttonStyle}>Submit Complaint</button>
         </form>
-        {message && <p className="feedback-message">{message}</p>}
+        {message && <p style={feedbackMessageStyle}>{message}</p>}
       </div>
     </div>
   );
+};
+
+const containerStyle = {
+  padding: '20px',
+  maxWidth: '600px',
+  margin: 'auto',
+  backgroundColor: '#f8f9fa',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+};
+
+const headerStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  marginBottom: '30px',
+  textAlign: 'center',
+  fontSize: '24px',
+  fontWeight: 'bold',
+  color: '#333',
+};
+
+const titleStyle = {
+  margin: 0,
+  color: '#333',
+};
+
+const formCardStyle = {
+  backgroundColor: '#fff',
+  padding: '30px',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+};
+
+const formGroupStyle = {
+  marginBottom: '20px',
+};
+
+const labelStyle = {
+  fontSize: '16px',
+  fontWeight: 'bold',
+  color: '#333',
+  display: 'block',
+  marginBottom: '5px',
+};
+
+const inputStyle = {
+  width: '100%',
+  padding: '12px',
+  fontSize: '16px',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+  marginBottom: '10px',
+};
+
+const textareaStyle = {
+  width: '100%',
+  padding: '12px',
+  fontSize: '16px',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+};
+
+const buttonStyle = {
+  padding: '12px 20px',
+  fontSize: '16px',
+  color: 'white',
+  border: 'none',
+  borderRadius: '5px',
+  backgroundColor: '#008080', // Teal color for button
+  cursor: 'pointer',
+  transition: 'background-color 0.3s ease',
+  width: '100%',
+};
+
+const feedbackMessageStyle = {
+  marginTop: '20px',
+  fontSize: '16px',
+  color: '#008080', // Teal color for feedback
+  textAlign: 'center',
 };
 
 export default FileComplaint;

@@ -264,3 +264,357 @@
     background-color: #004d4d; /* Darker teal on hover */
   }
   
+  .welcome-section {
+    display: flex;
+    align-items: center;
+    margin: 50px;
+  }
+  
+  .welcome-image img {
+    width: 50%;
+    height: auto;
+    border-radius: 10px;
+  }
+  
+  .welcome-text {
+    margin-left: 20px;
+    flex: 1;
+  }
+  
+  .welcome-text h2 {
+    font-size: 2rem;
+    color: #333;
+  }
+  
+  .welcome-text .highlight {
+    color: #008080; /* Match your theme color */
+  }
+  
+  .features-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .features-list li {
+    margin: 10px 0;
+    font-size: 1rem;
+    color: #666;
+  }
+  
+  .features-list .icon {
+    margin-right: 10px;
+    color: #008080; /* Icon color */
+  }
+
+  .about-us-text {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #008080; /* A green color to match the theme */
+    margin: 20px 0; /* Adds spacing above and below */
+  }
+  
+  .non-clickable-buttons-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 20px;
+  }
+  
+  .non-clickable-button {
+    display: flex;
+    align-items: center;
+    background-color: #007bff; /* Button color */
+    color: #fff; /* Text color */
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: default; /* Prevent click behavior */
+    opacity: 0.8;
+  }
+  
+  .custom-button-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three buttons per row */
+    gap: 30px; /* Spacing between buttons */
+    margin-top: 40px;
+    padding: 20px;
+    justify-content: center; /* Centers the grid horizontally */
+    justify-items: center; /* Centers each button in its grid cell */
+  }
+  
+  
+  .custom-button-container button {
+    width: 100%; /* Ensure buttons take full space of their grid cell */
+    box-sizing: border-box; /* Include padding and border in size calculations */
+  }
+  
+  
+  
+  
+  .custom-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 200px;
+    height: 150px;
+    background-color: #f8f9fa; /* Light background */
+    color: #000; /* Text color */
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: default;
+    transition: all 0.3s ease;
+  }
+  
+  .custom-button .custom-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #28a745; /* Green icon */
+  }
+  
+  .custom-button:hover {
+    background-color: #008080; /* Green background on hover */
+    color: #fff; /* White text on hover */
+    transform: translateY(-5px); /* Slight lift effect */
+    transition: all 0.3s ease;
+  }
+  
+  .custom-button:hover .custom-icon {
+    color: #fff; /* White icon on hover */
+  }
+  
+  /* Popular Destinations Section */
+.popular-destinations {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.popular-destinations h2 {
+  font-size: 2.5rem;
+  color: #008080; /* Match your theme */
+  margin-bottom: 30px;
+}
+
+.destinations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.destination-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.destination-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease-in-out;
+}
+
+.destination-item:hover img {
+  transform: scale(1.1); /* Add a zoom effect on hover */
+}
+
+.destination-item:hover {
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.destination-label {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1rem;
+  padding: 5px 10px;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+/* Easy Steps Section */
+.easy-steps {
+  padding: 50px 20px;
+  text-align: center;
+  background-color: #fff;
+}
+
+.steps-title {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #222;
+}
+
+.steps-highlight {
+  color: #008080; /* Green color for the highlight */
+  font-weight: bold;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.step-item {
+  flex: 1;
+  max-width: 300px;
+  text-align: center;
+  background: #fff;
+  border: 2px solid #008080; /* Green border */
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-item:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.step-icon {
+  font-size: 40px;
+  color: #008080;
+  margin-bottom: 15px;
+}
+
+.step-icon i {
+  display: inline-block;
+}
+
+.step-item h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 10px 0;
+}
+
+.step-item p {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+
+/* White banner container with absolute positioning */
+.banner-container {
+  position: absolute;
+  top: 0; /* Position at the top of the image */
+  left: 0;
+  width: 100%;
+  background-color: #008080;
+  color: black; /* Text color */
+  padding: 10px;
+  text-align: center; /* Center the text */
+  font-size: 18px; /* Adjust font size as needed */
+  font-weight: bold; /* Make the text bold */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Adds shadow below the banner */
+  z-index: 10; /* Ensures the banner stays on top of other content */
+}
+
+/* Header Styling */
+.site-header {
+  display: flex;
+  justify-content: space-between; /* Space between logo and navigation */
+  align-items: center;
+  position: absolute; /* Position on top of the background image */
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 40px; /* Add spacing around the content */
+  z-index: 100; /* Ensure it appears above the content */
+  background: transparent; /* No background */
+}
+
+.header-content {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo (Explora Title) */
+.logo h1 {
+  font-size: 3rem; /* Adjust font size as needed */
+  font-weight: bold;
+  color: white; /* White text color */
+  text-align: center;
+  margin: 0; /* Remove default margin */
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.navigation ul {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start; /* Align other links to the left */
+  gap: 20px;
+}
+
+.navigation li {
+  list-style: none;
+}
+
+.navigation .logout {
+  margin-left: auto; /* Push the "Log Out" to the right */
+  padding-left: 20px;
+}
+
+.navigation a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.navigation a:hover {
+  text-decoration: underline;
+}
+
+
+/* Center Explora Title Like Tourist Title */
+.background-image .logo {
+  position: absolute; /* Place the logo on the image */
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Adjust for exact centering */
+  text-align: center;
+  z-index: 10; /* Ensure it appears above the image */
+}
+
+.logout {
+  position: absolute;
+  top: 10px; /* Distance from the top of the photo */
+  right: -500px; /* Adjust this value to move it further to the right */
+  background-color: transparent; /* No background color */
+  padding: 5px 10px; /* Optional: add padding for styling */
+  border-radius: 5px; /* Optional: round the edges */
+}
+
+.logout a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+}
+
+.logout a:hover {
+  text-decoration: underline;
+}

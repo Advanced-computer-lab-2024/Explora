@@ -144,6 +144,7 @@ p {
 }
 
 .product-card {
+  position: relative; /* Makes it the reference for absolutely positioned elements */
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 15px;
@@ -176,7 +177,7 @@ p {
 .product-ratings,
 .product-reviews {
   font-size: 12px;
-  color: #888;
+  color: #000;
 }
 
 .search-input {
@@ -359,7 +360,7 @@ p {
 
 .share-buttons button {
   padding: 8px 12px;
-  background-color: #000000; /* Blue background */
+  background-color: #008080; /* Blue background */
   color: white; /* White text */
   border: none; /* No border */
   border-radius: 5px; /* Rounded corners */
@@ -581,7 +582,7 @@ p {
 .comment-submit {
   margin-top: 5px;
   padding: 10px 15px;
-  background-color: #007bff; /* Primary button color */
+  background-color: #008080; /* Primary button color */
   color: white;
   border: none;
   border-radius: 5px;
@@ -1204,23 +1205,18 @@ label {
 }
 
 .wishlist-icon {
-  background-color: transparent;
-  color: black;
-  border: none;
-  width: auto;
-  height: auto;
-  font-size: 20px;
+  position: absolute; /* Absolute positioning relative to .product-card */
+  top: 10px; /* 10px from the top */
+  right: 10px; /* 10px from the right */
+  font-size: 1.5rem; /* Icon size */
   cursor: pointer;
-  padding: 0;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  color: #f00; /* You can change the color based on your design */
 }
 
-.wishlist-icon:hover {
-  color: darkred;
+/* Additional optional styles for the wishlist icon */
+.wishlist-icon i {
+  color: #f00; /* Change color for the filled heart */
 }
-
 
   
 .valid-till,
@@ -1437,6 +1433,109 @@ form label {
 .promo-modal-body p {
   margin: 0;
   color: #333;
+}
+
+/* Container styling */
+.booked-transportations-container {
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  background-color: #f9f9f9;
+  max-width: 1200px;
+  margin: 0 auto; /* Centers the container on the page */
+}
+
+/* Title styling */
+.booked-transportations-title {
+  text-align: center;
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Grid layout for the cards */
+.booked-transportations-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Up to 3 cards in a row */
+  gap: 20px; /* Spacing between cards */
+}
+
+/* Individual card styling */
+.booked-transportations-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect for cards */
+.booked-transportations-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Icon container (circle with bus icon) */
+.booked-transportations-icon-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto; /* Centers the icon */
+}
+
+.booked-transportations-icon {
+  font-size: 28px;
+  color: #ff8800;
+}
+
+/* Card details (From, To, Date, Price) */
+.booked-transportations-details {
+  text-align: center; /* Center text for consistency */
+}
+
+.booked-transportations-details h2 {
+  font-size: 18px;
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.booked-transportations-details p {
+  margin: 8px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 600px) {
+  .booked-transportations-card {
+    padding: 15px;
+  }
+
+  .booked-transportations-icon {
+    font-size: 24px;
+  }
+
+  .booked-transportations-details h2 {
+    font-size: 16px;
+  }
+}
+
+
+
+.activity-image {
+  width: 75px; /* Set to a smaller size */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: 10px; /* Space below the image */
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 

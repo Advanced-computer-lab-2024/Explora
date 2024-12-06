@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
 import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import ProductModal from './ProductModal'; // New Product Modal
 
 
 
@@ -13,27 +14,30 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
+    const [cartQuantity, setCartQuantity] = useState(0); // Quantity in the cart
+    const [showProductModal, setShowProductModal] = useState(false); // Product modal visibility
 
-    // Function to handle adding a product to the cart
-    const handleAddToCart = async () => {
-        try {
-            const cartItem = {
-                productId: product._id,
-                name: product.name,
-                price: product.price,
-                quantity: 1, // Default quantity
-            };
 
-            const response = await axios.post(`http://localhost:4000/Cart/addToCart`, cartItem);
-            console.log('Add to cart response:', response.data);
 
-            setMessage('Product added to cart successfully!');
-        } catch (error) {
-            console.error('Error adding product to cart:', error);
-            setMessage('Error adding product to cart: ' + error.message);
-        }
+    // Handle adding to cart
+    const handleAddToCart = () => {
+        setCartQuantity(1);
+        setMessage('Product added to cart successfully!');
     };
 
+    // Increment cart quantity
+    const incrementQuantity = () => {
+        setCartQuantity(cartQuantity + 1);
+    };
+
+    // Decrement cart quantity
+    const decrementQuantity = () => {
+        if (cartQuantity > 1) {
+            setCartQuantity(cartQuantity - 1);
+        } else if (cartQuantity === 1) {
+            setCartQuantity(0); // Remove from cart if quantity reaches 0
+        }
+    };
 
     const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
     const [showModal, setShowModal] = useState(false); // State for modal visibility
@@ -178,107 +182,168 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         return stars;
     };
 
+    const handleViewDetails = () => {
+        alert(`Viewing details for ${product.name}`);
+    };
+
+    const closeProductModal = () => {
+        setShowProductModal(false);
+    };
+
     return (
         <div className="product-card">
-            <img src={product.image} alt={product.name} className="product-image" />
+            <div 
+        className="wishlist-icon" 
+        onClick={handleWishlistToggle} 
+        style={{ position: 'absolute', left: '75%' }} // Adjust left to move the heart
+    >
+        <i className={isInWishlist ? "fa-solid fa-heart" : "fa-regular fa-heart"}></i>
+    </div>
+    <img src={product.image} alt={product.name} className="product-image" />
 
-            {isEditing ? (
-                <>
-                    <input
-                        type="text"
-                        value={editedName}
-                        onChange={(e) => setEditedName(e.target.value)}
-                        className="edit-input"
-                        placeholder="Edit name"
-                    />
-                    <input
-                        type="text"
-                        value={editedDescription}
-                        onChange={(e) => setEditedDescription(e.target.value)}
-                        className="edit-input"
-                        placeholder="Edit description"
-                    />
-                    <input
-                        type="number"
-                        value={editedPrice}
-                        onChange={(e) => setEditedPrice(Number(e.target.value))}
-                        className="edit-input"
-                        placeholder="Edit price"
-                    />
-                    <button onClick={updateProduct}>Save</button>
-                </>
-            ) : (
-                <>
-                    <h2 className="product-title">{editedName}</h2>
-                    <p className="product-description">{editedDescription}</p>
-                    <p className="product-price">${editedPrice.toFixed(2)}</p>
-                    <p className="product-ratings">
-                        Average Rating: {renderStars(product.averageRating)}
-                    </p>
-                </>
-            )}
+    {isEditing ? (
+        <>
+            <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="edit-input"
+                placeholder="Edit name"
+            />
+            <input
+                type="text"
+                value={editedDescription}
+                onChange={(e) => setEditedDescription(e.target.value)}
+                className="edit-input"
+                placeholder="Edit description"
+            />
+            <input
+                type="number"
+                value={editedPrice}
+                onChange={(e) => setEditedPrice(Number(e.target.value))}
+                className="edit-input"
+                placeholder="Edit price"
+            />
+            <button onClick={updateProduct}>Save</button>
+        </>
+    ) : (
+        <>
+            <h2 className="product-title">{editedName}</h2>
+            <p className="product-description">{editedDescription}</p>
+            <p className="product-price">${editedPrice.toFixed(2)}</p>
+            <p className="product-ratings">
+                Average Rating: {renderStars(product.averageRating)}
+            </p>
+        </>
+    )}
 
-            <p className="product-seller">Seller: {product.seller}</p>
-            <p className="product-reviews">{product.reviews.length} reviews</p>
+    <p className="product-seller">Seller: {product.seller}</p>
+    <p className="product-seller">Number of Reviews: {product.reviews.length}</p>
 
-            {/* Add to Cart Button */}
-            <button onClick={handleAddToCart} className="add-to-cart-btn">
-                Add to Cart
+
+    {/* Add to Cart Button */}
+    {cartQuantity === 0 ? (
+                <button
+                    onClick={handleAddToCart}
+                    style={{
+                        width: '80%',
+                        padding: '10px',
+                        background: '#008080',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '16px',
+                    }}
+                >
+                    Add to Cart
+                </button>
+                ) : (
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '10px',
+                            marginTop: '10px',
+                        }}
+                    >
+                        <button
+                            onClick={decrementQuantity}
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                background: '#ff4c4c',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '50%',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            -
+                        </button>
+                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{cartQuantity}</span>
+                        <button
+                            onClick={incrementQuantity}
+                            style={{
+                                width: '30px',
+                                height: '30px',
+                                background: '#4caf50',
+                                color: '#fff',
+                                border: 'none',
+                                borderRadius: '50%',
+                                cursor: 'pointer',
+                                fontWeight: 'bold',
+                            }}
+                        >
+                            +
+                        </button>
+                    </div>
+                )}
+
+                {/* View Details Button */}
+            <button
+                onClick={handleViewDetails}
+                style={{
+                    width: '80%',
+                    padding: '10px',
+                    marginTop: '10px',
+                    background: '#008080',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '5px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold',
+                    fontSize: '16px',
+                }}
+            >
+                View Details
             </button>
 
-            {/* Rating input for the user */}
-            <div className="user-rating">
-                <p>Rate this product:</p>
-                {renderUserRating()}
-                <button onClick={handleRatingSubmit}>Submit Rating</button>
-            </div>
+    {/* Wishlist Icon */}
+    
 
-            {/* Review input for the user */}
-            <textarea
-                value={userReview}
-                onChange={(e) => setUserReview(e.target.value)}
-                placeholder="Write your review here..."
-                rows="3"
-            />
-            <button onClick={handleReviewSubmit}>Submit Review</button>
+    {showModal && (
+        <Modal onClose={closeModal}>
+            <h2>Added to Wishlist</h2>
+            <img src={product.image} alt={product.name} className="modal-product-image" />
+            <p className="modal-product-title">{product.name}</p>
+            <p className="modal-product-price">${product.price.toFixed(2)}</p>
+            <button className="modal-close-button" onClick={closeModal}>
+                Close
+            </button>
+        </Modal>
+    )}
 
-            {message && <p className="message">{message}</p>}
+    {message && <p className="message">{message}</p>}
+    {/* Product Modal */}
+    {showProductModal && (
+                <ProductModal product={product} onClose={closeProductModal} />
+            )}
+</div>
 
-            {/* Wishlist Icon */}
-            <div className="wishlist-icon" onClick={handleWishlistToggle}>
-                <i className={isInWishlist ? "fa-solid fa-heart" : "fa-regular fa-heart"}></i>
-            </div>
-            {showModal && (
-                <Modal onClose={closeModal}>
-                    <h2>Added to Wishlist</h2>
-                    <img src={product.image} alt={product.name} className="modal-product-image" />
-                    <p className="modal-product-title">{product.name}</p>
-                    <p className="modal-product-price">${product.price.toFixed(2)}</p>
-                    <button className="modal-close-button" onClick={closeModal}>
-                        Close
-                    </button>
-                </Modal>
-                   )}
-
-
-          
-
-            {/* Display all reviews */}
-            <div className="product-reviews">
-                <h3>Reviews:</h3>
-                {product.reviews.length === 0 ? (
-                    <p>No reviews yet.</p>
-                ) : (
-                    product.reviews.map(review => (
-                        <div key={review._id} className="review">
-                            <p><strong>{review.user ? review.user : 'Anonymous'}</strong></p>
-                            <p>{review.comment}</p>
-                            <p>Rating: {renderStars(review.rating)}</p>
-                        </div>
-                    ))
-                )}
-            </div>
-        </div>
     );
 };
 

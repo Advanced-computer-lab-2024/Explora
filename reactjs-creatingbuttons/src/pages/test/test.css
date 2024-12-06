@@ -1,3 +1,5 @@
+/* Add unique prefix "test-" to all classes */
+
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 * {
@@ -6,25 +8,29 @@
     box-sizing: border-box;
     font-family: 'Montserrat', sans-serif;
 }
+
+/* Responsive design */
 @media (max-width: 768px) {
-    .container {
-        width: 100%; /* Full width on smaller screens */
-        min-height: auto; /* Remove fixed height */
-        padding: 10px; /* Adjust padding */
+    .test-container {
+        width: 100%;
+        min-height: auto;
+        padding: 10px;
     }
 }
 
-.container body {
-    background-color: #c9d6ff;
-    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
+/* Body Background */
+.test-container body {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    height: 100vh;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+    background-color: #c9d6ff;
+    background: linear-gradient(to right, #e2e2e2, #c9d6ff);
 }
 
-.container {
+/* Main Container */
+.test-container {
     background-color: #fff;
     border-radius: 30px;
     position: relative;
@@ -35,27 +41,33 @@
     min-height: 650px; 
     max-height: 80vh; 
     padding: 20px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto; /* Center horizontally */
 }
-.container p {
+
+.test-container p {
     font-size: 14px;
     line-height: 20px;
     letter-spacing: 0.3px;
     margin: 20px 0;
 }
 
-.container span {
+.test-container span {
     font-size: 12px;
 }
 
-.container a {
+.test-container a {
     color: #333;
     font-size: 13px;
     text-decoration: none;
     margin: 15px 0 10px;
 }
 
-.test_button {
-    background-color: #05668D;
+/* Button Styling */
+.test-button {
+    background-color: #0797C4;
     color: #fff;
     font-size: 12px;
     padding: 10px 45px;
@@ -71,19 +83,19 @@
     align-items: center;
     justify-content: center;
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-
-
-
-    &:active {
-        transform: scale(0.98);
-    }
-    &:hover {
-        background-color: white;
-        color: #05668D;
-    }
 }
 
-.container input {
+.test-button:active {
+    transform: scale(0.98);
+}
+
+.test-button:hover {
+    background-color: white;
+    color: #05668D;
+}
+
+/* Input Styling */
+.test-container input {
     background-color: #eee;
     border: none;
     margin: 8px 0;
@@ -94,37 +106,39 @@
     outline: none;
 }
 
-.form-container {
+/* Form Containers */
+.test-form-container {
     position: absolute;
     top: 0;
     height: 100%;
-    transition: none; /* Disable transitions for testing */
+    transition: none;
 }
 
-.sign-in {
+.test-sign-in {
     left: 0;
     width: 50%;
     z-index: 2;
 }
 
-.container.active .sign-in {
+.test-container.active .test-sign-in {
     transform: translateX(100%);
 }
 
-.sign-up {
+.test-sign-up {
     left: 0;
     width: 50%;
-    opacity: 1; /* Ensure visible */
-    z-index: 5; /* Ensure it is above others */
+    opacity: 1;
+    z-index: 5;
 }
 
-.container.active .sign-up {
-    transform: translateX(0); /* Reset transformation */
-    opacity: 1; /* Ensure it is fully visible */
-    z-index: 5; /* Bring to the front */
+.test-container.active .test-sign-up {
+    transform: translateX(0);
+    opacity: 1;
+    z-index: 5;
 }
 
-.toggle-container {
+/* Toggle Container */
+.test-toggle-container {
     position: absolute;
     top: 0;
     left: 50%;
@@ -136,12 +150,13 @@
     z-index: 1000;
 }
 
-.container.active .toggle-container {
+.test-container.active .test-toggle-container {
     transform: translateX(-100%);
     border-radius: 0 150px 100px 0;
 }
 
-.toggle {
+/* Toggle */
+.test-toggle {
     background-color: #05668D;
     height: 100%;
     background: linear-gradient(to right, #028090, #05668D);
@@ -154,11 +169,12 @@
     transition: all 0.6s ease-in-out;
 }
 
-.container.active .toggle {
+.test-container.active .test-toggle {
     transform: translateX(50%);
 }
 
-.toggle-panel {
+/* Toggle Panels */
+.test-toggle-panel {
     position: absolute;
     width: 50%;
     height: 100%;
@@ -173,19 +189,35 @@
     transition: all 0.6s ease-in-out;
 }
 
-.toggle-left {
+.test-toggle-left {
     transform: translateX(-200%);
 }
 
-.container.active .toggle-left {
+.test-container.active .test-toggle-left {
     transform: translateX(0);
 }
 
-.toggle-right {
+.test-toggle-right {
     right: 0;
     transform: translateX(0);
 }
 
-.container.active .toggle-right {
+.test-container.active .test-toggle-right {
     transform: translateX(200%);
+    color: #fff;
+
 }
+
+/* Specific styles for the "Hello, Friend!" text */
+.test-toggle-panel.test-toggle-right h1,
+.test-toggle-panel.test-toggle-left h1 {
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+.test-toggle-panel.test-toggle-right p,
+.test-toggle-panel.test-toggle-left p {
+    color: white;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+}
+

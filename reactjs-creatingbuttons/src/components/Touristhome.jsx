@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 import './Touristhome.css'; // Import the CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faExclamation, faCircleXmark, faLock, faPlane, faBus, faCity, faBinoculars, faHotel, faCar, faGripLines } from '@fortawesome/free-solid-svg-icons'; // Import the grip lines icon\
+import { faUser, faExclamation, faCircleXmark, faLock, faPlane, faBus, faCity, faBinoculars, faHotel, faCar, faGripLines, faUserMinus} from '@fortawesome/free-solid-svg-icons'; // Import the grip lines icon\
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
 
 
 
@@ -42,14 +43,25 @@ export default function Touristhome() {
     <div className="main-container">
       {/* Background Image */}
       <div className="background-image">
-        <header className="custom-header">
-          <div className="header-left">
-            
-          </div>
-          <div className="header-right">
-          </div>
-        </header>
-      </div>
+      <header className="site-header">
+    <div className="header-content">
+      <nav className="navigation">
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div className="logout">
+    <Link to="/">Log Out</Link>
+  </div>
+  </header>
+  <div className="logo">
+    <h1>Explora</h1>
+  </div>
+</div>
 
       {showPromoModal && <BirthdayPromoModal onClose={handleClosePromoModal} />}
 {/* Services Text Section */}
@@ -106,6 +118,12 @@ export default function Touristhome() {
         <button onClick={handleUseGuideClick}>
   <FontAwesomeIcon icon={faGlobe} />
   User Guide
+</button>
+
+<button
+  onClick={() => navigate('/request-account-deletion')}
+>
+  <FontAwesomeIcon icon={faUserMinus} style={{ marginRight: '8px' }} /> Request Account Deletion
 </button>
 
       </div>
