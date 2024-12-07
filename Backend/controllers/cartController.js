@@ -9,7 +9,7 @@ const getMyCart = async (req, res) => {
 
     try {
         // Fetch the cart for the given tourist
-        const cart = await Cart.findOne({ user: touristId });
+        const cart = await Cart.findOne({ user: touristId }).populate('items.productId');
 
         if (!cart) {
             return res.status(404).json({ message: 'Cart not found' });
@@ -31,6 +31,7 @@ const addToCart = async (req, res) => {
     try {
         const { touristId } = req.params; // Tourist ID from request parameters
         const { productId } = req.body; // Product ID from request body
+        console.log('Received request:', req.body); // Log the incoming request body to see the data sent from the frontend
         const quantity = 1; // Default quantity to add (can be changed if needed)
 
         // Fetch the product to get its price

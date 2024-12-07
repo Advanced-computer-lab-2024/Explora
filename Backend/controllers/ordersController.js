@@ -64,6 +64,7 @@ const checkoutOrder = async (req, res) => {
 
 const processPayment = async (req, res) => {
     const { userId, frontendUrl } = req.body;
+    
   
     try {
       console.log("Received frontend URL:", frontendUrl);
@@ -133,6 +134,7 @@ const processPayment = async (req, res) => {
 
   const checkoutAndPay = async (req, res) => {
     const { userId, addressId, frontendUrl, paymentMethod } = req.body; // Added paymentMethod parameter
+    console.log('Received request:', req.body); // Log the incoming request body to see the data sent from the frontend
 
     try {
         // Validate the required parameters
@@ -221,6 +223,7 @@ const processPayment = async (req, res) => {
         } else if (paymentMethod === 'wallet') {
             // Check if the user has sufficient wallet balance
             if (user.wallet < order.totalPrice) {
+              console.log('Wallet does not have enough money');
                 return res.status(400).json({ message: 'Insufficient wallet balance' });
             }
 

@@ -3,11 +3,11 @@ const Address = require('../models/Address');
 // Create a new address
 
 const createAddress = async (req, res) => {
-    const {user} = req.params; 
+    const {touristId} = req.params; 
     const { street, city, state, zipCode, neighborhood, apartment, building, floor } = req.body;
 
     try {
-        const newAddress = await Address.create({ user, street, city, state, zipCode, zipCode, neighborhood, apartment, building, floor  });
+        const newAddress = await Address.create({ user:touristId, street, city, state, zipCode, zipCode, neighborhood, apartment, building, floor  });
         res.status(201).json(newAddress);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -31,7 +31,8 @@ const getAllAddresses = async (req, res) => {
 
 const deleteAddressById = async (req, res) => {
     try {
-        const address = await Address.findByIdAndDelete(req.params.id);
+        const {addressId} = req.params;
+        const address = await Address.findByIdAndDelete(addressId);
 
         if (!address) return res.status(404).json({ message: 'Address not found' });
 
@@ -45,8 +46,8 @@ const deleteAddressById = async (req, res) => {
 
 const viewAddresses = async (req, res) => {
     try {
-        const {userId} = req.params;
-        const addresses = await Address.find({ user: userId });
+        const {touristId} = req.params;
+        const addresses = await Address.find({ user: touristId });
 
         res.json(addresses);
     } catch (error) {
