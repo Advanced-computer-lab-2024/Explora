@@ -36,6 +36,44 @@ const auth = (req, res, next) => {
   }
 };
 
+//http://localhost:4000/api/tour_guide_itinerary/return
+router.delete('/return', async (req, res) => {
+  const { itineraryId, touristId } = req.body;
+
+  try {
+    const bookedItinerary = await BookedItinerary.findById(itineraryId).populate('tourist');
+
+    if (!bookedItinerary) {
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+
+    if (bookedItinerary.tourist._id.toString() !== touristId) {
+      return res.status(403).json({ message: 'Unauthorized action' });
+    }
+
+    const currentDate = new Date();
+    const firstAvailableDate = new Date(bookedItinerary.availableDates[0]);
+
+    const hoursDifference = (firstAvailableDate - currentDate) / (1000 * 60 * 60);
+
+    if (hoursDifference <= 48) {
+      return res.status(400).json({ message: 'The event is in less than 2 days' });
+    }
+
+    // Add the money back to the tourist's wallet
+    bookedItinerary.tourist.wallet += bookedItinerary.price;
+    await bookedItinerary.tourist.save();
+
+    // Remove the booked itinerary
+    await BookedItinerary.findByIdAndDelete(itineraryId);
+
+    return res.status(200).json({ message: 'Itinerary canceled and money refunded' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error canceling itinerary', error: error.message });
+  }
+});
+
 //http://localhost:4000/api/tour_guide_itinerary/notification/5f9b1b3b7b3b3b3b3b3b3b3b
 router.delete('/notification/:id', async (req, res) => {
   const { id } = req.params;
@@ -587,6 +625,7 @@ router.get('/sortrate', async (req, res) => {
 });
 
 // get all upcoming itineraries
+//http://localhost:4000/api/tour_guide_itinerary/upcoming
 router.get('/upcoming', async (req, res) => {
   try {
     // Get today's date and remove the time component for accurate comparisons

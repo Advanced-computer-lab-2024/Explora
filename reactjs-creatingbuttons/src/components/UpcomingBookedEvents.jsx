@@ -6,16 +6,16 @@ const UpcomingBookedEvents = () => {
   const [upcomingItineraries, setUpcomingItineraries] = useState([]); // Upcoming itineraries
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
-  const [touristId, setTouristId] = useState(localStorage.getItem('userId') ); // Dynamically set from localStorage
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId')); // Dynamically set from localStorage
 
   useEffect(() => {
     const fetchUpcomingEvents = async () => {
-        const touristId = localStorage.getItem("userId");
-        if (!touristId) {
-          setError("User not logged in. Please log in first.");
-          setLoading(false);
-          return;
-        }
+      const touristId = localStorage.getItem("userId");
+      if (!touristId) {
+        setError("User not logged in. Please log in first.");
+        setLoading(false);
+        return;
+      }
       try {
         // Fetch upcoming activities
         const activitiesResponse = await axios.get(
@@ -38,6 +38,33 @@ const UpcomingBookedEvents = () => {
     fetchUpcomingEvents();
   }, []);
 
+  const handleReturnActivity = async (eventType, eventId) => {
+    try {
+      console.log('Sending request to cancel activity:', { activityId: eventId, touristId });
+      const response = await axios.delete('http://localhost:4000/api/activity/cancelActivity', {
+        data: { activityId: eventId, touristId }
+      });
+      alert(response.data.message);
+      setUpcomingActivities(upcomingActivities.filter(activity => activity._id !== eventId));
+    } catch (err) {
+      console.error('Error canceling activity:', err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Failed to return activity');
+    }
+  };
+
+  const handleReturnItin = async (eventType, eventId) => {
+    try {
+      const response = await axios.delete('http://localhost:4000/api/tour_guide_itinerary/return', {
+        data: { itineraryId: eventId, touristId }
+      });
+      alert(response.data.message);
+      // Optionally, refresh the list of itineraries
+      setUpcomingItineraries(upcomingItineraries.filter(itinerary => itinerary._id !== eventId));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to return itinerary');
+    }
+  };
+
   if (loading) return <div>Loading...</div>; // Show loading state
   if (error) return <div>Error: {error}</div>; // Show error state
 
@@ -48,29 +75,35 @@ const UpcomingBookedEvents = () => {
       <div style={styles.splitContainer}>
         {/* Left Column: Activities */}
         <div style={styles.column}>
-          <h2 style={styles.columnTitle}>Upcoming Paid Activities</h2>
-          {upcomingActivities.length > 0 ? (
-            upcomingActivities.map((activity, index) => (
-              <div key={activity.id || index} style={styles.card}>
-                <h3>{activity.name}</h3>
-                <p>
-                  <strong>Date:</strong> {activity.date}
-                </p>
-                <p>
-                  <strong>Location:</strong> {activity.location}
-                </p>
-                <p>
-                  <strong>Price:</strong> {activity.price}
-                </p>
-                <p>
-                  <strong>Rating:</strong> {activity.rating}/10
-                </p>
-              </div>
-            ))
-          ) : (
-            <p>No upcoming activities found.</p>
-          )}
-        </div>
+        <h2 style={styles.columnTitle}>Upcoming Paid Activities</h2>
+        {upcomingActivities.length > 0 ? (
+          upcomingActivities.map((activity, index) => (
+            <div key={activity.id || index} style={styles.card}>
+              <h3>{activity.name}</h3>
+              <p>
+                <strong>Date:</strong> {activity.date}
+              </p>
+              <p>
+                <strong>Location:</strong> {activity.location}
+              </p>
+              <p>
+                <strong>Price:</strong> {activity.price}
+              </p>
+              <p>
+                <strong>Rating:</strong> {activity.rating}/10
+              </p>
+              <button
+                onClick={() => handleReturnActivity("Activity", activity._id)}
+                style={styles.returnButton}
+              >
+                Return Activity
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>No upcoming activities found.</p>
+        )}
+      </div>
 
         {/* Right Column: Itineraries */}
         <div style={styles.column}>
@@ -91,6 +124,12 @@ const UpcomingBookedEvents = () => {
                 <p>
                   <strong>Rating:</strong> {itinerary.rating}/10
                 </p>
+                <button
+                  onClick={() => handleReturnItin("Itinerary", itinerary._id)}
+                  style={styles.returnButton}
+                >
+                  Return Itinerary
+                </button>
               </div>
             ))
           ) : (
@@ -139,6 +178,15 @@ const styles = {
     padding: "15px",
     marginBottom: "15px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+  },
+  returnButton: {
+    marginTop: "10px",
+    padding: "8px 15px",
+    backgroundColor: "#dc3545",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
   },
 };
 

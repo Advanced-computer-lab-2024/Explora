@@ -72,6 +72,42 @@ router.post('/create/:categoryName', async (req, res) => {
     }
 });
 
+//http://localhost:4000/api/activity/cancelActivity
+router.delete('/cancelActivity', async (req, res) => {
+    const { activityId, touristId } = req.body;
+
+    try {
+      const bookedActivity = await BookedActivity.findById(activityId).populate('tourist');
+  
+      if (!bookedActivity) {
+        return res.status(404).json({ message: 'Activity not found' });
+      }
+  
+      if (bookedActivity.tourist._id.toString() !== touristId) {
+        return res.status(403).json({ message: 'Unauthorized action' });
+      }
+  
+      const currentDate = new Date();
+      const activityDate = new Date(bookedActivity.date);
+  
+      const hoursDifference = (activityDate - currentDate) / (1000 * 60 * 60);
+  
+      if (hoursDifference <= 48) {
+        return res.status(400).json({ message: 'The event is in less than 2 days' });
+      }
+  
+      // Add the money back to the tourist's wallet
+      bookedActivity.tourist.wallet += bookedActivity.price;
+      await bookedActivity.tourist.save();
+  
+      // Remove the booked activity
+      await BookedActivity.findByIdAndDelete(activityId);
+      return res.status(200).json({ message: 'Activity canceled and money refunded' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Error canceling activity', error: error.message });
+    }})
+    
 //http://localhost:4000/api/activity/testdelete
 router.delete('/testdelete', async (req, res) => {
     const { touristId } = req.body;
@@ -397,6 +433,7 @@ router.get('/', async (req, res) => {
 
 // Get all upcoming itineraries
 // Get all upcoming activities
+//http://localhost:4000/api/activity/upcoming
 router.get('/upcoming', async (req, res) => {
     const today = new Date(); // Get today's date
 
