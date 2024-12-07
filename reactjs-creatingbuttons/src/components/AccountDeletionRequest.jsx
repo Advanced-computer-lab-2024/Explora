@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
@@ -13,7 +12,6 @@ const AccountDeletionRequest = () => {
   const [additionalComments, setAdditionalComments] = useState('');
   const [confirmation, setConfirmation] = useState(false);
 
-  const navigate = useNavigate(); // Initialize the navigate function
 
   // Handle form submission
   const handleSubmit = async (e) => {

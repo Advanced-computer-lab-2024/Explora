@@ -94,6 +94,21 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
+import Wishlist from './components/Wishlist';
+import PromoCodeComponent from './components/PromoCodeComponent.jsx';
+import SalesReport from "./components/SalesReport"; // Adjust path based on your file structureimport ViewCartTourist from './components/ViewCartTourist';
+import Checkout from './components/Checkout'; // Create a new checkout component
+import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
+import VacationGuide from "./components/VacationGuide";
+import ViewCartTourist from "./components/ViewCartTourist.jsx"
+import HomeTest from "./components/HomeTest.jsx"
+import ProductModal from './components/ProductModal.jsx';
+
+
+import Sales from './components/Tour_Guide_Sales.jsx';
+import Viewing from './components/NoUsed';
+import Notification from './components/FlagNotifications';
+import { ToastContainer } from 'react-toastify';
 
 
 
