@@ -138,7 +138,7 @@ export default function Touristhome() {
                 Cart
               </button>
               <button
-                onClick={() => navigate('/logout')}
+                onClick={() => navigate('/')}
                 style={buttonStyle}
               >
                 Log Out
@@ -299,6 +299,7 @@ export default function Touristhome() {
           {/* Testimonials content here */}
         </div>
       </div>
+      {showPromoModal && <BirthdayPromoModal onClose={handleClosePromoModal} />}
 
       {/* Footer */}
       <footer className="footer">
