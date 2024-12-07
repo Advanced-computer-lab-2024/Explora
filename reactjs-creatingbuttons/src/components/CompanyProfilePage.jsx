@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 import './Touristhome.css'; // Import the CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -17,19 +16,16 @@ import {
   faGripLines, 
   faUserPlus, 
   faUsers, 
-  faUserMinus // Ensure faUserMinus is imported
-} from '@fortawesome/free-solid-svg-icons';import { faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { faHeadset } from '@fortawesome/free-solid-svg-icons';
-import { faImage } from '@fortawesome/free-solid-svg-icons';
+  faUserMinus,
+  faHeadset,
+  faImage
+} from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-
-
-
-
 
 export default function Touristhome() {
   const navigate = useNavigate();
   const [showPromoModal, setShowPromoModal] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(""); // State for the search query
 
   const handleClosePromoModal = () => setShowPromoModal(false);
 
@@ -37,6 +33,23 @@ export default function Touristhome() {
     setShowPromoModal(true);
   }, []);
 
+  // Handle the search action based on the query
+  const handleSearch = () => {
+    const query = searchQuery.toLowerCase();
+
+    // Example conditions for routing based on search query
+    if (query.includes("view profiles")) {
+      navigate('/advertisers'); // Replace with actual route for activities
+    } else if (query.includes("create activity")) {
+      navigate('/create-act');
+    } else if (query.includes("view activities")) {
+      navigate('/list');
+    } else {
+      alert("No results found!"); // Add fallback case if no matches found
+    }
+  };
+
+  // Navigation handlers for different pages
   const handleUpdateProfileClick = () => navigate('/tourist-profile');
   const handleViewComplaintsClick = () => navigate('/complaints');
   const handleFileComplaintClick = () => navigate('/file-complaint');
@@ -47,94 +60,89 @@ export default function Touristhome() {
   const handleViewPastActivitiesClick = () => navigate('/tourist-previous-activities');
   const handleBookHotelClick = () => navigate('/book-hotel');
   const handleViewBookedTransportationsClick = () => navigate('/view-booked-transportations');
-  const handleUseGuideClick = () => {
-    navigate('/vacation-guide'); // Navigate to the VacationGuide component
-  };
-  
+  const handleUseGuideClick = () => navigate('/vacation-guide');
   const handleHomeClick = () => navigate('/home');
   const handleLogoutClick = () => navigate('/logout');
 
   return (
     <div className="main-container">
-      {/* Background Image */}
       <div className="background-image">
-      <header className="site-header">
-    <div className="header-content">
-      <nav className="navigation">
-        <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-                    <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </div>
-    <div className="logout">
-    <Link to="/">Log Out</Link>
-  </div>
-  </header>
-  <div className="logo">
-    <h1>Explora</h1>
-  </div>
-</div>
+        <header className="site-header">
+          <div className="header-content">
+            <nav className="navigation">
+              <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#contact">Contact</a></li>
+              </ul>
+            </nav>
+          </div>
+          <div className="logout">
+            <Link to="/">Log Out</Link>
+          </div>
+        </header>
 
-{/* Services Text Section */}
-<div className="services-section">
-<FontAwesomeIcon icon={faHeadset} className="service-icon" />
+        <div className="logo">
+          <h1>Explora</h1>
+          
+          {/* Search Bar */}
+          <div className="search-bar-container">
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search for destinations, activities, and more..."
+              value={searchQuery} // Bind the search query to the input
+              onChange={(e) => setSearchQuery(e.target.value)} // Update the query on change
+            />
+            <button className="search-button" onClick={handleSearch}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="search-icon"
+              >
+                <path
+                  d="m15.97 17.031c-1.479 1.238-3.384 1.985-5.461 1.985-4.697 0-8.509-3.812-8.509-8.508s3.812-8.508 8.509-8.508c4.695 0 8.508 3.812 8.508 8.508 0 2.078-.747 3.984-1.985 5.461l4.749 4.75c.146.146.219.338.219.531 0 .587-.537.75-.75.75-.192 0-.384-.073-.531-.22zm-5.461-13.53c-3.868 0-7.007 3.14-7.007 7.007s3.139 7.007 7.007 7.007c3.866 0 7.007-3.14 7.007-7.007s-3.141-7.007-7.007-7.007z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
 
-  <span className="services-text"> Advertiser Services</span>
-</div>
-
-
-
+      {/* Services Section */}
+      <div className="services-section">
+        <FontAwesomeIcon icon={faHeadset} className="service-icon" />
+        <span className="services-text">Advertiser Services</span>
+      </div>
 
       <div className="button-container">
-      <button
-        onClick={() => navigate('/advertisers/create')}
-      >
-        <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: '8px' }} /> Create New Profile
-      </button>
-
-<button
-  onClick={() => navigate('/advact')}
->
-  <FontAwesomeIcon icon={faBinoculars} style={{ marginRight: '8px' }} /> Create New Activity
-</button>
-
-
-      {/* New button for viewing profiles */}
-      <button
-  onClick={() => navigate('/advertisers')}
->
-  <FontAwesomeIcon icon={faUsers} style={{ marginRight: '8px' }} /> View Profiles
-</button>
-
-      {/* New button for Account Deletion Request */}
-      <button
-  onClick={() => navigate('/request-account-deletion')}
->
-  <FontAwesomeIcon icon={faUserMinus} style={{ marginRight: '8px' }} /> Request Account Deletion
-</button>
-
-<button
-  onClick={() => navigate('/change-password')}
->
-  <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} /> Change My Password
-</button>
-<button
-  onClick={() => navigate('/upload-image')}
->
-  <FontAwesomeIcon icon={faImage} style={{ marginRight: '8px' }} /> Upload Logo
-</button>
-
-
-
+        <button onClick={() => navigate('/advertisers/create')}>
+          <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: '8px' }} /> Create New Profile
+        </button>
+        <button onClick={() => navigate('/advact')}>
+          <FontAwesomeIcon icon={faBinoculars} style={{ marginRight: '8px' }} /> Create New Activity
+        </button>
+        <button onClick={() => navigate('/advertisers')}>
+          <FontAwesomeIcon icon={faUsers} style={{ marginRight: '8px' }} /> View Profiles
+        </button>
+        <button onClick={() => navigate('/request-account-deletion')}>
+          <FontAwesomeIcon icon={faUserMinus} style={{ marginRight: '8px' }} /> Request Account Deletion
+        </button>
+        <button onClick={() => navigate('/change-password')}>
+          <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} /> Change My Password
+        </button>
+        <button onClick={() => navigate('/upload-image')}>
+          <FontAwesomeIcon icon={faImage} style={{ marginRight: '8px' }} /> Upload Logo
+        </button>
       </div>
+
       <div className="testimonials-section">
-      <h2>
-  <FontAwesomeIcon icon={faUsers} />
-  Our Clients Say!
-</h2>
+        <h2>
+          <FontAwesomeIcon icon={faUsers} />
+          Our Clients Say!
+        </h2>
         <div className="testimonials-container">
           <div className="testimonial">
             <img src="client1.jpg" alt="Client 1" className="testimonial-image" />
@@ -154,9 +162,11 @@ export default function Touristhome() {
             <p>Chicago, USA</p>
             <p>i luv basant and haidy 4ever</p>
           </div>
-          </div>
-          </div>
-          <footer className="footer">
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="footer">
         <div className="footer-container">
           <div className="footer-column">
             <h3>Company</h3>

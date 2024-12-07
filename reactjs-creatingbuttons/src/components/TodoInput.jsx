@@ -32,8 +32,28 @@ import { Link } from 'react-router-dom';
 export default function Touristhome() {
   const navigate = useNavigate();
   const [showPromoModal, setShowPromoModal] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
 
   const handleClosePromoModal = () => setShowPromoModal(false);
+
+  const handleSearch = () => {
+    const query = searchQuery.toLowerCase();
+
+    if (query === "profile") {
+      navigate('/ProfileDetailsPage'); // Redirect to the ProfileDetailsPage
+    } else if (query === "activities" || query === "activity") {
+      navigate('/UpcomingActivities'); // Redirect to the UpcomingActivities page
+    } else if (query === "tour" || query === "guide" || query === "tour guide" || query === "itinerary" || query === "itineraries") {
+      navigate('/itinerariesList'); // Redirect to the Book Flight page
+    
+    } else if (query === "create itinerary" || query === "create") {
+      navigate('/create-itinerary'); // Redirect to the Book Hotel page
+    } else if (query === "products" || query === "product") {
+      navigate('/product-list-tourist'); // Redirect to the Product Card Tourist page
+    }
+    // Add any other search functionality if needed
+  };
 
   useEffect(() => {
     setShowPromoModal(true);
@@ -76,7 +96,30 @@ export default function Touristhome() {
   </div>
   </header>
   <div className="logo">
-    <h1>Explora</h1>
+  <h1>Explora</h1>
+  {/* Search Bar */}
+  <div className="search-bar-container">
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search for destinations, activities, and more..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button className="search-button" onClick={handleSearch}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="search-icon"
+              >
+                <path
+                  d="m15.97 17.031c-1.479 1.238-3.384 1.985-5.461 1.985-4.697 0-8.509-3.812-8.509-8.508s3.812-8.508 8.509-8.508c4.695 0 8.508 3.812 8.508 8.508 0 2.078-.747 3.984-1.985 5.461l4.749 4.75c.146.146.219.338.219.531 0 .587-.537.75-.75.75-.192 0-.384-.073-.531-.22zm-5.461-13.53c-3.868 0-7.007 3.14-7.007 7.007s3.139 7.007 7.007 7.007c3.866 0 7.007-3.14 7.007-7.007s-3.141-7.007-7.007-7.007z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+
   </div>
 </div>
 

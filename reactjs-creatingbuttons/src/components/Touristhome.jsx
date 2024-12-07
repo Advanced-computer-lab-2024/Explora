@@ -3,18 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 import './Touristhome.css'; // Import the CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faExclamation, faCircleXmark, faLock, faPlane, faBus, faCity, faBinoculars, faHotel, faCar, faGripLines, faUserMinus} from '@fortawesome/free-solid-svg-icons'; // Import the grip lines icon\
+import { faUser, faExclamation, faCircleXmark, faLock, faPlane, faBus, faCity, faBinoculars, faHotel, faCar, faGripLines, faUserMinus } from '@fortawesome/free-solid-svg-icons'; // Import the grip lines icon
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-
-
-
+import logo from '../assets/cropped_image.png';
 
 export default function Touristhome() {
   const navigate = useNavigate();
   const [showPromoModal, setShowPromoModal] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isHistoryOptionsVisible, setIsHistoryOptionsVisible] = useState(false);
 
   const handleClosePromoModal = () => setShowPromoModal(false);
 
@@ -22,68 +23,231 @@ export default function Touristhome() {
     setShowPromoModal(true);
   }, []);
 
-  const handleUpdateProfileClick = () => navigate('/tourist-profile');
-  const handleViewComplaintsClick = () => navigate('/complaints');
-  const handleFileComplaintClick = () => navigate('/file-complaint');
-  const handleAccountDeletionClick = () => navigate('/request-account-deletion');
-  const handleBookTransportationClick = () => navigate('/book-transportation');
-  const handleBookFlightClick = () => navigate('/book-flight');
-  const handleViewPastItinerariesClick = () => navigate('/tourist-past-itineraries');
-  const handleViewPastActivitiesClick = () => navigate('/tourist-previous-activities');
-  const handleBookHotelClick = () => navigate('/book-hotel');
-  const handleViewBookedTransportationsClick = () => navigate('/view-booked-transportations');
-  const handleUseGuideClick = () => {
-    navigate('/vacation-guide'); // Navigate to the VacationGuide component
+  const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
+  const handleMouseEnterHistory = () => setIsHistoryOptionsVisible(true);
+  const handleMouseLeaveHistory = () => setTimeout(() => setIsHistoryOptionsVisible(false), 500);
+
+  const buttonStyle = {
+    backgroundColor: '#008080',
+    color: 'white',
+    border: 'none',
+    padding: '10px 20px',
+    width: '100%',
+    textAlign: 'center',
+    cursor: 'pointer'
   };
-  
-  const handleHomeClick = () => navigate('/home');
-  const handleLogoutClick = () => navigate('/logout');
+
+  const handleSearch = () => {
+    const query = searchQuery.toLowerCase();
+    if (query === "profile") {
+      navigate('/ProfileDetailsPage');
+    } else if (query === "activities" || query === "activity") {
+      navigate('/UpcomingActivities');
+    } else if (query === "flights" || query === "flight") {
+      navigate('/book-flight');
+    } else if (query === "itineraries" || query === "itinerary") {
+      navigate('/UpcomingItineraries');
+    } else if (query === "hotels" || query === "hotel") {
+      navigate('/book-hotel');
+    } else if (query === "products" || query === "product") {
+      navigate('/product-list-tourist');
+    }
+  };
 
   return (
     <div className="main-container">
+      {/* New Navigation Bar */}
+      <nav
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '1px 5px',
+          backgroundColor: '#008080',
+          color: 'white',
+          position: 'fixed',
+          top: 0,
+          width: '100%',
+          zIndex: 1000,
+          justifyContent: 'space-between',
+        }}
+      >
+        <img src={logo} alt="Logo" style={{ height: '80px', marginRight: '10px' }} />
+
+        {/* Navigation Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <a href="/tourist-home" style={{ color: 'white', textDecoration: 'none' }}>Home</a>
+          <a href="/UpcomingActivities" style={{ color: 'white', textDecoration: 'none' }}>Activities</a>
+          <a href="/book-flight" style={{ color: 'white', textDecoration: 'none' }}>Flights</a>
+          <a href="/book-hotel" style={{ color: 'white', textDecoration: 'none' }}>Hotels</a>
+          <a href="/UpcomingItineraries" style={{ color: 'white', textDecoration: 'none' }}>Itineraries</a>
+          <a href="/product-list-tourist" style={{ color: 'white', textDecoration: 'none' }}>Products</a>
+        </div>
+
+        {/* SVG Icon */}
+        <div style={{ marginLeft: 'auto', marginRight: '60px' }}>
+          <svg
+            onClick={toggleDropdown}
+            xmlns="http://www.w3.org/2000/svg"
+            width="54"
+            height="54"
+            viewBox="0 0 24 24"
+            style={{ cursor: 'pointer', color: 'white' }}
+          >
+            <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-3.123 0-5.914-1.441-7.749-3.69.259-.588.783-.995 1.867-1.246 2.244-.518 4.459-.981 3.393-2.945-3.155-5.82-.899-9.119 2.489-9.119 3.322 0 5.634 3.177 2.489 9.119-1.035 1.952 1.1 2.416 3.393 2.945 1.082.25 1.61.655 1.871 1.241-1.836 2.253-4.628 3.695-7.753 3.695z" fill="white" />
+          </svg>
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '80px',
+                right: '0',
+                backgroundColor: '#008080',
+                color: 'white',
+                borderRadius: '5px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                width: '200px',
+                padding: '10px 0',
+                zIndex: 1000,
+              }}
+              onMouseEnter={handleMouseEnterHistory}
+              onMouseLeave={handleMouseLeaveHistory}
+            >
+              <button
+                onClick={() => navigate('/ProfileDetailsPage')}
+                style={buttonStyle}
+              >
+                Profile
+              </button>
+              <a
+                href="/history"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  display: 'block',
+                }}
+              >
+                History
+              </a>
+
+              <button
+                onClick={() => navigate('/cart')}
+                style={buttonStyle}
+              >
+                Cart
+              </button>
+              <button
+                onClick={() => navigate('/logout')}
+                style={buttonStyle}
+              >
+                Log Out
+              </button>
+              <button
+                onClick={() => navigate('/file-complaint')}
+                style={buttonStyle}
+              >
+                File Complaint
+              </button>
+              <button
+                onClick={() => navigate('/change-password')}
+                style={buttonStyle}
+              >
+                Change Password
+              </button>
+
+              {isHistoryOptionsVisible && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '80px',
+                    right: '220px',
+                    backgroundColor: '#008080',
+                    color: 'white',
+                    borderRadius: '5px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                    width: '200px',
+                    padding: '10px 0',
+                    zIndex: 1000,
+                  }}
+                >
+                  <button
+                    onClick={() => navigate('/tourist-previous-activities')}
+                    style={buttonStyle}
+                  >
+                    Past Activities
+                  </button>
+                  <button
+                    onClick={() => navigate('/tourist-past-itineraries')}
+                    style={buttonStyle}
+                  >
+                    Past Itineraries
+                  </button>
+                  <button
+                    onClick={() => navigate('/past-orders')}
+                    style={buttonStyle}
+                  >
+                    Past Orders
+                  </button>
+                  <button
+                    onClick={() => navigate('/view-booked-transportations')}
+                    style={buttonStyle}
+                  >
+                    Booked Transportations
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </nav>
+
       {/* Background Image */}
       <div className="background-image">
-      <header className="site-header">
-    <div className="header-content">
-      <nav className="navigation">
-        <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-                    <li><a href="#contact">Contact</a></li>
-        </ul>
-      </nav>
-    </div>
-    <div className="logout">
-    <Link to="/">Log Out</Link>
-  </div>
-  </header>
-  <div className="logo">
-    <h1>Explora</h1>
-  </div>
-</div>
+        {/* Other sections and page content here */}
+        <div className="logo">
+          {/* Search Bar */}
+          <div className="search-bar-container">
+            <input
+              type="text"
+              className="search-bar"
+              placeholder="Search for destinations, activities, and more..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button className="search-button" onClick={handleSearch}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="search-icon"
+              >
+                <path
+                  d="m15.97 17.031c-1.479 1.238-3.384 1.985-5.461 1.985-4.697 0-8.509-3.812-8.509-8.508s3.812-8.508 8.509-8.508c4.695 0 8.508 3.812 8.508 8.508 0 2.078-.747 3.984-1.985 5.461l4.749 4.75c.146.146.219.338.219.531 0 .587-.537.75-.75.75-.192 0-.384-.073-.531-.22zm-5.461-13.53c-3.868 0-7.007 3.14-7.007 7.007s3.139 7.007 7.007 7.007c3.866 0 7.007-3.14 7.007-7.007s-3.141-7.007-7.007-7.007z"
+                  fill="white"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
 
-      {showPromoModal && <BirthdayPromoModal onClose={handleClosePromoModal} />}
-{/* Services Text Section */}
-<div className="services-section">
-<FontAwesomeIcon icon={faHeadset} className="service-icon" />
+      {/* Services Section */}
+      <div className="services-section">
+        <FontAwesomeIcon icon={faHeadset} className="service-icon" />
+        <span className="services-text">Services</span>
+      </div>
 
-  <span className="services-text">Services</span>
-</div>
-
-
-
-
+      {/* Main content buttons */}
       <div className="button-container">
-        <button onClick={handleUpdateProfileClick}>
+        <button onClick={() => navigate('/tourist-profile')}>
           <FontAwesomeIcon icon={faUser} />
           Update Profile
         </button>
-        <button onClick={handleViewComplaintsClick}>
+        <button onClick={() => navigate('/complaints')}>
           <FontAwesomeIcon icon={faExclamation} />
           View Issued Complaints
         </button>
-        <button onClick={handleFileComplaintClick}>
+        <button onClick={() => navigate('/file-complaint')}>
           <FontAwesomeIcon icon={faCircleXmark} />
           File a Complaint
         </button>
@@ -91,69 +255,53 @@ export default function Touristhome() {
           <FontAwesomeIcon icon={faLock} />
           Change My Password
         </button>
-        <button onClick={handleBookFlightClick}>
+        <button onClick={() => navigate('/book-flight')}>
           <FontAwesomeIcon icon={faPlane} />
           Book Flight
         </button>
-        <button onClick={handleBookTransportationClick}>
+        <button onClick={() => navigate('/book-transportation')}>
           <FontAwesomeIcon icon={faBus} />
           Book Transportation
         </button>
-        <button onClick={handleViewPastItinerariesClick}>
+        <button onClick={() => navigate('/tourist-past-itineraries')}>
           <FontAwesomeIcon icon={faCity} />
           View Past Itineraries
         </button>
-        <button onClick={handleViewPastActivitiesClick}>
+        <button onClick={() => navigate('/tourist-previous-activities')}>
           <FontAwesomeIcon icon={faBinoculars} />
           View Past Activities
         </button>
-        <button onClick={handleBookHotelClick}>
+        <button onClick={() => navigate('/book-hotel')}>
           <FontAwesomeIcon icon={faHotel} />
           Book Hotel
         </button>
-        <button onClick={handleViewBookedTransportationsClick}>
+        <button onClick={() => navigate('/view-booked-transportations')}>
           <FontAwesomeIcon icon={faCar} />
           View All My Booked Transportations
         </button>
-        <button onClick={handleUseGuideClick}>
-  <FontAwesomeIcon icon={faGlobe} />
-  User Guide
-</button>
-
-<button
-  onClick={() => navigate('/request-account-deletion')}
->
-  <FontAwesomeIcon icon={faUserMinus} style={{ marginRight: '8px' }} /> Request Account Deletion
-</button>
-
+        <button onClick={() => navigate('/vacation-guide')}>
+          <FontAwesomeIcon icon={faGlobe} />
+          User Guide
+        </button>
+        <button onClick={() => navigate('/request-account-deletion')}>
+          <FontAwesomeIcon icon={faUserMinus} />
+          Request Account Deletion
+        </button>
       </div>
+
+      {/* Testimonials Section */}
       <div className="testimonials-section">
-      <h2>
-  <FontAwesomeIcon icon={faUsers} />
-  Our Clients Say!
-</h2>
+        <h2>
+          <FontAwesomeIcon icon={faUsers} />
+          Our Clients Say!
+        </h2>
         <div className="testimonials-container">
-          <div className="testimonial">
-            <img src="client1.jpg" alt="Client 1" className="testimonial-image" />
-            <h3>John Doe</h3>
-            <p>New York, USA</p>
-            <p>Basant and Haidy are the best front end people ever</p>
-          </div>
-          <div className="testimonial highlight">
-            <img src="client2.jpg" alt="Client 2" className="testimonial-image" />
-            <h3>Jane Smith</h3>
-            <p>Los Angeles, USA</p>
-            <p>Thank you Basant and Haidy for the best website ever</p>
-          </div>
-          <div className="testimonial">
-            <img src="client3.jpg" alt="Client 3" className="testimonial-image" />
-            <h3>Sam Wilson</h3>
-            <p>Chicago, USA</p>
-            <p>i luv basant and haidy 4ever</p>
-          </div>
-          </div>
-          </div>
-          <footer className="footer">
+          {/* Testimonials content here */}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="footer">
         <div className="footer-container">
           <div className="footer-column">
             <h3>Company</h3>
@@ -182,15 +330,11 @@ export default function Touristhome() {
           </div>
           <div className="footer-column">
             <h3>Newsletter</h3>
-            <p>Subscribe to our newsletter</p>
             <form>
-              <input type="email" placeholder="Your email" />
-              <button type="submit">Sign Up</button>
+              <input type="email" placeholder="Your email address" />
+              <button type="submit">Subscribe</button>
             </form>
           </div>
-        </div>
-        <div className="footer-bottom">
-          <p>© Your Site Name, All Rights Reserved. Designed by HTML Codex</p>
         </div>
       </footer>
     </div>

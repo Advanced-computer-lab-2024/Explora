@@ -183,11 +183,11 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     };
 
     const handleViewDetails = () => {
-        alert(`Viewing details for ${product.name}`);
+        setShowProductModal(true); // Open the product modal
     };
 
     const closeProductModal = () => {
-        setShowProductModal(false);
+        setShowProductModal(false); // Close the product modal
     };
 
     return (
@@ -304,23 +304,28 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                 )}
 
                 {/* View Details Button */}
-            <button
-                onClick={handleViewDetails}
-                style={{
-                    width: '80%',
-                    padding: '10px',
-                    marginTop: '10px',
-                    background: '#008080',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold',
-                    fontSize: '16px',
-                }}
-            >
-                View Details
-            </button>
+                <button
+            onClick={handleViewDetails}
+            style={{
+                width: '80%',
+                padding: '10px',
+                marginTop: '10px',
+                background: '#008080',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                fontWeight: 'bold',
+                fontSize: '16px',
+            }}
+        >
+            View Details
+        </button>
+
+        {/* Product Modal */}
+        {showProductModal && (
+            <ProductModal product={product} onClose={closeProductModal} />
+        )}
 
     {/* Wishlist Icon */}
     
@@ -338,10 +343,7 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     )}
 
     {message && <p className="message">{message}</p>}
-    {/* Product Modal */}
-    {showProductModal && (
-                <ProductModal product={product} onClose={closeProductModal} />
-            )}
+    
 </div>
 
     );
