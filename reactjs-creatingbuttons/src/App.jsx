@@ -95,6 +95,8 @@ import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
 import Bookmarks from './components/Bookmarks.jsx';
 import Notifications from './components/Notifications.jsx';
+import PastBookedEvents from './components/PastBookedEvents.jsx';
+import UpcomingBookedEvents from './components/UpcomingBookedEvents.jsx';
 import { CgNotifications } from 'react-icons/cg';
 
 
@@ -195,7 +197,8 @@ function App() {
           <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
           <Route path="/Bookmarks" element={<Bookmarks/>}/>
           <Route path="/Notifications" element={<Notifications/>}/>
- 
+          <Route path="/PastBookedEvents" element={<PastBookedEvents/>}/>
+          <Route path="/UpcomingBookedEvents" element={<UpcomingBookedEvents/>}/>
 
         </Routes>
       </Router>
