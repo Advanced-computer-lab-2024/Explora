@@ -1,0 +1,248 @@
+Title: 
+Route: 
+Request Method: 
+Request:
+Body Parameters:
+{}
+Expected Response:
+{}
+Title: Create Tour Guide Profile
+Route: (http://localhost:4000/api/tour_guide_profile/register)
+Request Method: POST
+Request:
+Body Parameters:
+{
+  "username": "sis",       
+  "email": "sis@gmail.com",          
+  "password": "sis",       
+  "name": "sasa",           
+  "mobile": "010052525",         
+  "yearsOfExperience": 5, 
+  "previousWork": "non",   
+  "termsAccepted": "true", 
+  "image": "file"             
+}
+Expected Response:
+{
+    "username": "sis",
+    "password": "$2b$10$yJ.ODT7r3PwDPvtqXX/O8OCDOvX1Zo.Wb7CDzxdV8ognlQlOugKRu",
+    "loyaltyPoints": 0,
+    "loyaltyLevel": 0,
+    "role": "TourGuide",
+    "_id": "6754b5cf0ee2b9fdc6014dd6",
+    "email": "sis@gmail.com",
+    "tourists": [],
+    "name": "sasa",
+    "mobile": "010052525",
+    "yearsOfExperience": 5,
+    "previousWork": "non",
+    "isAccepted": true,
+    "termsAccepted": true,
+    "rating": 0,
+    "status": "Pending",
+    "createdAt": "2024-12-07T20:53:35.862Z",
+    "updatedAt": "2024-12-07T20:53:35.862Z",
+    "__v": 0
+}
+------------------------------------------
+Title: Get Tour Guide Profile by ID
+Route: http://localhost:4000/api/tour_guide_profile/:id
+Request Method: GET
+Request:
+{
+  "id": "string"
+}
+Body Parameters: None
+Expected Response:
+{
+  "loyaltyPoints": 0,
+  "loyaltyLevel": 0,
+  "_id": "6748fae835a3fa0479d4a088",
+  "username": "mimi",
+  "password": "$2b$10$/.0EcrIBO9ZF4IPDQaSF7eFoEeF2sL7IQcMFtSdjRa/Mhi2H07HYy",
+  "role": "TourGuide",
+  "email": "maruma1682003@gmail.com",
+  "tourists": [],
+  "previousWork": "",
+  "isAccepted": true,
+  "termsAccepted": false,
+  "rating": 0,
+  "idFile": "uploads\\1732836072168.png",
+  "certificatesFile": "uploads\\1732836072181.png",
+  "imageFile": "uploads\\1732836072188.png",
+  "status": "Accepted",
+  "createdAt": "2024-11-28T23:21:12.555Z",
+  "updatedAt": "2024-12-01T23:52:05.955Z",
+  "__v": 0
+}
+------------------------------------------
+Title: Update Tour Guide Profile
+Route: http://localhost:4000/api/tour_guide_profile/me/:id
+Request Method: PUT
+Request:
+Body Parameters:
+{
+  "email": "new_email@example.com",
+  "newPassword": "new_password",
+  "name": "New Name",
+  "mobile": "0123456789",
+  "yearsOfExperience": 5,
+  "previousWork": "New Work Details",
+  "isAccepted": true
+}
+Expected Response:
+{
+  "_id": "6748fae835a3fa0479d4a088",
+  "username": "mimi",
+  "email": "new_email@example.com",
+  "password": "$2b$10$hashed_password_string",
+  "name": "New Name",
+  "mobile": "0123456789",
+  "yearsOfExperience": 5,
+  "previousWork": "New Work Details",
+  "isAccepted": true,
+  "profilePicture": "uploads/path_to_new_picture.png",
+  "loyaltyPoints": 0,
+  "loyaltyLevel": 0,
+  "role": "TourGuide",
+  "tourists": [],
+  "rating": 0,
+  "status": "Accepted",
+  "createdAt": "2024-11-28T23:21:12.555Z",
+  "updatedAt": "2024-12-01T23:52:05.955Z",
+  "__v": 0
+}
+------------------------------------------
+Title: Create a New Itinerary
+Route: http://localhost:4000/api/tour_guide_itinerary/
+Request Method: POST
+Request:
+Body Parameters:
+{
+  "tourGuideName": "John Doe",
+  "tourGuideId": "6748fae835a3fa0479d4a088",
+  "activities": [
+    {
+      "duration": 120,
+      "date": "2024-07-01",
+      "time": "10:00"
+    },
+    {
+      "duration": 90,
+      "date": "2024-07-02",
+      "time": "14:00"
+    }
+  ],
+  "locations": "Cairo, Giza Pyramids, Egyptian Museum",
+  "timeline": "2-day cultural tour covering major attractions",
+  "duration": 2,
+  "language": "English",
+  "price": 150,
+  "availableDates": ["2024-07-01", "2024-07-02"],
+  "availableTimes": ["10:00", "14:00"],
+  "accessibility": true,
+  "pickupLocation": "Cairo Airport",
+  "dropoffLocation": "Giza Pyramids",
+  "hasBookings": false,
+  "tags": ["cultural", "history", "adventure"]
+}
+Expected Response Example:
+{
+    "tourGuideName": "John Doe",
+    "tourGuideId": "6748fae835a3fa0479d4a088",
+    "activities": [
+        {
+            "duration": 120,
+            "date": "2024-07-01T00:00:00.000Z",
+            "time": "10:00",
+            "_id": "6754b7c1420909de67705296"
+        },
+        {
+            "duration": 90,
+            "date": "2024-07-02T00:00:00.000Z",
+            "time": "14:00",
+            "_id": "6754b7c1420909de67705297"
+        }
+    ],
+    "locations": "Cairo, Giza Pyramids, Egyptian Museum",
+    "timeline": "2-day cultural tour covering major attractions",
+    "duration": 2,
+    "language": "English",
+    "price": 150,
+    "availableDates": [
+        "2024-07-01T00:00:00.000Z",
+        "2024-07-02T00:00:00.000Z"
+    ],
+    "availableTimes": [
+        "10:00",
+        "14:00"
+    ],
+    "accessibility": true,
+    "pickupLocation": "Cairo Airport",
+    "dropoffLocation": "Giza Pyramids",
+    "hasBookings": false,
+    "isActive": true,
+    "tags": [
+        "cultural",
+        "history",
+        "adventure"
+    ],
+    "rating": 0,
+    "isDeleted": false,
+    "flagged": false,
+    "_id": "6754b7c1420909de67705295",
+    "__v": 0
+}
+------------------------------------------
+Title: Get Itineraries by Tour Guide ID
+Route: (http://localhost:4000/api/tour_guide_itinerary)
+Request Method: GET
+Request:
+Query Parameters:
+{
+  "tourGuideId": "6748fae835a3fa0479d4a088"
+}
+Expected Response:
+[ 
+    {
+        "_id": "6749a7a40d9e637f9c7cc0b8",
+        "tourGuideName": "Mimi",
+        "tourGuideId": "6748fae835a3fa0479d4a088",
+        "activities": [
+            {
+                "duration": 10,
+                "date": "2024-11-30T00:00:00.000Z",
+                "time": "13:40",
+                "_id": "6749a7a40d9e637f9c7cc0b9"
+            }
+        ],
+        "locations": "Germany",
+        "timeline": "Morning ",
+        "duration": 5,
+        "language": "English",
+        "price": 500,
+        "availableDates": [
+            "2024-12-05T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "13:35"
+        ],
+        "accessibility": false,
+        "pickupLocation": "Cairo",
+        "dropoffLocation": "Berlin",
+        "hasBookings": true,
+        "isActive": true,
+        "tags": [],
+        "rating": 0,
+        "isDeleted": false,
+        "flagged": false,
+        "__v": 0
+    }
+]
+------------------------------------------
+Title: Update an Itinerary by ID
+Route: http://localhost:4000/api/tour_guide_itinerary/:id
+Request Method: PUT
+Request:
+URL Parameter:
+    "_id": "6754b7c1420909de67705295"

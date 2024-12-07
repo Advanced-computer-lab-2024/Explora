@@ -68,9 +68,9 @@ const createProfile = async (req, res) => {
   const { username, email, password, name, mobile, yearsOfExperience, previousWork, termsAccepted } = req.body;
 
   // Check if terms and conditions are accepted
-  if (!termsAccepted) {
-      return res.status(400).json({ msg: 'You must accept the terms and conditions to register.' });
-  }
+  // if (!termsAccepted) {
+  //     return res.status(400).json({ msg: 'You must accept the terms and conditions to register.' });
+  // }
 
   try {
     const picturePath = req.file ? `uploads/${req.file.filename}` : null;
