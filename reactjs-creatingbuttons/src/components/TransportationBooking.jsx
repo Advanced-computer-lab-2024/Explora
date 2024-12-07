@@ -7,6 +7,8 @@ export default function TransportationBooking() {
   const [error, setError] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null); // State to track the selected transportation option
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false); // State to track modal visibility
+  const [enteredPromocode, setEnteredPromocode] = useState('');
+  const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
   const navigate = useNavigate();
   const touristId = '67322cdfa472e2e7d22de84a'; // Replace this with the actual tourist ID if dynamic
 
@@ -63,11 +65,11 @@ export default function TransportationBooking() {
     }
   };
 
-  const handlePayWithWallet = () => {
+  const handleWalletPayment = () => {
     handleBookNow(); // Trigger wallet payment by calling the booking function
   };
 
-  const handlePayWithCreditCard = async () => {
+  const handleCreditCardPayment = async () => {
     try {
       // Create a Stripe Checkout session
       const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
@@ -118,22 +120,46 @@ export default function TransportationBooking() {
       {/* Payment Modal */}
       {isPaymentModalOpen && selectedOption && (
         <div style={styles.modal}>
-          <h4>Payment Options</h4>
+          <h4>Selected Transportation</h4>
           <p>Transportation Method: {selectedOption.method}</p>
           <p>From: {selectedOption.origin}</p>
           <p>To: {selectedOption.destination}</p>
           <p>Amount to Pay: {selectedOption.currency} {selectedOption.price}</p>
-          <button onClick={handlePayWithWallet} style={styles.bookButton}>
-            Pay with Wallet
-          </button>
-          <button onClick={handlePayWithCreditCard} style={styles.creditButton}>
-            Pay with Credit Card
-          </button>
-          <button onClick={handleCloseModal} style={styles.closeButton}>
-            Close
-          </button>
-        </div>
-      )}
+          <h4>Choose Payment Method:</h4>
+    <div style={styles.modalButtonContainer}>
+      <div style={styles.paymentOption}>
+        <button onClick={handleCreditCardPayment} style={styles.creditCardButton}>
+          Pay with Credit Card
+        </button>
+        <input
+          type="text"
+          placeholder="Enter Promocode"
+          value={enteredPromocodeCredit}
+          onChange={(e) => setEnteredPromocodeCredit(e.target.value)}
+          style={styles.promocodeInput}
+        />
+      </div>
+      <div style={styles.paymentOption}>
+        <button onClick={handleWalletPayment} style={styles.bookButton}>
+          Pay with Wallet
+        </button>
+        <input
+          type="text"
+          placeholder="Enter Promocode"
+          value={enteredPromocode}
+          onChange={(e) => setEnteredPromocode(e.target.value)}
+          style={styles.promocodeInput}
+        />
+      </div>
+      <button
+        onClick={() => setIsPaymentModalOpen(false)}
+        style={styles.cancelButton}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }
@@ -179,6 +205,7 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
+    margin: '10px',
   },
   creditButton: {
     padding: '10px 15px',
@@ -207,6 +234,51 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     zIndex: 1000,
+    textAlign: 'center',
+    width: '750px',
+  },
+  modalButtonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '10px',
+    marginTop: '20px',
+  },
+  modalButton: {
+    flex: '1',
+    padding: '10px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    border: 'none',
+    color: 'white',
+    transition: 'background-color 0.3s',
+  },
+  creditCardButton: {
+    padding: '10px 15px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    margin: '10px',
+  },
+  cancelButton: {
+    padding: '10px 15px',
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    margin: '10px',
+  },
+  promocodeInput: {
+    marginTop: '10px',
+    width: '90%',
+    padding: '8px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
     textAlign: 'center',
   },
 };
