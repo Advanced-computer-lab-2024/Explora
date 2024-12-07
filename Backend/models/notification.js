@@ -1,12 +1,30 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }, // Owner's ID
-  type: { type: String, default: 'Itinerary Flagged' }, // Type of notification
-  message: { type: String, required: true }, // Notification message
-  createdAt: { type: Date, default: Date.now },
-  itineraryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Itinerary' }, // Related itinerary
-  read: { type: Boolean, default: false } // Track if the notification has been read
+  tourist: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Tourist', // Reference to the Tourist model
+    required: true,
+  },
+  event: {
+    type: String,
+    required: true,
+    enum: ['activity', 'itinerary'], // Example event types
+  },
+  date: {
+    type: Date,
+    required: true,
+  },
+  message: {
+    type: String,
+    required: true, // Content of the notification
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, // Automatically sets the timestamp of creation
+  },
 });
 
-module.exports = mongoose.model('Notification', notificationSchema);
+const Notification = mongoose.model('Notification', notificationSchema);
+
+module.exports = Notification;
