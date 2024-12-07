@@ -7,7 +7,7 @@ const { checkAdmin } = require('../middleware/AuthMiddleware');
 const socket = require('socket.io-client');
 let io; // The Socket.IO instance
 const nodemailer = require('nodemailer');
-const Notification = require('../models/Notification'); // Import Notification model
+const Notification = require('../models/Notifications'); // Import Notification model
 const TourGuide = require('../models/Tour_Guide_Profile');
 const Book = require('../models/Book');
 
