@@ -30,6 +30,8 @@ const ProfileDetailsPage = () => {
     });
 
     const [loading, setLoading] = useState(true);
+    const [isEditable, setIsEditable] = useState(false);
+
 
     useEffect(() => {
         const touristId = localStorage.getItem('userId');
