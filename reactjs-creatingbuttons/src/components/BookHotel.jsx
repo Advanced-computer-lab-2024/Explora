@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHotel } from '@fortawesome/free-solid-svg-icons'; // Import the faHotel icon
 
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 const HotelBooking = () => {
