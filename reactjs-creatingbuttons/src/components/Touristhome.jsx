@@ -138,7 +138,7 @@ export default function Touristhome() {
                 Cart
               </button>
               <button
-                onClick={() => navigate('/logout')}
+                onClick={() => navigate('/')}
                 style={buttonStyle}
               >
                 Log Out

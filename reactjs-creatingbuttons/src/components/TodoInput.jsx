@@ -19,7 +19,9 @@ import {
   faGripLines, 
   faUserPlus, 
   faUsers, 
-  faUserMinus // Ensure faUserMinus is imported
+  faUserMinus,
+  faChartLine,// Ensure faUserMinus is imported
+  faBell
 } from '@fortawesome/free-solid-svg-icons';
 import { faGlobe } from '@fortawesome/free-solid-svg-icons';
 import { faHeadset } from '@fortawesome/free-solid-svg-icons';
@@ -172,23 +174,59 @@ export default function Touristhome() {
 
 
       <div className="button-container">
-      <button onClick={() => navigate('/create-profile')}>
-  <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: '8px' }} /> Create Profile
-</button>
+      <button 
+        onClick={() => navigate('/create-profile')}
+      >
+                  <FontAwesomeIcon icon={faUserPlus} />
 
+        Create Profile
+      </button>
 
-<button onClick={() => navigate('/tour-guide-itinerary')}>
-  <FontAwesomeIcon icon={faCity} style={{ marginRight: '8px' }} /> Tour Guide Itinerary
-</button>
+      <button
+        onClick={() => navigate('/tour-guide-itinerary')}
+      >
+                          <FontAwesomeIcon icon={faCity} />
 
+        Itinerary
+      </button>
 
-     
+      <button
+        onClick={() => navigate('/request-account-deletion')}
+      >
+        <FontAwesomeIcon icon={faUserMinus}/>
+        Request Account Deletion
+      </button>
 
-      {/* New button for Account Deletion Request */}
-      <button onClick={() => navigate('/request-account-deletion')}>
-  <FontAwesomeIcon icon={faUserMinus} style={{ marginRight: '8px' }} /> Request Account Deletion
-</button>
+      <button
+        onClick={() => navigate('/sales')}
+      >
+                <FontAwesomeIcon icon={faChartLine}/>
 
+        View Sales
+      </button>
+      <button
+        onClick={() => navigate('/change-password')}
+      >
+                        <FontAwesomeIcon icon={faLock}/>
+
+        Change My Password
+      </button>
+
+      <button
+        onClick={() => navigate('/view-number-of-tourists')}
+      >
+                                <FontAwesomeIcon icon={faUsers}/>
+
+        View number of tourists
+      </button>
+
+      <button
+        onClick={() => navigate('/flag-notification')}
+      >
+                                <FontAwesomeIcon icon={faBell}/>
+
+        Notifications
+      </button>
       </div>
       <div className="testimonials-section">
       <h2>

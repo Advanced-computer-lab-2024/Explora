@@ -1,32 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import LineChart from './LineChart'; // Line chart component
+import './SalesReport.module.css'; // Styles for the report
 
-const SalesReport = () => {
+const TourGuideSales = () => {
   const [sales, setSales] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
-  const [itineraryId, setItineraryId] = useState('');
-  const [specificDate, setspecificDate] = useState('');
-  const [month, setMonth] = useState('');
-  const [location, setLocation] = useState('');
+  const [filterByMonth, setFilterByMonth] = useState('');
+  const [filterByDateRange, setFilterByDateRange] = useState({ startDate: '', endDate: '' });
+  const [location, setLocation] = useState(''); // Added location filter state
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const userId = localStorage.getItem('userId'); // Assuming user ID is stored in localStorage
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId'); // Assuming the user ID is stored in localStorage
 
-  // Check if the user is logged in
+  // Fetch sales data for the logged-in tour guide
   useEffect(() => {
     if (!userId) {
       setError('User ID is not available. Please log in.');
       setLoading(false);
-    }
-  }, [userId]);
-
-  // Fetch sales data for the logged-in tour guide
-  useEffect(() => {
-    if (userId) {
+    } else {
       const fetchSalesData = async () => {
         try {
           const response = await axios.get('http://localhost:4000/api/', {
@@ -35,10 +31,7 @@ const SalesReport = () => {
           const { sales, totalRevenue } = response.data;
           setSales(sales || []);
           setFilteredSales(sales || []);
-          
-          // Calculate and set the total revenue
-          const total = sales.reduce((sum, sale) => sum + sale.amount, 0);
-          setTotalRevenue(total || 0);
+          setTotalRevenue(totalRevenue || 0);
         } catch (err) {
           setError('Failed to fetch sales data.');
         } finally {
@@ -48,36 +41,29 @@ const SalesReport = () => {
       fetchSalesData();
     }
   }, [userId]);
-  
-  // Filter sales data based on the selected filters
-  const filterSales = () => {
+
+  // Filter sales by month (using YYYY-MM format)
+  const filterSalesByMonth = () => {
     let filtered = sales;
-  
-    // Filter by Itinerary ID
-    if (itineraryId) {
-      filtered = filtered.filter((sale) => sale.itineraryId._id === itineraryId);
+    if (filterByMonth) {
+      filtered = filtered.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const formattedDate = `${saleDate.getFullYear()}-${String(saleDate.getMonth() + 1).padStart(2, '0')}`;
+        return formattedDate === filterByMonth;
+      });
     }
-  
-    // Filter by Specific Date (Exact Match)
-    if (specificDate) {
-        const selectedDate = new Date(specificDate); // Convert to Date object
-        filtered = filtered.filter((sale) => {
-          const availableDate = new Date(sale.itineraryId.availableDates[0]); // Take the first date from availableDates array
-          return availableDate.toDateString() === selectedDate.toDateString(); // Compare only the date part
-        });
-      }      
-  
-      if (month) {
-        const [selectedYear, selectedMonth] = month.split('-'); // Extract year and month from the month input (format: YYYY-MM)
-        filtered = filtered.filter((sale) => {
-          const availableDate = new Date(sale.itineraryId.availableDates[0]); // Take the first date from availableDates array
-          const availableYear = availableDate.getFullYear();
-          const availableMonth = availableDate.getMonth() + 1; // getMonth() returns 0-based months (0 for January, 11 for December)
-      
-          return availableYear == selectedYear && availableMonth == selectedMonth;
-        });
-      }
-      
+
+    // Filter by date range (start and end dates)
+    const { startDate, endDate } = filterByDateRange;
+    if (startDate && endDate) {
+      filtered = filtered.filter((sale) => {
+        const saleDate = new Date(sale.date);
+        const formattedStartDate = new Date(startDate);
+        const formattedEndDate = new Date(endDate);
+        return saleDate >= formattedStartDate && saleDate <= formattedEndDate;
+      });
+    }
+
     // Filter by Location
     if (location) {
       filtered = filtered.filter((sale) => {
@@ -85,141 +71,164 @@ const SalesReport = () => {
         return itineraryLocation.includes(location.toLowerCase());
       });
     }
-  
+
     // Calculate total revenue after filtering
     setFilteredSales(filtered);
     setTotalRevenue(filtered.reduce((sum, sale) => sum + sale.amount, 0));
   };
 
-  // Clear all filters and show all sales
-  const clearFilters = () => {
-    setItineraryId('');
-    setspecificDate('');
-    setMonth('');
-    setLocation('');
-    setFilteredSales(sales); // Reset the filtered sales to show all sales
-    setTotalRevenue(sales.reduce((sum, sale) => sum + sale.amount, 0)); // Recalculate total revenue
+  // Handle change for month filter
+  const handleMonthChange = (e) => {
+    setFilterByMonth(e.target.value);
   };
-  
+
+  // Handle change for date range filters
+  const handleDateRangeChange = (e) => {
+    const { name, value } = e.target;
+    setFilterByDateRange((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // Handle change for location filter
+  const handleLocationChange = (e) => {
+    setLocation(e.target.value);
+  };
+
+  // Handle the filter apply action
+  const applyFilters = () => {
+    filterSalesByMonth();
+  };
+
+  // Clear all filters
+  const clearFilters = () => {
+    setFilterByMonth('');
+    setFilterByDateRange({ startDate: '', endDate: '' });
+    setLocation('');
+    setFilteredSales(sales);
+    setTotalRevenue(sales.reduce((sum, sale) => sum + sale.amount, 0));
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div style={{ color: 'red' }}>{error}</div>;
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto', textAlign: 'center' }}>
-      <h1>Sales Report</h1>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-          position: 'absolute',
-          top: '20px',
-          left: '20px',
-          padding: '10px 20px',
-          fontSize: '16px',
-          backgroundColor: '#007bff',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '5px',
-          cursor: 'pointer',
-        }}
-      >
-        Go Back
-      </button>
+    <div className="sales-report">
+      <h2>Dashboard</h2>
 
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Itinerary ID"
-          value={itineraryId}
-          onChange={(e) => setItineraryId(e.target.value)}
-          style={{ flex: '1 1 200px', padding: '8px', fontSize: '14px' }}
-        />
-        <input
-          type="date"
-          value={specificDate}
-          onChange={(e) => setspecificDate(e.target.value)}
-          style={{ flex: '1 1 200px', padding: '8px', fontSize: '14px' }}
-        />
-        <input
-          type="month"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          style={{ flex: '1 1 200px', padding: '8px', fontSize: '14px' }}
-        />
-        <input
-          type="text"
-          placeholder="Itinerary Title"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          style={{ flex: '1 1 200px', padding: '8px', fontSize: '14px' }}
-        />
+      {/* Line Chart Section */}
+      <div className="chart-container">
+        <LineChart salesData={filteredSales} filterBy="month" />
+      </div>
+
+      <h2>Total Revenue: ${totalRevenue.toFixed(2)}</h2>
+
+      {/* Filter Section */}
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
+        {/* Month Filter */}
+        <div>
+          <label htmlFor="month">Select Month:</label>
+          <input
+            type="month"
+            id="month"
+            value={filterByMonth}
+            onChange={handleMonthChange}
+            style={{ padding: '8px', fontSize: '14px' }}
+          />
+        </div>
+
+        {/* Date Range Filter */}
+        <div>
+          <label htmlFor="startDate">Start Date:</label>
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            value={filterByDateRange.startDate}
+            onChange={handleDateRangeChange}
+            style={{ padding: '8px', fontSize: '14px' }}
+            placeholder="MM-DD-YYYY"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="endDate">End Date:</label>
+          <input
+            type="date"
+            id="endDate"
+            name="endDate"
+            value={filterByDateRange.endDate}
+            onChange={handleDateRangeChange}
+            style={{ padding: '8px', fontSize: '14px' }}
+            placeholder="MM-DD-YYYY"
+          />
+        </div>
+
+        {/* Location Filter */}
+        <div>
+          <label htmlFor="location">Title:</label>
+          <input
+            type="text"
+            id="location"
+            value={location}
+            onChange={handleLocationChange}
+            style={{ padding: '8px', fontSize: '14px' }}
+            placeholder="Enter location"
+          />
+        </div>
+
+        {/* Apply Filters Button */}
         <button
-          onClick={filterSales}
+          onClick={applyFilters}
           style={{
-            flex: '1 1 200px',
-            backgroundColor: '#28a745',
+            backgroundColor: '#008080',
             color: '#fff',
             padding: '10px',
             borderRadius: '5px',
-            cursor: 'pointer',
             fontSize: '14px',
           }}
         >
           Apply Filters
         </button>
+
+        {/* Clear Filters Button */}
         <button
           onClick={clearFilters}
           style={{
-            flex: '1 1 200px',
-            backgroundColor: '#dc3545',
+            backgroundColor: '#008080',
             color: '#fff',
             padding: '10px',
             borderRadius: '5px',
-            cursor: 'pointer',
             fontSize: '14px',
           }}
         >
-          Clear All Filters
+          Clear Filters
         </button>
       </div>
 
-      <h2>Total Revenue: ${totalRevenue.toFixed(2)}</h2>
-
+      {/* Sales Table */}
       {filteredSales.length === 0 ? (
         <p>No sales data found.</p>
       ) : (
-        <table
-          style={{
-            width: '100%',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            marginTop: '20px',
-            marginBottom: '20px',
-            padding: '0',
-            textAlign: 'left',
-            boxSizing: 'border-box',
-            borderCollapse: 'collapse',
-            tableLayout: 'fixed',
-          }}
-        >
+        <table>
           <thead>
             <tr>
-              <th style={{ padding: '10px', width: '20%' }}>Date</th>
-              <th style={{ padding: '10px', width: '20%' }}>Amount</th>
-              <th style={{ padding: '30px', width: '30%' }}>Itinerary ID</th>
-              <th style={{ padding: '10px', width: '20%' }}>Itinerary Title</th>
-              <th style={{ padding: '10px', width: '20%' }}>Tourist</th>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Itinerary ID</th>
+              <th>Itinerary Title</th>
+              <th>Tourist</th>
             </tr>
           </thead>
           <tbody>
             {filteredSales.map((sale) => (
               <tr key={sale._id}>
-                <td style={{ padding: '10px' }}>
-                  {new Date(sale.itineraryId.availableDates).toLocaleDateString()}
-                </td>
-                <td style={{ padding: '10px' }}>${sale.amount.toFixed(2)}</td>
-                <td style={{ padding: '10px' }}>{sale.itineraryId._id}</td>
-                <td style={{ padding: '10px' }}>{sale.itineraryId.locations}</td>
-                <td style={{ padding: '10px' }}>{sale.touristId.username}</td>
+                <td>{new Date(sale.date).toLocaleDateString()}</td>
+                <td>${sale.amount.toFixed(2)}</td>
+                <td>{sale.itineraryId._id}</td>
+                <td>{sale.itineraryId.locations}</td>
+                <td>{sale.touristId.username}</td>
               </tr>
             ))}
           </tbody>
@@ -229,4 +238,4 @@ const SalesReport = () => {
   );
 };
 
-export default SalesReport;
+export default TourGuideSales;
