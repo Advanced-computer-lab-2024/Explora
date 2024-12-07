@@ -1,127 +1,165 @@
-import React, { useState } from 'react';
-const handleAddToCart = (productId) => {
-    // Logic to handle adding the product to the cart
-    console.log(`Product ${productId} added to the cart`);
-    setMessage('Item added to cart successfully!');
-};
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+
+const WishList = () => {
+  const [wishlist, setWishlist] = useState([]);
+  const [message, setMessage] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  //const touristId = localStorage.getItem('userId') || '';
+  const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
 
 
-const Wishlist = () => {
-    // Hardcoded products for wishlist
-    const wishlist = [
-        {
-            _id: '1',
-            name: 'Handcrafted Wooden Chair',
-            price: 99.99,
-            image: 'https://via.placeholder.com/150',
-            description: 'A beautiful handcrafted wooden chair.',
-            seller: 'Crafty Creations',
-            averageRating: 4.5,
-            reviews: [
-                { _id: 'r1', user: 'John Doe', comment: 'Very sturdy and comfortable!', rating: 5 },
-                { _id: 'r2', user: 'Jane Smith', comment: 'Looks great in my living room.', rating: 4 },
-            ],
-        },
-        {
-            _id: '2',
-            name: 'Luxury Leather Wallet',
-            price: 59.99,
-            image: 'https://via.placeholder.com/150',
-            description: 'A premium leather wallet with multiple compartments.',
-            seller: 'Elite Accessories',
-            averageRating: 4.8,
-            reviews: [
-                { _id: 'r3', user: 'Alice', comment: 'Great quality and design.', rating: 5 },
-                { _id: 'r4', user: 'Bob', comment: 'Perfect gift for my dad!', rating: 4 },
-            ],
-        },
-        {
-            _id: '3',
-            name: 'Wireless Bluetooth Headphones',
-            price: 129.99,
-            image: 'https://via.placeholder.com/150',
-            description: 'High-quality noise-cancelling headphones.',
-            seller: 'TechWorld',
-            averageRating: 4.7,
-            reviews: [
-                { _id: 'r5', user: 'Sam', comment: 'Amazing sound quality!', rating: 5 },
-                { _id: 'r6', user: 'Emma', comment: 'Battery life is impressive.', rating: 4 },
-            ],
-        },
-    ];
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (!touristId) {
+        setMessage('User not logged in. Please log in first.');
+        return;
+      }
 
-    // State to track wishlist items
-    const [wishlistState, setWishlistState] = useState(
-        wishlist.map((product) => ({ ...product, isInWishlist: true }))
-    );
-
-    // Handle wishlist toggle
-    const handleWishlistToggle = (productId) => {
-        setWishlistState((prevState) =>
-            prevState.map((product) =>
-                product._id === productId
-                    ? { ...product, isInWishlist: !product.isInWishlist }
-                    : product
-            )
-        );
+      try {
+        const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
+    if (response.data && Array.isArray(response.data.items)) {
+        setWishlist(response.data.items);
+    } else {
+        setMessage('Your wishlist is empty.');
+    }
+      } catch (error) {
+        console.error('Error fetching wishlist:', error);
+        setMessage('Could not load wishlist. Please try again later.');
+      }
     };
 
-    // Render stars for average rating
-    const renderStars = (averageRating) => {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-            stars.push(
-                <i
-                    key={i}
-                    className={i <= averageRating ? 'fa-solid fa-star' : 'fa-regular fa-star'}
-                    style={{ color: 'gold', marginRight: '2px' }}
-                />
-            );
-        }
-        return stars;
-    };
+    fetchWishlist();
+  }, [touristId]);
 
-    return (
-        <div className="product-list">
-            <h1>My Wishlist</h1>
-            <div className="product-cards-container">
-                {wishlistState.map((product) => (
-                    <div key={product._id} className="product-card">
-                       
-                        <img src={product.image} alt={product.name} className="product-image" />
-                        <h2 className="product-title">{product.name}</h2>
-                        <p className="product-description">{product.description}</p>
-                        <p className="product-price">${product.price.toFixed(2)}</p>
-                        <p className="product-seller">Seller: {product.seller}</p>
-                        <p className="product-ratings">Average Rating: {renderStars(product.averageRating)}</p>
-                        <p className="product-reviews">{product.reviews.length} reviews</p>
-                        <div className="wishlist-icon" onClick={() => handleWishlistToggle(product._id)}>
+  const handleWishlistToggle = async (productId) => {
+    if (!touristId) {
+      setMessage('User not logged in. Please log in first.');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:4000/wishlist/toggle', { productId, touristId });
+      if (response.data && response.data.wishlist) {
+        setWishlist(response.data.wishlist.items);
+        const isInWishlist = response.data.wishlist.items.some(item => item._id === productId);
+        setModalTitle(isInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist');
+        setShowModal(true);
+      }
+    } catch (error) {
+      console.error('Error toggling wishlist item:', error);
+      setMessage('Could not update wishlist. Please try again later.');
+    }
+  };
+
+  const handleAddToCart = async (productId) => {
+    if (!touristId) {
+      setMessage('User not logged in. Please log in first.');
+      return;
+    }
+
+    try {
+      await axios.post(`http://localhost:4000/cart/add/${touristId}`, { productId });
+      setMessage('Product added to cart successfully!');
+    } catch (error) {
+      console.error('Error adding product to cart:', error);
+      setMessage('Error adding product to cart. Please try again.');
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const renderStars = (averageRating) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
         <i
-            className={product.isInWishlist ? 'fa-solid fa-heart' : 'fa-regular fa-heart'}
-            style={{ color: product.isInWishlist ? 'red' : 'gray', cursor: 'pointer' }}
+          key={i}
+          className={i <= averageRating ? 'fa-solid fa-star' : 'fa-regular fa-star'}
+          style={{ color: 'gold', marginRight: '2px' }}
         />
-    </div>
-    <button
-    style={{
-        backgroundColor: '#000',   // Black background
-        color: '#fff',             // White text
-        border: 'none',            // Remove default border
-        borderRadius: '5px',       // Rounded corners
-        padding: '10px 15px',      // Padding inside the button
-        fontSize: '14px',          // Font size
-        cursor: 'pointer',        // Pointer cursor on hover
-        marginTop: '10px',         // Space above the button
-        transition: 'background-color 0.3s ease, transform 0.2s ease', // Smooth transition
-    }}
-    onClick={() => console.log('Add to Cart clicked!')}
->
-    Add to Cart
-</button>
-                    </div>
-                ))}
-            </div>
+      );
+    }
+    return stars;
+  };
+
+  return (
+    <div className="wishlist-container">
+      <h1>My Wishlist</h1>
+      {message && <p className="info-message">{message}</p>}
+      <div className="product-cards-container">
+      {wishlist.length > 0 ? (
+  wishlist.map((item) => {
+    const product = item.productId; // Extract productId directly from item
+    if (!product) {
+      return null; // Skip rendering this item if product is null
+    }
+    return (
+      <div key={product._id} className="product-card">
+        <img
+          src={product.image || '/default-placeholder.jpg'}
+          alt={product.name || 'No Image'}
+          className="product-image"
+        />
+        <h2 className="product-title">{product.name || 'Unnamed Product'}</h2>
+        <p className="product-description">{product.description || 'No description available.'}</p>
+        <p className="product-seller">Seller: {product.seller || 'Unknown'}</p>
+        <p className="product-ratings">
+          Average Rating: {renderStars(product.averageRating || 0)}
+        </p>
+        <p className="product-reviews">{product.reviews?.length || 0} reviews</p>
+        <div
+          className="wishlist-icon"
+          onClick={() => handleWishlistToggle(product._id)}
+        >
+          <i
+            className={
+              wishlist.some((item) => item.productId?._id === product._id)
+                ? 'fa-solid fa-heart'
+                : 'fa-regular fa-heart'
+            }
+            style={{
+              color: wishlist.some((item) => item.productId?._id === product._id)
+                ? 'red'
+                : 'gray',
+              cursor: 'pointer',
+            }}
+          />
         </div>
+        <button
+          style={{
+            backgroundColor: '#000',
+            color: '#fff',
+            border: 'none',
+            borderRadius: '5px',
+            padding: '10px 15px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            marginTop: '10px',
+          }}
+          onClick={() => handleAddToCart(product._id)}
+        >
+          Add to Cart
+        </button>
+      </div>
     );
+  })
+) : (
+  <p>Your wishlist is empty.</p>
+)}
+
+      </div>
+      {showModal && (
+        <div className="modal">
+          <h2>{modalTitle}</h2>
+          <button onClick={closeModal}>Close</button>
+        </div>
+      )}
+    </div>
+  );
 };
 
-export default Wishlist;
+export default WishList;
