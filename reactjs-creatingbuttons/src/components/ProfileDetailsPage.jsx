@@ -18,49 +18,98 @@ const EditIcon = () => (
 );
 
 const ProfileDetailsPage = () => {
-    const [profileData, setProfileData] = useState({
-        email: 'tourist@example.com',
-        username: 'touristUser',
-        nationality: 'USA',
-        dob: '1990-01-01',
-        jobStatus: 'job',
-        wallet: '1000.00$',
-        level: '1' // Added user level
+    const [profile, setProfile] = useState({
+        email: '',
+        mobileNumber: '',
+        nationality: '',
+        dateOfBirth: '',
+        job: '',
+        username: '', // Will be read-only
+        wallet: 0, // Will be read-only
     });
 
-    const [isEditable, setIsEditable] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    const navigate = useNavigate(); // Hook to navigate between pages
+    useEffect(() => {
+        const touristId = localStorage.getItem('userId');
+        // Fetch profile details
+        const fetchProfile = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/api/tourists/id/${touristId}`); // Replace with your API endpoint
+                setProfile(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProfileData({ ...profileData, [name]: value });
+        setProfile((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleEditToggle = (e) => {
+    const handleSubmit = async (e) => {
+        const touristId = localStorage.getItem('userId');
+
         e.preventDefault();
-        setIsEditable(!isEditable);
+        try {
+            const { wallet, ...editableFields } = profile; // Exclude wallet
+            await axios.put(`http://localhost:4000/api/tourists/${touristId}`, editableFields); // Replace with your API endpoint
+            alert('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+    const formStyle = {
+        maxWidth: "600px",
+        margin: "50px auto",
+        padding: "20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#f9f9f9",
+        fontFamily: "Arial, sans-serif",
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Profile updated:', profileData);
-        setIsEditable(false);
+    const labelStyle = {
+        display: "block",
+        marginBottom: "10px",
+        fontWeight: "bold",
+        color: "#333",
     };
 
-    // Navigation functions for buttons
-    const handleChangePassword = () => {
-        navigate('/change-password');
+    const inputStyle = {
+        width: "100%",
+        padding: "10px",
+        marginBottom: "20px",
+        borderRadius: "5px",
+        border: "1px solid #ccc",
+        fontSize: "16px",
+        boxSizing: "border-box",
     };
 
-    const handleFileComplaint = () => {
-        navigate('/file-complaint');
+    const buttonStyle = {
+        padding: "10px 20px",
+        backgroundColor: "#4CAF50",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+        fontSize: "16px",
+        cursor: "pointer",
+        transition: "background-color 0.3s ease",
     };
 
-    const handleRequestAccountDeletion = () => {
-        navigate('/request-account-deletion');
+    const buttonHoverStyle = {
+        ...buttonStyle,
+        backgroundColor: "#45a049",
     };
 
+    const [hover, setHover] = React.useState(false);
+    if (loading) return <p>Loading...</p>;
+
+  
     return (
         <div
             style={{

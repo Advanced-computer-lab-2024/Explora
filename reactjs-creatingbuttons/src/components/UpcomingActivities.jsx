@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios
+import Select from 'react-select';
+
 
 const UpcomingActivities = () => {
   const [places, setPlaces] = useState([]);
@@ -11,10 +13,16 @@ const UpcomingActivities = () => {
   const [ratings, setRatings] = useState({});
   const [comments, setComments] = useState({});
   const [itins, setItins] = useState([]);
-
-
-  const userId = "67322cdfa472e2e7d22de84a";
-
+  const [error, setError] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen]= useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+  // const [userId, setUserId] = useState("67322cdfa472e2e7d22de84a");
+  // const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded for now
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
+  const [activityId, setActivityId] = useState(null); // Set after selecting the activity
+  const [enteredPromocode, setEnteredPromocode] = useState('');
+  const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
+ const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     const savedPoints = localStorage.getItem('loyaltyPoints');
     if (savedPoints) {
@@ -39,16 +47,17 @@ const UpcomingActivities = () => {
         console.error("Error fetching user ID:", error);
       }
     };
-
+  
     fetchUserId();
   }, []);
-
+  
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchUpcomingActivities = async () => {
       try {
         const response = await fetch('http://localhost:4000/api/activity/upcoming');
         const data = await response.json();
-
+  
         if (response.ok) {
           const formattedData = data.map((place) => ({
             ...place,
@@ -57,16 +66,17 @@ const UpcomingActivities = () => {
           }));
           setPlaces(formattedData);
         } else {
-          console.error("Failed to fetch activities:", data.message);
+          setError(data.message || "Failed to fetch activities");
         }
-      } catch (error) {
-        console.error("Error fetching upcoming activities:", error);
+      } catch (err) {
+        setError("Error fetching upcoming activities");
+      } finally {
+        setLoading(false);
       }
     };
-
+  
     fetchUpcomingActivities();
   }, []);
-
   const getBadgeLevel = (points) => {
     if (points > 500000) return 'Level 3 Badge';
     else if (points > 100000) return 'Level 2 Badge';
@@ -80,64 +90,91 @@ const UpcomingActivities = () => {
       .then(() => setMessage('Link copied to clipboard!'))
       .catch(() => setMessage('Failed to copy link.'));
   };
-
+  
   const shareEmail = (place) => {
     const subject = `Check out this activity: ${place.name}`;
     const body = `I thought you might be interested in this activity:\n\n${place.name}\nDate: ${place.date}\nPrice: ${place.price}$\nRating: ${place.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${place._id}`;
-    
+  
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-};
-
-  const handleBookTicket = async (place) => {
-    try {
-      if (!userId) {
-        alert('You must be logged in to book a ticket.');
-        return;
-      }
-
-      if (bookedTickets.includes(place._id)) {
-        alert('Ticket Already Booked');
-        return;
-      }
-
-      setBookedTickets((prev) => [...prev, place._id]);
-
-      const level = place.price > 500000 ? 3 : place.price > 100000 ? 2 : 1;
-
-      const response = await axios.post("http://localhost:4000/api/tourists/addLoyaltyPoints", {
-        touristId: userId,
-        amountPaid: place.price,
-        level,
-      });
-
-      if (response.status === 200) {
-        const data = response.data;
-        const newPoints = loyaltyPoints + data.pointsEarned;
-
-        setLoyaltyPoints(newPoints);
-        localStorage.setItem('loyaltyPoints', newPoints);
-        setBadgeLevel(getBadgeLevel(newPoints));
-
-        alert(`You booked "${place.name}" and earned ${data.pointsEarned} points!`);
-      }
-    } catch (error) {
-      alert("An error occurred while booking the ticket.");
-    }
   };
 
-  const handleCancelBooking = (place) => {
+const handleActivitySelect = (activity) => {
+    setSelectedActivity(activity);
+    setActivityId(activity._id); // Update the state with the selected activity's ID
+    setIsPaymentModalOpen(true); // Open payment modal
+};
+
+  
+//Handle Wallet Payment
+const handleWalletPayment = async () => {
+  const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+  if (!touristId) {
+    setMessage('User not logged in. Please log in first.');
+    return;
+  }
+  try {
+      const response = await fetch("http://localhost:4000/api/activity/bookWallet", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              touristId,
+              activityId,
+              promoCode: enteredPromocode,  // Send the entered promo code
+          }),
+      });
+
+      if (response.ok) {
+          alert(`Payment via Wallet for ${selectedActivity.name} successful!`);
+      } else {
+          alert(err.message || "Failed to book activity. Please try again.");
+      }
+  } catch (error) {
+      console.error("Error during wallet payment:", error);
+      alert("An error occurred. Please try again.");
+  }
+
+  setIsPaymentModalOpen(false);
+  setSelectedActivity(null);
+};
+
+
+
+  // Handle credit card payment
+const handleCreditCardPayment = async () => {
+  try {
+    // Create a Stripe Checkout session
+    const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
+      itemName: selectedActivity.name,
+      itemPrice: selectedActivity.price,
+    });
+
+    const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+    window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+  } catch (error) {
+    console.error("Error creating Stripe session:", error);
+    alert("Failed to redirect to Stripe. Please try again.");
+  }
+};
+
+if (loading) return <div>Loading...</div>;
+if (error) return <div>Error: {error}</div>;
+
+
+  /* const handleCancelBooking = (place) => {
     const now = new Date();
     const timeDifference = place.dateObject - now;
     const hoursDifference = timeDifference / (1000 * 60 * 60);
 
     if (hoursDifference >= 48) {
       setBookedTickets((prev) => prev.filter(ticketId => ticketId !== place._id));
-      alert(`Your booking for "${place.name}" has been canceled.`);
+      alert(Your booking for "${place.name}" has been canceled.);
     } else {
       alert('You can not cancel your booking 48 hours before the event starts.');
     }
   };
-
+*/
   const redeemPoints = async () => {
     try {
       if (loyaltyPoints < 10000) {
@@ -166,6 +203,36 @@ const UpcomingActivities = () => {
     }
   };
 
+  const handleBookmarkClick = async (activity) => {
+    const touristId = localStorage.getItem('userId');
+    if (!touristId) {
+      setErrorMessage('User not logged in. Please log in first.');
+      return;
+    }  
+  
+    try {
+      const response = await fetch(`http://localhost:4000/api/tour_guide_itinerary/bookmark/${touristId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ eventId: activity._id }), // Pass the selected activity ID or itinerary ID
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message); // Display success message
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Failed to bookmark the activity.");
+      }
+    } catch (error) {
+      console.error("Error bookmarking the event:", error);
+      alert("An error occurred while bookmarking. Please try again.");
+    }
+  };
+  
+ 
   return (
     <div className="upcoming-activities">
       <h1 className="header">Upcoming Activities</h1>
@@ -178,20 +245,71 @@ const UpcomingActivities = () => {
             <p className="activity-rating">Rating: {place.rating}/10</p>
 
             <div className="share-buttons">
+            <button onClick={() => shareLink(place)}>Share Link</button>
+              <button onClick={() => shareEmail(place)}>Share via Email</button>
+              <button onClick={()=>handleBookmarkClick(place)}>Bookmark</button>
               {bookedTickets.includes(place._id) ? (
                 <button disabled>Ticket Already Booked</button>
               ) : (
-                <button onClick={() => handleBookTicket(place)}>Book Ticket</button>
+                <button onClick={() => handleActivitySelect(place)}>Book Ticket</button>
               )}
-              <button onClick={() => shareLink(place)}>Share Link</button>
-              <button onClick={() => shareEmail(place)}>Share via Email</button>
+              
             </div>
-
+            {/*
             {bookedTickets.includes(place._id) && (
               <button onClick={() => handleCancelBooking(place)}>Cancel Booking</button>
             )}
+            */}
           </div>
+          
         ))}
+ {/* Payment Modal */}
+{isPaymentModalOpen && selectedActivity && (
+  <div style={styles.modal}>
+    <h4>Selected Activity:</h4>
+    <p>
+      {selectedActivity.name} on {selectedActivity.date}
+    </p>
+    <p>
+      <strong>Amount to Pay:</strong> {selectedActivity.price}
+    </p>
+    <h4>Choose Payment Method:</h4>
+    <div style={styles.modalButtonContainer}>
+      <div style={styles.paymentOption}>
+        <button onClick={handleCreditCardPayment} style={styles.creditCardButton}>
+          Pay with Credit Card
+        </button>
+        <input
+          type="text"
+          placeholder="Enter Promocode"
+          value={enteredPromocodeCredit}
+          onChange={(e) => setEnteredPromocodeCredit(e.target.value)}
+          style={styles.promocodeInput}
+        />
+      </div>
+      <div style={styles.paymentOption}>
+        <button onClick={handleWalletPayment} style={styles.bookButton}>
+          Pay with Wallet
+        </button>
+        <input
+          type="text"
+          placeholder="Enter Promocode"
+          value={enteredPromocode}
+          onChange={(e) => setEnteredPromocode(e.target.value)}
+          style={styles.promocodeInput}
+        />
+      </div>
+      <button
+        onClick={() => setIsPaymentModalOpen(false)}
+        style={styles.cancelButton}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)}
+
+
       </div>
       <div className="points-container">
         <div className="loyalty-points">
@@ -204,10 +322,152 @@ const UpcomingActivities = () => {
       </div>
       <button onClick={redeemPoints} disabled={loyaltyPoints < 10000}>
         Redeem 10,000 Points for 100 EGP
-      </button>
+      </button> 
       {message && <p className="message">{message}</p>}
     </div>
   );
 };
+
+const styles = {
+  pageContainer: {
+      fontFamily: 'Arial, sans-serif',
+      padding: '20px',
+      backgroundColor: '#f4f4f9',
+      minHeight: '100vh',
+  },
+  error: {
+      color: 'red',
+      marginBottom: '15px',
+      textAlign: 'center',
+  },
+  searchBarContainer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      marginBottom: '20px',
+  },
+  inputField: {
+      padding: '10px',
+      width: '48%',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+  },
+  selectContainer: {
+      marginBottom: '20px',
+  },
+  reactSelect: {
+      control: (styles) => ({
+          ...styles,
+          borderRadius: '5px',
+          border: '1px solid #ccc',
+      }),
+  },
+  filtersContainer: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '20px',
+      marginBottom: '20px',
+  },
+  filterGroup: {
+      display: 'flex',
+      flexDirection: 'column',
+      minWidth: '150px',
+  },
+  selectInput: {
+      padding: '8px',
+      borderRadius: '5px',
+      border: '1px solid #ccc',
+  },
+  resultsContainer: {
+      marginTop: '30px',
+  },
+  resultsList: {
+      listStyleType: 'none',
+      padding: '0',
+  },
+  resultItem: {
+      padding: '10px',
+      backgroundColor: '#fff',
+      marginBottom: '10px',
+      borderRadius: '5px',
+      border: '1px solid #ddd',
+  },
+  resultLink: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+      color: '#333',
+      textDecoration: 'none',
+  },
+  details: {
+      fontSize: '14px',
+      color: '#777',
+      marginTop: '5px',
+  },
+  bookButton: {
+      padding: '10px 15px',
+      backgroundColor: '#28a745',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      margin: '10px',
+    },   
+    modal: {
+      position: 'fixed',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      backgroundColor: 'white',
+      padding: '20px',
+      borderRadius: '10px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+      zIndex: 1000,
+      textAlign: 'center',
+      width: '750px',
+    },
+    modalButtonContainer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      gap: '10px',
+      marginTop: '20px',
+    },
+    modalButton: {
+      flex: '1',
+      padding: '10px',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      border: 'none',
+      color: 'white',
+      transition: 'background-color 0.3s',
+    },
+    creditCardButton: {
+      padding: '10px 15px',
+      backgroundColor: '#007bff',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      margin: '10px',
+    },
+    cancelButton: {
+      padding: '10px 15px',
+      backgroundColor: '#dc3545',
+      color: 'white',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      margin: '10px',
+    },
+    promocodeInput: {
+      marginTop: '10px',
+      width: '90%',
+      padding: '8px',
+      border: '1px solid #ccc',
+      borderRadius: '5px',
+      fontSize: '14px',
+      textAlign: 'center',
+    },
+  };
 
 export default UpcomingActivities;

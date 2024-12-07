@@ -8,7 +8,7 @@ const { addLoyaltyPoints } = require('../controllers/touristController');
 const { redeemPoints } = require('../controllers/touristController');
 
 
-
+//https://localhost:4000/api/tourists/id/60f3b3b3b3b3b3b3b3b3b3b3
 router.get('/id/:id', async (req, res) => {
     try {
         const tourist = await Tourist.findById(req.params.id);
@@ -50,6 +50,7 @@ router.delete('/:id', deleteTourist) ;
 
 
 // Prevent DOB updates
+//https://localhost:4000/api/tourists/update/60f3b3b3b3b3b3b3b3b3b3b3
 router.put('/update/:id', async (req, res) => {
     const updates = { ...req.body };
 

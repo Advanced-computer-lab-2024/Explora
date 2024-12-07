@@ -1,35 +1,103 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const ViewCartTourist = () => {
-  const [cartItems, setCartItems] = useState([
-    { id: 1, name: 'Product 1', price: 100, quantity: 1, image: 'https://via.placeholder.com/100' },
-    { id: 2, name: 'Product 2', price: 150, quantity: 1, image: 'https://via.placeholder.com/100' },
-    { id: 3, name: 'Product 3', price: 200, quantity: 1, image: 'https://via.placeholder.com/100' },
-  ]);
+  const [cartItems, setCartItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const touristId = "67322cdfa472e2e7d22de84a";
+  const navigate = useNavigate();
 
-  const navigate = useNavigate(); // Hook for navigation
+  // Function to fetch cart details
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!touristId) return;
 
-  const handleRemove = (id) => {
-    setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+      try {
+        const response = await axios.get(`http://localhost:4000/cart/${touristId}`);
+
+        console.log("API Response:", response.data);
+
+        if (response.data && response.data.cartItems && Array.isArray(response.data.cartItems)) {
+          setCartItems(response.data.cartItems);
+          setTotalPrice(response.data.totalPrice || 0); // Set total price from backend or calculate locally
+        } else {
+          console.error("Cart items are not available in the response.");
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
+  // Handle removing an item
+  const handleRemove = async (productId) => {
+    try {
+      // Send DELETE request to the backend with productId in the request body
+      const response = await axios.delete(`http://localhost:4000/cart/remove/${touristId}`, {
+        data: { productId }, // Send productId in the request body
+      });
+  
+      if (response.status === 200) {
+        // Remove the item from the local state
+        setCartItems((prevItems) =>
+          prevItems.filter((item) => item.productId._id !== productId)
+        );
+        console.log("Item removed successfully");
+      } else {
+        console.error("Failed to remove item:", response.data);
+      }
+    } catch (error) {
+      console.error("Error removing item:", error);
+    }
   };
 
-  const handleQuantityChange = (id, amount) => {
-    setCartItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + amount) }
+  // Handle quantity changes
+  const handleQuantityChange = async (id, amount) => {
+    // Update the local state with the new quantity
+    setCartItems((prevItems) => {
+      const updatedItems = prevItems.map((item) =>
+        item.productId._id === id
+          ? { 
+              ...item, 
+              quantity: Math.max(1, item.quantity + amount),
+              itemPrice: (item.quantity + amount) * item.productId.price  // Update item price
+            }
           : item
-      )
-    );
+      );
+  
+      // Recalculate the total price
+      const newTotalPrice = updatedItems.reduce((total, item) => total + item.itemPrice, 0);
+      setTotalPrice(newTotalPrice);
+  
+      return updatedItems;
+    });
+  
+    try {
+      // Find the updated item in the cart
+      const itemToUpdate = cartItems.find(item => item.productId._id === id);
+  
+      // Send updated quantity to backend
+      const response = await axios.put(
+        `http://localhost:4000/cart/update/${touristId}`,
+        {
+          productId: id,
+          quantity: itemToUpdate.quantity + amount,
+        }
+      );
+  
+      console.log("Quantity updated successfully:", response.data);
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
   };
 
+  // Navigate to checkout page
   const handleCheckout = () => {
-    navigate('/checkout'); // Redirect to Checkout page
-  };
-
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    navigate('/checkout');
   };
 
   return (
@@ -37,38 +105,41 @@ const ViewCartTourist = () => {
       <h2 style={styles.heading}>Your Cart</h2>
       {cartItems.length > 0 ? (
         <div style={styles.cartItems}>
-          {cartItems.map((item) => (
-            <div key={item.id} style={styles.cartItem}>
-              <img src={item.image} alt={item.name} style={styles.image} />
-              <div style={styles.details}>
-                <h3 style={styles.productName}>{item.name}</h3>
-                <p style={styles.price}>${item.price}</p>
-                <div style={styles.quantityControls}>
-                  <button
-                    onClick={() => handleQuantityChange(item.id, -1)}
-                    style={styles.quantityButton}
-                  >
-                    -
-                  </button>
-                  <span style={styles.quantity}>{item.quantity}</span>
-                  <button
-                    onClick={() => handleQuantityChange(item.id, 1)}
-                    style={styles.quantityButton}
-                  >
-                    +
-                  </button>
+          {cartItems.map((item) => {
+            const imageUrl = "http://localhost:4000/" + item.productId.image;
+            return (
+              <div key={item.productId._id} style={styles.cartItem}>
+                <img src={imageUrl} alt={item.productId.name} style={styles.image} />
+                <div style={styles.details}>
+                  <h3 style={styles.productName}>{item.productId.name}</h3>
+                  <p style={styles.price}>Price: ${item.productId.price}</p>
+                  <div style={styles.quantityControls}>
+                    <button
+                      onClick={() => handleQuantityChange(item.productId._id, -1)}
+                      style={styles.quantityButton}
+                    >
+                      -
+                    </button>
+                    <span style={styles.quantity}>{item.quantity}</span>
+                    <button
+                      onClick={() => handleQuantityChange(item.productId._id, 1)}
+                      style={styles.quantityButton}
+                    >
+                      +
+                    </button>
+                  </div>
                 </div>
+                <button
+                  onClick={() => handleRemove(item.productId._id)}
+                  style={styles.removeButton}
+                >
+                  Remove
+                </button>
               </div>
-              <button
-                onClick={() => handleRemove(item.id)}
-                style={styles.removeButton}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+            );
+          })}
           <div style={styles.total}>
-            <strong>Total:</strong> ${calculateTotal()}
+            <strong>Total:</strong> ${totalPrice}
           </div>
         </div>
       ) : (
@@ -81,8 +152,8 @@ const ViewCartTourist = () => {
   );
 };
 
-// Updated styles for the design
 const styles = {
+  // (Keep the styles from your current implementation)
   container: {
     maxWidth: '700px',
     margin: '20px auto',

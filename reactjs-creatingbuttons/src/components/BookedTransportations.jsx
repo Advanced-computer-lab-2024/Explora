@@ -2,12 +2,18 @@ import React, { useEffect, useState } from 'react';
 
 export default function BookedTransportations() {
   const [bookedTransportations, setBookedTransportations] = useState([]);
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
 
   useEffect(() => {
     // Fetch data for booked transportations when the component mounts
     const fetchBookedTransportations = async () => {
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+      if (!touristId) {
+        setErrorMessage('User not logged in. Please log in first.');
+        return;
+      }
       try {
-        const response = await fetch(`http://localhost:4000/transportationBook/67322cdfa472e2e7d22de84a`); // Use your specific user ID here
+        const response = await fetch(`http://localhost:4000/transportationBook/${touristId}`); // Use your specific user ID here
         const data = await response.json();
         
         console.log('Booked Transportations:', data); // Log the response to check its structure

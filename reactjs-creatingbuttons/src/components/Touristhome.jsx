@@ -36,22 +36,56 @@ export default function Touristhome() {
     textAlign: 'center',
     cursor: 'pointer'
   };
+  const handleViewPastBookedEventsClick = () => {
+    navigate('/PastBookedEvents');
+};
+const handleViewUpcomingBookedEventsClick = () => {
+  navigate('/UpcomingBookedEvents');
+};
+  const handleAccountDeletionClick = () => {
+    navigate('/request-account-deletion');
+  };
 
-  const handleSearch = () => {
-    const query = searchQuery.toLowerCase();
-    if (query === "profile") {
-      navigate('/ProfileDetailsPage');
-    } else if (query === "activities" || query === "activity") {
-      navigate('/UpcomingActivities');
-    } else if (query === "flights" || query === "flight") {
-      navigate('/book-flight');
-    } else if (query === "itineraries" || query === "itinerary") {
-      navigate('/UpcomingItineraries');
-    } else if (query === "hotels" || query === "hotel") {
-      navigate('/book-hotel');
-    } else if (query === "products" || query === "product") {
-      navigate('/product-list-tourist');
-    }
+  const handleBookTransportationClick = () => {
+    navigate('/book-transportation');
+  };
+
+  const handleBookFlightClick = () => {
+    navigate('/book-flight');
+  };
+
+  const handleViewPreviousActivitiesClick = () => {
+    navigate('/tourist-previous-activities');
+  };
+
+  const handleViewPastItinerariesClick = () => {
+    navigate('/tourist-past-itineraries');
+  };
+
+  const handleViewPastActivitiesClick = () => {
+    navigate('/tourist-previous-activities');
+  };
+
+  const handleBookHotelClick = () => {
+    navigate('/hotel-booking');
+  };
+
+  const handleBookmarkedeventsClick = () => {
+    navigate('/Bookmarks');
+  };
+
+  const handleViewNotificationsClick = () => {
+      navigate('/Notifications');
+  }; 
+
+  const handleViewMyPromoCodesClick = () => {
+    navigate('/my-promo-codes');
+  };
+  
+ 
+  // New handler for viewing all booked transportations
+  const handleViewBookedTransportationsClick = () => {
+    navigate('/view-booked-transportations');
   };
 
   return (
