@@ -5,14 +5,18 @@ import axios from 'axios';
 const ViewCartTourist = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
-  const touristId = "67322cdfa472e2e7d22de84a";
+  //const touristId = "67322cdfa472e2e7d22de84a";
   const navigate = useNavigate();
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
 
   // Function to fetch cart details
   useEffect(() => {
     const fetchCart = async () => {
-      if (!touristId) return;
-
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+      if (!touristId) {
+        setError('User not logged in. Please log in first.');
+          return;
+      }
       try {
         const response = await axios.get(`http://localhost:4000/cart/${touristId}`);
 

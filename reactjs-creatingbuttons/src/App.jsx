@@ -106,6 +106,9 @@ import ViewCartTourist from "./components/ViewCartTourist.jsx"
 import Notifications from './components/Notifications.jsx';
 import BookMarks from './components/BookMarks.jsx';
 import ForgetPassword from './components/ForgetPass.jsx'
+import PaymentSuccess from './components/PaymentSuccess';
+import PaymentFailure from './components/PaymentFailure';
+
 function App() {
 
   return (
@@ -214,6 +217,8 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
         <Route path="/vacation-guide" element={<VacationGuide />} />
         <Route path="/forget_password" element={<ForgetPassword />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failure" element={<PaymentFailure />} />
         </Routes>
       </Router>
     </main>

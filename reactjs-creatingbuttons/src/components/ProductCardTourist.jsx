@@ -15,7 +15,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [userReview, setUserReview] = useState(''); // State for review text
     const [wishlistState, setWishlistState] = useState([]); // Wishlist state
     const [modalTitle, setModalTitle] = useState(''); // State for modal title
-    const touristId = "67322cdfa472e2e7d22de84a"; // Assume the user ID is stored in local storage
     const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
     const [showModal, setShowModal] = useState(false); // State for modal visibility
     const [heartIcon, setHeartIcon] = useState(faHeart); // Initial heart icon color
@@ -23,10 +22,16 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         transition: 'color 0.3s ease', // Smooth transition for color change
         color: isInWishlist ? 'red' : 'black' // Red heart when in wishlist, black when not
     };
+    const [touristId, setTouristId] = useState(localStorage.getItem('userId') ); // Dynamically set from localStorage
 
     useEffect(() => {
         const fetchWishlist = async () => {
-            if (!touristId) return; // Exit if no touristId is available
+            const touristId = localStorage.getItem("userId");
+            if (!touristId) {
+              setError("User not logged in. Please log in first.");
+              setLoading(false);
+              return;
+            }            
             try {
                 const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
                 console.log("API Response:", response.data);

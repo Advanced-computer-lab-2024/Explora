@@ -8,6 +8,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Payment = require('../models/PaymentModel');
 const bodyParser = require('body-parser'); // For raw body parsing
 const Tourist = require('../models/touristModel');
+const TouristPromoCode = require('../models/touristPromoCode');
 
 
 const checkoutOrder = async (req, res) => {
@@ -133,7 +134,7 @@ const processPayment = async (req, res) => {
 
 
   const checkoutAndPay = async (req, res) => {
-    const { userId, addressId, frontendUrl, paymentMethod } = req.body; // Added paymentMethod parameter
+    const { userId, addressId, frontendUrl, paymentMethod, promoCode } = req.body; // Added paymentMethod parameter
     console.log('Received request:', req.body); // Log the incoming request body to see the data sent from the frontend
 
     try {
@@ -153,6 +154,8 @@ const processPayment = async (req, res) => {
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: "Your cart is empty" });
         }
+        let totalPrice = cart.totalPrice; // Or calculate the price manually if needed
+
 
         // Fetch product details for the items in the cart
         const productIds = cart.items.map(item => item.productId);
@@ -163,6 +166,24 @@ const processPayment = async (req, res) => {
         if (!address) {
             return res.status(404).json({ message: 'Address not found' });
         }
+        if (promoCode) {
+          const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+          if (!promoCodeRecord) {
+              return res.status(400).json({ message: 'Invalid or expired promo code' });
+          }
+
+          // Apply the discount
+          const discountAmount = promoCodeRecord.discount * totalPrice;
+          totalPrice -= discountAmount;
+          // Ensure discounted price is valid
+          if (totalPrice < 0) {
+            return res.status(400).json({ message: 'Discounted price is invalid' });
+        }
+
+        // Delete the promo code since it's used
+        await TouristPromoCode.deleteOne({ tourist: userId, code: promoCode });
+      };
 
         // Create the order with the address reference
         const order = new Orders({
@@ -171,7 +192,7 @@ const processPayment = async (req, res) => {
                 productId: item.productId,
                 quantity: item.quantity,
             })),
-            totalPrice: cart.totalPrice, // Or calculate the total price manually
+            totalPrice: totalPrice, // Or calculate the total price manually
             orderStatus: 'pending',
             deliveryAddress: addressId,
             paymentMethod: paymentMethod,
@@ -206,17 +227,17 @@ const processPayment = async (req, res) => {
               payment_method_types: ['card'],
               line_items: lineItems,
               mode: 'payment',
-              success_url: `${frontendUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-              cancel_url: `${frontendUrl}/fail`,
+              success_url: `${frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancel_url: `${frontendUrl}/payment-failure`,
               metadata: {
                   userId: userId.toString(),
                   orderId: order._id.toString(), // Convert ObjectId to string
               },
           });
             // // Optionally, clear the cart after checkout
-            // cart.items = [];
-            // cart.totalPrice = 0;
-            // await cart.save();
+            cart.items = [];
+            cart.totalPrice = 0;
+            await cart.save();
 
             // Send the session URL back to frontend to redirect user
             return res.status(200).json({ url: session.url });
