@@ -32,6 +32,17 @@ const ProfileDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [isEditable, setIsEditable] = useState(false);
 
+    const handleEditToggle = (e) => {
+        e.preventDefault();
+        setIsEditable(!isEditable);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('Profile updated:', profileData);
+        setIsEditable(false);
+    };
+
 
     useEffect(() => {
         const touristId = localStorage.getItem('userId');
