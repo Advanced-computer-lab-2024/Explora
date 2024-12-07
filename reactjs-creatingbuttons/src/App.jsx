@@ -206,7 +206,6 @@ function App() {
         <Route path="/promo-code" element={<PromoCodeComponent />} />
         <Route path="/sales-report" element={<SalesReport />} />
 
-
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/Bookmarks" element={<BookMarks />} />
 

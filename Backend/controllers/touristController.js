@@ -1,4 +1,5 @@
 const touristModel = require('../models/touristModel');
+const jwt = require('jsonwebtoken');
 
 // controllers/touristController.js
 
@@ -56,6 +57,16 @@ const createTourist = async (req, res) => {
       // Save the tourist to the database
       const savedTourist = await newTourist.save();
   
+      // Create a token (optional) - assuming you're using JWT for authentication
+      const token = jwt.sign({ userId: savedTourist._id }, 'your_jwt_secret', { expiresIn: '1h' });
+  
+      // Set the token in the response cookies
+      res.cookie('auth_token', token, {
+        httpOnly: true,  // This makes the cookie accessible only to the server
+        secure: process.env.NODE_ENV === 'production',  // Secure cookies only in production
+        maxAge: 3600000,  // 1 hour in milliseconds
+      });
+  
       // Respond with the saved tourist object
       res.status(201).json({
         message: 'Tourist created successfully',
@@ -66,7 +77,6 @@ const createTourist = async (req, res) => {
       res.status(500).json({ message: 'Error creating tourist', error: err.message });
     }
   };
-  
 // Update a tourist by email
 const updateTourist = async (req, res) => {
     try {
