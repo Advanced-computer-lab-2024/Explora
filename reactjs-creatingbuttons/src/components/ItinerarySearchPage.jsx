@@ -12,36 +12,45 @@ const preferencesOptions = [
 
 const ItinerarySearchPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedTags, setSelectedTags] = useState([]);
-    const [selectedLanguage, setSelectedLanguage] = useState('');
-    const [selectedBudget, setSelectedBudget] = useState(100); // Default max budget
-    const [selectedDate, setSelectedDate] = useState('');
-    const [selectedPreferences, setSelectedPreferences] = useState([]);
-    const [sortByRating, setSortByRating] = useState('none');
-    const [sortByPrice, setSortByPrice] = useState('none');
+    const [selectedTags, setSelectedTags] = useState([]); // No tags selected initially
+    const [selectedLanguage, setSelectedLanguage] = useState(''); // No language filter initially
+    const [selectedBudget, setSelectedBudget] = useState(null); // No budget filter initially
+    const [selectedDate, setSelectedDate] = useState(''); // No date selected initially
+    const [selectedPreferences, setSelectedPreferences] = useState([]); // No preferences selected initially
+    const [sortByRating, setSortByRating] = useState('none'); // No sorting applied initially
+    const [sortByPrice, setSortByPrice] = useState('none'); // No sorting applied initially
     const [itineraries, setItineraries] = useState([]);
-    const [selectedCurrency, setSelectedCurrency] = useState('USD');
+    const [selectedCurrency, setSelectedCurrency] = useState('USD'); // Default currency is USD
     const [exchangeRates, setExchangeRates] = useState({});
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchitineraries = async () => {
+        const fetchItineraries = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/upcoming');
-                const itineraries = response.data.map(itinerary => ({
+                const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/all');
+                console.log(response.data);  // Add a console log here to inspect the data
+                const itins = response.data.map(itinerary => ({
                     id: itinerary._id,
-                    name: itinerary.locations,
-                    date: itinerary.date,
+                    tourGuideName: itinerary.tourGuideName,
+                    locations: itinerary.locations,
+                    timeline: itinerary.timeline,
+                    duration: itinerary.duration,
+                    language: itinerary.language,
                     price: itinerary.price,
-                    tags: itinerary.tags.map(tag => tag.tag),
+                    availableDates: itinerary.availableDates,
+                    availableTimes: itinerary.availableTimes,
+                    accessibility: itinerary.accessibility,
+                    pickupLocation: itinerary.pickupLocation,
+                    dropoffLocation: itinerary.dropoffLocation,
+                    tags: itinerary.tags,
+                    rating: itinerary.rating,
                 }));
-                setItineraries(itineraries);
+                setItineraries(itins);
             } catch (err) {
                 setError('Failed to fetch itineraries');
             }
         };
-
-        fetchitineraries();
+        fetchItineraries();
     }, []);
 
     useEffect(() => {
@@ -65,24 +74,27 @@ const ItinerarySearchPage = () => {
         return priceInUSD;
     };
 
+    // Apply budget filter only if a valid budget is selected
     const filteredItineraries = itineraries.filter((itinerary) => {
-        const matchesSearch = itinerary.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => itinerary.tags.includes(tag.value));
         const matchesLanguage = !selectedLanguage || itinerary.language.toLowerCase() === selectedLanguage.toLowerCase();
-        const matchesBudget = itinerary.budget <= selectedBudget;
-        const matchesDate = !selectedDate || itinerary.date === selectedDate;
+        const matchesBudget = selectedBudget === null || itinerary.price <= selectedBudget;
+        const matchesDate = !selectedDate || itinerary.availableDates.some(date => {
+            const availableDate = new Date(date).toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+            return availableDate === selectedDate;
+        });
         const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
             itinerary.tags.includes(pref.value)
         );
 
-        return matchesSearch && matchesTags && matchesLanguage && matchesBudget && matchesDate && matchesPreferences;
+        return matchesTags && matchesLanguage && matchesBudget && matchesDate && matchesPreferences;
     });
 
     let sortedItineraries = [...filteredItineraries];
     if (sortByPrice === 'low-to-high') {
-        sortedItineraries.sort((a, b) => a.budget - b.budget);
+        sortedItineraries.sort((a, b) => a.price - b.price);
     } else if (sortByPrice === 'high-to-low') {
-        sortedItineraries.sort((a, b) => b.budget - a.budget);
+        sortedItineraries.sort((a, b) => b.price - a.price);
     }
 
     if (sortByRating === 'lowest-to-highest') {
@@ -96,19 +108,12 @@ const ItinerarySearchPage = () => {
             {error && <div style={styles.error}>{error}</div>}
 
             <div style={styles.searchBarContainer}>
-                <input
-                    type="text"
-                    placeholder="Search by name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={styles.inputField}
-                />
-                <input
-                    type="text"
+                <Select
+                    isMulti
+                    options={preferencesOptions}
+                    onChange={(selectedOptions) => setSelectedTags(selectedOptions || [])}
+                    styles={styles.reactSelect}
                     placeholder="Search tags..."
-                    value={selectedTags}
-                    onChange={(e) => setSelectedTags(e.target.value)}
-                    style={styles.inputField}
                 />
             </div>
 
@@ -117,8 +122,8 @@ const ItinerarySearchPage = () => {
                     <label>Budget:</label>
                     <input
                         type="number"
-                        value={selectedBudget}
-                        onChange={(e) => setSelectedBudget(e.target.value)}
+                        value={selectedBudget || ''}
+                        onChange={(e) => setSelectedBudget(e.target.value ? parseInt(e.target.value) : null)} // Allow empty value to reset budget
                         style={styles.selectInput}
                     />
                 </div>
@@ -196,21 +201,25 @@ const ItinerarySearchPage = () => {
             </div>
 
             <div style={styles.resultsContainer}>
-                <h3>Available Itineraries:</h3>
+                <h3>Itineraries:</h3>
                 <ul style={styles.resultsList}>
-                {sortedItineraries.map((itinerary) => (
-    <li key={itinerary.id} style={styles.resultItem}>
-        <Link to={`/itineraries/${itinerary.id}`} style={styles.resultLink}>
-            {itinerary.name}
-        </Link>
-        <div style={styles.details}>
-            Category: <span>{itinerary.category}</span> - Price {selectedCurrency} {convertPrice(itinerary.price).toFixed(2)} - Rating: {itinerary.rating}/5 - tags: {itinerary.tags.join(', ')}
-        </div>
-    </li>
-))}
-
+                    {sortedItineraries.length === 0 ? (
+                        <p>No itineraries found.</p>
+                    ) : (
+                        sortedItineraries.map((itinerary) => (
+                            <li key={itinerary.id} style={styles.resultItem}>
+                                <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
+                                    {selectedCurrency} {convertPrice(itinerary.price).toFixed(2)} - (Rating: {itinerary.rating}) - Date: {itinerary.availableDates.join(', ')}
+                                </Link>
+                                <div style={styles.additionalInfo}>
+                                    <p>Language: {itinerary.language}</p>
+                                    <p>Tags: {itinerary.tags.join(', ')}</p>
+                                </div>
+                            </li>
+                        ))
+                    )}
                 </ul>
-            </div>
+
                 {/* View Upcoming Itineraries Button */}
                 <div style={styles.viewButtonContainer}>
                     <Link to="/UpcomingItineraries" style={styles.viewButton}>
@@ -218,6 +227,7 @@ const ItinerarySearchPage = () => {
                     </Link>
                 </div>
             </div>
+        </div>
     );
 };
 
