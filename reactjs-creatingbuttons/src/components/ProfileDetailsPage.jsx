@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons'; // User icon import
 import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import axios from 'axios';
 
 const EditIcon = () => (
   <svg
@@ -157,13 +158,13 @@ const ProfileDetailsPage = () => {
                             }}
                         />
                         <h1 style={{ fontWeight: 'bold', fontSize: '36px', marginBottom: '10px' }}>
-                            {profileData.username}
+                            {profile.username}
                         </h1>
                         <p style={{ fontSize: '16px', marginBottom: '5px', fontWeight: 'normal' }}>
-                            Wallet: {profileData.wallet}
+                            Wallet: {profile.wallet}
                         </p>
                         <p style={{ fontSize: '16px', fontWeight: 'normal' }}>
-                            Level: {profileData.level}
+                            Level: {profile.level}
                         </p>
                     </div>
 
@@ -185,7 +186,8 @@ const ProfileDetailsPage = () => {
                             Redeem Points
                         </button>
                         <button
-                            onClick={handleChangePassword} // Navigate to change password page
+                onClick={() => navigate('/change-password')}
+              
                             style={{
                                 marginBottom: '20px',
                                 padding: '10px 20px',
@@ -201,7 +203,7 @@ const ProfileDetailsPage = () => {
                             Change Password
                         </button>
                         <button
-                            onClick={handleFileComplaint} // Navigate to file complaint page
+                            onClick={() => navigate('/file-complaint')} // Navigate to file complaint page
                             style={{
                                 marginBottom: '20px',
                                 padding: '10px 20px',
@@ -217,7 +219,7 @@ const ProfileDetailsPage = () => {
                             File a Complaint
                         </button>
                         <button
-                            onClick={handleRequestAccountDeletion} // Navigate to account deletion page
+                            onClick={() => navigate('/request-account-deletion')} // Navigate to account deletion page
                             style={{
                                 padding: '10px 20px',
                                 background: '#008080',
@@ -257,7 +259,7 @@ const ProfileDetailsPage = () => {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={profileData.email}
+                                    value={profile.email}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required
@@ -278,7 +280,7 @@ const ProfileDetailsPage = () => {
                                 Nationality:
                                 <select
                                     name="nationality"
-                                    value={profileData.nationality}
+                                    value={profile.nationality}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required
@@ -302,7 +304,7 @@ const ProfileDetailsPage = () => {
                                 <input
                                     type="date"
                                     name="dob"
-                                    value={profileData.dob}
+                                    value={profile.dob}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required
@@ -322,7 +324,7 @@ const ProfileDetailsPage = () => {
                                 Job Status:
                                 <select
                                     name="jobStatus"
-                                    value={profileData.jobStatus}
+                                    value={profile.jobStatus}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required

@@ -88,6 +88,23 @@ const handleViewUpcomingBookedEventsClick = () => {
     navigate('/view-booked-transportations');
   };
 
+  const handleSearch = () => {
+    const query = searchQuery.toLowerCase();
+    if (query === "profile") {
+      navigate('/ProfileDetailsPage');
+    } else if (query === "activities" || query === "activity") {
+      navigate('/UpcomingActivities');
+    } else if (query === "flights" || query === "flight") {
+      navigate('/book-flight');
+    } else if (query === "itineraries" || query === "itinerary") {
+      navigate('/UpcomingItineraries');
+    } else if (query === "hotels" || query === "hotel") {
+      navigate('/book-hotel');
+    } else if (query === "products" || query === "product") {
+      navigate('/product-list-tourist');
+    }
+  };
+
   return (
     <div className="main-container">
       {/* New Navigation Bar */}
