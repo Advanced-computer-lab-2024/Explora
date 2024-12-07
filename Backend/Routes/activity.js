@@ -9,35 +9,31 @@ const mongoose = require('mongoose');
 
 // Create an activity
 router.post('/create/:categoryName', async (req, res) => {
-    // Extract the category name from request parameters
     const { categoryName } = req.params;
+    const { advertiserId, name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
-    // Extract other activity details from the request body
-    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
-    const advertiserId = req.user.id; 
+    if (!advertiserId) {
+        return res.status(400).json({ message: 'Advertiser ID is required.' });
+    }
 
     try {
-        const activity = await Activity.findOne({ name, date, time, location });
-        if (activity) {
+        const activityExists = await Activity.findOne({ name, date, time, location });
+        if (activityExists) {
             return res.status(400).json({ message: 'Activity already exists.' });
         }
-        // Find the category by name
-        const category = await ActivityCategory.findOne({ activityType: categoryName });
 
-        // If the category is not found, return an error
+        const category = await ActivityCategory.findOne({ activityType: categoryName });
         if (!category) {
             return res.status(404).json({ message: 'Category not found.' });
         }
 
         const prefTags = await PrefrenceTag.find({ tag: { $in: tags } });
-
-
         if (prefTags.length !== tags.length) {
             return res.status(400).json({ message: 'One or more tags are invalid.' });
         }
 
-        // Create a new activity instance
         const newActivity = new Activity({
+            advertiserId, // Set the advertiser ID from request body
             name,
             date,
             time,
@@ -45,7 +41,7 @@ router.post('/create/:categoryName', async (req, res) => {
             location,
             price,
             category: category._id,
-            tags: prefTags.map(tag => tag._id), 
+            tags: prefTags.map(tag => tag._id),
             specialDiscounts,
             bookingOpen,
         });
@@ -110,7 +106,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get all upcoming itineraries
 // Get all upcoming activities
 router.get('/upcoming', async (req, res) => {
     const today = new Date(); // Get today's date
@@ -166,6 +161,23 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Route to get activities by advertiser ID
+router.get('/act/:advertiserId', async (req, res) => {
+  try {
+    const advertiserId = req.params.advertiserId;
+
+    // Find all activities associated with the advertiser
+    const activities = await Activity.find({ 
+      advertiserId,
+      isDeleted: false, // Exclude deleted activities
+    }).populate('category tags');
+
+    res.status(200).json(activities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching activities.' });
+  }
+});
 
 // Update an activity
 router.put('/:id', async (req, res) => {

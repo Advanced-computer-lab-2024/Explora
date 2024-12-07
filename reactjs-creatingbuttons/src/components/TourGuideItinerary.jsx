@@ -24,6 +24,24 @@ const TourGuideItinerary = () => {
         Create Itinerary
       </button>
       <button
+  onClick={() => navigate(-1)}
+  style={{
+    position: 'absolute',
+    top: '20px',        // Adjust as needed for spacing
+    left: '20px',       // Adjust as needed for spacing
+    padding: '10px 20px',
+    fontSize: '16px',
+    backgroundColor: '#007bff',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+  }}
+>
+  Go Back
+</button>
+
+      <button
         style={{
           width: '250px',
           height: '60px',

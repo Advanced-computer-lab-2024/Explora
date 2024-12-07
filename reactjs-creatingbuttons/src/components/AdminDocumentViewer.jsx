@@ -47,11 +47,8 @@ const AdminDocumentViewer = () => {
   const handleReject = async (userId) => {
     const updatedUser = await updateStatusInBackend(userId, 'Rejected');
     if (updatedUser) {
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user._id === userId ? { ...user, status: 'Rejected' } : user
-        )
-      );
+      // Remove the rejected user from the state
+      setUsers((prevUsers) => prevUsers.filter((user) => user._id !== userId));
     }
   };
 

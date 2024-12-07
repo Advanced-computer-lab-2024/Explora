@@ -371,15 +371,6 @@ const changePassword = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
 // Additional user controller functions can be defined here...
 
 module.exports = {

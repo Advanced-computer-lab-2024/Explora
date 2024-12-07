@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaBell } from 'react-icons/fa'; // Importing the bell icon
+import axios from 'axios'; // Make sure axios is imported
 import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 import './Touristhome.css'; // Import the CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,6 +34,42 @@ import { Link } from 'react-router-dom';
 
 export default function Touristhome() {
   const navigate = useNavigate();
+  const [unreadNotifications, setUnreadNotifications] = useState(0); // State for unread notifications
+  const userId = localStorage.getItem('userId');
+  const token = localStorage.getItem('token'); // Get token from localStorage
+
+  useEffect(() => {
+    // If userId or token is missing, don't make the API request
+    if (!userId || !token) {
+      console.error('User ID or token is missing.');
+      return;
+    }
+
+    // Fetch notifications or any data that will update the unread count
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:4000/api/notifications/notifications?userId=${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = response.data;
+        // Filter unread notifications and set the unread count
+        const unreadCount = data.filter(
+          (notification) => !notification.read
+        ).length;
+        setUnreadNotifications(unreadCount);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+  }, [userId, token]); // Dependencies to re-fetch if either userId or token changes
   const [showPromoModal, setShowPromoModal] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 

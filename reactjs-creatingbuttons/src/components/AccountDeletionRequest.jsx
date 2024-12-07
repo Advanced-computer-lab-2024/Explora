@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserSlash } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 const AccountDeletionRequest = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [deletionReason, setDeletionReason] = useState('');
@@ -26,7 +28,7 @@ const AccountDeletionRequest = () => {
       // Send the deletion request to the backend
       const response = await axios.post('http://localhost:4000/Request/requestDeletion', {
         username,
-        email, // Sending email to backend as well
+        email,
         reason: deletionReason,
       });
 

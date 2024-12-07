@@ -27,14 +27,20 @@ const ActivityList2 = () => {
 
     // Fetch all activities from the backend
     const fetchActivities = async () => {
+        const advertiserId = localStorage.getItem('userId'); // Retrieve advertiserId
+        if (!advertiserId) {
+            console.error('No advertiserId found in localStorage');
+            return;
+        }
+    
         try {
-            const response = await axios.get('http://localhost:4000/Activity');
+            const response = await axios.get(`http://localhost:4000/api/Activity/act/${advertiserId}`);
             setActivities(response.data);
         } catch (err) {
             console.error('Error fetching activities:', err);
         }
     };
-
+    
     // Fetch all categories from the backend
     const fetchCategories = async () => {
         try {

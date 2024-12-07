@@ -41,5 +41,21 @@ router.put('/updateStatus/:id', updateStatus);
 router.post('/change-password', changePassword); // New route for changing password
 router.delete('/:id', deleteUser); // New route for deleting user
 
+router.get('/loyalty-points/:userId', (req, res) => {
+    const { userId } = req.params;
+    // Fetch user from database (e.g., MongoDB)
+    User.findById(userId)
+      .then(user => {
+        if (user) {
+          res.json({ loyaltyPoints: user.loyaltyPoints });
+        } else {
+          res.status(404).json({ message: 'User not found' });
+        }
+      })
+      .catch(error => {
+        res.status(500).json({ message: 'Error fetching loyalty points', error });
+      });
+  });
+  
 
 module.exports = router;
