@@ -82,6 +82,7 @@ const handleViewUpcomingBookedEventsClick = () => {
     navigate('/my-promo-codes');
   };
   
+  
  
   // New handler for viewing all booked transportations
   const handleViewBookedTransportationsClick = () => {
@@ -246,6 +247,8 @@ const handleViewUpcomingBookedEventsClick = () => {
                   >
                     Booked Transportations
                   </button>
+
+                  
                 </div>
               )}
             </div>
@@ -338,6 +341,12 @@ const handleViewUpcomingBookedEventsClick = () => {
           <FontAwesomeIcon icon={faUserMinus} />
           Request Account Deletion
         </button>
+        <button onClick={handleViewPastBookedEventsClick}>View All My Previously Booked Events</button>
+        <button onClick={handleViewUpcomingBookedEventsClick}>View All My Upcoming Booked Events</button>
+        <button onClick={handleBookmarkedeventsClick}>Bookmarked Events</button>
+        <button onClick={handleViewNotificationsClick}>View Notifications</button>
+        <button onClick={handleViewMyPromoCodesClick}>View My Promo Codes</button>
+
       </div>
 
       {/* Testimonials Section */}

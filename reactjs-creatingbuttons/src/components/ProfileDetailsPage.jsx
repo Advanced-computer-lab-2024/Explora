@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons'; // User icon import
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const EditIcon = () => (
@@ -18,6 +18,7 @@ const EditIcon = () => (
   </svg>
 );
 
+
 const ProfileDetailsPage = () => {
     const [profile, setProfile] = useState({
         email: '',
@@ -31,17 +32,15 @@ const ProfileDetailsPage = () => {
 
     const [loading, setLoading] = useState(true);
     const [isEditable, setIsEditable] = useState(false);
+    const navigate = useNavigate(); // Add this here
+
 
     const handleEditToggle = (e) => {
         e.preventDefault();
         setIsEditable(!isEditable);
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Profile updated:', profileData);
-        setIsEditable(false);
-    };
+
 
 
     useEffect(() => {
@@ -199,22 +198,23 @@ const ProfileDetailsPage = () => {
                             Redeem Points
                         </button>
                         <button
-                onClick={() => navigate('/change-password')}
-              
-                            style={{
-                                marginBottom: '20px',
-                                padding: '10px 20px',
-                                background: '#008080',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            Change Password
-                        </button>
+    onClick={() => navigate('/change-password')} // Correctly uses the navigate function
+    style={{
+        marginBottom: '20px',
+        padding: '10px 20px',
+        background: '#008080',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '16px',
+        fontWeight: 'bold',
+    }}
+>
+    Change Password
+</button>
+
+
                         <button
                             onClick={() => navigate('/file-complaint')} // Navigate to file complaint page
                             style={{
