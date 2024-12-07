@@ -96,7 +96,7 @@ import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdve
 import Success from './pages/success.jsx';
 import Fail from './pages/fail.jsx';
 import Home from './pages/Home.jsx';
-import Wishlist from './components/Wishlist';
+import Wishlist from './components/Wishlist.jsx';
 import PromoCodeComponent from './components/PromoCodeComponent.jsx';
 import SalesReport from "./components/SalesReport"; // Adjust path based on your file structureimport ViewCartTourist from './components/ViewCartTourist';
 import Checkout from './components/Checkout'; // Create a new checkout component
@@ -105,9 +105,7 @@ import VacationGuide from "./components/VacationGuide";
 import ViewCartTourist from "./components/ViewCartTourist.jsx"
 import Notifications from './components/Notifications.jsx';
 import BookMarks from './components/BookMarks.jsx';
-import PromoCodeComponent from './components/PromoCodeComponent.jsx';
-
-
+import ForgetPassword from './components/ForgetPass.jsx'
 function App() {
 
   return (
@@ -116,7 +114,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<Home />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
@@ -211,12 +209,12 @@ function App() {
 
         <Route path="/Notifications" element={<Notifications />} />
         <Route path="/Bookmarks" element={<BookMarks />} />
-        <Route path="/promo-code" element={<PromoCodeComponent />} />
 
         <Route path="/view-cart" element={<ViewCartTourist />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
         <Route path="/vacation-guide" element={<VacationGuide />} />
+        <Route path="/forget_password" element={<ForgetPassword />} />
         </Routes>
       </Router>
     </main>

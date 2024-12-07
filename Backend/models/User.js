@@ -17,6 +17,14 @@ const userSchema = new Schema({
         type: String,
         enum: ['Tourist','Seller','TourGuide','Advertiser','Governor', 'Admin'],
         required: true 
+    },
+    resetCode: {
+        type: String,
+        default: null,
+    },
+    resetCodeExpires: {
+        type: Date,
+        default: null
     }
 }, 
 { 
