@@ -7,7 +7,7 @@ const { checkAdmin } = require('../middleware/AuthMiddleware');
 const socket = require('socket.io-client');
 let io; // The Socket.IO instance
 const nodemailer = require('nodemailer');
-const Notification = require('../models/Notification'); // Import Notification model
+const Notifications = require('../models/Notifications'); // Import Notification model
 const TourGuide = require('../models/Tour_Guide_Profile');
 const Book = require('../models/Book');
 
@@ -18,7 +18,6 @@ const setIo = (_io) => {
 const User = require('../models/User');
 const TouristPromoCode = require('../models/touristPromoCode');
 const BookedItinerary = require('../models/bookedItineraries');
-const nodemailer = require('nodemailer');
 const stripe = require('stripe')(process.env.STRIPE_API_SECRET);
 const cron = require('node-cron');
 const moment = require('moment');
@@ -1062,17 +1061,7 @@ router.put('/comment/:id', async (req, res) => {
   }
 });
 
-// Create a transporter for sending emails (ensure you use app-specific passwords if required)
-const transporter = nodemailer.createTransport({
-  service: 'Gmail', // Using Gmail as the email service
-  auth: {
-    user: 'explora.donotreply@gmail.com',
-    pass: 'goiz pldj kpjy clsh' // Use app-specific password if required
-  },
-  tls: {
-    rejectUnauthorized: false, // This will allow self-signed certificates
-  }
-});
+
 
 // Flagging and unflagging the itinerary
 router.patch('/:id/flag', async (req, res) => {
@@ -1092,7 +1081,7 @@ router.patch('/:id/flag', async (req, res) => {
     // If the itinerary has been flagged, notify the tour guide
     if (itinerary.flagged) {
       // Create a notification for the itinerary owner (tour guide)
-      await Notification.create({
+      await Notifications.create({
         userId: itinerary.tourGuideId._id, // Assuming 'tourGuideId' points to a User
         message: `Your itinerary "${itinerary.locations}" has been flagged.`,
         itineraryId: id,

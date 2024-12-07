@@ -1,6 +1,6 @@
 // backend/routes/notification.js
 const express = require('express');
-const Notification = require('../models/Notification');
+const Notification = require('../models/Notifications');
 
 const router = express.Router();
 
