@@ -22,6 +22,7 @@ const bookedItinerarySchema = new mongoose.Schema({
   duration: { type: Number, required: true }, // Duration in days or appropriate unit
   language: { type: String, required: true },
   price: { type: Number, required: true },
+  availableDates: { type: [Date], required: true },
   pickupLocation: { type: String, required: true },
   dropoffLocation: { type: String, required: true },
   tags: { type: [String], required: false },

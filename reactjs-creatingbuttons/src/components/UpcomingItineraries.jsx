@@ -13,11 +13,13 @@ const UpcomingItineraries = () => {
   const [error, setError] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedItinerary, setSelectedItinerary] = useState(null);
-  const [touristId] = useState('674b64cbd03522fb24ac9d06'); // Hardcoded for now
+  // const [touristId] = useState('674b64cbd03522fb24ac9d06'); // Hardcoded for now
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
   const [itineraryId, setItineraryId] = useState(null); // Set after selecting the activity
   const [enteredPromocode, setEnteredPromocode] = useState('');
   const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
- 
+  const [errorMessage, setErrorMessage] = useState('');
+
 
 
   useEffect(() => {
@@ -72,6 +74,11 @@ const UpcomingItineraries = () => {
   };
 
   const handleWalletPayment = async () => {
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+    if (!touristId) {
+      setErrorMessage('User not logged in. Please log in first.');
+      return;
+    }
     try {
       const response = await fetch('http://localhost:4000/api/tour_guide_itinerary/bookWallet', {
         method: 'POST',
@@ -150,25 +157,24 @@ const UpcomingItineraries = () => {
   };
 
   const handleBookmarkClick = async (itinerary) => {
-    if (!itineraryId) {
-      alert("Please select an itinerary to bookmark.");
+    const touristId = localStorage.getItem('userId');  
+    if (!touristId) {
+      setErrorMessage('User not logged in. Please log in first.');
       return;
     }
-    setSelectedItinerary(itinerary);
-    setItineraryId(itinerary._id);
-   
+  
     try {
       const response = await fetch(`http://localhost:4000/api/tour_guide_itinerary/bookmark/${touristId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ eventId: itineraryId }), // Pass the selected itinerary ID
+        body: JSON.stringify({ eventId: itinerary._id }), // Directly use itinerary._id
       });
   
       if (response.ok) {
         const data = await response.json();
-        alert(data.message); // Display success message
+        alert(data.message); // Success
       } else {
         const errorData = await response.json();
         alert(errorData.message || "Failed to bookmark the itinerary.");
@@ -179,35 +185,35 @@ const UpcomingItineraries = () => {
     }
   };
   
+  
+  
+  
 
   return (
     <div className="UpcomingItineraries">
       <h1 className="header">Upcoming Itineraries</h1>
       <div className="activities-list">
-        {itins.map((itin) => (
-          <div key={itin._id} className="activity-card">
-            <h2 className="activity-name">{itin.locations}</h2>
-            <p className="activity-rating">TourGuide: {itin.tourGuideName}</p>
-            <p className="activity-date">Date: {itin.availableDates}</p>
-            <p className="activity-price">Price: {itin.price}$</p>
-            <p className="activity-rating">language: {itin.language}</p>
+      {itins.map((itin) => (
+  <div key={itin._id} className="activity-card">
+    <h2 className="activity-name">{itin.locations}</h2>
+    <p className="activity-rating">TourGuide: {itin.tourGuideName}</p>
+    <p className="activity-date">Date: {itin.availableDates.join(', ')}</p> 
+    <p className="activity-price">Price: {itin.price}$</p>
+    <p className="activity-rating">Language: {itin.language}</p>
 
+    <div className="share-buttons">
+      <button onClick={() => shareLink(itin)}>Share Link</button>
+      <button onClick={() => shareEmail(itin)}>Share via Email</button>
+      <button onClick={() => handleBookmarkClick(itin)}>Bookmark</button>
+      {bookedTickets.includes(itin._id) ? (
+        <button disabled>Ticket Already Booked</button>
+      ) : (
+        <button onClick={() => handleItinerarySelect(itin)}>Book Ticket</button>
+      )}
+    </div>
+  </div>
+))}
 
-            <div className="share-buttons">
-              <button onClick={() => shareLink(itin)}>Share Link</button>
-              <button onClick={() => shareEmail(itin)}>Share via Email</button>
-              <button onClick={handleBookmarkClick}>Bookmark</button>
-              {bookedTickets.includes(itin._id) ? (
-                <button disabled>Ticket Already Booked</button>
-              ) : (
-                <button onClick={() => handleItinerarySelect(itin)}>Book Ticket</button>
-              )}
-              {/* {bookedTickets.includes(itin._id) && (
-                <button onClick={() => handleCancelBooking(itin)}>Cancel Booking</button>
-              )} */}
-            </div>
-          </div>
-        ))}
 
         {/* Payment Modal */}
 {isPaymentModalOpen && selectedItinerary && (

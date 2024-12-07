@@ -16,13 +16,13 @@ const UpcomingActivities = () => {
   const [error, setError] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen]= useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
-  const [userId, setUserId] = useState("67322cdfa472e2e7d22de84a");
-  const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded for now
+  // const [userId, setUserId] = useState("67322cdfa472e2e7d22de84a");
+  // const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded for now
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
   const [activityId, setActivityId] = useState(null); // Set after selecting the activity
   const [enteredPromocode, setEnteredPromocode] = useState('');
   const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
- 
-
+ const [errorMessage, setErrorMessage] = useState('');
   useEffect(() => {
     const savedPoints = localStorage.getItem('loyaltyPoints');
     if (savedPoints) {
@@ -107,6 +107,11 @@ const handleActivitySelect = (activity) => {
   
 //Handle Wallet Payment
 const handleWalletPayment = async () => {
+  const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+  if (!touristId) {
+    setMessage('User not logged in. Please log in first.');
+    return;
+  }
   try {
       const response = await fetch("http://localhost:4000/api/activity/bookWallet", {
           method: "POST",
@@ -199,13 +204,11 @@ if (error) return <div>Error: {error}</div>;
   };
 
   const handleBookmarkClick = async (activity) => {
-    if (!activityId) {
-      alert("Please select an activity or itinerary to bookmark.");
+    const touristId = localStorage.getItem('userId');
+    if (!touristId) {
+      setErrorMessage('User not logged in. Please log in first.');
       return;
-    }
-    setSelectedActivity(activity);
-    setActivityId(activity._id);
-   
+    }  
   
     try {
       const response = await fetch(`http://localhost:4000/api/tour_guide_itinerary/bookmark/${touristId}`, {
@@ -213,7 +216,7 @@ if (error) return <div>Error: {error}</div>;
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ eventId: activityId }), // Pass the selected activity ID or itinerary ID
+        body: JSON.stringify({ eventId: activity._id }), // Pass the selected activity ID or itinerary ID
       });
   
       if (response.ok) {
@@ -221,7 +224,7 @@ if (error) return <div>Error: {error}</div>;
         alert(data.message); // Display success message
       } else {
         const errorData = await response.json();
-        alert(errorData.message || "Failed to bookmark the event.");
+        alert(errorData.message || "Failed to bookmark the activity.");
       }
     } catch (error) {
       console.error("Error bookmarking the event:", error);
@@ -242,14 +245,15 @@ if (error) return <div>Error: {error}</div>;
             <p className="activity-rating">Rating: {place.rating}/10</p>
 
             <div className="share-buttons">
+            <button onClick={() => shareLink(place)}>Share Link</button>
+              <button onClick={() => shareEmail(place)}>Share via Email</button>
+              <button onClick={()=>handleBookmarkClick(place)}>Bookmark</button>
               {bookedTickets.includes(place._id) ? (
                 <button disabled>Ticket Already Booked</button>
               ) : (
                 <button onClick={() => handleActivitySelect(place)}>Book Ticket</button>
               )}
-              <button onClick={() => shareLink(place)}>Share Link</button>
-              <button onClick={() => shareEmail(place)}>Share via Email</button>
-              <button onClick={handleBookmarkClick}>Bookmark</button>
+              
             </div>
             {/*
             {bookedTickets.includes(place._id) && (

@@ -282,6 +282,7 @@ router.post('/bookWallet', async (req, res) => {
           duration: itinerary.duration,
           language: itinerary.language,
           price: totalPrice,
+          availableDates: itinerary.availableDates[0], // Use the first available date
           pickupLocation: itinerary.pickupLocation,
           dropoffLocation: itinerary.dropoffLocation,
           tags: itinerary.tags,
@@ -347,28 +348,32 @@ router.get('/pastBookedItineraries/:touristId', async (req, res) => {
       }
 
       // Fetch all booked itineraries for the tourist
-      const pastBookedItineraries = await BookedItinerary.find({ tourist: touristId })
-          .populate('itinerary', 'tourGuideName locations duration price') // Populate itinerary fields
+      const bookedItineraries = await BookedItinerary.find({ tourist: touristId })
+          .populate('itinerary', 'tourGuideName locations duration price availableDates') // Populate itinerary fields
           .select('-__v -createdAt -updatedAt'); // Exclude unnecessary fields
 
-      // Filter itineraries based on the latest date in the activities array
-      const pastItineraries = pastBookedItineraries.filter(itinerary => {
-          const latestActivityDate = itinerary.activities[itinerary.activities.length - 1].date;
-          return latestActivityDate < new Date(); // If the latest activity date is in the past
+      // Filter itineraries based on the first date in the availableDates array
+      const currentDate = new Date();
+      const pastItineraries = bookedItineraries.filter(itinerary => {
+          const firstAvailableDate = itinerary.availableDates[0]; // Use the first value in availableDates
+          return firstAvailableDate < currentDate; // Compare the first available date with the current date
       });
 
-      // Check if no past bookings were found
-      if (pastItineraries.length === 0) {
-          return res.status(404).json({ message: 'No past booked itineraries found for this tourist' });
-      }
+      const futureItineraries = bookedItineraries.filter(itinerary => {
+          const firstAvailableDate = itinerary.availableDates[0]; // Use the first value in availableDates
+          return firstAvailableDate >= currentDate; // Compare the first available date with the current date
+      });
 
-      // Return the past booked itineraries
-      res.status(200).json(pastItineraries);
+      // Return past and future itineraries
+      res.status(200).json({ 
+          pastItineraries
+      });
   } catch (err) {
       console.error(err);
-      res.status(500).json({ message: 'Error fetching past booked itineraries', error: err.message });
+      res.status(500).json({ message: 'Error fetching itineraries', error: err.message });
   }
 });
+
 
 //http://localhost:4000/api/tour_guide_itinerary/upcomingBookedItineraries/5f9b1b3b7b3b3b3b3b3b3b3b
 router.get('/upcomingBookedItineraries/:touristId', async (req, res) => {
@@ -382,26 +387,24 @@ router.get('/upcomingBookedItineraries/:touristId', async (req, res) => {
       }
 
       // Fetch all booked itineraries for the tourist
-      const upcomingBookedItineraries = await BookedItinerary.find({ tourist: touristId })
-          .populate('itinerary', 'tourGuideName locations duration price') // Populate itinerary fields
+      const bookedItineraries = await BookedItinerary.find({ tourist: touristId })
+          .populate('itinerary', 'tourGuideName locations duration price availableDates') // Populate itinerary fields
           .select('-__v -createdAt -updatedAt'); // Exclude unnecessary fields
 
-      // Filter itineraries based on the latest date in the activities array
-      const upcomingItineraries = upcomingBookedItineraries.filter(itinerary => {
-          const latestActivityDate = itinerary.activities[itinerary.activities.length - 1].date;
-          return latestActivityDate >= new Date(); // If the latest activity date is in the present or future
+      // Filter itineraries based on the first date in the availableDates array
+      const currentDate = new Date();
+      const futureItineraries = bookedItineraries.filter(itinerary => {
+          const firstAvailableDate = itinerary.availableDates[0]; // Use the first value in availableDates
+          return firstAvailableDate >= currentDate; // Compare the first available date with the current date
       });
 
-      // Check if no upcoming bookings were found
-      if (upcomingItineraries.length === 0) {
-          return res.status(404).json({ message: 'No upcoming booked itineraries found for this tourist' });
-      }
-
-      // Return the upcoming booked itineraries
-      res.status(200).json(upcomingItineraries);
+      // Return past and future itineraries
+      res.status(200).json({ 
+          futureItineraries
+      });
   } catch (err) {
       console.error(err);
-      res.status(500).json({ message: 'Error fetching upcoming booked itineraries', error: err.message });
+      res.status(500).json({ message: 'Error fetching itineraries', error: err.message });
   }
 });
 

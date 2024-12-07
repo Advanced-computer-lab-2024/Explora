@@ -14,27 +14,28 @@ const LoginForm = () => {
     try {
       const response = await axios.post('http://localhost:4000/api/auth/', { username, password });
 
-      const { token, role } = response.data;
-
+      const { token, role, userId } = response.data;
+      console.log('Received userId:', userId);  // Log to check if userId is present
+      
       localStorage.setItem('token', token);
+      localStorage.setItem('userId', userId);  // Store userId
 
       switch (role) {
         case 'Governor':
           navigate('/tourism-dashboard');
           break;
         case 'TourGuide':
-          navigate('/to-do');
+          navigate(`/terms-tour-guide/${userId}`);
           break;
         case 'Tourist':
           navigate('/tourist-home');
           break;
         case 'Advertiser':
-          navigate('/company');
+          navigate(`/terms-advertiser/${userId}`);
           break;
         case 'Seller':
-          navigate('/seller-home');
+          navigate(`/terms-seller/${userId}`);
           break;
-        
         case 'Admin':
           navigate('/');
           break;
@@ -42,7 +43,11 @@ const LoginForm = () => {
           navigate('/dashboard');
       }
     } catch (err) {
-      setError('Invalid username or password. Please try again.');
+      if (err.response && err.response.data && err.response.data.msg) {
+        setError(err.response.data.msg);  // Set the error message from the backend
+      } else {
+        setError('Invalid username or password. Please try again.');
+      }
     }
   };
 
@@ -89,9 +94,7 @@ const LoginForm = () => {
             <Link to="/change-password">Forgot password?</Link>
           </p>
           <p>
-          <p>
-  <Link to="/guest-home" className="link">Continue as a guest</Link>
-</p>
+            <Link to="/guest-home" className="link">Continue as a guest</Link>
           </p>
           <p>
             <Link to="/acc-settings">Admin Access</Link>

@@ -414,6 +414,7 @@ router.get('/upcoming', async (req, res) => {
     }
 });
 
+//http://localhost:4000/api/activity/previous-activities
 router.get('/previous-activities', async (req, res) => {
     const today = new Date(); // Get today's date
 

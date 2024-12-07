@@ -2,12 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const Notifications = () => {
-  const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Replace with dynamic ID as needed
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     // Fetch notifications from the backend
     const fetchNotifications = async () => {
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+      if (!touristId) {
+        setErrorMessage('User not logged in. Please log in first.');
+        return;
+      }
       try {
         const response = await axios.get(
           `http://localhost:4000/api/tour_guide_itinerary/notification/${touristId}`

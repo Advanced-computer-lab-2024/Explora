@@ -87,7 +87,7 @@ router.post('/bookWallet', async (req, res) => {
         const savedBooking = await booking.save();
 
         // Process payment (call the method on the booking instance)
-        await savedBooking.processPayment();
+        // await savedBooking.processPayment();
 
         // Send a booking receipt email to the tourist
         const mailOptions = {

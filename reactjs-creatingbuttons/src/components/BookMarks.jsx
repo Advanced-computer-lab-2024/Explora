@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Bookmarks = () => {
-  const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded tourist ID
+  // const [touristId] = useState("674b64cbd03522fb24ac9d06"); // Hardcoded tourist ID
+
   const [bookmarks, setBookmarks] = useState({ activities: [], itineraries: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
 
   useEffect(() => {
     const fetchBookmarks = async () => {

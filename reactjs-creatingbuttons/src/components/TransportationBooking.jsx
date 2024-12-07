@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Added import for axios
 
 export default function TransportationBooking() {
   const [transportationOptions, setTransportationOptions] = useState([]);
@@ -8,8 +7,10 @@ export default function TransportationBooking() {
   const [error, setError] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null); // State to track the selected transportation option
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false); // State to track modal visibility
+  const [enteredPromocode, setEnteredPromocode] = useState('');
+  const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
   const navigate = useNavigate();
-  const touristId = '6744bead2b0cf27c284554ad'; // Replace this with the actual tourist ID if dynamic
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
 
   useEffect(() => {
     const fetchTransportationOptions = async () => {
@@ -35,13 +36,21 @@ export default function TransportationBooking() {
     fetchTransportationOptions();
   }, []);
 
-  const handlePayWithWallet = async () => {
+  
+
+  const handleWalletPayment = async () => {
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+    if (!touristId) {
+      setErrorMessage('User not logged in. Please log in first.');
+      return;
+    }
     const bookingData = {
-      touristId: touristId,
+      touristId,
       transportationId: selectedOption._id, // Get the transportationId from the selected option
       seats: 1, // Number of seats (modify as needed)
+      promoCode:enteredPromocode,
     };
-
+  
     try {
       const response = await fetch('http://localhost:4000/transportationBook/bookWallet', {
         method: 'POST',
@@ -50,26 +59,34 @@ export default function TransportationBooking() {
         },
         body: JSON.stringify(bookingData),
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         alert(`Booking confirmed! Booking ID: ${data._id}`);
         setIsPaymentModalOpen(false); // Close the modal after successful booking
       } else {
-        const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+        const errorText = await response.text(); // Read raw text in case JSON parsing fails
+        let errorMessage;
+        try {
+          const errorData = JSON.parse(errorText); // Try parsing as JSON
+          errorMessage = errorData.message || 'An unknown error occurred';
+        } catch {
+          errorMessage = errorText || 'An unknown error occurred';
+        }
+        alert(`Error: ${errorMessage}`);
       }
     } catch (error) {
       alert(`Booking failed: ${error.message}`);
     }
   };
+  
 
-  const handlePayWithCreditCard = async () => {
+  const handleCreditCardPayment = async () => {
     try {
       // Create a Stripe Checkout session
       const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
-        itemName: selectedOption.name,
-        itemPrice: selectedOption.price,
+        itemName: selectedItem.name,
+        itemPrice: selectedItem.price,
       });
 
       const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
@@ -94,6 +111,7 @@ export default function TransportationBooking() {
 
   return (
     <div style={styles.container}>
+      <h1 style={styles.header}>Book a Transportation</h1>
       <div style={styles.cardContainer}>
         {transportationOptions.map((option) => (
           <div key={option._id} style={styles.card}>
@@ -111,28 +129,53 @@ export default function TransportationBooking() {
           </div>
         ))}
       </div>
-
+  
       {/* Payment Modal */}
       {isPaymentModalOpen && selectedOption && (
         <div style={styles.modal}>
-          <h4>Payment Options</h4>
+          <h4>Selected Transportation</h4>
           <p>Transportation Method: {selectedOption.method}</p>
           <p>From: {selectedOption.origin}</p>
           <p>To: {selectedOption.destination}</p>
           <p>Amount to Pay: {selectedOption.currency} {selectedOption.price}</p>
-          <button onClick={handlePayWithWallet} style={styles.bookButton}>
-            Pay with Wallet
-          </button>
-          <button onClick={handlePayWithCreditCard} style={styles.creditButton}>
-            Pay with Credit Card
-          </button>
-          <button onClick={handleCloseModal} style={styles.closeButton}>
-            Close
-          </button>
+          <h4>Choose Payment Method:</h4>
+          <div style={styles.modalButtonContainer}>
+            <div style={styles.paymentOption}>
+              <button onClick={handleCreditCardPayment} style={styles.creditCardButton}>
+                Pay with Credit Card
+              </button>
+              <input
+                type="text"
+                placeholder="Enter Promocode"
+                value={enteredPromocodeCredit}
+                onChange={(e) => setEnteredPromocodeCredit(e.target.value)}
+                style={styles.promocodeInput}
+              />
+            </div>
+            <div style={styles.paymentOption}>
+              <button onClick={handleWalletPayment} style={styles.bookButton}>
+                Pay with Wallet
+              </button>
+              <input
+                type="text"
+                placeholder="Enter Promocode"
+                value={enteredPromocode}
+                onChange={(e) => setEnteredPromocode(e.target.value)}
+                style={styles.promocodeInput}
+              />
+            </div>
+            <button
+              onClick={() => setIsPaymentModalOpen(false)}
+              style={styles.cancelButton}
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       )}
     </div>
   );
+  
 }
 
 const styles = {
@@ -176,6 +219,7 @@ const styles = {
     border: 'none',
     borderRadius: '5px',
     cursor: 'pointer',
+    margin: '10px',
   },
   creditButton: {
     padding: '10px 15px',
@@ -204,6 +248,51 @@ const styles = {
     borderRadius: '10px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     zIndex: 1000,
+    textAlign: 'center',
+    width: '750px',
+  },
+  modalButtonContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    gap: '10px',
+    marginTop: '20px',
+  },
+  modalButton: {
+    flex: '1',
+    padding: '10px',
+    fontSize: '14px',
+    fontWeight: 'bold',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    border: 'none',
+    color: 'white',
+    transition: 'background-color 0.3s',
+  },
+  creditCardButton: {
+    padding: '10px 15px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    margin: '10px',
+  },
+  cancelButton: {
+    padding: '10px 15px',
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    margin: '10px',
+  },
+  promocodeInput: {
+    marginTop: '10px',
+    width: '90%',
+    padding: '8px',
+    border: '1px solid #ccc',
+    borderRadius: '5px',
+    fontSize: '14px',
     textAlign: 'center',
   },
 };

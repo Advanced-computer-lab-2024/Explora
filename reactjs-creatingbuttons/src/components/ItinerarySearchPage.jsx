@@ -25,7 +25,32 @@ const ItinerarySearchPage = () => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        setItineraries(dummyItineraries);
+        const fetchItineraries = async () => {
+            try {
+                const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/');
+                console.log(response.data);  // Add a console log here to inspect the data
+                const itins = response.data.map(itinerary => ({
+                    id: itinerary._id,
+                    tourGuideName: itinerary.tourGuideName,
+                    locations: itinerary.locations,
+                    timeline: itinerary.timeline,
+                    duration: itinerary.duration,
+                    language: itinerary.language,
+                    price: itinerary.price,
+                    availableDates: itinerary.availableDates,
+                    availableTimes: itinerary.availableTimes,
+                    accessibility: itinerary.accessibility,
+                    pickupLocation: itinerary.pickupLocation,
+                    dropoffLocation: itinerary.dropoffLocation,
+                    tags: itinerary.tags,
+                    rating: itinerary.rating,
+                }));
+                setItineraries(itins);
+            } catch (err) {
+                setError('Failed to fetch itineraries');
+            }
+        };
+        fetchItineraries();
     }, []);
 
     useEffect(() => {
@@ -50,23 +75,22 @@ const ItinerarySearchPage = () => {
     };
 
     const filteredItineraries = itineraries.filter((itinerary) => {
-        const matchesSearch = itinerary.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => itinerary.tags.includes(tag.value));
         const matchesLanguage = !selectedLanguage || itinerary.language.toLowerCase() === selectedLanguage.toLowerCase();
-        const matchesBudget = itinerary.budget <= selectedBudget;
-        const matchesDate = !selectedDate || itinerary.date === selectedDate;
+        const matchesBudget = itinerary.price <= selectedBudget;
+        const matchesDate = !selectedDate || itinerary.availableDates.includes(selectedDate);
         const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
             itinerary.tags.includes(pref.value)
         );
 
-        return matchesSearch && matchesTags && matchesLanguage && matchesBudget && matchesDate && matchesPreferences;
+        return matchesTags && matchesLanguage && matchesBudget && matchesDate && matchesPreferences;
     });
 
     let sortedItineraries = [...filteredItineraries];
     if (sortByPrice === 'low-to-high') {
-        sortedItineraries.sort((a, b) => a.budget - b.budget);
+        sortedItineraries.sort((a, b) => a.price - b.price);
     } else if (sortByPrice === 'high-to-low') {
-        sortedItineraries.sort((a, b) => b.budget - a.budget);
+        sortedItineraries.sort((a, b) => b.price - a.price);
     }
 
     if (sortByRating === 'lowest-to-highest') {
@@ -80,19 +104,12 @@ const ItinerarySearchPage = () => {
             {error && <div style={styles.error}>{error}</div>}
 
             <div style={styles.searchBarContainer}>
-                <input
-                    type="text"
-                    placeholder="Search by name..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    style={styles.inputField}
-                />
-                <input
-                    type="text"
+                <Select
+                    isMulti
+                    options={preferencesOptions}
+                    onChange={(selectedOptions) => setSelectedTags(selectedOptions || [])}
+                    styles={styles.reactSelect}
                     placeholder="Search tags..."
-                    value={selectedTags}
-                    onChange={(e) => setSelectedTags(e.target.value)}
-                    style={styles.inputField}
                 />
             </div>
 
@@ -180,16 +197,20 @@ const ItinerarySearchPage = () => {
             </div>
 
             <div style={styles.resultsContainer}>
-                <h3>Upcoming Itineraries:</h3>
+                <h3>Itineraries:</h3>
                 <ul style={styles.resultsList}>
-                    {sortedItineraries.map((itinerary) => (
-                        <li key={itinerary.id} style={styles.resultItem}>
-                            <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
-                                {itinerary.name} - {selectedCurrency} {convertPrice(itinerary.budget).toFixed(2)} (Rating: {itinerary.rating}) - Date: {itinerary.date}
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+    {sortedItineraries.map((itinerary) => (
+        <li key={itinerary.id} style={styles.resultItem}>
+            <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
+                {selectedCurrency} {convertPrice(itinerary.price).toFixed(2)} - (Rating: {itinerary.rating}) - Date: {itinerary.availableDates.join(', ')}
+            </Link>
+            <div style={styles.additionalInfo}>
+                <p>Language: {itinerary.language}</p>
+                <p>Tags: {itinerary.tags.join(', ')}</p>
+            </div>
+        </li>
+    ))}
+</ul>
 
                 {/* View Upcoming Itineraries Button */}
                 <div style={styles.viewButtonContainer}>
@@ -201,6 +222,7 @@ const ItinerarySearchPage = () => {
         </div>
     );
 };
+
 
 const styles = {
     pageContainer: {

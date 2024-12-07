@@ -31,6 +31,10 @@ const flightRoutes = require('./Routes/flightRoutes'); // Adjust the path as nee
 const hotelRoutes = require('./Routes/hotelRoutes');
 const complaintsRoute = require('./Routes/ComplaintsRoutes');
 const promoCodeRoutes = require('./Routes/promoCodeRoutes');
+const wishListRoute = require('./Routes/WishListRoutes'); // Adjust the path as needed
+const cartRoutes = require('./Routes/cartRoutes');
+const ordersRoute = require('./Routes/ordersRoute'); // Adjust the path as needed
+const AddressRoute = require('./Routes/AddressRoutes'); // Adjust the path as needed
 
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
@@ -75,7 +79,10 @@ app.use('/hotels', hotelRoutes);
 app.use('/complaints',complaintsRoute);
 app.use('/Activity', AdvertiserActivityRoutes);
 app.use('/promoCode', promoCodeRoutes);
-
+app.use('/wishList', wishListRoute);
+app.use('/cart', cartRoutes);
+app.use('/orders', ordersRoute);
+app.use('/addresses', AddressRoute);
 
 //connect to MongoDB
 console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded

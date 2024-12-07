@@ -15,7 +15,12 @@ export default function Touristhome() {
   const handleFileComplaintClick = () => {
     navigate('/file-complaint');
   };
-
+  const handleViewPastBookedEventsClick = () => {
+    navigate('/PastBookedEvents');
+};
+const handleViewUpcomingBookedEventsClick = () => {
+  navigate('/UpcomingBookedEvents');
+};
   const handleAccountDeletionClick = () => {
     navigate('/request-account-deletion');
   };
@@ -52,9 +57,11 @@ export default function Touristhome() {
       navigate('/Notifications');
   }; 
 
+  const handleViewMyPromoCodesClick = () => {
+    navigate('/my-promo-codes');
+  };
   
-  
-
+ 
   // New handler for viewing all booked transportations
   const handleViewBookedTransportationsClick = () => {
     navigate('/view-booked-transportations');
@@ -75,9 +82,10 @@ export default function Touristhome() {
         <button onClick={handleBookHotelClick}>Book Hotel</button>
         <button onClick={handleBookmarkedeventsClick}>Bookmarked Events</button>
         <button onClick={handleViewNotificationsClick}>View Notifications</button>
-
-
+        <button onClick={handleViewPastBookedEventsClick}>View All My Previously Booked Events</button>
+        <button onClick={handleViewUpcomingBookedEventsClick}>View All My Upcoming Booked Events</button>
         {/* New button for viewing all booked transportations */}
+        <button onClick={handleViewMyPromoCodesClick}>View My Promo Codes</button>
         <button onClick={handleViewBookedTransportationsClick}>View All My Booked Transportations</button>
       </div>
     </header>

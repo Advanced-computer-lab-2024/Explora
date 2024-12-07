@@ -1,6 +1,9 @@
-// ProductCardTourist.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Modal from './Modal'; // Import the Modal component
+import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+
+
 
 const ProductCardTourist = ({ product, products, setProducts }) => {
     const [isEditing, setIsEditing] = useState(false);
@@ -10,6 +13,85 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
+    const [wishlistState, setWishlistState] = useState([]); // Wishlist state
+    const [modalTitle, setModalTitle] = useState(''); // State for modal title
+    const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
+    const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
+    const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const [heartIcon, setHeartIcon] = useState(faHeart); // Initial heart icon color
+    const heartIconStyle = {
+        transition: 'color 0.3s ease', // Smooth transition for color change
+        color: isInWishlist ? 'red' : 'black' // Red heart when in wishlist, black when not
+    };
+
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            if (!touristId) {
+              setErrorMessage('User not logged in. Please log in first.');
+              return;
+            }            try {
+                const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
+                console.log("API Response:", response.data);
+    
+                if (response.data && response.data.items && Array.isArray(response.data.items)) {
+                    setWishlistState(response.data.items);
+    
+                    // Check if the current product is in the wishlist
+                    const isProductInWishlist = response.data.items.some(item => item.productId && item.productId.toString() === product._id);
+                    setIsInWishlist(isProductInWishlist); // Update the heart color
+                } else {
+                    console.error("Wishlist or items are not available in the response.");
+                }
+            } catch (error) {
+                console.error("Error fetching wishlist:", error);
+            }
+        };
+    
+        fetchWishlist();
+    }, [touristId, product._id]); // Add touristId and product._id as dependencies
+
+    const toggleWishlistItem = async (productId) => {
+    if (!touristId) {
+        setMessage('User not logged in. Please log in first.');
+        return;
+    }
+    try {
+        const response = await axios.post('http://localhost:4000/wishlist/toggle', { productId, touristId });
+        console.log(response.data.message);
+
+        setWishlistState(response.data.wishlist.items);
+
+        const isProductInWishlist = response.data.wishlist.items.some(item => item.productId && item.productId.toString() === productId);
+        setIsInWishlist(isProductInWishlist); // Update the heart color
+
+        setModalTitle(isProductInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist');
+        setShowModal(true);
+    } catch (error) {
+        console.error("Error toggling wishlist item:", error.response?.data || error.message);
+    }
+};
+    const handleAddToCart = async (productId) => {
+        if (!touristId) {
+            setMessage('User not logged in. Please log in first.');
+            return;
+        }
+        try {
+            const response = await axios.post(`http://localhost:4000/cart/add/${touristId}`, { productId });
+            console.log('Add to cart response:', response.data);
+
+            setMessage('Product added to cart successfully!');
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            setMessage('Error adding product to cart: ' + error.message);
+        }
+    };
+
+    const closeModal = () => {
+        setShowModal(false); // Close the modal
+    };
+
+
 
     // Handle the edit button click
     const handleEditClick = () => {
@@ -86,8 +168,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             const reviewData = {
                 user: '672404b5711f4330c4103753', // Replace with logged-in user's info if available
                 comment: userReview,
-                // Optionally include a rating if your UI allows it
-                // rating: userRatingForReview
             };
 
             const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
@@ -107,6 +187,16 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         }
     };
 
+    const renderHeartIcon = () => {
+        return (
+            <i
+                className={isInWishlist ? "fa-solid fa-heart red-heart" : "fa-regular fa-heart"}
+                style={heartIconStyle}
+                onClick={() => toggleWishlistItem(product._id)}
+            />
+        );
+    };
+    
     // Render stars based on average rating
     const renderStars = (averageRating) => {
         const stars = [];
@@ -140,8 +230,18 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
 
     return (
         <div className="product-card">
+             <style>
+                {`
+                    .wishlist-icon .fa-heart {
+                        transition: color 0.3s ease; /* Smooth transition for color change */
+                    }
+                    .wishlist-icon .fa-heart.red-heart {
+                        color: red; /* Red heart when the item is in the wishlist */
+                    }
+                `}
+            </style>
             <img src={product.image} alt={product.name} className="product-image" />
-
+            
             {isEditing ? (
                 <>
                     <input
@@ -181,6 +281,11 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             <p className="product-seller">Seller: {product.seller}</p>
             <p className="product-reviews">{product.reviews.length} reviews</p>
 
+            {/* Add to Cart Button */}
+            <button onClick={() => handleAddToCart(product._id)} className="add-to-cart-btn">
+                Add to Cart
+            </button>
+
             {/* Rating input for the user */}
             <div className="user-rating">
                 <p>Rate this product:</p>
@@ -199,6 +304,22 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
 
             {message && <p className="message">{message}</p>}
 
+            {/* Wishlist Icon */}
+            <div className="wishlist-button">
+                {renderHeartIcon()}
+            </div>
+
+            {showModal && (
+                <Modal onClose={closeModal}>
+                    <h2>{modalTitle}</h2>
+                    <img src={product.image} alt={product.name} className="modal-product-image" />
+                    <p className="modal-product-title">{product.name}</p>
+                    <p className="modal-product-price">${product.price.toFixed(2)}</p>
+                    <button className="modal-close-button" onClick={closeModal}>
+                        Close
+                    </button>
+                </Modal>
+            )}
             {/* Display all reviews */}
             <div className="product-reviews">
                 <h3>Reviews:</h3>
@@ -216,6 +337,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             </div>
         </div>
     );
+    
 };
-
 export default ProductCardTourist;

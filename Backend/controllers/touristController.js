@@ -70,11 +70,11 @@ const createTourist = async (req, res) => {
 // Update a tourist by email
 const updateTourist = async (req, res) => {
     try {
-        const { password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
+        const { email,password, mobileNumber, nationality, dateOfBirth, job} = req.body;
 
         const updatedTourist = await touristModel.findByIdAndUpdate(
             req.params.id,
-            { password, mobileNumber, nationality, dateOfBirth, job, wallet },
+            { email,password, mobileNumber, nationality, dateOfBirth, job },
             { new: true, runValidators: true }
         );
 

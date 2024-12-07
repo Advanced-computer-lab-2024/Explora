@@ -1,142 +1,180 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const ProfileDetailsPage = () => {
-    // State to store the profile data
-    const [profileData, setProfileData] = useState({
-        email: 'tourist@example.com',
-        username: 'touristUser', // Non-editable
-        password: 'tourist@123',
-        nationality: 'USA',
-        dob: '1990-01-01',
-        jobStatus: 'job',
-        wallet: '1000.00$' // Non-editable
+    const [profile, setProfile] = useState({
+        email: '',
+        mobileNumber: '',
+        nationality: '',
+        dateOfBirth: '',
+        job: '',
+        username: '', // Will be read-only
+        wallet: 0, // Will be read-only
     });
 
-    // State to toggle between edit mode and view mode
-    const [isEditable, setIsEditable] = useState(false);
+    const [loading, setLoading] = useState(true);
 
-    // Handle changes in form inputs
+    useEffect(() => {
+        const touristId = localStorage.getItem('userId');
+        // Fetch profile details
+        const fetchProfile = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/api/tourists/id/${touristId}`); // Replace with your API endpoint
+                setProfile(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setProfileData({ ...profileData, [name]: value });
+        setProfile((prev) => ({ ...prev, [name]: value }));
     };
 
-    // Toggle between edit and view mode
-    const handleEditToggle = (e) => {
+    const handleSubmit = async (e) => {
+        const touristId = localStorage.getItem('userId');
+
         e.preventDefault();
-        setIsEditable(!isEditable);
+        try {
+            const { wallet, ...editableFields } = profile; // Exclude wallet
+            await axios.put(`http://localhost:4000/api/tourists/${touristId}`, editableFields); // Replace with your API endpoint
+            alert('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+    const formStyle = {
+        maxWidth: "600px",
+        margin: "50px auto",
+        padding: "20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#f9f9f9",
+        fontFamily: "Arial, sans-serif",
     };
 
-    // Handle form submission
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Profile updated:', profileData);
-        setIsEditable(false); // Stop editing after saving
+    const labelStyle = {
+        display: "block",
+        marginBottom: "10px",
+        fontWeight: "bold",
+        color: "#333",
     };
 
+    const inputStyle = {
+        width: "100%",
+        padding: "10px",
+        marginBottom: "20px",
+        borderRadius: "5px",
+        border: "1px solid #ccc",
+        fontSize: "16px",
+        boxSizing: "border-box",
+    };
+
+    const buttonStyle = {
+        padding: "10px 20px",
+        backgroundColor: "#4CAF50",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+        fontSize: "16px",
+        cursor: "pointer",
+        transition: "background-color 0.3s ease",
+    };
+
+    const buttonHoverStyle = {
+        ...buttonStyle,
+        backgroundColor: "#45a049",
+    };
+
+    const [hover, setHover] = React.useState(false);
+    if (loading) return <p>Loading...</p>;
+
+  
     return (
-        <div>
-            <h2>Profile Details</h2>
-            <form onSubmit={handleSubmit}>
-                {/* Email Field */}
-                <div>
-                    <label>Email: </label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={profileData.email}
-                        onChange={handleChange}
-                        disabled={!isEditable}
-                    />
-                </div>
-
-                {/* Username Field */}
-                <div>
-                    <label>Username: </label>
-                    <input
-                        type="text"
-                        name="username"
-                        value={profileData.username}
-                        disabled
-                    />
-                </div>
-                <div>
-                    <label>Password: </label>
-                    <input
-                        type="password"
-                        name="password"
-                        value={profileData.password}
-                        onChange={handleChange}
-                        disabled={!isEditable}
-                    />
-                </div>
-
-                {/* Nationality Field */}
-                <div>
-                    <label>Nationality: </label>
-                    <select
-                        name="nationality"
-                        className="styled-select"
-                        value={profileData.nationality}
-                        onChange={handleChange}
-                        disabled={!isEditable}
-                    >
-                        <option value="USA">USA</option>
-                        <option value="Canada">Canada</option>
-                        {/* Add more options as needed */}
-                    </select>
-                </div>
-
-                {/* Date of Birth Field */}
-                <div>
-                    <label>Date of Birth: </label>
-                    <input
-                        type="date"
-                        name="dob"
-                        value={profileData.dob}
-                        onChange={handleChange}
-                        disabled={!isEditable}
-                    />
-                </div>
-
-                {/* Job/Student Status Field */}
-                <div>
-                    <label>Job Status: </label>
-                    <select
-                        name="jobStatus"
-                        className="styled-select"
-                        value={profileData.jobStatus}
-                        onChange={handleChange}
-                        disabled={!isEditable}
-                    >
-                        <option value="Unemployed">Unemployed</option>
-                        <option value="Student">Student</option>
-                        <option value="Employed">Employed</option>
-                    </select>
-                </div>
-
-                {/* Wallet Field (Non-Editable) */}
-                <div>
-                    <label>Wallet: </label>
-                    <input
-                        type="text"
-                        name="wallet"
-                        value={profileData.wallet}
-                        disabled
-                    />
-                </div>
-
-                {/* Button to toggle between editing and saving */}
-                <button type="button" onClick={handleEditToggle}>
-                    {isEditable ? "Cancel" : "Edit Profile"}
-                </button>
-                {isEditable && (
-                    <button type="submit">
-                        Save Profile
-                    </button>
-                )}
-            </form>
-        </div>
+        <form onSubmit={handleSubmit} style={formStyle}>
+            <label style={labelStyle}>
+                Email:
+                <input
+                    type="email"
+                    name="email"
+                    value={profile.email}
+                    onChange={handleChange}
+                    style={inputStyle}
+                />
+            </label>
+            <label style={labelStyle}>
+                Mobile Number:
+                <input
+                    type="text"
+                    name="mobileNumber"
+                    value={profile.mobileNumber}
+                    onChange={handleChange}
+                    style={inputStyle}
+                />
+            </label>
+            <label style={labelStyle}>
+                Nationality:
+                <input
+                    type="text"
+                    name="nationality"
+                    value={profile.nationality}
+                    onChange={handleChange}
+                    style={inputStyle}
+                />
+            </label>
+            <label style={labelStyle}>
+                Date of Birth:
+                <input
+                    type="date"
+                    name="dateOfBirth"
+                    value={profile.dateOfBirth.slice(0, 10)} // Format to YYYY-MM-DD
+                    onChange={handleChange}
+                    style={inputStyle}
+                />
+            </label>
+            <label style={labelStyle}>
+                Job:
+                <input
+                    type="text"
+                    name="job"
+                    value={profile.job}
+                    onChange={handleChange}
+                    style={inputStyle}
+                />
+            </label>
+            <label style={labelStyle}>
+                Username: (uneditable)
+                <input
+                    type="text"
+                    name="username"
+                    value={profile.username}
+                    readOnly
+                    style={inputStyle}
+                />
+            </label>
+            <label style={labelStyle}>
+                Wallet ($):(uneditable)
+                <input
+                    type="text"
+                    name="wallet"
+                    value={profile.wallet}
+                    readOnly
+                    style={inputStyle}
+                />
+            </label>
+            <button
+                type="submit"
+                style={hover ? buttonHoverStyle : buttonStyle}
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => setHover(false)}
+            >
+                Save
+            </button>
+        </form>
     );
 };
 
