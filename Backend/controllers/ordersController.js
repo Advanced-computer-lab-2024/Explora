@@ -326,22 +326,36 @@ const filterByStatus = async (req, res) => {
 }
 
 const cancelOrder = async (req, res) => {
-  try{
-    const {orderId} = req.params;
+  try {
+    const { orderId } = req.params;
+
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
     }
+
+    // Update order status to 'cancelled'
     const order = await Orders.findByIdAndUpdate(orderId, { orderStatus: 'cancelled' }, { new: true });
-    if (order) {
-      return res.status(200).json({ message: "Order cancelled successfully", order });
-    } else {
+    if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-  }catch{
+
+    const touristId = order.userId;
+
+    // Refund if the payment method is credit_card or wallet
+    if (order.paymentMethod === 'credit_card' || order.paymentMethod === 'wallet') {
+      const tourist = await Tourist.findById(touristId);
+      if (tourist) {
+        tourist.wallet += order.totalPrice; // Add refunded amount to wallet
+        await tourist.save();
+      }
+    }
+
+    res.status(200).json({ message: "Order cancelled successfully", order });
+  } catch (err) {
     console.error("Error cancelling order:", err);
     res.status(500).json({ message: "Error cancelling order", error: err.message });
   }
-}
+};
 
 const viewAllOrders = async (req, res) => {
   try{
