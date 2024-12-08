@@ -26,11 +26,13 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
 
     useEffect(() => {
         const fetchWishlist = async () => {
-            const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            const touristId = localStorage.getItem("userId");
             if (!touristId) {
-              setErrorMessage('User not logged in. Please log in first.');
+              setError("User not logged in. Please log in first.");
+              setLoading(false);
               return;
-            }            try {
+            }            
+            try {
                 const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
                 console.log("API Response:", response.data);
     
@@ -348,3 +350,5 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     
 };
 export default ProductCardTourist;
+
+

@@ -12,7 +12,11 @@ const TourismGovernor = require('../models/Governor');
 const Admin = require('../models/Admin');
 const Product = require('../models/Products');
 const Activity = require('../models/Activity');
+const nodemailer = require('nodemailer');
+const randomstring = require('randomstring');
+const bodyparser = require('body-parser');
 const maxAge = 3 * 24 * 60 * 60;
+const optCache = {};
 const createToken = (_id) => {
     return jwt.sign({ _id }, 'supersecret', {
         expiresIn: maxAge
@@ -336,26 +340,17 @@ const deleteUser = async (req, res) => {
 
 // Change user password
 const changePassword = async (req, res) => {
-  const { username, password, newPassword } = req.body;
+  const { email, newPassword } = req.body;
 
   try {
     // Find the user by username
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
     // Verify the current password (hashed password comparison)
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Current password is incorrect" });
-    }
-
-    // Check if the new password is different from the old one
-    if (password === newPassword) {
-      return res.status(400).json({ message: "New password cannot be the same as the old one" });
-    }
 
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
@@ -370,6 +365,82 @@ const changePassword = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const sendMail = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Check if the user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Generate a 4-digit numeric reset code
+        const resetCode = randomstring.generate({ length: 4, charset: "numeric" });
+
+        // Cache the reset code temporarily (optional, for additional verification)
+        optCache[email] = resetCode;
+
+        // Save the reset code and its expiration to the database
+        user.resetCode = resetCode;
+        user.resetCodeExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        await user.save();
+
+        // Set up Nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'Gmail',
+            auth: {
+                user: 'explora.donotreply@gmail.com',
+                pass: 'goizpldjkpjyclsh', // Ensure this is an app password
+            },
+        });
+
+        // Send reset code email
+        await transporter.sendMail({
+            from: 'explora.donotreply@gmail.com',
+            to: email,
+            subject: 'Reset Password Request',
+            html: `
+                <h2>Reset Password Request</h2>
+                <p>You have requested a password reset for your account.</p>
+                <p>Your reset code is: <strong>${resetCode}</strong></p>
+                <p>Please use this code to reset your password within the next 10 minutes.</p>
+            `,
+        });
+
+        // Return success response
+        return res.status(200).json({ message: "Reset code sent to your email" });
+
+    } catch (error) {
+        console.error("Error:", error.message);
+        return res.status(500).json({ message: "An error occurred while sending the email" });
+    }
+};
+
+const verificationCode = async (req, res) => {
+    try {
+        const { email, code } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        if (user.resetCode!== code) {
+            return res.status(400).json({ message: "Invalid reset code" });
+        }
+        if (Date.now() > user.resetCodeExpires) {
+            return res.status(400).json({ message: "Reset code has expired" });
+        }
+        // Reset the reset code fields
+        user.resetCode = null;
+        await user.save();
+        return res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+        console.error("Error:", error.message);
+        return res.status(500).json({ message: "Invalid request" });
+    }  
+};
+
 
 // Additional user controller functions can be defined here...
 
@@ -387,6 +458,8 @@ module.exports = {
     logout,
     login,
     changePassword,
-    deleteUser
+    deleteUser,
+    sendMail,
+    verificationCode
     // Add other controller methods like loginUser, getUserProfile, etc.
 };

@@ -9,14 +9,14 @@ const SignupTourist = () => {
         password: "",
         mobileNumber: "",
         nationality: "",
-        birthDate: "",
+        dateOfBirth: "",
         job: false,
         student: false,
     });
     const [message, setMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
         
         // Simple validation for empty fields
@@ -26,16 +26,37 @@ const SignupTourist = () => {
             !formData.password ||
             !formData.mobileNumber ||
             !formData.nationality ||
-            !formData.birthDate
+            !formData.dateOfBirth
         ) {
             setErrorMessage("Please fill in all the fields.");
             return;
         }
-        
-        // Simulating successful signup and redirect
-        setMessage("Signup successful!");
-        setErrorMessage("");
-        navigate("/tourist-home"); // Redirect to the tourist-home page
+
+        try {
+            // Send data to the backend API
+            const response = await fetch("http://localhost:4000/api/tourists/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setMessage(data.message);
+                setErrorMessage("");
+                // Redirect to tourist home page
+                navigate("/tourist-home");
+            } else {
+                setMessage("");
+                setErrorMessage(data.message || "Error during signup.");
+            }
+        } catch (error) {
+            setMessage("");
+            setErrorMessage("Error connecting to server.");
+        }
     };
 
     const handleChange = (event) => {
@@ -103,9 +124,9 @@ const SignupTourist = () => {
                 <div className="input-box">
                     <input
                         type="text"
-                        name="birthDate"
+                        name="dateOfBirth"
                         placeholder="Date of Birth"
-                        value={formData.birthDate}
+                        value={formData.dateOfBirth}
                         onChange={handleChange}
                         required
                     />

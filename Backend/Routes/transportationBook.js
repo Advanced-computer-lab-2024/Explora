@@ -115,9 +115,10 @@ router.post('/bookWallet', async (req, res) => {
 
 //============================================================
 //http://localhost:4000/transportationBook/bookStripe
-//book a transportation method
+// http://localhost:4000/transportationBook/bookStripe
+// Book a transportation method
 router.post('/bookStripe', async (req, res) => {
-    const { touristId, transportationId, seats, paymentMethodId } = req.body;
+    const { touristId, transportationId, seats, frontendUrl, promoCode } = req.body;
 
     try {
         // Find the tourist user
@@ -133,45 +134,73 @@ router.post('/bookStripe', async (req, res) => {
             return res.status(404).json({ message: 'Transportation not found' });
         }
 
-
         if (seats > transportation.capacity) {
             return res.status(400).json({ message: 'Not enough seats available' });
         }
 
-        // Calculate the total price in cents (Stripe requires the amount in cents)
-        const totalPrice = transportation.price * seats;
-        const amountInCents = Math.round(totalPrice * 100);
+        // Calculate the total price (seats booked * price of the transportation)
+        let totalPrice = transportation.price * seats;
+
+        // Check for promo code and apply discount if valid
+        if (promoCode) {
+            const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+            if (!promoCodeRecord) {
+                return res.status(400).json({ message: 'Invalid or expired promo code' });
+            }
+
+            // Apply the discount
+            const discountAmount = promoCodeRecord.discount * totalPrice;
+            totalPrice -= discountAmount;
+
+            // Ensure discounted price is valid
+            if (totalPrice < 0) {
+                return res.status(400).json({ message: 'Discounted price is invalid' });
+            }
+
+            // Delete the promo code since it's used
+            await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+        }
 
         // Create a payment intent with Stripe
-        let paymentIntent;
-        try {
-            paymentIntent = await stripe.paymentIntents.create({
-                amount: amountInCents,
-                currency: 'usd',
-                payment_method: paymentMethodId,
-                confirm: true,
-            });
-        } catch (error) {
-            return res.status(500).json({ message: 'Payment failed', error: error.raw.message });
-        }
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `Transportation: ${transportation.method}`,
+                            description: `${transportation.origin} to ${transportation.destination}`,
+                        },
+                        unit_amount: Math.round(totalPrice * 100), // Stripe expects amounts in cents
+                    },
+                    quantity: seats, // Seats booked
+                },
+            ],
+            mode: 'payment',
+            success_url: `${frontendUrl}/view-booked-transportations?session_id={CHECKOUT_SESSION_ID}&touristId=${touristId}&transportationId=${transportationId}`, // Including session ID and other details in URL
+            cancel_url: `${frontendUrl}/view-booked-transportations`, // Redirect to the same URL for cancellation
+            metadata: {
+                touristId,
+                transportationId,
+                method: transportation.method,
+                origin: transportation.origin,
+                destination: transportation.destination,
+            },
+        });
 
-        // Check if payment succeeded
-        if (paymentIntent.status !== 'succeeded') {
-            return res.status(400).json({ message: 'Payment failed', paymentIntent });
-        }
+        // Send the session URL back to frontend to redirect user
+        res.status(200).json({ url: session.url });
 
-        // Deduct the number of seats booked from the transportation capacity
-        transportation.capacity -= seats;
-        await transportation.save();
-
-        // Create a new booking
+        // Immediately book the transportation without verifying the payment
         const booking = new transportBook({
             tourist: tourist._id,
             transportation: transportation._id,
             method: transportation.method,
             seatsBooked: seats,
-            totalPrice,
-            paymentIntentId: paymentIntent.id, // Store Stripe payment intent ID
+            totalPrice: totalPrice,
+            paymentIntentId: session.id, // Store the Stripe session ID for reference
         });
 
         // Save the booking
@@ -193,11 +222,6 @@ router.post('/bookStripe', async (req, res) => {
             }
         });
 
-        res.status(201).json({
-            message: 'Transportation booked successfully',
-            bookingDetails: savedBooking,
-            paymentDetails: paymentIntent,
-        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error booking transportation', error: err.message });

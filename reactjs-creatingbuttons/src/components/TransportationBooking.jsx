@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // Import axios
 import logo from '../assets/cropped_image.png';
 const buttonStyle = {
   backgroundColor: '#008080',
@@ -107,12 +108,22 @@ export default function TransportationBooking() {
 
   const handleCreditCardPayment = async () => {
     try {
-      // Create a Stripe Checkout session
-      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
-        itemName: selectedItem.name,
-        itemPrice: selectedItem.price,
-      });
+      const frontendUrl = window.location.origin;
+      console.log("Frontend URL:", frontendUrl); // Log it for debugging
 
+      // Log the data being sent in the request
+      const requestData = {
+        touristId,
+        transportationId: selectedOption._id, // Get the transportationId from the selected option
+        seats: 1, // Number of seats (modify as needed)
+        frontendUrl,
+        promoCode: enteredPromocodeCredit,
+      };
+      console.log("Request Data:", requestData);
+
+      // Send request to the backend to create a Stripe Checkout session
+      const response = await axios.post("http://localhost:4000/transportationBook/bookStripe", requestData);
+  
       const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
       window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
     } catch (error) {

@@ -16,7 +16,9 @@ const { registerUser,
         viewRequests,
         filterByStatus,
         changePassword,
-        deleteUser
+        deleteUser,
+        sendMail,
+        verificationCode
     } = require('../controllers/userController'); // Import the controller
 
 const router = express.Router();
@@ -40,6 +42,13 @@ router.get('/Tax/:id', downloadTaxFile )
 router.put('/updateStatus/:id', updateStatus);
 router.post('/change-password', changePassword); // New route for changing password
 router.delete('/:id', deleteUser); // New route for deleting user
+// Route to verify email
+
+router.post('/verify-email', verificationCode);
+
+// Route to forget password
+
+router.post('/forget-password', sendMail);
 
 router.get('/loyalty-points/:userId', (req, res) => {
     const { userId } = req.params;

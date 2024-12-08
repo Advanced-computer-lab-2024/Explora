@@ -6,17 +6,15 @@ const WishList = () => {
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
-  //const touristId = localStorage.getItem('userId') || '';
-  const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
+  const touristId = localStorage.getItem('userId') || '';
+  //const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
 
-
-  useEffect(() => {
-    const fetchWishlist = async () => {
+  const fetchWishlist = async () => {      
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
       if (!touristId) {
         setMessage('User not logged in. Please log in first.');
         return;
       }
-
       try {
         const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
     if (response.data && Array.isArray(response.data.items)) {
@@ -30,30 +28,48 @@ const WishList = () => {
       }
     };
 
+  useEffect(() => {
     fetchWishlist();
-  }, [touristId]);
+  }, []);
 
   const handleWishlistToggle = async (productId) => {
     if (!touristId) {
       setMessage('User not logged in. Please log in first.');
       return;
     }
-
+  
     try {
-      const response = await axios.post('http://localhost:4000/wishlist/toggle', { productId, touristId });
-      if (response.data && response.data.wishlist) {
-        setWishlist(response.data.wishlist.items);
-        const isInWishlist = response.data.wishlist.items.some(item => item._id === productId);
-        setModalTitle(isInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist');
+      // Call the API to delete the item from the wishlist
+      const response = await axios.delete(`http://localhost:4000/wishlist/delete`, {
+  data: { // Use the 'data' key to include the body
+    touristId: touristId,
+    productId: productId
+  }
+});
+  
+      if (response.data?.wishlist?.items) {
+        setWishlist(response.data.wishlist.items); // Update state with new wishlist
+        setModalTitle('Removed from Wishlist');
         setShowModal(true);
+      } else {
+        // If API does not return updated wishlist, manually remove item
+        const updatedWishlist = wishlist.filter((item) => item.productId._id !== productId);
+        setWishlist(updatedWishlist);
+        setModalTitle('Removed from Wishlist');
+        setShowModal(true);
+        fetchWishlist();
       }
     } catch (error) {
-      console.error('Error toggling wishlist item:', error);
+      console.error('Error deleting wishlist item:', error);
       setMessage('Could not update wishlist. Please try again later.');
     }
   };
+  
+  
 
   const handleAddToCart = async (productId) => {
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+
     if (!touristId) {
       setMessage('User not logged in. Please log in first.');
       return;
@@ -97,10 +113,12 @@ const WishList = () => {
     if (!product) {
       return null; // Skip rendering this item if product is null
     }
+    const imageUrl = "http://localhost:4000/" + item.productId.image;
+
     return (
       <div key={product._id} className="product-card">
         <img
-          src={product.image || '/default-placeholder.jpg'}
+          src={imageUrl}
           alt={product.name || 'No Image'}
           className="product-image"
         />
@@ -114,7 +132,7 @@ const WishList = () => {
         <div
           className="wishlist-icon"
           onClick={() => handleWishlistToggle(product._id)}
-        >
+          >
           <i
             className={
               wishlist.some((item) => item.productId?._id === product._id)

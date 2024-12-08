@@ -35,7 +35,8 @@ const complaintsRoute = require('./Routes/ComplaintsRoutes');
 const salesRoutes = require('./Routes/tour_guide_sales');
 const notificationsRoute = require('./Routes/notification');
 const bookingTicket = require('./Routes/book');
-const touristReport = require('./Routes/tour_guide_tourist');const promoCodeRoutes = require('./Routes/promoCodeRoutes');
+const touristReport = require('./Routes/tour_guide_tourist');
+const promoCodeRoutes = require('./Routes/promoCodeRoutes');
 const wishListRoute = require('./Routes/WishListRoutes'); // Adjust the path as needed
 const cartRoutes = require('./Routes/cartRoutes');
 const ordersRoute = require('./Routes/ordersRoute'); // Adjust the path as needed
@@ -89,6 +90,12 @@ app.use('/api', salesRoutes);
 app.use('/api/notifications', notificationsRoute);  // Mount the route
 app.use('/ticket', bookingTicket);
 app.use('/api/report', touristReport);
+app.use('/wishList', wishListRoute);
+app.use('/cart', cartRoutes);
+app.use('/orders', ordersRoute);
+app.use('/addresses',AddressRoute);
+
+app.use('/promoCode', promoCodeRoutes);
 
 // Handle socket connection
 io.on('connection', (socket) => {
@@ -96,11 +103,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
-});app.use('/promoCode', promoCodeRoutes);
-app.use('/wishList', wishListRoute);
-app.use('/cart', cartRoutes);
-app.use('/orders', ordersRoute);
-app.use('/addresses', AddressRoute);
+});
 
 //connect to MongoDB
 console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded

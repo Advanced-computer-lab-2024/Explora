@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './SalesReport.module.css'; // Reuse the same CSS for consistency
-import LineChart from './LineChart'; // Line chart component
+import TouristLineChart from './TouristLineChart'; // Import the new chart
 
 const TouristReport = () => {
   const [tourists, setTourists] = useState([]);
@@ -44,7 +44,7 @@ const TouristReport = () => {
     }
   }, [userId]);
 
-  // Prepare data for the LineChart
+  // Prepare data for the TouristLineChart
   const prepareChartData = () => {
     const dataMap = {};
 
@@ -61,24 +61,47 @@ const TouristReport = () => {
   const chartData = prepareChartData();
 
   // Filter Logic
-  const applyFilters = () => {
+  const filterTouristsByMonth = () => {
     let filtered = tourists;
-
-    // Month Filter
+  
     if (filterByMonth) {
-      const [selectedYear, selectedMonth] = filterByMonth.split('-');
-      filtered = filtered.filter((tourist) => {
-        const tourDate = new Date(tourist.itineraryDate);
-        return (
-          tourDate.getFullYear() === parseInt(selectedYear) &&
-          tourDate.getMonth() + 1 === parseInt(selectedMonth)
-        );
-      });
+      // Ensure filterByMonth is in the format YYYY-MM (e.g., '2024-12')
+      const [year, month] = filterByMonth.split('-'); // Split into year and month
+  
+      // Convert the month string to an integer (0-based index)
+      const monthIndex = parseInt(month, 10) - 1; // December is 12, but JavaScript months are 0-based (0-11)
+  
+      console.log("Filtering for:", month, year, "Month Index:", monthIndex); // Log selected month and year
+  
+      if (!isNaN(monthIndex) && monthIndex >= 0 && monthIndex <= 11) { // Validate month index
+        filtered = filtered.filter((tourist) => {
+          const bookingDate = new Date(tourist.bookingDate); // Parse the booking date
+  
+          // Check if the booking date is valid
+          if (isNaN(bookingDate)) {
+            console.error("Invalid booking date for tourist:", tourist.bookingDate);
+            return false; // Skip this tourist if the booking date is invalid
+          }
+  
+          const bookingYear = bookingDate.getFullYear(); // Get the year of the booking date
+          const bookingMonth = bookingDate.getMonth(); // Get the month of the booking date (0-based index)
+  
+          console.log("Booking Year:", bookingYear, "Booking Month:", bookingMonth);
+  
+          // Check if the year and month match
+          return bookingYear === parseInt(year) && bookingMonth === monthIndex;
+        });
+      } else {
+        console.error("Invalid month:", month); // Handle invalid month case
+      }
     }
+  
+    // Update the filtered tourists and total count
     setFilteredTourists(filtered);
-    setTotalTourists(filtered.length);
+    setTotalTourists(filtered.length);  // Update total tourists count
   };
-
+  
+  // Handle month selection change
   const handleMonthChange = (e) => {
     setFilterByMonth(e.target.value);
   };
@@ -94,11 +117,11 @@ const TouristReport = () => {
 
   return (
     <div className="sales-report">
-      <h2>Dashboard</h2>
+      <h2 style={{ textAlign: 'center' }}>Tourist Dashboard</h2>
 
       {/* Line Chart Section */}
-      <div className="chart-container">
-      <LineChart salesData={chartData} filterBy="date" />
+      <div className="chart-container" style={{ marginBottom: '40px' }}>
+        <TouristLineChart data={chartData} />
       </div>
 
       {/* Filter Section */}
@@ -117,7 +140,7 @@ const TouristReport = () => {
 
         {/* Apply Filters Button */}
         <button
-          onClick={applyFilters}
+          onClick={filterTouristsByMonth}
           style={{
             backgroundColor: '#008080',
             color: '#fff',
@@ -144,35 +167,38 @@ const TouristReport = () => {
         </button>
       </div>
 
-      <h2>Total Tourists: {totalTourists}</h2>
+      {/* Total Tourists */}
+      <h2 style={{ textAlign: 'center' }}>Total Tourists: {totalTourists}</h2>
 
-      {/* Tourists Table */}
-      {filteredTourists.length === 0 ? (
-        <p>No tourists found.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>Booking Date</th>
-              <th>Tourist Name</th>
-              <th>Itinerary Title</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredTourists.map((tourist, index) => (
-              <tr key={index}>
-                <td>
-                  {tourist.bookingDate
-                    ? new Date(tourist.bookingDate).toLocaleDateString()
-                    : 'No Date Available'}
-                </td>
-                <td>{tourist.touristName}</td>
-                <td>{tourist.itineraryLocations}</td>
+      {/* Tourists Table Section */}
+      <div style={{ marginTop: '40px' }}>
+        {filteredTourists.length === 0 ? (
+          <p style={{ textAlign: 'center' }}>No tourists found.</p>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr>
+                <th style={{ borderBottom: '2px solid #ddd', padding: '10px' }}>Booking Date</th>
+                <th style={{ borderBottom: '2px solid #ddd', padding: '10px' }}>Tourist Name</th>
+                <th style={{ borderBottom: '2px solid #ddd', padding: '10px' }}>Itinerary Title</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+            </thead>
+            <tbody>
+              {filteredTourists.map((tourist, index) => (
+                <tr key={index}>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>
+                    {tourist.bookingDate
+                      ? new Date(tourist.bookingDate).toLocaleDateString()
+                      : 'No Date Available'}
+                  </td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{tourist.touristName}</td>
+                  <td style={{ padding: '10px', textAlign: 'center' }}>{tourist.itineraryLocations}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
     </div>
   );
 };
