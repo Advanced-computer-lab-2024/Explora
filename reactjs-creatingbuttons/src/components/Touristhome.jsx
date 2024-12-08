@@ -85,9 +85,6 @@ const handleViewUpcomingBookedEventsClick = () => {
   const handleViewMyPromoCodesClick = () => {
     navigate('/my-promo-codes');
   };
-  const handleViewMyPromoCodesClick = () => {
-    navigate('/my-promo-codes');
-  };
   
   
  
