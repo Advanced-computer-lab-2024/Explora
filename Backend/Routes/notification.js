@@ -26,8 +26,6 @@ router.get('/notifications', async (req, res) => {
     }
   });
   
-
-// Mark notification as read
 // Mark notification as read
 router.patch('/:id/read', async (req, res) => {
   try {
