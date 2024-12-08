@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { MdDelete, MdEdit } from 'react-icons/md';
 import TagForm from './TagForm';
+import logo from '../assets/cropped_image.png';
+import { useNavigate } from 'react-router-dom';
+const buttonStyle = {
+  backgroundColor: '#008080',
+  color: 'white',
+  border: 'none',
+  padding: '10px 20px',
+  width: '100%',
+  textAlign: 'center',
+  cursor: 'pointer'
+};
 
 export default function TagManagers() {
   // Hardcoded initial tags data
@@ -11,6 +22,26 @@ export default function TagManagers() {
     { id: 3, name: 'Medieval Cathedral', type: 'Religious Sites' },
     { id: 4, name: 'Royal Palace', type: 'Palaces/Castles' },
   ]);
+  const [showPromoModal, setShowPromoModal] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const [users, setUsers] = useState([]); // State for users
+  const [totalUsers, setTotalUsers] = useState(0); // State for total users
+  const [newUsersThisMonth, setNewUsersThisMonth] = useState(0); // State for new users this month
+  const [message, setMessage] = useState('');
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [badgeLevel, setBadgeLevel] = useState('');
+  const [guideRatings, setGuideRatings] = useState({});
+  const [guideComments, setGuideComments] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [isEditable, setIsEditable] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isHistoryOptionsVisible, setIsHistoryOptionsVisible] = useState(false);
+
+  const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
+  const handleMouseEnterHistory = () => setIsHistoryOptionsVisible(true);
+  const handleMouseLeaveHistory = () => setTimeout(() => setIsHistoryOptionsVisible(false), 900);
 
   const [currentTag, setCurrentTag] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
