@@ -108,6 +108,20 @@ const handleViewUpcomingBookedEventsClick = () => {
     } else if (query === "products" || query === "product") {
       navigate('/product-list-tourist');
     }
+    else if (query === " past booked events" ) {
+      navigate('/PastBookedEvents');
+    }else if (query === "upcoming booked events" ) {
+      navigate('/UpcomingBookedEvents');
+    }
+    else if (query === "bookmarks" ) {
+      navigate('/Bookmarks');
+    }
+    else if (query === "notifications" ) {
+      navigate('/Notifications');
+    }
+    else if (query === "promo codes" ) {
+      navigate('/my-promo-codes');
+    }
   };
 
   return (
