@@ -220,7 +220,6 @@ if (startDate && endDate) {
             <tr>
               <th>Date</th>
               <th>Amount</th>
-              <th>Itinerary ID</th>
               <th>Itinerary Title</th>
               <th>Tourist</th>
             </tr>
@@ -230,7 +229,6 @@ if (startDate && endDate) {
               <tr key={sale._id}>
                 <td>{new Date(sale.date).toLocaleDateString()}</td>
                 <td>${sale.amount.toFixed(2)}</td>
-                <td>{sale.itineraryId._id}</td>
                 <td>{sale.itineraryId.locations}</td>
                 <td>{sale.touristId.username}</td>
               </tr>
