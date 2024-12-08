@@ -23,11 +23,14 @@ const Checkout = () => {
   });
   const [error, setError] = useState('');
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
+  //const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [showStripeForm, setShowStripeForm] = useState(false);
   const [loading, setLoading] = useState(false); // Loading state for the request
+  const [promoCode, setPromoCode] = useState(""); //
+  const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
+
 
 
 
@@ -38,6 +41,11 @@ const Checkout = () => {
 
   const fetchAddresses = async () => {
     try {
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            if (!touristId) {
+              setError('User not logged in. Please log in first.');
+                return;
+            }
       const response = await fetch(`http://localhost:4000/addresses/user/${touristId}`);
       const data = await response.json();
       setAddresses(data);
@@ -53,6 +61,11 @@ const Checkout = () => {
     }
 
     try {
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            if (!touristId) {
+              setError('User not logged in. Please log in first.');
+                return;
+            }
       const response = await fetch(`http://localhost:4000/addresses/${touristId}`, {
         method: 'POST',
         headers: {
@@ -86,6 +99,11 @@ const Checkout = () => {
 
   const handleRemoveAddress = async (id) => {
     try {
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            if (!touristId) {
+              setError('User not logged in. Please log in first.');
+                return;
+            }
       const response = await fetch(`http://localhost:4000/addresses/${id}`, {
         method: 'DELETE',
       });
@@ -121,45 +139,50 @@ const Checkout = () => {
   };
 
   const handlePayment = async () => {
-      if (selectedAddress !== null && selectedPaymentMethod) {
-        setLoading(true);
-        try {
-          const response = await fetch('http://localhost:4000/orders/checkoutAndPay', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userId: touristId,
-              addressId: selectedAddress,
-              frontendUrl: frontendUrl,
-              paymentMethod: selectedPaymentMethod,
-            }),
-          });
-          
-          const data = await response.json();
-          
-          if (response.ok) {
-            if (selectedPaymentMethod === 'credit_card') {
-              // Redirect to Stripe checkout
-              window.location.href = data.url;
-            } else {
-              // Handle other payment methods like wallet or COD
-              alert(data.message);
+    if (selectedAddress !== null && selectedPaymentMethod) {
+      setLoading(true);
+      try {
+        const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            if (!touristId) {
+              setError('User not logged in. Please log in first.');
+                return;
             }
-          } else {
-            setError(data.message || 'Something went wrong with the payment process. ');
-          }
-        } catch (error) {
-          console.error('Error during checkout request:', error);
-          setError('Error during checkout, please try again.' + error.message);
-        }
-        setLoading(false);
-      } else {
-        setError('Please select an address and payment method.');
-      }
-    };
+        const response = await fetch('http://localhost:4000/orders/checkoutAndPay', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: touristId,
+            addressId: selectedAddress,
+            frontendUrl: frontendUrl,
+            paymentMethod: selectedPaymentMethod,
+            promocode: promoCode, // Include promo code in the request
+          }),
+        });
 
+        const data = await response.json();
+
+        if (response.ok) {
+          if (selectedPaymentMethod === 'credit_card') {
+            // Redirect to Stripe checkout
+            window.location.href = data.url;
+          } else {
+            // Handle other payment methods like wallet or COD
+            alert(data.message);
+          }
+        } else {
+          setError(data.message || 'Something went wrong with the payment process. ');
+        }
+      } catch (error) {
+        console.error('Error during checkout request:', error);
+        setError('Error during checkout, please try again.' + error.message);
+      }
+      setLoading(false);
+    } else {
+      setError('Please select an address and payment method.');
+    }
+  };
 
   return (
     <Elements stripe={stripePromise}>
@@ -301,6 +324,13 @@ const Checkout = () => {
                 )
               )}
             </div>
+            <input
+              type="text"
+              placeholder="Enter Promo Code"
+              value={promoCode}
+              onChange={(e) => setPromoCode(e.target.value)}
+              style={styles.input}
+            />
             <div style={styles.centered}>
               <button
                 style={styles.primaryButton}

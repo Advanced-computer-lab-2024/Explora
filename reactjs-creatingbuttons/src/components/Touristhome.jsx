@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import BirthdayPromoModal from './BirthdayPromoModal'; // Import the modal
 import './Touristhome.css'; // Import the CSS
@@ -82,6 +82,9 @@ const handleViewUpcomingBookedEventsClick = () => {
       navigate('/Notifications');
   }; 
 
+  const handleViewMyPromoCodesClick = () => {
+    navigate('/my-promo-codes');
+  };
   const handleViewMyPromoCodesClick = () => {
     navigate('/my-promo-codes');
   };

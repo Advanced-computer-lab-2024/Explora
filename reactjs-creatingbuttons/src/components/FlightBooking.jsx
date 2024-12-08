@@ -84,7 +84,7 @@ const FlightBooking = () => {
     setSelectedFlight(null);
   };
 
-
+  // Handle Wallet Payment
   const handleWalletPayment = async () => {
     const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
     if (!touristId) {

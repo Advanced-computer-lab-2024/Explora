@@ -4,10 +4,12 @@ const Product = require('../models/Products'); // To fetch product details
 const Address = require('../models/Address'); // To fetch address details
 const User = require('../models/User'); // To fetch user details
 require('dotenv').config();
-const stripe = require('stripe')(process.env.STRIPE_API_SECRET);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const Payment = require('../models/PaymentModel');
 const bodyParser = require('body-parser'); // For raw body parsing
 const Tourist = require('../models/touristModel');
 const TouristPromoCode = require('../models/touristPromoCode');
+
 
 const checkoutOrder = async (req, res) => {
     try {
@@ -132,7 +134,7 @@ const processPayment = async (req, res) => {
 
 
   const checkoutAndPay = async (req, res) => {
-    const { userId, addressId, frontendUrl, paymentMethod,promoCode } = req.body; // Added paymentMethod parameter
+    const { userId, addressId, frontendUrl, paymentMethod, promoCode } = req.body; // Added paymentMethod parameter
     console.log('Received request:', req.body); // Log the incoming request body to see the data sent from the frontend
 
     try {
@@ -152,6 +154,8 @@ const processPayment = async (req, res) => {
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: "Your cart is empty" });
         }
+        let totalPrice = cart.totalPrice; // Or calculate the price manually if needed
+
 
         // Fetch product details for the items in the cart
         const productIds = cart.items.map(item => item.productId);
@@ -170,18 +174,17 @@ const processPayment = async (req, res) => {
           }
 
           // Apply the discount
-          let totalPrice = cart.totalPrice; // Or calculate the price manually if needed
           const discountAmount = promoCodeRecord.discount * totalPrice;
           totalPrice -= discountAmount;
-
           // Ensure discounted price is valid
           if (totalPrice < 0) {
-              return res.status(400).json({ message: 'Discounted price is invalid' });
-          }
+            return res.status(400).json({ message: 'Discounted price is invalid' });
+        }
 
-          // Delete the promo code since it's used
-          await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
-      }
+        // Delete the promo code since it's used
+        await TouristPromoCode.deleteOne({ tourist: userId, code: promoCode });
+      };
+
         // Create the order with the address reference
         const order = new Orders({
             userId: userId,
@@ -224,17 +227,17 @@ const processPayment = async (req, res) => {
               payment_method_types: ['card'],
               line_items: lineItems,
               mode: 'payment',
-              success_url: `${frontendUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-              cancel_url: `${frontendUrl}/fail`,
+              success_url: `${frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+              cancel_url: `${frontendUrl}/payment-failure`,
               metadata: {
                   userId: userId.toString(),
                   orderId: order._id.toString(), // Convert ObjectId to string
               },
           });
             // // Optionally, clear the cart after checkout
-            // cart.items = [];
-            // cart.totalPrice = 0;
-            // await cart.save();
+            cart.items = [];
+            cart.totalPrice = 0;
+            await cart.save();
 
             // Send the session URL back to frontend to redirect user
             return res.status(200).json({ url: session.url });
@@ -277,7 +280,99 @@ const processPayment = async (req, res) => {
     }
 };
 
+const viewOrders = async (req, res) => {
+  try {
+    const { touristId } = req.params; // Destructure `touristId` from params
+    if (!touristId) {
+      return res.status(400).json({ message: "Tourist ID is required" });
+    }
+
+    const orders = await Orders.find({ userId: touristId })
+    .populate({
+      path: 'products.productId', // Populate the `productId` in `products`
+      select: 'name price' // Select specific fields (you can modify this)
+    })
+    .exec(); // Execute the query
+  console.log(orders); //
+    if (!orders || !orders.length) {
+      return res.status(404).json({ message: "No orders found for this tourist" });
+    }
+
+    return res.status(200).json({ orders }); // Return orders if found
+  } catch (err) { // Use `err` in the catch block
+    console.error("Error retrieving orders:", err);
+    res.status(500).json({ message: "Error retrieving orders", error: err.message });
+  }
+};
+
+const filterByStatus = async (req, res) => {
+  try{
+  
+  const {status} = req.query;
+  const {touristId} = req.params
+  if (!status) {
+    return res.status(400).json({ message: "Status is required" });
+  }
+  const orders = await Orders.find({ orderStatus: status, userId:touristId });
+  if (orders.length > 0) {
+    return res.status(200).json({ orders });
+  } else {
+    return res.status(404).json({ message: "No orders found with this status" });
+  }
+}catch{
+  console.error("Error retrieving orders:", err);
+  res.status(500).json({ message: "Error retrieving orders", error: err.message });
+}
+}
+
+const cancelOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      return res.status(400).json({ message: "Order ID is required" });
+    }
+    // Update order status to 'cancelled'
+    const order = await Orders.findByIdAndUpdate(orderId, { orderStatus: 'cancelled' }, { new: true });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    const touristId = order.userId;
+
+    // Refund if the payment method is credit_card or wallet
+    if (order.paymentMethod === 'credit_card' || order.paymentMethod === 'wallet') {
+      const tourist = await Tourist.findById(touristId);
+      if (tourist) {
+        tourist.wallet += order.totalPrice; // Add refunded amount to wallet
+        await tourist.save();
+      }
+    }
+
+    res.status(200).json({ message: "Order cancelled successfully", order });
+  } catch (err) {
+    console.error("Error cancelling order:", err);
+    res.status(500).json({ message: "Error cancelling order", error: err.message });
+  }
+};
+
+const viewAllOrders = async (req, res) => {
+  try{
+    const orders = await Orders.find({});
+    if (orders.length > 0) {
+      return res.status(200).json({ orders });
+    } else {
+      return res.status(404).json({ message: "No orders found" });
+    }
+  }
+  catch{
+    console.error("Error retrieving orders:", err);
+    res.status(500).json({ message: "Error retrieving orders", error: err.message });
+  }
+}
+
+
   
   
 
-module.exports = {checkoutOrder, processPayment , checkoutAndPay};
+module.exports = {checkoutOrder, processPayment , checkoutAndPay, viewOrders, cancelOrder, filterByStatus, viewAllOrders};

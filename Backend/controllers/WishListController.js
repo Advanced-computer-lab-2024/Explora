@@ -48,11 +48,11 @@ const getWishlist = async (req, res) => {
 // DELETE product from wishlist
 
 const deleteFromWishlist = async (req, res) => {
-    const { productId, id } = req.params;
+    const { productId, touristId } = req.body;
 
     try {
         const wishlist = await WishList.findOneAndUpdate(
-            { touristId: id },
+            { touristId: touristId },
             { $pull: { items: { productId: productId } } },
             { new: true } 
         );

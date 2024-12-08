@@ -11,7 +11,6 @@ import TagManager from './components/TagManager.jsx';
 import TagForm from './components/TagForm.jsx';
 import TagList from './components/TagList.jsx';
 import ProductList from './components/productList/ProductList.jsx';
-import ProductListSeller from './components/productList/ProductListSeller.jsx';
 import MiddleForm from './components/MiddleForm.jsx';
 import LoginForm from './components/LoginForm.jsx';
 import SignupTourist from './components/SignupTourist.jsx';
@@ -94,25 +93,25 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
+import Success from './pages/success.jsx';
+import Fail from './pages/fail.jsx';
+import Home from './pages/Home.jsx';
+import Wishlist from './components/Wishlist.jsx';
 import PromoCodeComponent from './components/PromoCodeComponent.jsx';
 import SalesReport from "./components/SalesReport"; // Adjust path based on your file structureimport ViewCartTourist from './components/ViewCartTourist';
 import Checkout from './components/Checkout'; // Create a new checkout component
 import PaymentPage from './components/PaymentPage'; // Import your PaymentPage component
 import VacationGuide from "./components/VacationGuide";
 import ViewCartTourist from "./components/ViewCartTourist.jsx"
-import HomeTest from "./components/HomeTest.jsx"
-import ProductModal from './components/ProductModal.jsx';
-import Sales from './components/Tour_Guide_Sales.jsx';
-import Viewing from './components/NoUsed';
-import Notification from './components/FlagNotifications';
-import { ToastContainer } from 'react-toastify';
-
 import Notifications from './components/Notifications.jsx';
 import BookMarks from './components/BookMarks.jsx';
-import PastBookedEvents from './components/PastBookedEvents.jsx';
-import UpcomingBookedEvents from './components/UpcomingBookedEvents.jsx';
-import MyPromocodes from './components/MyPromoCodes.jsx';
-import Wishlist from './components/Wishlist.jsx';
+import ForgetPassword from './components/ForgetPass.jsx'
+import PaymentSuccess from './components/PaymentSuccess';
+import PaymentFailure from './components/PaymentFailure';
+import OrderList from './components/OrdersList.jsx';
+import HomeTest from "./components/HomeTest.jsx"
+import ProductModal from './components/ProductModal.jsx';
+
 function App() {
 
   return (
@@ -121,7 +120,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<HomeTest />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
@@ -130,7 +129,6 @@ function App() {
           <Route path="/category-manager" element={<CategoryManager />} /> {/* Add this route */}
           <Route path="/tag-manager" element={<TagManager />} /> {/* Add this route */}
           <Route path="/product-list" element={<ProductList />} />  {/* Route for ProductList */}
-          <Route path="/product-list-seller" element={<ProductListSeller />} />  {/* Route for ProductList */}
           <Route path="/add-product" element={<AddProduct />} />  {/* Route for AddProduct */}
           <Route path="/to-do" element={<TodoInput />} />  {/* Route for TodoInput */}
           <Route path="/middle" element={<MiddleForm />} />
@@ -208,29 +206,27 @@ function App() {
         <Route path="/terms-tour-guide/:userId" element={<TermsTourGuide />} />  {/* Add this route */}
         <Route path="/terms-seller/:userId" element={<TermsSellerPage />} />
         <Route path="/terms-advertiser/:userId" element={<TermsAdvertiserPage />} />
-        <Route path="/sales" element={<Sales />} />
-        <Route path="/view-number-of-tourists" element={<Viewing />} />
-        <Route path="/flag-notification" element={<Notification />} />
+        <Route path="/success" element={<Success/>} />
+        <Route path="/fail" element={<Fail />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/promo-code" element={<PromoCodeComponent />} />
         <Route path="/sales-report" element={<SalesReport />} />
 
-
+        <Route path="/Notifications" element={<Notifications />} />
+        <Route path="/Bookmarks" element={<BookMarks />} />
 
         <Route path="/view-cart" element={<ViewCartTourist />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
         <Route path="/vacation-guide" element={<VacationGuide />} />
+        <Route path="/forget_password" element={<ForgetPassword />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failure" element={<PaymentFailure />} />
+        <Route  path="/order_list" element={<OrderList />} />
         <Route path="/test" element={<Test />} />
-        <Route path="/product-modal" element={<ProductModal />} />        <Route path="/Notifications" element={<Notifications />} />
-        <Route path="/Bookmarks" element={<BookMarks />} />
-        <Route path="/promo-code" element={<PromoCodeComponent />} />
-        <Route path="/PastBookedEvents" element={<PastBookedEvents />} />
-        <Route path="/UpcomingBookedEvents" element={<UpcomingBookedEvents />} />
-        <Route path="/my-promo-codes" element={<MyPromocodes />} />
-        <Route path="/view-cart" element={<ViewCartTourist />} />
-        <Route path="/checkout" element={<Checkout />} />
-       <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/product-modal" element={<ProductModal />} />
+
+
         </Routes>
       </Router>
     </main>

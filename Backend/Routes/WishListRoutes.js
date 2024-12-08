@@ -17,7 +17,7 @@ router.get("/:touristId", getWishlist);
 
 // DELETE - Delete an item from the wishlist
 
-router.delete("/delete/:touristId/:productId", deleteFromWishlist);
+router.delete("/delete", deleteFromWishlist);
 
 // POST - Toggle the wishlist status
 
