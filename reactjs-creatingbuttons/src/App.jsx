@@ -103,8 +103,6 @@ import VacationGuide from "./components/VacationGuide";
 import ViewCartTourist from "./components/ViewCartTourist.jsx"
 import HomeTest from "./components/HomeTest.jsx"
 import ProductModal from './components/ProductModal.jsx';
-
-
 import Sales from './components/Tour_Guide_Sales.jsx';
 import Viewing from './components/NoUsed';
 import Notification from './components/FlagNotifications';

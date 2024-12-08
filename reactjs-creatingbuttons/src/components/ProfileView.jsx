@@ -1,5 +1,5 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function ProfileView() {
@@ -7,9 +7,35 @@ export default function ProfileView() {
   const { state } = useLocation();
   const navigate = useNavigate();
 
-  const initialProfile = state?.profile;
-  const [profile, setProfile] = useState(initialProfile);
+  const [profile, setProfile] = useState(null);
   const [message, setMessage] = useState('');
+  
+  // Get the user ID from localStorage
+  const userIdFromLocalStorage = localStorage.getItem('userId'); // Assuming userId is stored in localStorage
+
+  // Use the ID from local storage if available, or fallback to the URL parameter
+  const profileId = userIdFromLocalStorage || id;
+
+  // Fetch profile data when the component mounts or profileId changes
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/tour_guide_profile/${profileId}`, {
+          headers: {
+            'Authorization': `Bearer YOUR_TOKEN_HERE`, // Replace with your actual token
+          },
+        });
+        setProfile(response.data); // Set profile state with the fetched data
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setMessage("Failed to load profile. Please try again.");
+      }
+    };
+
+    if (profileId) {
+      fetchProfile();
+    }
+  }, [profileId]);
 
   if (!profile) {
     return <p>No profile data available. Something went wrong.</p>;

@@ -1,11 +1,3 @@
-Title: 
-Route: 
-Request Method: 
-Request:
-Body Parameters:
-{}
-Expected Response:
-{}
 Title: Create Tour Guide Profile
 Route: (http://localhost:4000/api/tour_guide_profile/register)
 Request Method: POST
@@ -245,4 +237,402 @@ Route: http://localhost:4000/api/tour_guide_itinerary/:id
 Request Method: PUT
 Request:
 URL Parameter:
-    "_id": "6754b7c1420909de67705295"
+    "_id": "6754bb26420909de67705299"
+Request Body:
+{
+  "tourGuideName": "John Doe",
+  "activities": [
+    {
+      "duration": 180,
+      "date": "2024-08-01T00:00:00.000Z",
+      "time": "11:00"
+    }
+  ],
+  "locations": "Luxor, Karnak Temple",
+  "timeline": "3-day ancient sites tour",
+  "duration": 3,
+  "language": "French",
+  "price": 300,
+  "availableDates": ["2024-08-01T00:00:00.000Z"],
+  "availableTimes": ["11:00"],
+  "accessibility": true,
+  "pickupLocation": "Luxor Airport",
+  "dropoffLocation": "Karnak Temple",
+  "hasBookings": false,
+  "tags": ["ancient", "cultural"]
+}
+Expected Response:
+{
+    "_id": "6754bb26420909de67705299",
+    "tourGuideName": "John Doe",
+    "tourGuideId": "6748fae835a3fa0479d4a088",
+    "activities": [
+        {
+            "duration": 180,
+            "date": "2024-08-01T00:00:00.000Z",
+            "time": "11:00",
+            "_id": "6754c2c100cbdf40181f909b"
+        }
+    ],
+    "locations": "Luxor, Karnak Temple",
+    "timeline": "3-day ancient sites tour",
+    "duration": 3,
+    "language": "French",
+    "price": 300,
+    "availableDates": [
+        "2024-08-01T00:00:00.000Z"
+    ],
+    "availableTimes": [
+        "11:00"
+    ],
+    "accessibility": true,
+    "pickupLocation": "Luxor Airport",
+    "dropoffLocation": "Karnak Temple",
+    "hasBookings": false,
+    "isActive": true,
+    "tags": [
+        "ancient",
+        "cultural"
+    ],
+    "rating": 0,
+    "isDeleted": false,
+    "flagged": false,
+    "__v": 1
+}
+------------------------------------------
+Title: Delete an Itinerary by ID
+Route: http://localhost:4000/api/tour_guide_itinerary/:id
+Request Method: DELETE
+Request:
+URL Parameter:
+id : "6754bb26420909de67705299"
+Expected Response:
+{
+  "msg": "Itinerary removed successfully"
+}
+------------------------------------------
+Title: Get Itinerary by ID
+Route: http://localhost:4000/api/tour_guide_itinerary/:id
+Request Method: GET
+Request:
+URL Parameter:
+id: "6754bb26420909de67705299"
+Expected Response:
+{
+    "_id": "6754bb26420909de67705299",
+    "tourGuideName": "John Doe",
+    "tourGuideId": "6748fae835a3fa0479d4a088",
+    "activities": [
+        {
+            "duration": 180,
+            "date": "2024-08-01T00:00:00.000Z",
+            "time": "11:00",
+            "_id": "6754c2c100cbdf40181f909b"
+        }
+    ],
+    "locations": "Luxor, Karnak Temple",
+    "timeline": "3-day ancient sites tour",
+    "duration": 3,
+    "language": "French",
+    "price": 300,
+    "availableDates": [
+        "2024-08-01T00:00:00.000Z"
+    ],
+    "availableTimes": [
+        "11:00"
+    ],
+    "accessibility": true,
+    "pickupLocation": "Luxor Airport",
+    "dropoffLocation": "Karnak Temple",
+    "hasBookings": false,
+    "isActive": true,
+    "tags": [
+        "ancient",
+        "cultural"
+    ],
+    "rating": 0,
+    "isDeleted": false,
+    "flagged": false,
+    "__v": 1
+}
+------------------------------------------
+Title: Request Account Deletion
+Route: http://localhost:4000/Request/requestDeletion
+Request Method: POST
+Request: 
+{
+  "username": "john_doe",
+  "email": "john@example.com",
+  "reason": "No longer needed"
+}
+Expected Response:
+{
+  "message": "Deletion request submitted"
+}
+------------------------------------------
+Title: Deactivate Itinerary
+Route: http://localhost:4000/api/tour_guide_itinerary/:id/deactivate
+Request Method: PUT
+Request:
+URL Parameter:
+id: "6749a7a40d9e637f9c7cc0b8"
+Expected Response:
+{
+  "message": "Itinerary deactivated successfully."
+}
+------------------------------------------
+Title: Accept Terms
+Route: http://localhost:4000/api/tour_guide_profile/accept-terms/:id
+Request Method: PUT
+Request:
+URL Parameter:
+id: "6748fae835a3fa0479d4a088"
+Expected Response:
+{
+  "msg": "Terms accepted successfully"
+}
+------------------------------------------
+Title: Rate and Comment on a Tour Guide
+Route: http://localhost:4000/reviews/rateTourGuide
+Request Method: POST
+Request:
+Body Parameters:
+{
+"touristId": "674d0772a54a6ecc374e2f35",
+"tourGuideId": "674cfa7ea54a6ecc374e2ea9",
+"rating": 5,
+"comment": "very good" 
+}
+Expected Response:
+{
+    "msg": "Review added successfully",
+    "review": {
+        "tourGuide": "674cfa7ea54a6ecc374e2ea9",
+        "tourist": "674d0772a54a6ecc374e2f35",
+        "rating": 5,
+        "comment": "very good",
+        "_id": "6754e71ff92fc61705823126",
+        "date": "2024-12-08T00:23:59.226Z"
+    }
+}
+------------------------------------------
+Title: Rate and Comment on an Itinerary
+Route: http://localhost:4000/reviews/rateItinerary
+Request Method: POST
+Request:
+Body Parameters:
+{
+"touristId": "674d0772a54a6ecc374e2f35",
+"itineraryId": "6754bb26420909de67705299",
+"rating": 5,
+"comment": "very good" 
+}
+Expected Response:
+{
+    "msg": "Rating and comment added successfully",
+    "itinerary": {
+        "_id": "6754bb26420909de67705299",
+        "tourGuideName": "John Doe",
+        "tourGuideId": "6748fae835a3fa0479d4a088",
+        "activities": [
+            {
+                "duration": 180,
+                "date": "2024-08-01T00:00:00.000Z",
+                "time": "11:00",
+                "_id": "6754c2c100cbdf40181f909b"
+            }
+        ],
+        "locations": "Luxor, Karnak Temple",
+        "timeline": "3-day ancient sites tour",
+        "duration": 3,
+        "language": "French",
+        "price": 300,
+        "availableDates": [
+            "2024-08-01T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "11:00"
+        ],
+        "accessibility": true,
+        "pickupLocation": "Luxor Airport",
+        "dropoffLocation": "Karnak Temple",
+        "hasBookings": false,
+        "isActive": true,
+        "tags": [
+            "ancient",
+            "cultural"
+        ],
+        "rating": 5,
+        "isDeleted": false,
+        "flagged": false,
+        "__v": 1,
+        "comment": "very good"
+    }
+}
+------------------------------------------
+Title: Get Previous Itineraries
+Route: http://localhost:4000/api/tour_guide_itinerary/previous
+Request Method: GET
+Request:
+Expected Response:
+{
+        "_id": "67324673bd5e0b9fdcdba05c",
+        "tourGuideName": "John Doe",
+        "activities": [
+            {
+                "duration": 120,
+                "date": "2024-11-15T10:00:00.000Z",
+                "time": "10:00 AM",
+                "_id": "67324673bd5e0b9fdcdba05d"
+            }
+        ],
+        "locations": "Paris, France",
+        "timeline": "Full Day Tour",
+        "duration": 1,
+        "language": "English",
+        "price": 150,
+        "availableDates": [
+            "2024-11-15T00:00:00.000Z",
+            "2024-11-16T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "10:00 AM",
+            "2:00 PM"
+        ],
+        "accessibility": true,
+        "pickupLocation": "Paris Hotel",
+        "dropoffLocation": "Eiffel Tower",
+        "hasBookings": false,
+        "isActive": true,
+        "tags": [
+            "tour",
+            "adventure",
+            "paris"
+        ],
+        "rating": 0,
+        "isDeleted": false,
+        "flagged": true,
+        "__v": 0
+    }
+------------------------------------------
+Title: Get All Itineraries
+Route: http://localhost:4000/api/tour_guide_itinerary/all
+Request Method: GET
+Request:
+Expected Response:
+{
+        "_id": "6754bb26420909de67705299",
+        "tourGuideName": "John Doe",
+        "tourGuideId": "6748fae835a3fa0479d4a088",
+        "activities": [
+            {
+                "duration": 180,
+                "date": "2024-08-01T00:00:00.000Z",
+                "time": "11:00",
+                "_id": "6754c2c100cbdf40181f909b"
+            }
+        ],
+        "locations": "Luxor, Karnak Temple",
+        "timeline": "3-day ancient sites tour",
+        "duration": 3,
+        "language": "French",
+        "price": 300,
+        "availableDates": [
+            "2024-08-01T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "11:00"
+        ],
+        "accessibility": true,
+        "pickupLocation": "Luxor Airport",
+        "dropoffLocation": "Karnak Temple",
+        "hasBookings": false,
+        "isActive": true,
+        "tags": [
+            "ancient",
+            "cultural"
+        ],
+        "rating": 5,
+        "isDeleted": false,
+        "flagged": false,
+        "__v": 1,
+        "comment": "very good"
+    }
+------------------------------------------
+Title: Get Upcoming Itineraries
+Route: http://localhost:4000/api/tour_guide_itinerary/upcoming
+Request Method: GET
+Request:
+Expected Response:
+{
+        "_id": "6752f084f3d7174904885e23",
+        "tourGuideName": "EZZ",
+        "tourGuideId": "6751e64314a67da81e2b08e9",
+        "activities": [],
+        "locations": "Egypt",
+        "timeline": "December",
+        "duration": 2,
+        "language": "Egypt",
+        "price": 499,
+        "availableDates": [
+            "2024-12-31T00:00:00.000Z"
+        ],
+        "availableTimes": [
+            "14:22"
+        ],
+        "accessibility": false,
+        "pickupLocation": "Airport",
+        "dropoffLocation": "Egypt",
+        "hasBookings": true,
+        "isActive": true,
+        "tags": [],
+        "rating": 0,
+        "isDeleted": false,
+        "flagged": true,
+        "__v": 0
+    }
+------------------------------------------
+Title: Get Loyalty Points for a User
+Route: http://localhost:4000/users/loyalty-points/:userId
+Request Method: GET
+Request:
+URL Parameter:
+userId: "674d0772a54a6ecc374e2f35"
+Expected Response:
+{
+    "loyaltyPoints": 250019312.5
+}
+------------------------------------------
+Title: Book a Ticket for an Itinerary
+Route: http://localhost:4000/ticket/book
+Request Method: POST
+Request:
+Body Parameters:
+{
+  "userId": "tourist_user_id",
+  "itineraryId": "itinerary_id",
+  "numberOfTickets": "number_of_tickets"
+}
+Expected Response:
+{
+  "message": "Booking and sale recorded successfully",
+  "booking": {
+    "_id": "booking_id",
+    "tourist": "tourist_user_id",
+    "itinerary": "itinerary_id",
+    "numberOfTickets": "number_of_tickets",
+    "totalPrice": "total_price",
+    "tourGuideId": "tour_guide_id"
+  },
+  "sale": {
+    "_id": "sale_id",
+    "tourGuideId": "tour_guide_id",
+    "itineraryId": "itinerary_id",
+    "touristId": "tourist_user_id",
+    "amount": "total_price"
+  },
+  "loyaltyPoints": "tourist_loyalty_points"
+}
+------------------------------------------
+
+
