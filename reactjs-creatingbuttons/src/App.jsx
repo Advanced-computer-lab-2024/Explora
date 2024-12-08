@@ -118,7 +118,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<OrderList />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
