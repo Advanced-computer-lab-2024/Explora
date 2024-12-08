@@ -332,7 +332,6 @@ const cancelOrder = async (req, res) => {
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
     }
-
     // Update order status to 'cancelled'
     const order = await Orders.findByIdAndUpdate(orderId, { orderStatus: 'cancelled' }, { new: true });
     if (!order) {
