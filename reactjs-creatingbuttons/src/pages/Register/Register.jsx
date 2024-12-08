@@ -3,7 +3,6 @@ import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 import './register.css';
-import { FaSignInAlt } from "react-icons/fa";
 import { CgProfile } from "react-icons/cg";
 import { RiLockPasswordFill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
@@ -11,6 +10,11 @@ import { FaMobileScreen } from "react-icons/fa6";
 import { FaRegFlag } from "react-icons/fa6";
 import { MdOutlineWorkOutline } from "react-icons/md";
 import { BsCalendarDate } from "react-icons/bs";
+import { faRightToBracket } from '@fortawesome/free-solid-svg-icons'; // Import the new icon
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+
+
 
 function Register() {
     const navigate = useNavigate();
@@ -283,9 +287,17 @@ function Register() {
                     </div>
                 )}
 
-                <button type="submit" className="register-button">
-                    <FaSignInAlt /> Register
-                </button>
+<button type="submit" className="register-button">
+    <span className="register-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+            <path d="M8 10v-5l8 7-8 7v-5h-8v-4h8zm2-8v2h12v16h-12v2h14v-20h-14z" fill="white" />
+        </svg>
+    </span>
+    Register
+</button>
+
+
+
             </form>
         </div>
     );

@@ -50,7 +50,6 @@ General Page Styles
     align-items:flex-start;
 }
 
-/* Input and Button Styling */
 .registerr-input,
 .register-dropdownlist,
 .register-button {
@@ -59,6 +58,7 @@ General Page Styles
     font-size: 0.9rem;
     border: 1px solid #ccc;
     border-radius: 5px;
+    color : #fff;
 }
 
 .register-input:focus,
@@ -143,4 +143,10 @@ General Page Styles
     align-items: center;
     color: #aaa; /* Placeholder text color */
     text-align: center;
+}
+
+
+.register-button .fa {
+    color: white;  /* Ensures the icon is white */
+    font-size: 20px;  /* Font size for the icon */
 }

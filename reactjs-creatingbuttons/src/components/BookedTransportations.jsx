@@ -26,28 +26,30 @@ export default function BookedTransportations() {
   }, []);
 
   return (
-    <div>
-      <h1>My Booked Transportations</h1>
-      {bookedTransportations.length > 0 ? (
-        <ul>
-          {bookedTransportations.map((transportation) => {
+    <div className="UpcomingItineraries">
+      <h1 className="header">My Booked Transportations</h1>
+      <div className="activities-list">
+        {bookedTransportations.length > 0 ? (
+          bookedTransportations.map((transportation) => {
             // Destructure the transportation object
             const { transportation: details } = transportation;
             const formattedDate = details.date ? new Date(details.date).toLocaleDateString() : 'Date not available';
             
             return (
-              <li key={transportation._id}>
-                <h2>{details.method}</h2>
-                <p>From: {details.origin} To: {details.destination}</p>
-                <p>Date: {formattedDate}</p>
-                <p>Price: {details.currency} {details.price}</p>
-              </li>
+              <div key={transportation._id} className="activity-card">
+                <h2 className="activity-name">{details.method}</h2>
+                <p className="activity-date">From: {details.origin} To: {details.destination}</p>
+                <p className="activity-price">Date: {formattedDate}</p>
+                <p className="activity-rating">Price: {details.currency} {details.price}</p>
+                
+               
+              </div>
             );
-          })}
-        </ul>
-      ) : (
-        <p>No booked transportations found.</p>
-      )}
+          })
+        ) : (
+          <p>No booked transportations found.</p>
+        )}
+      </div>
     </div>
   );
 }

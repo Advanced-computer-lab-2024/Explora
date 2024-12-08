@@ -78,7 +78,7 @@ import FlightBooking from './components/FlightBooking'; // import the new compon
 import PastItineraries from './components/PastItineraries.jsx';
 import BookHotel from './components/BookHotel';
 import AdminComplaints from './pages/AdminComplaints/AdminComplaints.jsx';
-import Test from './pages/test/test.jsx';
+import Test from './pages/test/Test.jsx';
 import { Toaster } from 'react-hot-toast';
 import DeleteRequestsPage from './components/AdminDeleteRequests.jsx';
 import PastActivities from './components/PastActivities';  // Assuming this exists
@@ -109,6 +109,8 @@ import ForgetPassword from './components/ForgetPass.jsx'
 import PaymentSuccess from './components/PaymentSuccess';
 import PaymentFailure from './components/PaymentFailure';
 import OrderList from './components/OrdersList.jsx';
+import HomeTest from "./components/HomeTest.jsx"
+import ProductModal from './components/ProductModal.jsx';
 
 function App() {
 
@@ -118,7 +120,7 @@ function App() {
       <Toaster position='top-center' toastOptions={{ duration: 2000 }} />
 
         <Routes>
-          <Route path="/" element={<LoginForm />} />  {/* Set LoginForm as the default route */}
+          <Route path="/" element={<HomeTest />} />  {/* Set LoginForm as the default route */}
           <Route path="/log-in-start" element={<LoginForm />} />  {/* Route for LoginForm */}
           <Route path="/acc-settings" element={<AccsSettings />} />  {/* Route for the AccsSettings component */}
           <Route path="/created" element={<CreatedPop />} />  {/* Route for the DeletedPop component */} 
@@ -221,6 +223,10 @@ function App() {
         <Route path="/payment-success" element={<PaymentSuccess />} />
         <Route path="/payment-failure" element={<PaymentFailure />} />
         <Route  path="/order_list" element={<OrderList />} />
+        <Route path="/test" element={<Test />} />
+        <Route path="/product-modal" element={<ProductModal />} />
+
+
         </Routes>
       </Router>
     </main>

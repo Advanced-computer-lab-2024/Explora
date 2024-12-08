@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
 import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
+import ProductModal from './ProductModal'; // New Product Modal
 
 
 
@@ -230,6 +231,14 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         return stars;
     };
 
+    const handleViewDetails = () => {
+        setShowProductModal(true); // Open the product modal
+    };
+
+    const closeProductModal = () => {
+        setShowProductModal(false); // Close the product modal
+    };
+
     return (
         <div className="product-card">
              <style>
@@ -280,8 +289,9 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                 </>
             )}
 
-            <p className="product-seller">Seller: {product.seller}</p>
-            <p className="product-reviews">{product.reviews.length} reviews</p>
+    <p className="product-seller">Seller: {product.seller}</p>
+    <p className="product-seller">Number of Reviews: {product.reviews.length}</p>
+
 
             {/* Add to Cart Button */}
             <button onClick={() => handleAddToCart(product._id)} className="add-to-cart-btn">
