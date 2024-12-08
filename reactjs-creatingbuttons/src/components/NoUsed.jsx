@@ -9,8 +9,6 @@ const TouristReport = () => {
   const [filteredTourists, setFilteredTourists] = useState([]);
   const [totalTourists, setTotalTourists] = useState(0);
   const [filterByMonth, setFilterByMonth] = useState('');
-  const [filterByDateRange, setFilterByDateRange] = useState({ startDate: '', endDate: '' });
-  const [titleFilter, setTitleFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,6 +44,22 @@ const TouristReport = () => {
     }
   }, [userId]);
 
+  // Prepare data for the LineChart
+  const prepareChartData = () => {
+    const dataMap = {};
+
+    // Aggregate the number of tourists by date
+    filteredTourists.forEach((tourist) => {
+      const date = new Date(tourist.bookingDate).toLocaleDateString();
+      dataMap[date] = (dataMap[date] || 0) + 1;
+    });
+
+    // Convert to an array format suitable for the chart
+    return Object.entries(dataMap).map(([date, count]) => ({ date, count }));
+  };
+
+  const chartData = prepareChartData();
+
   // Filter Logic
   const applyFilters = () => {
     let filtered = tourists;
@@ -64,14 +78,13 @@ const TouristReport = () => {
     setFilteredTourists(filtered);
     setTotalTourists(filtered.length);
   };
+
   const handleMonthChange = (e) => {
     setFilterByMonth(e.target.value);
   };
 
   const clearFilters = () => {
     setFilterByMonth('');
-    setFilterByDateRange({ startDate: '', endDate: '' });
-    setTitleFilter('');
     setFilteredTourists(tourists);
     setTotalTourists(tourists.length);
   };
@@ -85,7 +98,7 @@ const TouristReport = () => {
 
       {/* Line Chart Section */}
       <div className="chart-container">
-        <LineChart salesData={filteredTourists} filterBy="month" />
+      <LineChart salesData={chartData} filterBy="date" />
       </div>
 
       {/* Filter Section */}
@@ -138,26 +151,26 @@ const TouristReport = () => {
         <p>No tourists found.</p>
       ) : (
         <table>
-<thead>
-  <tr>
-    <th>Booking Date</th>
-    <th>Tourist Name</th>
-    <th>Itinerary Title</th>
-  </tr>
-</thead>
-<tbody>
-  {filteredTourists.map((tourist, index) => (
-    <tr key={index}>
-      <td>
-        {tourist.bookingDate
-          ? new Date(tourist.bookingDate).toLocaleDateString()
-          : 'No Date Available'}
-      </td>
-      <td>{tourist.touristName}</td>
-      <td>{tourist.itineraryLocations}</td>
-    </tr>
-  ))}
-</tbody>
+          <thead>
+            <tr>
+              <th>Booking Date</th>
+              <th>Tourist Name</th>
+              <th>Itinerary Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredTourists.map((tourist, index) => (
+              <tr key={index}>
+                <td>
+                  {tourist.bookingDate
+                    ? new Date(tourist.bookingDate).toLocaleDateString()
+                    : 'No Date Available'}
+                </td>
+                <td>{tourist.touristName}</td>
+                <td>{tourist.itineraryLocations}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       )}
     </div>
