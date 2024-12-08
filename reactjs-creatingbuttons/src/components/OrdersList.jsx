@@ -6,13 +6,20 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [error, setError] = useState(null);
-  const touristId = "67322cdfa472e2e7d22de84a";
+  //const touristId = "67322cdfa472e2e7d22de84a";
+  const touristId = localStorage.getItem('userId') || '';
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+
+      if (!touristId) {
+        setMessage('User not logged in. Please log in first.');
+        return;
+      }
     try {
       const response = await axios.get(`http://localhost:4000/orders/${touristId}`);
       console.log(response.data); // Check the structure of response
@@ -29,6 +36,12 @@ const OrderList = () => {
   };
 
   const cancelOrder = async (orderId) => {
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+
+      if (!touristId) {
+        setMessage('User not logged in. Please log in first.');
+        return;
+      }
     try {
       await axios.put(`http://localhost:4000/orders/cancel/${orderId}`);
       fetchOrders(); // Re-fetch orders to update the list
