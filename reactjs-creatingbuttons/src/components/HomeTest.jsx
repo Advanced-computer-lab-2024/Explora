@@ -19,10 +19,7 @@ export default function Touristhome() {
     <div className="header-content">
       <nav className="navigation">
         <ul>
-          <li><a href="#home">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-                   <li><a href="#contact">Contact</a></li>
+          
         </ul>
       </nav>
     </div>
@@ -51,12 +48,10 @@ export default function Touristhome() {
             Welcome to <span className="highlight">Explora!</span>
           </h2>
           <p>
-            Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit. Aliqu
-            diam amet diam et eos. Clita erat ipsum et lorem et sit.
+          Explora is an innovative travel planning platform designed to revolutionize how you experience the world. Whether you’re a seasoned traveler or embarking on your first adventure, Explora provides all the tools you need to seamlessly plan, organize, and enjoy your trips. From creating detailed itineraries to managing bookings, Explora simplifies every aspect of travel, ensuring you focus on what truly matters—exploring new destinations and making unforgettable memories.
           </p>
           <p>
-            Tempor erat elitr rebum at clita. Sed stet lorem sit clita duo justo
-            magna dolore erat amet.
+           
           </p>
           <ul className="features-list">
             <li>
@@ -144,8 +139,7 @@ export default function Touristhome() {
       </div>
       <h3>Choose A Destination</h3>
       <p>
-        Tempor erat elitr rebum clita dolor diam ipsum sit diam amet diam eos
-        erat ipsum et lorem et sit sed stet lorem sit.
+        
       </p>
     </div>
     <div className="step-item">
@@ -154,8 +148,7 @@ export default function Touristhome() {
       </div>
       <h3>Pay Online</h3>
       <p>
-        Tempor erat elitr rebum clita dolor diam ipsum sit diam amet diam eos
-        erat ipsum et lorem et sit sed stet lorem sit.
+       
       </p>
     </div>
     <div className="step-item">
@@ -164,8 +157,7 @@ export default function Touristhome() {
       </div>
       <h3>Fly Today</h3>
       <p>
-        Tempor erat elitr rebum clita dolor diam ipsum sit diam amet diam eos
-        erat ipsum et lorem et sit sed stet lorem sit.
+       
       </p>
     </div>
   </div>
