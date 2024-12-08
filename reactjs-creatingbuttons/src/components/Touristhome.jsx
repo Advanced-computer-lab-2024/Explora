@@ -9,6 +9,10 @@ import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import { faUsers } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import logo from '../assets/cropped_image.png';
+import { faReceipt } from '@fortawesome/free-solid-svg-icons';
+import { faBookmark , faBell} from '@fortawesome/free-solid-svg-icons';
+
+
 
 export default function Touristhome() {
   const navigate = useNavigate();
@@ -25,7 +29,7 @@ export default function Touristhome() {
 
   const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
   const handleMouseEnterHistory = () => setIsHistoryOptionsVisible(true);
-  const handleMouseLeaveHistory = () => setTimeout(() => setIsHistoryOptionsVisible(false), 500);
+  const handleMouseLeaveHistory = () => setTimeout(() => setIsHistoryOptionsVisible(false), 900);
 
   const buttonStyle = {
     backgroundColor: '#008080',
@@ -132,7 +136,12 @@ const handleViewUpcomingBookedEventsClick = () => {
           <a href="/book-flight" style={{ color: 'white', textDecoration: 'none' }}>Flights</a>
           <a href="/book-hotel" style={{ color: 'white', textDecoration: 'none' }}>Hotels</a>
           <a href="/UpcomingItineraries" style={{ color: 'white', textDecoration: 'none' }}>Itineraries</a>
+          <a href="/UpcomingBookedEvents" style={{ color: 'white', textDecoration: 'none' }}>Upcoming Events</a>
+
           <a href="/product-list-tourist" style={{ color: 'white', textDecoration: 'none' }}>Products</a>
+          <a href="/Notifications" style={{ color: 'white', textDecoration: 'none' }}>Notifications</a>
+
+
         </div>
 
         {/* SVG Icon */}
@@ -207,6 +216,24 @@ const handleViewUpcomingBookedEventsClick = () => {
               >
                 Change Password
               </button>
+              <button
+                onClick={() => navigate('/Bookmarks')}
+                style={buttonStyle}
+              >
+                Bookmarks
+              </button>
+              <button
+                onClick={() => navigate('/my-promo-codes')}
+                style={buttonStyle}
+              >
+                My Promo Codes
+              </button>
+              <button
+                onClick={() => navigate('/my-promo-codes')}
+                style={buttonStyle}
+              >
+                Current Orders
+              </button>
 
               {isHistoryOptionsVisible && (
                 <div
@@ -246,6 +273,12 @@ const handleViewUpcomingBookedEventsClick = () => {
                     style={buttonStyle}
                   >
                     Booked Transportations
+                  </button>
+                  <button
+                    onClick={() => navigate('/PastBookedEvents')}
+                    style={buttonStyle}
+                  >
+                    Booked Events
                   </button>
 
                   
@@ -341,11 +374,14 @@ const handleViewUpcomingBookedEventsClick = () => {
           <FontAwesomeIcon icon={faUserMinus} />
           Request Account Deletion
         </button>
-        <button onClick={handleViewPastBookedEventsClick}>View All My Previously Booked Events</button>
-        <button onClick={handleViewUpcomingBookedEventsClick}>View All My Upcoming Booked Events</button>
-        <button onClick={handleBookmarkedeventsClick}>Bookmarked Events</button>
-        <button onClick={handleViewNotificationsClick}>View Notifications</button>
-        <button onClick={handleViewMyPromoCodesClick}>View My Promo Codes</button>
+        <button  onClick={handleViewPastBookedEventsClick}>       <FontAwesomeIcon icon={faReceipt} />
+ View All My Previously Booked Events</button>
+        <button onClick={handleViewUpcomingBookedEventsClick}> <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M17 3v-2c0-.552.447-1 1-1s1 .448 1 1v2c0 .552-.447 1-1 1s-1-.448-1-1zm-12 1c.553 0 1-.448 1-1v-2c0-.552-.447-1-1-1-.553 0-1 .448-1 1v2c0 .552.447 1 1 1zm13 13v-3h-1v4h3v-1h-2zm-5 .5c0 2.481 2.019 4.5 4.5 4.5s4.5-2.019 4.5-4.5-2.019-4.5-4.5-4.5-4.5 2.019-4.5 4.5zm11 0c0 3.59-2.91 6.5-6.5 6.5s-6.5-2.91-6.5-6.5 2.91-6.5 6.5-6.5 6.5 2.91 6.5 6.5zm-14.237 3.5h-7.763v-13h19v1.763c.727.33 1.399.757 2 1.268v-9.031h-3v1c0 1.316-1.278 2.339-2.658 1.894-.831-.268-1.342-1.111-1.342-1.984v-.91h-9v1c0 1.316-1.278 2.339-2.658 1.894-.831-.268-1.342-1.111-1.342-1.984v-.91h-3v21h11.031c-.511-.601-.938-1.273-1.268-2z"/></svg> View All My Upcoming Booked Events</button>
+        <button onClick={handleBookmarkedeventsClick}>   <FontAwesomeIcon icon={faBookmark} style={{ marginRight: '8px' }} />
+Bookmarked Events</button>
+        <button onClick={handleViewNotificationsClick}>   <FontAwesomeIcon icon={faBell} style={{ marginRight: '8px' }} />
+View Notifications</button>
+        <button onClick={handleViewMyPromoCodesClick}> <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M10.605 0h-10.605v10.609l13.391 13.391 10.609-10.604-13.395-13.396zm-7.02 6.415c-.781-.783-.781-2.048 0-2.829.782-.782 2.048-.781 2.829-.001.782.783.781 2.047 0 2.829-.781.781-2.046.781-2.829.001zm3.101 4.514l4.243-4.243.707.707-4.243 4.243-.707-.707zm1.414 1.414l4.243-4.243.354.354-4.243 4.243-.354-.354zm1.061 1.061l4.243-4.243 1.061 1.061-4.243 4.243-1.061-1.061zm1.768 1.768l4.243-4.243.354.354-4.243 4.243-.354-.354zm1.767 1.767l-.707-.707 4.243-4.243.707.707-4.243 4.243zm.708.707l4.242-4.242.354.354-4.242 4.242-.354-.354z"/></svg>View My Promo Codes</button>
 
       </div>
 
