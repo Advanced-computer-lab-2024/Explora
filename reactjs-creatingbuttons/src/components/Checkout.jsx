@@ -298,12 +298,7 @@ const Checkout = () => {
               ...styles.primaryButton,
               ...(selectedAddress === null ? styles.disabledButton : {}),
             }}
-            style={{
-              ...styles.primaryButton,
-              ...(selectedAddress === null ? styles.disabledButton : {}),
-            }}
             disabled={selectedAddress === null}
-            onClick={handleProceedToPayment}
             onClick={handleProceedToPayment}
           >
             Proceed to Payment
@@ -393,34 +388,7 @@ const StripePaymentForm = () => {
   );
 };
 
-
 const styles = {
-  container: {
-    maxWidth: '600px',
-    margin: '0 auto',
-    padding: '20px',
-    background: '#f9f9f9',
-    borderRadius: '10px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-  },
-  heading: {
-    textAlign: 'center',
-    color: '#333',
-    fontSize: '2rem',
-    marginBottom: '20px',
-  },
-  section: {
-    marginBottom: '30px',
-  },
-  subheading: {
-    fontSize: '1.5rem',
-    marginBottom: '10px',
-    color: '#444',
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-  },
   container: {
     maxWidth: '600px',
     margin: '0 auto',
@@ -451,15 +419,9 @@ const styles = {
     padding: '10px',
     marginBottom: '10px',
     fontSize: '1rem',
-    fontSize: '1rem',
     borderRadius: '5px',
     border: '1px solid #ccc',
   },
-  primaryButton: {
-    backgroundColor: '#007bff',
-    color: 'white',
-    padding: '10px 20px',
-    fontSize: '1rem',
   primaryButton: {
     backgroundColor: '#007bff',
     color: 'white',
@@ -469,15 +431,7 @@ const styles = {
     borderRadius: '5px',
     cursor: 'pointer',
     transition: 'background-color 0.3s',
-    transition: 'background-color 0.3s',
   },
-  primaryButtonDisabled: {
-    backgroundColor: '#ccc',
-    cursor: 'not-allowed',
-  },
-  errorText: {
-    color: 'red',
-    fontSize: '0.9rem',
   primaryButtonDisabled: {
     backgroundColor: '#ccc',
     cursor: 'not-allowed',
@@ -488,13 +442,11 @@ const styles = {
   },
   addressList: {
     listStyleType: 'none',
-    listStyleType: 'none',
     padding: '0',
   },
   addressItem: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
     alignItems: 'center',
     padding: '10px',
     borderBottom: '1px solid #ddd',
@@ -505,23 +457,11 @@ const styles = {
   },
   radioInput: {
     marginRight: '10px',
-    borderBottom: '1px solid #ddd',
   },
-  radioLabel: {
-    fontSize: '1rem',
-    marginRight: '10px',
-  },
-  radioInput: {
-    marginRight: '10px',
-  },
-  dangerButton: {
-    backgroundColor: '#dc3545',
-    color: 'white',
   dangerButton: {
     backgroundColor: '#dc3545',
     color: 'white',
     padding: '5px 10px',
-    fontSize: '0.9rem',
     fontSize: '0.9rem',
     border: 'none',
     borderRadius: '5px',
@@ -531,24 +471,8 @@ const styles = {
     color: '#777',
   },
   centered: {
-  noAddressText: {
-    color: '#777',
-  },
-  centered: {
     display: 'flex',
     justifyContent: 'center',
-  },
-  paymentSection: {
-    padding: '20px',
-    background: '#fff',
-    borderRadius: '10px',
-    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-  },
-  paymentMethods: {
-    marginBottom: '20px',
-  },
-  cardElement: {
-    marginBottom: '10px',
   },
   paymentSection: {
     padding: '20px',
