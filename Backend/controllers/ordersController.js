@@ -280,7 +280,86 @@ const processPayment = async (req, res) => {
     }
 };
 
+const viewOrders = async (req, res) => {
+  try {
+    const { touristId } = req.params; // Destructure `touristId` from params
+    if (!touristId) {
+      return res.status(400).json({ message: "Tourist ID is required" });
+    }
+
+    const orders = await Orders.find({ userId: touristId })
+    .populate({
+      path: 'products.productId', // Populate the `productId` in `products`
+      select: 'name price' // Select specific fields (you can modify this)
+    })
+    .exec(); // Execute the query
+  console.log(orders); //
+    if (!orders || !orders.length) {
+      return res.status(404).json({ message: "No orders found for this tourist" });
+    }
+
+    return res.status(200).json({ orders }); // Return orders if found
+  } catch (err) { // Use `err` in the catch block
+    console.error("Error retrieving orders:", err);
+    res.status(500).json({ message: "Error retrieving orders", error: err.message });
+  }
+};
+
+const filterByStatus = async (req, res) => {
+  try{
+  
+  const {status} = req.query;
+  const {touristId} = req.params
+  if (!status) {
+    return res.status(400).json({ message: "Status is required" });
+  }
+  const orders = await Orders.find({ orderStatus: status, userId:touristId });
+  if (orders.length > 0) {
+    return res.status(200).json({ orders });
+  } else {
+    return res.status(404).json({ message: "No orders found with this status" });
+  }
+}catch{
+  console.error("Error retrieving orders:", err);
+  res.status(500).json({ message: "Error retrieving orders", error: err.message });
+}
+}
+
+const cancelOrder = async (req, res) => {
+  try{
+    const {orderId} = req.params;
+    if (!orderId) {
+      return res.status(400).json({ message: "Order ID is required" });
+    }
+    const order = await Orders.findByIdAndUpdate(orderId, { orderStatus: 'cancelled' }, { new: true });
+    if (order) {
+      return res.status(200).json({ message: "Order cancelled successfully", order });
+    } else {
+      return res.status(404).json({ message: "Order not found" });
+    }
+  }catch{
+    console.error("Error cancelling order:", err);
+    res.status(500).json({ message: "Error cancelling order", error: err.message });
+  }
+}
+
+const viewAllOrders = async (req, res) => {
+  try{
+    const orders = await Orders.find({});
+    if (orders.length > 0) {
+      return res.status(200).json({ orders });
+    } else {
+      return res.status(404).json({ message: "No orders found" });
+    }
+  }
+  catch{
+    console.error("Error retrieving orders:", err);
+    res.status(500).json({ message: "Error retrieving orders", error: err.message });
+  }
+}
+
+
   
   
 
-module.exports = {checkoutOrder, processPayment , checkoutAndPay};
+module.exports = {checkoutOrder, processPayment , checkoutAndPay, viewOrders, cancelOrder, filterByStatus, viewAllOrders};
