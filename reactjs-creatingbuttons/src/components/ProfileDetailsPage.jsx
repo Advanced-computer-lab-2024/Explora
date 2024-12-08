@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserCircle } from '@fortawesome/free-solid-svg-icons'; // User icon import
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const EditIcon = () => (
   <svg
@@ -17,50 +18,111 @@ const EditIcon = () => (
   </svg>
 );
 
+
 const ProfileDetailsPage = () => {
-    const [profileData, setProfileData] = useState({
-        email: 'tourist@example.com',
-        username: 'touristUser',
-        nationality: 'USA',
-        dob: '1990-01-01',
-        jobStatus: 'job',
-        wallet: '1000.00$',
-        level: '1' // Added user level
+    const [profile, setProfile] = useState({
+        email: '',
+        mobileNumber: '',
+        nationality: '',
+        dateOfBirth: '',
+        job: '',
+        username: '', // Will be read-only
+        wallet: 0, // Will be read-only
     });
 
+    const [loading, setLoading] = useState(true);
     const [isEditable, setIsEditable] = useState(false);
+    const navigate = useNavigate(); // Add this here
 
-    const navigate = useNavigate(); // Hook to navigate between pages
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setProfileData({ ...profileData, [name]: value });
-    };
 
     const handleEditToggle = (e) => {
         e.preventDefault();
         setIsEditable(!isEditable);
     };
 
-    const handleSubmit = (e) => {
+
+
+
+    useEffect(() => {
+        const touristId = localStorage.getItem('userId');
+        // Fetch profile details
+        const fetchProfile = async () => {
+            try {
+                const response = await axios.get(`http://localhost:4000/api/tourists/id/${touristId}`); // Replace with your API endpoint
+                setProfile(response.data);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error fetching profile:', error);
+            }
+        };
+
+        fetchProfile();
+    }, []);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProfile((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e) => {
+        const touristId = localStorage.getItem('userId');
+
         e.preventDefault();
-        console.log('Profile updated:', profileData);
-        setIsEditable(false);
+        try {
+            const { wallet, ...editableFields } = profile; // Exclude wallet
+            await axios.put(`http://localhost:4000/api/tourists/${touristId}`, editableFields); // Replace with your API endpoint
+            alert('Profile updated successfully');
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+    };
+    const formStyle = {
+        maxWidth: "600px",
+        margin: "50px auto",
+        padding: "20px",
+        borderRadius: "10px",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        backgroundColor: "#f9f9f9",
+        fontFamily: "Arial, sans-serif",
     };
 
-    // Navigation functions for buttons
-    const handleChangePassword = () => {
-        navigate('/change-password');
+    const labelStyle = {
+        display: "block",
+        marginBottom: "10px",
+        fontWeight: "bold",
+        color: "#333",
     };
 
-    const handleFileComplaint = () => {
-        navigate('/file-complaint');
+    const inputStyle = {
+        width: "100%",
+        padding: "10px",
+        marginBottom: "20px",
+        borderRadius: "5px",
+        border: "1px solid #ccc",
+        fontSize: "16px",
+        boxSizing: "border-box",
     };
 
-    const handleRequestAccountDeletion = () => {
-        navigate('/request-account-deletion');
+    const buttonStyle = {
+        padding: "10px 20px",
+        backgroundColor: "#4CAF50",
+        color: "#fff",
+        border: "none",
+        borderRadius: "5px",
+        fontSize: "16px",
+        cursor: "pointer",
+        transition: "background-color 0.3s ease",
     };
 
+    const buttonHoverStyle = {
+        ...buttonStyle,
+        backgroundColor: "#45a049",
+    };
+
+    const [hover, setHover] = React.useState(false);
+    if (loading) return <p>Loading...</p>;
+
+  
     return (
         <div
             style={{
@@ -108,13 +170,13 @@ const ProfileDetailsPage = () => {
                             }}
                         />
                         <h1 style={{ fontWeight: 'bold', fontSize: '36px', marginBottom: '10px' }}>
-                            {profileData.username}
+                            {profile.username}
                         </h1>
                         <p style={{ fontSize: '16px', marginBottom: '5px', fontWeight: 'normal' }}>
-                            Wallet: {profileData.wallet}
+                            Wallet: {profile.wallet}
                         </p>
                         <p style={{ fontSize: '16px', fontWeight: 'normal' }}>
-                            Level: {profileData.level}
+                            Level: {profile.level}
                         </p>
                     </div>
 
@@ -136,23 +198,25 @@ const ProfileDetailsPage = () => {
                             Redeem Points
                         </button>
                         <button
-                            onClick={handleChangePassword} // Navigate to change password page
-                            style={{
-                                marginBottom: '20px',
-                                padding: '10px 20px',
-                                background: '#008080',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            Change Password
-                        </button>
+    onClick={() => navigate('/change-password')} // Correctly uses the navigate function
+    style={{
+        marginBottom: '20px',
+        padding: '10px 20px',
+        background: '#008080',
+        color: '#ffffff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        fontSize: '16px',
+        fontWeight: 'bold',
+    }}
+>
+    Change Password
+</button>
+
+
                         <button
-                            onClick={handleFileComplaint} // Navigate to file complaint page
+                            onClick={() => navigate('/file-complaint')} // Navigate to file complaint page
                             style={{
                                 marginBottom: '20px',
                                 padding: '10px 20px',
@@ -168,7 +232,7 @@ const ProfileDetailsPage = () => {
                             File a Complaint
                         </button>
                         <button
-                            onClick={handleRequestAccountDeletion} // Navigate to account deletion page
+                            onClick={() => navigate('/request-account-deletion')} // Navigate to account deletion page
                             style={{
                                 padding: '10px 20px',
                                 background: '#008080',
@@ -208,7 +272,7 @@ const ProfileDetailsPage = () => {
                                 <input
                                     type="email"
                                     name="email"
-                                    value={profileData.email}
+                                    value={profile.email}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required
@@ -229,7 +293,7 @@ const ProfileDetailsPage = () => {
                                 Nationality:
                                 <select
                                     name="nationality"
-                                    value={profileData.nationality}
+                                    value={profile.nationality}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required
@@ -253,7 +317,7 @@ const ProfileDetailsPage = () => {
                                 <input
                                     type="date"
                                     name="dob"
-                                    value={profileData.dob}
+                                    value={profile.dob}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required
@@ -273,7 +337,7 @@ const ProfileDetailsPage = () => {
                                 Job Status:
                                 <select
                                     name="jobStatus"
-                                    value={profileData.jobStatus}
+                                    value={profile.jobStatus}
                                     onChange={handleChange}
                                     disabled={!isEditable}
                                     required

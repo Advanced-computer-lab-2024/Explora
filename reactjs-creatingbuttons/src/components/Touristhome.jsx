@@ -36,6 +36,58 @@ export default function Touristhome() {
     textAlign: 'center',
     cursor: 'pointer'
   };
+  const handleViewPastBookedEventsClick = () => {
+    navigate('/PastBookedEvents');
+};
+const handleViewUpcomingBookedEventsClick = () => {
+  navigate('/UpcomingBookedEvents');
+};
+  const handleAccountDeletionClick = () => {
+    navigate('/request-account-deletion');
+  };
+
+  const handleBookTransportationClick = () => {
+    navigate('/book-transportation');
+  };
+
+  const handleBookFlightClick = () => {
+    navigate('/book-flight');
+  };
+
+  const handleViewPreviousActivitiesClick = () => {
+    navigate('/tourist-previous-activities');
+  };
+
+  const handleViewPastItinerariesClick = () => {
+    navigate('/tourist-past-itineraries');
+  };
+
+  const handleViewPastActivitiesClick = () => {
+    navigate('/tourist-previous-activities');
+  };
+
+  const handleBookHotelClick = () => {
+    navigate('/hotel-booking');
+  };
+
+  const handleBookmarkedeventsClick = () => {
+    navigate('/Bookmarks');
+  };
+
+  const handleViewNotificationsClick = () => {
+      navigate('/Notifications');
+  }; 
+
+  const handleViewMyPromoCodesClick = () => {
+    navigate('/my-promo-codes');
+  };
+  
+  
+ 
+  // New handler for viewing all booked transportations
+  const handleViewBookedTransportationsClick = () => {
+    navigate('/view-booked-transportations');
+  };
 
   const handleSearch = () => {
     const query = searchQuery.toLowerCase();
@@ -195,6 +247,8 @@ export default function Touristhome() {
                   >
                     Booked Transportations
                   </button>
+
+                  
                 </div>
               )}
             </div>
@@ -287,6 +341,12 @@ export default function Touristhome() {
           <FontAwesomeIcon icon={faUserMinus} />
           Request Account Deletion
         </button>
+        <button onClick={handleViewPastBookedEventsClick}>View All My Previously Booked Events</button>
+        <button onClick={handleViewUpcomingBookedEventsClick}>View All My Upcoming Booked Events</button>
+        <button onClick={handleBookmarkedeventsClick}>Bookmarked Events</button>
+        <button onClick={handleViewNotificationsClick}>View Notifications</button>
+        <button onClick={handleViewMyPromoCodesClick}>View My Promo Codes</button>
+
       </div>
 
       {/* Testimonials Section */}

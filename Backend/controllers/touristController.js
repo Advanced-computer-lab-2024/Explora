@@ -1,4 +1,4 @@
-const Tourist = require('../models/touristModel');
+const touristModel = require('../models/touristModel');
 
 // controllers/touristController.js
 
@@ -38,42 +38,43 @@ const allTourists = async (req, res) => {
 // Create a new tourist
 const createTourist = async (req, res) => {
     try {
-        const { email, username, password, mobileNumber, nationality, dateOfBirth, job } = req.body;
-
-        const existingTourist = await touristModel.findOne({ email });
-        if (existingTourist) {
-            return res.status(400).json({ message: "Tourist with the same email already exists" });
-        }
-        const existingUsername = await touristModel.findOne({ username });
-        if (existingUsername) {
-            return res.status(400).json({ message: "Tourist with the same username already exists" });
-        }
-        const newTourist = await touristModel.create({
-            email,
-            username,
-            password,
-            mobileNumber,
-            nationality,
-            dateOfBirth,
-            job,
-           
-            role: 'Tourist'
-        });
-
-        res.status(201).json(newTourist);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+      // Destructure the request body to get the fields
+      const { email, username, password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
+  
+      // Ensure the 'wallet' field is being correctly passed
+      const newTourist = new touristModel({
+        email,
+        username,
+        password,  // Make sure to hash the password before saving
+        mobileNumber,
+        nationality,
+        dateOfBirth,
+        job,
+        wallet,  // This should correctly be set from the request body
+      });
+  
+      // Save the tourist to the database
+      const savedTourist = await newTourist.save();
+  
+      // Respond with the saved tourist object
+      res.status(201).json({
+        message: 'Tourist created successfully',
+        tourist: savedTourist
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Error creating tourist', error: err.message });
     }
-};
-
+  };
+  
 // Update a tourist by email
 const updateTourist = async (req, res) => {
     try {
-        const { password, mobileNumber, nationality, dateOfBirth, job, wallet } = req.body;
+        const { email,password, mobileNumber, nationality, dateOfBirth, job} = req.body;
 
         const updatedTourist = await touristModel.findByIdAndUpdate(
             req.params.id,
-            { password, mobileNumber, nationality, dateOfBirth, job, wallet },
+            { email,password, mobileNumber, nationality, dateOfBirth, job },
             { new: true, runValidators: true }
         );
 

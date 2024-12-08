@@ -1,10 +1,19 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
+const TouristPromoCode = require('../models/touristPromoCode');
 const Amadeus = require('amadeus');
 const User = require('../models/User'); // Adjust the path based on your project structure
+const stripe = require('stripe')(process.env.STRIPE_API_SECRET);
 const HotelReservation = require('../models/hotelReservation');
-
+const nodemailer = require('nodemailer');
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // Or another email service
+  auth: {
+    user: 'explora.donotreply@gmail.com', // Replace with your email
+    pass: 'goiz pldj kpjy clsh'  // Use app-specific password if necessary
+  }
+});
 const amadeus = new Amadeus({
   clientId: process.env.AMADEUS_API_KEY,
   clientSecret: process.env.AMADEUS_API_SECRET,
@@ -71,7 +80,7 @@ router.get(`/hotels`, async (req, res) => {
 
     // Map the response to include only name, hotelId, checkinDate, checkOutDate, and calculated price
     const simplifiedHotels = response.data.map(hotel => {
-      const pricePerNight = Math.floor(Math.random() * (150 - 40 + 1)) + 40;
+      const pricePerNight = Math.floor(Math.random() * (190 - 40 + 1)) + 40;
       const totalPrice = pricePerNight * nights;
       return {
         name: hotel.name,
@@ -97,9 +106,9 @@ router.get(`/hotels`, async (req, res) => {
 });
 
 
-//http://localhost:4000/hotels/book
-router.post('/book', async (req, res) => {
-  const { touristId, searchId, hotelId, cardNumber, cvv, cardExpiryDate } = req.body;
+//http://localhost:4000/hotels/bookWallet
+router.post('/bookWallet', async (req, res) => {
+  const { touristId, searchId, hotelId, promoCode } = req.body;
 
   try {
     // Find the tourist user
@@ -107,11 +116,7 @@ router.post('/book', async (req, res) => {
     if (!tourist || tourist.role !== 'Tourist') {
       return res.status(400).json({ message: 'Invalid tourist user' });
     }
-
-    // Validate payment details
-    if (!/^\d{16}$/.test(cardNumber) || !/^\d{3}$/.test(cvv) || !/^\d{2}\/\d{2}$/.test(cardExpiryDate)) {
-      return res.status(400).json({ message: 'Invalid payment details' });
-    }
+    const touristEmail = tourist.email; // Get the tourist's email dynamically
 
     // Check if the hotel is in the cache using the searchId and hotelId
     const cachedHotels = hotelCache[searchId]; // Get hotels based on searchId
@@ -124,13 +129,47 @@ router.post('/book', async (req, res) => {
       return res.status(404).json({ message: 'Hotel not found in this search results' });
     }
 
+    let price = parseFloat(selectedHotel.price.replace('$', '').trim()); // Assuming price is a string with $ symbol
+    console.log("Price:", price); // Debug log
+
+    // Check if promo code exists and is valid
+    if (promoCode) {
+      const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+      if (!promoCodeRecord) {
+        return res.status(400).json({ message: 'Invalid or expired promo code' });
+      }
+
+      // Apply the promo code discount
+      const discountAmount = promoCodeRecord.discount * price;
+      price = price - discountAmount;
+
+      // Ensure discounted price is valid
+      if (price < 0) {
+        return res.status(400).json({ message: 'Discounted price is invalid' });
+      }
+
+      // Deduct the discounted price from the tourist's wallet
+      tourist.wallet -= price;
+      await tourist.save(); // Save the updated tourist
+
+      // Delete the promo code since it's used
+      await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+    } else {
+      // If no promo code, deduct full price
+      if (tourist.wallet < price || !tourist.wallet) {
+        return res.status(400).json({ message: 'Insufficient funds in wallet' });
+      }
+      tourist.wallet -= price;
+      await tourist.save();
+    }
+
     // Extract hotel details
     const cityCode = selectedHotel.cityCode;
     const checkInDate = selectedHotel.checkInDate;
     const checkOutDate = selectedHotel.checkOutDate;
     const hotelName = selectedHotel.name;
     const reservationNumber = `${hotelId}-${touristId}-${Date.now()}`; // Unique reservation number
-    const price = parseFloat(selectedHotel.price.replace('$', '')); // Ensure price is a number
 
     // Create a new hotel booking
     const hotelReservation = new HotelReservation({
@@ -140,14 +179,26 @@ router.post('/book', async (req, res) => {
       checkOutDate,
       hotelName,
       reservationNumber,
-      price,
-      cardNumber,
-      cvv,
-      cardExpiryDate
+      price
     });
 
     // Save the booking
     const savedHotelReservation = await hotelReservation.save();
+
+    // Send a payment receipt email to the tourist's email
+    const mailOptions = {
+      from: 'explora.donotreply@gmail.com', // Sender address
+      to: touristEmail,            // Dynamic email based on the tourist's record
+      subject: 'Hotel Reservation Receipt',
+      text: `Dear ${tourist.username},\n\nYour hotel reservation has been successfully booked!\n\nDetails:\n- Reservation Number: ${reservationNumber}\n- City: ${cityCode}\n- Checkin Date: ${checkInDate}\n- Checkout Date: ${checkOutDate}\n- Hotel: ${hotelName}\n- Price: ${price} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
 
     // Respond with the booking confirmation (omit sensitive fields)
     res.status(201).json({
@@ -170,6 +221,119 @@ router.post('/book', async (req, res) => {
   }
 });
 
+
+
+//=======================================================
+//http://localhost:4000/hotels/bookStripe
+router.post('/bookStripe', async (req, res) => {
+  const { touristId, searchId, hotelId, paymentMethodId } = req.body; // Include paymentMethodId
+
+  try {
+    // Find the tourist user
+    const tourist = await User.findById(touristId);
+    if (!tourist || tourist.role !== 'Tourist') {
+      return res.status(400).json({ message: 'Invalid tourist user' });
+    }
+    const touristEmail = tourist.email; // Get the tourist's email dynamically
+
+    // Check if the hotel is in the cache using the searchId and hotelId
+    const cachedHotels = hotelCache[searchId]; // Get hotels based on searchId
+    if (!cachedHotels) {
+      return res.status(404).json({ message: 'No hotels found for this searchId' });
+    }
+
+    const selectedHotel = cachedHotels.find(hotel => hotel.hotelId === hotelId);
+    if (!selectedHotel) {
+      return res.status(404).json({ message: 'Hotel not found in this search results' });
+    }
+
+    // Extract hotel details
+    const cityCode = selectedHotel.cityCode;
+    const checkInDate = selectedHotel.checkInDate;
+    const checkOutDate = selectedHotel.checkOutDate;
+    const hotelName = selectedHotel.name;
+    const reservationNumber = `${hotelId}-${touristId}-${Date.now()}`; // Unique reservation number
+    const price = parseFloat(selectedHotel.price.replace('$', '')); // Ensure price is a number
+
+    // Check if paymentMethodId exists (for Stripe)
+    if (!paymentMethodId) {
+      return res.status(400).json({ message: 'Payment method ID is required' });
+    }
+
+    // Create a payment intent with Stripe (ensure price is in cents)
+    const amountInCents = Math.round(price * 100);  // Stripe accepts the amount in cents
+
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amountInCents,
+        currency: 'usd',  // Adjust based on your preferred currency
+        payment_method: paymentMethodId,
+        confirm: true,  // Automatically confirm the payment
+      });
+
+      // Check if the payment succeeded
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: 'Payment failed', paymentIntent });
+      }
+
+    } catch (error) {
+      return res.status(500).json({ message: 'Payment failed', error: error.raw.message });
+    }
+
+    // Create a new hotel booking
+    const hotelReservation = new HotelReservation({
+      tourist: touristId,
+      cityCode,
+      checkInDate,
+      checkOutDate,
+      hotelName,
+      reservationNumber,
+      price,
+      paymentIntentId: paymentIntent.id  // Store paymentIntentId for reference
+
+    });
+
+    // Save the booking
+    const savedHotelReservation = await hotelReservation.save();
+     
+      // Send a payment receipt email to the tourist's email
+      const mailOptions = {
+        from: 'explora.donotreply@gmail.com', // Sender address
+        to: touristEmail,            // Dynamic email based on the tourist's record
+        subject: 'Hotel Reservation Receipt',
+        text: `Dear ${tourist.username},\n\nYour hotel reservation has been successfully booked!\n\nDetails:\n- Reservation Number: ${reservationNumber}\n- City: ${cityCode}\n- Checkin Date: ${checkInDate}\n- Checkout Date: ${checkOutDate}\n- Hotel: ${hotelName}\n- Price: ${price} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    // Respond with the booking confirmation (omit sensitive fields)
+    res.status(201).json({
+      message: 'Hotel booked successfully',
+      bookingDetails: {
+        id: savedHotelReservation._id,
+        tourist: savedHotelReservation.tourist,
+        cityCode: savedHotelReservation.cityCode,
+        checkInDate: savedHotelReservation.checkInDate,
+        checkOutDate: savedHotelReservation.checkOutDate,
+        hotelName: savedHotelReservation.hotelName,
+        reservationNumber: savedHotelReservation.reservationNumber,
+        price: `${savedHotelReservation.price} $`
+      },
+      paymentDetails: paymentIntent  // Optionally include payment details
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error booking hotel', error: err.message });
+  }
+}
+);
+
+//=======================================================
 
 // GET all hotel reservations for a specific user
 //http://localhost:4000/hotels/reservations/:touristId

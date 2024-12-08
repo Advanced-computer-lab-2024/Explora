@@ -49,6 +49,11 @@ router.post('/', async (req, res) => {
                     role: user.role,
                     userId: user._id  // Send userId in the response
                 });
+                res.json({
+                    token,
+                    role: user.role,
+                    userId: user._id  // Send userId in the response
+                });
             }
         );
 

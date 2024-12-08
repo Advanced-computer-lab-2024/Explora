@@ -14,9 +14,7 @@ const flightTicketSchema = new mongoose.Schema({
   duration: { type: String, required: true },
   arrivalTime: { type: String, required: true },
   price: { type: Number, required: true },
-  cardNumber: { type: String, required: true },
-  cvv: { type: String, required: true },
-  cardExpiryDate: { type: String, required: true },
-});
+  paymentIntentId :{ type: String, required: false }
+  }, { timestamps: true });
 
 module.exports = mongoose.model('FlightTicket', flightTicketSchema);

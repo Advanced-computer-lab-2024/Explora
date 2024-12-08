@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
 
@@ -7,107 +7,269 @@ const stripePromise = loadStripe('pk_test_51QQzkUA2DxXJxW3GaGZ8OzgKlS9uq196afY2i
 
 // Hardcoded Payment Intent client secret for testing (Replace with your Stripe client secret)
 const CLIENT_SECRET = "sk_test_51QQzkUA2DxXJxW3GJAEWfePqTbzAteEXHCPFtFE8o2gQe00ChPMeqpNlgnyzSBbfzZ79a6zDpmiUyefEnQNiAjCm00qB9lX6RBt_abcdef"; // Use a real client secret for test mode
+const frontendUrl = 'http://localhost:5173/';
 
 const Checkout = () => {
   const [addresses, setAddresses] = useState([]);
-  const [newAddress, setNewAddress] = useState('');
+  const [newAddress, setNewAddress] = useState({
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    neighborhood: '',
+    apartment: '',
+    building: '',
+    floor: '',
+  });
   const [error, setError] = useState('');
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
   const [showStripeForm, setShowStripeForm] = useState(false);
+  const [loading, setLoading] = useState(false); // Loading state for the request
 
-  const handleAddAddress = () => {
-    if (!newAddress.trim()) {
-      setError('Please enter a valid address.');
+
+
+  // Fetch addresses when the component mounts
+  useEffect(() => {
+    fetchAddresses();
+  }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/addresses/user/${touristId}`);
+      const data = await response.json();
+      setAddresses(data);
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+    }
+  };
+
+  const handleAddAddress = async () => {
+    if (!newAddress.street || !newAddress.city || !newAddress.state || !newAddress.zipCode) {
+      setError('Please fill in all the required fields.');
       return;
     }
-    setAddresses((prevAddresses) => [...prevAddresses, newAddress]);
-    setNewAddress('');
-    setError('');
-  };
 
-  const handleRemoveAddress = (index) => {
-    const updatedAddresses = addresses.filter((_, i) => i !== index);
-    setAddresses(updatedAddresses);
-    if (selectedAddress === index) {
-      setSelectedAddress(null);
+    try {
+      const response = await fetch(`http://localhost:4000/addresses/${touristId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newAddress),
+      });
+
+      const data = await response.json();
+
+      if (data._id) {
+        setAddresses(prevAddresses => [...prevAddresses, data]);
+        setNewAddress({
+          street: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          neighborhood: '',
+          apartment: '',
+          building: '',
+          floor: '',
+        });
+        setError('');
+      } else {
+        setError(data.message || 'Error adding address.');
+      }
+    } catch (error) {
+      setError('Error adding address.');
     }
   };
 
-  const handleAddressSelect = (index) => {
-    setSelectedAddress(index);
+  const handleRemoveAddress = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:4000/addresses/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      if (data.message === 'Address deleted successfully') {
+        setAddresses(prevAddresses => prevAddresses.filter(address => address._id !== id));
+        if (selectedAddress === id) {
+          setSelectedAddress(null);
+        }
+      } else {
+        setError(data.message || 'Error removing address.');
+      }
+    } catch (error) {
+      setError('Error removing address.');
+    }
   };
 
+  const handleAddressSelect = (id) => {
+    setSelectedAddress(id);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewAddress((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
   const handleProceedToPayment = () => {
     if (selectedAddress !== null) {
       setShowPaymentOptions(true);
     }
   };
 
-  const handlePayment = () => {
-    if (!selectedPaymentMethod) {
-      alert('Please select a payment method.');
-      return;
-    }
-    if (selectedPaymentMethod === 'Credit Card (Stripe)') {
-      setShowStripeForm(true);
-    } else {
-      alert(`Payment method selected: ${selectedPaymentMethod}`);
-    }
-  };
+  const handlePayment = async () => {
+      if (selectedAddress !== null && selectedPaymentMethod) {
+        setLoading(true);
+        try {
+          const response = await fetch('http://localhost:4000/orders/checkoutAndPay', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              userId: touristId,
+              addressId: selectedAddress,
+              frontendUrl: frontendUrl,
+              paymentMethod: selectedPaymentMethod,
+            }),
+          });
+          
+          const data = await response.json();
+          
+          if (response.ok) {
+            if (selectedPaymentMethod === 'credit_card') {
+              // Redirect to Stripe checkout
+              window.location.href = data.url;
+            } else {
+              // Handle other payment methods like wallet or COD
+              alert(data.message);
+            }
+          } else {
+            setError(data.message || 'Something went wrong with the payment process. ');
+          }
+        } catch (error) {
+          console.error('Error during checkout request:', error);
+          setError('Error during checkout, please try again.' + error.message);
+        }
+        setLoading(false);
+      } else {
+        setError('Please select an address and payment method.');
+      }
+    };
+
 
   return (
     <Elements stripe={stripePromise}>
-      <div style={styles.container}>
-        <h1 style={styles.heading}>Checkout</h1>
-        <section style={styles.section}>
-          <h2 style={styles.subheading}>Add a New Delivery Address</h2>
-          <div style={styles.formGroup}>
-            <input
-              type="text"
-              value={newAddress}
-              onChange={(e) => setNewAddress(e.target.value)}
-              placeholder="Enter delivery address"
-              style={styles.input}
-            />
-            <button onClick={handleAddAddress} style={styles.primaryButton}>
-              Add Address
-            </button>
-          </div>
-          {error && <p style={styles.errorText}>{error}</p>}
-        </section>
 
-        <section style={styles.section}>
-          <h2 style={styles.subheading}>Your Delivery Addresses</h2>
-          {addresses.length > 0 ? (
-            <ul style={styles.addressList}>
-              {addresses.map((address, index) => (
-                <li key={index} style={styles.addressItem}>
-                  <label style={styles.radioLabel}>
-                    <input
-                      type="radio"
-                      checked={selectedAddress === index}
-                      onChange={() => handleAddressSelect(index)}
-                      style={styles.radioInput}
-                    />
-                    {address}
-                  </label>
-                  <button
-                    onClick={() => handleRemoveAddress(index)}
-                    style={styles.dangerButton}
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p style={styles.noAddressText}>No addresses added yet.</p>
-          )}
-        </section>
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Checkout</h1>
+      
+      <section style={styles.section}>
+        <h2 style={styles.subheading}>Add a New Delivery Address</h2>
+        <div style={styles.formGroup}>
+          <input
+            type="text"
+            name="street"
+            value={newAddress.street}
+            onChange={handleInputChange}
+            placeholder="Street"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="city"
+            value={newAddress.city}
+            onChange={handleInputChange}
+            placeholder="City"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="state"
+            value={newAddress.state}
+            onChange={handleInputChange}
+            placeholder="State"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="zipCode"
+            value={newAddress.zipCode}
+            onChange={handleInputChange}
+            placeholder="Zip Code"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="neighborhood"
+            value={newAddress.neighborhood}
+            onChange={handleInputChange}
+            placeholder="Neighborhood"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="apartment"
+            value={newAddress.apartment}
+            onChange={handleInputChange}
+            placeholder="Apartment"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="building"
+            value={newAddress.building}
+            onChange={handleInputChange}
+            placeholder="Building"
+            style={styles.input}
+          />
+          <input
+            type="text"
+            name="floor"
+            value={newAddress.floor}
+            onChange={handleInputChange}
+            placeholder="Floor"
+            style={styles.input}
+          />
+          <button onClick={handleAddAddress} style={styles.primaryButton}>
+            Add Address
+          </button>
+        </div>
+        {error && <p style={styles.errorText}>{error}</p>}
+      </section>
 
-        <div style={styles.centered}>
+      <section style={styles.section}>
+        <h2 style={styles.subheading}>Your Delivery Addresses</h2>
+        {addresses.length > 0 ? (
+          <ul style={styles.addressList}>
+            {addresses.map((address) => (
+              <li key={address._id} style={styles.addressItem}>
+                <label style={styles.radioLabel}>
+                  <input
+                    type="radio"
+                    checked={selectedAddress === address._id}
+                    onChange={() => handleAddressSelect(address._id)}
+                    style={styles.radioInput}
+                  />
+                  {`${address.street}, ${address.city}, ${address.state}, ${address.zipCode}`}
+                </label>
+                <button
+                  onClick={() => handleRemoveAddress(address._id)}
+                  style={styles.dangerButton}
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p style={styles.noAddressText}>No addresses added yet.</p>
+        )}
+      </section>
+      <div style={styles.centered}>
           <button
             style={{
               ...styles.primaryButton,
@@ -124,7 +286,7 @@ const Checkout = () => {
           <section style={styles.paymentSection}>
             <h2 style={styles.subheading}>Select Payment Method</h2>
             <div style={styles.paymentMethods}>
-              {['Wallet', 'Credit Card (Stripe)', 'Cash on Delivery'].map(
+              {['wallet', 'credit_card', 'cash'].map(
                 (method) => (
                   <label key={method} style={styles.radioLabel}>
                     <input
@@ -156,7 +318,6 @@ const Checkout = () => {
     </Elements>
   );
 };
-
 const StripePaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
@@ -196,6 +357,7 @@ const StripePaymentForm = () => {
     </form>
   );
 };
+
 
 const styles = {
   container: {
@@ -296,5 +458,6 @@ const styles = {
     marginBottom: '10px',
   },
 };
+
 
 export default Checkout;

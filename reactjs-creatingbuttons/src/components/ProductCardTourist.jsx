@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from './Modal'; // Import the Modal component
 import { faHeart, faCartShopping } from '@fortawesome/free-solid-svg-icons';
-import ProductModal from './ProductModal'; // New Product Modal
 
 
 
@@ -14,41 +13,78 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
-    const [cartQuantity, setCartQuantity] = useState(0); // Quantity in the cart
-    const [showProductModal, setShowProductModal] = useState(false); // Product modal visibility
-
-
-
-    // Handle adding to cart
-    const handleAddToCart = () => {
-        setCartQuantity(1);
-        setMessage('Product added to cart successfully!');
-    };
-
-    // Increment cart quantity
-    const incrementQuantity = () => {
-        setCartQuantity(cartQuantity + 1);
-    };
-
-    // Decrement cart quantity
-    const decrementQuantity = () => {
-        if (cartQuantity > 1) {
-            setCartQuantity(cartQuantity - 1);
-        } else if (cartQuantity === 1) {
-            setCartQuantity(0); // Remove from cart if quantity reaches 0
-        }
-    };
-
+    const [wishlistState, setWishlistState] = useState([]); // Wishlist state
+    const [modalTitle, setModalTitle] = useState(''); // State for modal title
+    const [touristId, setTouristId] = useState(localStorage.getItem('userId') || ''); // Dynamically set from localStorage
     const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
     const [showModal, setShowModal] = useState(false); // State for modal visibility
+    const [heartIcon, setHeartIcon] = useState(faHeart); // Initial heart icon color
+    const heartIconStyle = {
+        transition: 'color 0.3s ease', // Smooth transition for color change
+        color: isInWishlist ? 'red' : 'black' // Red heart when in wishlist, black when not
+    };
 
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+            if (!touristId) {
+              setErrorMessage('User not logged in. Please log in first.');
+              return;
+            }            try {
+                const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
+                console.log("API Response:", response.data);
+    
+                if (response.data && response.data.items && Array.isArray(response.data.items)) {
+                    setWishlistState(response.data.items);
+    
+                    // Check if the current product is in the wishlist
+                    const isProductInWishlist = response.data.items.some(item => item.productId && item.productId.toString() === product._id);
+                    setIsInWishlist(isProductInWishlist); // Update the heart color
+                } else {
+                    console.error("Wishlist or items are not available in the response.");
+                }
+            } catch (error) {
+                console.error("Error fetching wishlist:", error);
+            }
+        };
+    
+        fetchWishlist();
+    }, [touristId, product._id]); // Add touristId and product._id as dependencies
 
+    const toggleWishlistItem = async (productId) => {
+    if (!touristId) {
+        setMessage('User not logged in. Please log in first.');
+        return;
+    }
+    try {
+        const response = await axios.post('http://localhost:4000/wishlist/toggle', { productId, touristId });
+        console.log(response.data.message);
 
-    // Handle wishlist toggle
-    const handleWishlistToggle = () => {
-        setIsInWishlist(!isInWishlist);
-        setShowModal(true); // Show the modal when the heart is clicked
+        setWishlistState(response.data.wishlist.items);
 
+        const isProductInWishlist = response.data.wishlist.items.some(item => item.productId && item.productId.toString() === productId);
+        setIsInWishlist(isProductInWishlist); // Update the heart color
+
+        setModalTitle(isProductInWishlist ? 'Added to Wishlist' : 'Removed from Wishlist');
+        setShowModal(true);
+    } catch (error) {
+        console.error("Error toggling wishlist item:", error.response?.data || error.message);
+    }
+};
+    const handleAddToCart = async (productId) => {
+        if (!touristId) {
+            setMessage('User not logged in. Please log in first.');
+            return;
+        }
+        try {
+            const response = await axios.post(`http://localhost:4000/cart/add/${touristId}`, { productId });
+            console.log('Add to cart response:', response.data);
+
+            setMessage('Product added to cart successfully!');
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+            setMessage('Error adding product to cart: ' + error.message);
+        }
     };
 
     const closeModal = () => {
@@ -151,6 +187,16 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         }
     };
 
+    const renderHeartIcon = () => {
+        return (
+            <i
+                className={isInWishlist ? "fa-solid fa-heart red-heart" : "fa-regular fa-heart"}
+                style={heartIconStyle}
+                onClick={() => toggleWishlistItem(product._id)}
+            />
+        );
+    };
+    
     // Render stars based on average rating
     const renderStars = (averageRating) => {
         const stars = [];
@@ -192,163 +238,113 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
 
     return (
         <div className="product-card">
-            <div 
-        className="wishlist-icon" 
-        onClick={handleWishlistToggle} 
-        style={{ position: 'absolute', left: '75%' }} // Adjust left to move the heart
-    >
-        <i className={isInWishlist ? "fa-solid fa-heart" : "fa-regular fa-heart"}></i>
-    </div>
-    <img src={product.image} alt={product.name} className="product-image" />
+             <style>
+                {`
+                    .wishlist-icon .fa-heart {
+                        transition: color 0.3s ease; /* Smooth transition for color change */
+                    }
+                    .wishlist-icon .fa-heart.red-heart {
+                        color: red; /* Red heart when the item is in the wishlist */
+                    }
+                `}
+            </style>
+            <img src={product.image} alt={product.name} className="product-image" />
+            
+            {isEditing ? (
+                <>
+                    <input
+                        type="text"
+                        value={editedName}
+                        onChange={(e) => setEditedName(e.target.value)}
+                        className="edit-input"
+                        placeholder="Edit name"
+                    />
+                    <input
+                        type="text"
+                        value={editedDescription}
+                        onChange={(e) => setEditedDescription(e.target.value)}
+                        className="edit-input"
+                        placeholder="Edit description"
+                    />
+                    <input
+                        type="number"
+                        value={editedPrice}
+                        onChange={(e) => setEditedPrice(Number(e.target.value))}
+                        className="edit-input"
+                        placeholder="Edit price"
+                    />
+                    <button onClick={updateProduct}>Save</button>
+                </>
+            ) : (
+                <>
+                    <h2 className="product-title">{editedName}</h2>
+                    <p className="product-description">{editedDescription}</p>
+                    <p className="product-price">${editedPrice.toFixed(2)}</p>
+                    <p className="product-ratings">
+                        Average Rating: {renderStars(product.averageRating)}
+                    </p>
+                </>
+            )}
 
-    {isEditing ? (
-        <>
-            <input
-                type="text"
-                value={editedName}
-                onChange={(e) => setEditedName(e.target.value)}
-                className="edit-input"
-                placeholder="Edit name"
-            />
-            <input
-                type="text"
-                value={editedDescription}
-                onChange={(e) => setEditedDescription(e.target.value)}
-                className="edit-input"
-                placeholder="Edit description"
-            />
-            <input
-                type="number"
-                value={editedPrice}
-                onChange={(e) => setEditedPrice(Number(e.target.value))}
-                className="edit-input"
-                placeholder="Edit price"
-            />
-            <button onClick={updateProduct}>Save</button>
-        </>
-    ) : (
-        <>
-            <h2 className="product-title">{editedName}</h2>
-            <p className="product-description">{editedDescription}</p>
-            <p className="product-price">${editedPrice.toFixed(2)}</p>
-            <p className="product-ratings">
-                Average Rating: {renderStars(product.averageRating)}
-            </p>
-        </>
-    )}
+            <p className="product-seller">Seller: {product.seller}</p>
+            <p className="product-reviews">{product.reviews.length} reviews</p>
 
-    <p className="product-seller">Seller: {product.seller}</p>
-    <p className="product-seller">Number of Reviews: {product.reviews.length}</p>
-
-
-    {/* Add to Cart Button */}
-    {cartQuantity === 0 ? (
-                <button
-                    onClick={handleAddToCart}
-                    style={{
-                        width: '80%',
-                        padding: '10px',
-                        background: '#008080',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        fontSize: '16px',
-                    }}
-                >
-                    Add to Cart
-                </button>
-                ) : (
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '10px',
-                            marginTop: '10px',
-                        }}
-                    >
-                        <button
-                            onClick={decrementQuantity}
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                background: '#ff4c4c',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '50%',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            -
-                        </button>
-                        <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{cartQuantity}</span>
-                        <button
-                            onClick={incrementQuantity}
-                            style={{
-                                width: '30px',
-                                height: '30px',
-                                background: '#4caf50',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '50%',
-                                cursor: 'pointer',
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            +
-                        </button>
-                    </div>
-                )}
-
-                {/* View Details Button */}
-                <button
-            onClick={handleViewDetails}
-            style={{
-                width: '80%',
-                padding: '10px',
-                marginTop: '10px',
-                background: '#008080',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '5px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                fontSize: '16px',
-            }}
-        >
-            View Details
-        </button>
-
-        {/* Product Modal */}
-        {showProductModal && (
-            <ProductModal product={product} onClose={closeProductModal} />
-        )}
-
-    {/* Wishlist Icon */}
-    
-
-    {showModal && (
-        <Modal onClose={closeModal}>
-            <h2>Added to Wishlist</h2>
-            <img src={product.image} alt={product.name} className="modal-product-image" />
-            <p className="modal-product-title">{product.name}</p>
-            <p className="modal-product-price">${product.price.toFixed(2)}</p>
-            <button className="modal-close-button" onClick={closeModal}>
-                Close
+            {/* Add to Cart Button */}
+            <button onClick={() => handleAddToCart(product._id)} className="add-to-cart-btn">
+                Add to Cart
             </button>
-        </Modal>
-    )}
 
-    {message && <p className="message">{message}</p>}
-    
-</div>
+            {/* Rating input for the user */}
+            <div className="user-rating">
+                <p>Rate this product:</p>
+                {renderUserRating()}
+                <button onClick={handleRatingSubmit}>Submit Rating</button>
+            </div>
 
+            {/* Review input for the user */}
+            <textarea
+                value={userReview}
+                onChange={(e) => setUserReview(e.target.value)}
+                placeholder="Write your review here..."
+                rows="3"
+            />
+            <button onClick={handleReviewSubmit}>Submit Review</button>
+
+            {message && <p className="message">{message}</p>}
+
+            {/* Wishlist Icon */}
+            <div className="wishlist-button">
+                {renderHeartIcon()}
+            </div>
+
+            {showModal && (
+                <Modal onClose={closeModal}>
+                    <h2>{modalTitle}</h2>
+                    <img src={product.image} alt={product.name} className="modal-product-image" />
+                    <p className="modal-product-title">{product.name}</p>
+                    <p className="modal-product-price">${product.price.toFixed(2)}</p>
+                    <button className="modal-close-button" onClick={closeModal}>
+                        Close
+                    </button>
+                </Modal>
+            )}
+            {/* Display all reviews */}
+            <div className="product-reviews">
+                <h3>Reviews:</h3>
+                {product.reviews.length === 0 ? (
+                    <p>No reviews yet.</p>
+                ) : (
+                    product.reviews.map(review => (
+                        <div key={review._id} className="review">
+                            <p><strong>{review.user ? review.user : 'Anonymous'}</strong></p>
+                            <p>{review.comment}</p>
+                            <p>Rating: {renderStars(review.rating)}</p>
+                        </div>
+                    ))
+                )}
+            </div>
+        </div>
     );
+    
 };
-
 export default ProductCardTourist;
-
-

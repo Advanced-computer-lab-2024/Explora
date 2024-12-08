@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const {upload } = require('../middleware/upload');
 
 // get all products 
+//https://localhost:4000/Products/
 const allProducts = async (req, res) => {
     try {
         const products = await Product.find();

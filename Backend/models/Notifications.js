@@ -9,4 +9,4 @@ const notificationSchema = new mongoose.Schema({
   read: { type: Boolean, default: false } // Track if the notification has been read
 });
 
-module.exports = mongoose.model('Notification', notificationSchema);
+module.exports = mongoose.model('Notifications', notificationSchema);

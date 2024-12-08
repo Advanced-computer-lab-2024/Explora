@@ -50,7 +50,7 @@ export default function Touristhome() {
   const handleAddTourismGovernorClick = () => {
     navigate('/login-tourism');  // Navigate to the LogInTourism component
   };
-
+  
   const handleAddAdminClick = () => {
     navigate('/login-admin');  // Navigate to the LogInAdmin component
   };

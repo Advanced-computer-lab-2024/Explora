@@ -94,7 +94,6 @@ import ActivityForm from './components/ActivityForm.jsx';
 import TermsTourGuide from './components/TermsTourGuide'; // Import the new component
 import TermsSellerPage from './components/TermsSeller'; // The TermsSeller page
 import TermsAdvertiserPage from './components/TermsAdvertiser'; // The TermsAdvertiser page
-import Wishlist from './components/Wishlist';
 import PromoCodeComponent from './components/PromoCodeComponent.jsx';
 import SalesReport from "./components/SalesReport"; // Adjust path based on your file structureimport ViewCartTourist from './components/ViewCartTourist';
 import Checkout from './components/Checkout'; // Create a new checkout component
@@ -108,10 +107,12 @@ import Viewing from './components/NoUsed';
 import Notification from './components/FlagNotifications';
 import { ToastContainer } from 'react-toastify';
 
-
-
-
-
+import Notifications from './components/Notifications.jsx';
+import BookMarks from './components/BookMarks.jsx';
+import PastBookedEvents from './components/PastBookedEvents.jsx';
+import UpcomingBookedEvents from './components/UpcomingBookedEvents.jsx';
+import MyPromocodes from './components/MyPromoCodes.jsx';
+import Wishlist from './components/Wishlist.jsx';
 function App() {
 
   return (
@@ -221,9 +222,15 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} /> {/* Payment page route */}
         <Route path="/vacation-guide" element={<VacationGuide />} />
         <Route path="/test" element={<Test />} />
-        <Route path="/product-modal" element={<ProductModal />} />
-
-
+        <Route path="/product-modal" element={<ProductModal />} />        <Route path="/Notifications" element={<Notifications />} />
+        <Route path="/Bookmarks" element={<BookMarks />} />
+        <Route path="/promo-code" element={<PromoCodeComponent />} />
+        <Route path="/PastBookedEvents" element={<PastBookedEvents />} />
+        <Route path="/UpcomingBookedEvents" element={<UpcomingBookedEvents />} />
+        <Route path="/my-promo-codes" element={<MyPromocodes />} />
+        <Route path="/view-cart" element={<ViewCartTourist />} />
+        <Route path="/checkout" element={<Checkout />} />
+       <Route path="/wishlist" element={<Wishlist />} />
         </Routes>
       </Router>
     </main>
