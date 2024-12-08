@@ -603,37 +603,6 @@ Expected Response:
     "loyaltyPoints": 250019312.5
 }
 -------------------------------------------------------------------------------------------
-Title: Book a Ticket for an Itinerary
-Route: http://localhost:4000/ticket/book
-Request Method: POST
-Request:
-Body Parameters:
-{
-  "userId": "tourist_user_id",
-  "itineraryId": "itinerary_id",
-  "numberOfTickets": "number_of_tickets"
-}
-Expected Response:
-{
-  "message": "Booking and sale recorded successfully",
-  "booking": {
-    "_id": "booking_id",
-    "tourist": "tourist_user_id",
-    "itinerary": "itinerary_id",
-    "numberOfTickets": "number_of_tickets",
-    "totalPrice": "total_price",
-    "tourGuideId": "tour_guide_id"
-  },
-  "sale": {
-    "_id": "sale_id",
-    "tourGuideId": "tour_guide_id",
-    "itineraryId": "itinerary_id",
-    "touristId": "tourist_user_id",
-    "amount": "total_price"
-  },
-  "loyaltyPoints": "tourist_loyalty_points"
-}
--------------------------------------------------------------------------------------------
 Title: User Login
 Route: http://localhost:4000/api/auth/
 Request Method: POST

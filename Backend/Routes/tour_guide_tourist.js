@@ -23,12 +23,12 @@ router.get('/', async (req, res) => {
       return res.status(404).json({ message: 'No bookings found for this tour guide.' });
     }
 
-    // Extract the tourist names and itinerary details from the sales records
+    // Extract the tourist names, itinerary details, and booking date
     const touristDetails = sales.map((sale) => ({
       touristName: sale.touristId.username,
       touristEmail: sale.touristId.email,
       itineraryLocations: sale.itineraryId.locations,  // Itinerary location
-      itineraryDate: sale.itineraryId.availableDates,  // Itinerary available dates
+      bookingDate: sale.date,  // Date the booking was made
     }));
 
     res.status(200).json({ message: 'Tourists who booked the itinerary', touristDetails });

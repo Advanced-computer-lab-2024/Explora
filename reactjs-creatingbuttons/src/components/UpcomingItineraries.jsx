@@ -47,165 +47,203 @@ const UpcomingItineraries = () => {
  useEffect(() => {
      setShowPromoModal(true);
    }, []);
-
-
-
-  useEffect(() => {
-    // Fetch upcoming itineraries
-    fetch('http://localhost:4000/api/tour_guide_itinerary/upcoming')
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then((data) => {
-        const formattedData = data.map((itin) => {
-          const formattedDate = itin.availableDates
-            ? new Date(itin.availableDates).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })
-            : 'No Date Available';
-          return { ...itin, date: formattedDate };
-        });
-        setItins(formattedData);
-      })
-      .catch((error) => setError('Error fetching data: ' + error.message));
-  }, []);
   
-  const handleBookTicket = (itin) => {
-    const numberOfTickets = 1; // Assume 1 ticket for simplicity
-  
-    // Booking ticket API call
-    fetch('http://localhost:4000/ticket/book', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        userId: localStorage.getItem('userId'),
-        itineraryId: itin._id,
-        numberOfTickets,
-      }),
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      alert(`Your ticket has been booked!`);
-  
-      // Update the loyalty points and badge level based on the response
-      if (data.booking && data.sale) {
-        setBookedTickets((prev) => [...prev, itin._id]); 
-        const pointsToAdd = data.loyaltyPoints; // Use the loyaltyPoints returned from the backend
-        
-        // Ensure that pointsToAdd is a valid number before updating
-        if (typeof pointsToAdd === 'number' && !isNaN(pointsToAdd)) {
-          setLoyaltyPoints((prevPoints) => {
-            const newPoints = prevPoints + pointsToAdd;
-            setBadgeLevel(getBadgeLevel(newPoints)); // Update badge level based on new points
-            return newPoints; // Update loyalty points state
+    useEffect(() => {
+      // Fetch upcoming itineraries
+      fetch('http://localhost:4000/api/tour_guide_itinerary/upcoming')
+        .then(response => response.json())
+        .then(data => {
+          const formattedData = data.map((itin) => {
+            const formattedDate = itin.availableDates
+              ? new Date(itin.availableDates).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })
+              : 'No Date Available';
+            return { ...itin, date: formattedDate };
           });
-        } else {
-          console.error('Invalid loyalty points:', pointsToAdd);
-        }
-      }
-    })
-    .catch((error) => {
-      console.error('Error booking ticket:', error);
-      alert('An error occurred while booking the ticket.');
-    });
-  };
-  
-  // Function to determine badge level based on loyalty points
-  const getBadgeLevel = (loyaltyPoints) => {
-    if (loyaltyPoints > 500000) return 'Level 3 Badge';
-    else if (loyaltyPoints > 100000) return 'Level 2 Badge';
-    else if (loyaltyPoints > 0) return 'Level 1 Badge';
-    return '';
-  };
+          setItins(formattedData);
+        })
+        .catch(error => console.error('Error fetching itineraries:', error));
     
-  const shareLink = (itin) => {
-    const link = `http://localhost:4000/api/tour_guide_itinerary/${itin._id}`;
-    navigator.clipboard
-      .writeText(link)
-      .then(() => setMessage('Link copied to clipboard!'))
-      .catch((err) => setMessage(`Failed to copy link: ${err.message}`));
-  };
-
-  const shareEmail = (itin) => {
-    const subject = `Check out this activity: ${itin.name}`;
-    const body = `I thought you might be interested in this activity:\n\n${itin.name}\nDate: ${itin.date}\nPrice: ${itin.price}$\nRating: ${itin.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${itin._id}`;
-    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-
-  const handleItinerarySelect = (itinerary) => {
-    setSelectedItinerary(itinerary);
-    setItineraryId(itinerary._id);
-    setIsPaymentModalOpen(true);
-  };
-
-  const handleWalletPayment = async () => {
-    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
-    if (!touristId) {
-      setErrorMessage('User not logged in. Please log in first.');
-      return;
-    }
-    try {
-      const response = await fetch('http://localhost:4000/api/tour_guide_itinerary/bookWallet', {
-        method: 'POST',
+      // Fetch user loyalty points
+      fetch(`http://localhost:4000/users/loyalty-points/${touristId}`, {
         headers: {
-          'Content-Type': 'application/json',
+          // Authorization:` Bearer ${token}`, // Include the token for authentication
         },
-        body: JSON.stringify({
-          touristId,
-          itineraryId,
-          promoCode: enteredPromocode,  // Send the entered promo code
-        }),
-      });
-
-      if (response.ok) {
-        alert('Payment via Wallet for itinerary is successful!');
-      } else {
-        alert('You have already booked this itinerary.');
+      })
+        .then(response => response.json())
+        .then(data => {
+          setLoyaltyPoints(data.loyaltyPoints || 0); // Set loyalty points or default to 0
+          setBadgeLevel(getBadgeLevel(data.loyaltyPoints || 0)); // Set badge level
+        })
+        .catch(error => console.error('Error fetching loyalty points:', error));
+    }, []);
+  
+    const getBadgeLevel = (points) => {
+      if (points > 500000) return 'Level 3 Badge';
+      if (points > 100000) return 'Level 2 Badge';
+      if (points > 0) return 'Level 1 Badge';
+      return '';
+    };
+  
+    const shareLink = (itin) => {
+      const link = `http://localhost:5173/UpcomingItineraries`;
+      
+      // Ensure user feedback on successful copy
+      navigator.clipboard.writeText(link)
+          .then(() => setMessage('Link copied to clipboard!'))
+          .catch((err) => setMessage(`Failed to copy link: ${err.message}`));
+    };
+  
+    const shareEmail = (itin) => {
+      const subject = `Check out this activity: ${itin.name}`;
+      const body = `I thought you might be interested in this activity:\n\n${itin.name}\nDate: ${itin.date}\nPrice: ${itin.price}$\nRating: ${itin.rating}/10\n\nYou can check it out here: http://localhost:3000/activities/${itin._id}`;
+      
+      window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    };
+  
+    const handleItinerarySelect = (itinerary) => {
+      setSelectedItinerary(itinerary);
+      setItineraryId(itinerary._id);
+      setIsPaymentModalOpen(true);
+    };
+  
+    const handleWalletPayment = async () => {
+      const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+      if (!touristId) {
+        setErrorMessage('User not logged in. Please log in first.');
+        return;
       }
-    } catch (error) {
-      console.error('Error during wallet payment:', error);
-      alert('An error occurred. Please try again.');
-    }
-
-    setIsPaymentModalOpen(false);
-    setSelectedItinerary(null);
-  };
-
-  const handleCreditCardPayment = async () => {
-    try {
-      const response = await axios.post('http://localhost:4000/stripe/create-checkout-session', {
-        itemName: selectedItinerary.name,
-        itemPrice: selectedItinerary.price,
-      });
-      const sessionUrl = response.data.url;
-      window.location.href = sessionUrl;
-    } catch (error) {
-      console.error('Error creating Stripe session:', error);
-      alert('Failed to redirect to Stripe. Please try again.');
-    }
-  };
-
-  const redeemPoints = () => {
-    const pointsRequired = 10000;
-    if (loyaltyPoints >= pointsRequired) {
-      const cashToAdd = (pointsRequired / 10000) * 100;
-      setCashBalance((prevBalance) => prevBalance + cashToAdd);
-      setLoyaltyPoints((prevPoints) => prevPoints - pointsRequired);
-      setBadgeLevel(getBadgeLevel(loyaltyPoints - pointsRequired));
-      alert(`You have successfully redeemed ${pointsRequired} points for ${cashToAdd} EGP!`);
-    } else {
-      alert('You do not have enough loyalty points to redeem for cash.');
-    }
-  };
-
-  return (
+    
+      try {
+        const response = await fetch('http://localhost:4000/api/tour_guide_itinerary/bookWallet', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            touristId,
+            itineraryId,
+            promoCode: enteredPromocode,  // Send the entered promo code
+          }),
+        });
+    
+        // Parse the response body as JSON
+        const data = await response.json();
+    
+        if (response.ok) {
+          alert('Payment via Wallet for itinerary is successful!');
+          
+          if (data.savedBooking && data.sale) {
+            setBookedTickets((prev) => [...prev, itineraryId]); // Add the current itinerary to booked tickets
+    
+            const pointsToAdd = data.loyaltyPoints; // Use the loyaltyPoints returned from the backend
+            
+            // Ensure that pointsToAdd is a valid number before updating
+            if (typeof pointsToAdd === 'number' && !isNaN(pointsToAdd)) {
+              setLoyaltyPoints((prevPoints) => {
+                const newPoints = prevPoints + pointsToAdd;
+                setBadgeLevel(getBadgeLevel(newPoints)); // Update badge level based on new points
+                return newPoints; // Update loyalty points state
+              });
+            } else {
+              console.error('Invalid loyalty points:', pointsToAdd);
+            }
+          }
+        } else {
+          alert('You have already booked this itinerary.');
+        }
+      } catch (error) {
+        console.error('Error during wallet payment:', error);
+        alert('An error occurred. Please try again.');
+      }
+    
+      setIsPaymentModalOpen(false);
+      setSelectedItinerary(null);
+    };
+    
+    const handleCreditCardPayment = async () => {
+      try {
+        const response = await axios.post('http://localhost:4000/stripe/create-checkout-session', {
+          itemName: selectedItinerary.name,
+          itemPrice: selectedItinerary.price,
+        });
+        const sessionUrl = response.data.url;
+        window.location.href = sessionUrl;
+      } catch (error) {
+        console.error('Error creating Stripe session:', error);
+        alert('Failed to redirect to Stripe. Please try again.');
+      }
+    };
+  
+    const redeemPoints = () => {
+      const pointsRequired = 10000;
+      if (loyaltyPoints >= pointsRequired) {
+        const cashToAdd = (pointsRequired / 10000) * 100;
+        setCashBalance((prevBalance) => prevBalance + cashToAdd);
+        setLoyaltyPoints((prevPoints) => prevPoints - pointsRequired);
+        setBadgeLevel(getBadgeLevel(loyaltyPoints - pointsRequired));
+        alert(`You have successfully redeemed ${pointsRequired} points for ${cashToAdd} EGP!`);
+      } else {
+        alert('You do not have enough loyalty points to redeem for cash.');
+      }
+    };
+  
+    const handleRating = (itinId, rating) => {
+      setRatings((prevRatings) => ({
+        ...prevRatings,
+        [itinId]: rating,
+      }));
+      alert(`You rated "${itinId}" with ${rating} stars!`);
+    };
+  
+    const handleCommentChange = (itinId, comment) => {
+      setComments((prevComments) => ({
+        ...prevComments,
+        [itinId]: comment,
+      }));
+    };
+  
+    const handleCommentSubmit = (itinId) => {
+      alert(`Comment submitted for "${itinId}": ${comments[itinId]}`);
+      setComments((prevComments) => ({
+        ...prevComments,
+        [itinId]: '',
+      }));
+    };
+  
+    const handleBookmarkClick = async (itinerary) => {
+      const touristId = localStorage.getItem('userId');  
+      if (!touristId) {
+        setErrorMessage('User not logged in. Please log in first.');
+        return;
+      }
+    
+      try {
+        const response = await fetch(`http://localhost:4000/api/tour_guide_itinerary/bookmark/${touristId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ eventId: itinerary._id }), // Directly use itinerary._id
+        });
+    
+        if (response.ok) {
+          const data = await response.json();
+          alert(data.message); // Success
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message || "Failed to bookmark the itinerary.");
+        }
+      } catch (error) {
+        console.error("Error bookmarking the itinerary:", error);
+        alert("An error occurred while bookmarking. Please try again.");
+      }
+    };
+          
+      return (
     <div>
            <nav
         style={{
