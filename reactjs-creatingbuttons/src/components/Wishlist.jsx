@@ -6,17 +6,15 @@ const WishList = () => {
   const [message, setMessage] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
-  //const touristId = localStorage.getItem('userId') || '';
-  const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
+  const touristId = localStorage.getItem('userId') || '';
+  //const touristId = '67322cdfa472e2e7d22de84a'; // Replace with actual touristId
 
   const fetchWishlist = async () => {      
-    //const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
-
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
       if (!touristId) {
         setMessage('User not logged in. Please log in first.');
         return;
       }
-
       try {
         const response = await axios.get(`http://localhost:4000/wishlist/${touristId}`);
     if (response.data && Array.isArray(response.data.items)) {
@@ -70,7 +68,7 @@ const WishList = () => {
   
 
   const handleAddToCart = async (productId) => {
-    //const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
+    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
 
     if (!touristId) {
       setMessage('User not logged in. Please log in first.');
