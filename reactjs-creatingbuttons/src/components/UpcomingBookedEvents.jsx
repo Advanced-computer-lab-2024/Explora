@@ -59,6 +59,9 @@ const UpcomingBookedEvents = () => {
     fetchUpcomingEvents();
   }, []);
 
+  const handleReturnEvent = (evenType, eventId) =>{
+    //add return event logic here
+  };
   if (loading) return <div>Loading...</div>; // Show loading state
   if (error) return <div>Error: {error}</div>; // Show error state
 
@@ -85,6 +88,12 @@ const UpcomingBookedEvents = () => {
               <p>
                 <strong>Rating:</strong> {activity.rating}/10
               </p>
+              <button
+              onClick={() => handleReturnEvent("Activity", activity.id)}
+              style={styles.returnButton}
+              >
+                Return Event
+              </button>
             </div>
           ))}
         </div>
@@ -107,6 +116,12 @@ const UpcomingBookedEvents = () => {
               <p>
                 <strong>Rating:</strong> {itinerary.rating}/10
               </p>
+              <button
+              onClick={() => handleReturnEvent("Itinerary", itinerary.id)}
+              style={styles.returnButton}
+              >
+                Return Event
+              </button>
             </div>
           ))}
         </div>
@@ -153,6 +168,15 @@ const styles = {
     marginBottom: "15px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
   },
+  returnButton: {
+    marginTop:"10px",
+    padding:"8px 15px",
+    backgroundColor:"#dc3545",
+    color:"fff",
+    border:"none",
+    borderRadius:"5px",
+    cursor:"pointer",
+  }
 };
 
 export default UpcomingBookedEvents;
