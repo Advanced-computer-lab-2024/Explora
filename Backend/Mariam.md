@@ -36,7 +36,7 @@ Expected Response:
     "updatedAt": "2024-12-07T20:53:35.862Z",
     "__v": 0
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get Tour Guide Profile by ID
 Route: http://localhost:4000/api/tour_guide_profile/:id
 Request Method: GET
@@ -67,7 +67,7 @@ Expected Response:
   "updatedAt": "2024-12-01T23:52:05.955Z",
   "__v": 0
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Update Tour Guide Profile
 Route: http://localhost:4000/api/tour_guide_profile/me/:id
 Request Method: PUT
@@ -104,7 +104,7 @@ Expected Response:
   "updatedAt": "2024-12-01T23:52:05.955Z",
   "__v": 0
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Create a New Itinerary
 Route: http://localhost:4000/api/tour_guide_itinerary/
 Request Method: POST
@@ -185,7 +185,7 @@ Expected Response Example:
     "_id": "6754b7c1420909de67705295",
     "__v": 0
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get Itineraries by Tour Guide ID
 Route: (http://localhost:4000/api/tour_guide_itinerary)
 Request Method: GET
@@ -231,7 +231,7 @@ Expected Response:
         "__v": 0
     }
 ]
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Update an Itinerary by ID
 Route: http://localhost:4000/api/tour_guide_itinerary/:id
 Request Method: PUT
@@ -299,7 +299,7 @@ Expected Response:
     "flagged": false,
     "__v": 1
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Delete an Itinerary by ID
 Route: http://localhost:4000/api/tour_guide_itinerary/:id
 Request Method: DELETE
@@ -310,7 +310,7 @@ Expected Response:
 {
   "msg": "Itinerary removed successfully"
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get Itinerary by ID
 Route: http://localhost:4000/api/tour_guide_itinerary/:id
 Request Method: GET
@@ -355,7 +355,7 @@ Expected Response:
     "flagged": false,
     "__v": 1
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Request Account Deletion
 Route: http://localhost:4000/Request/requestDeletion
 Request Method: POST
@@ -369,7 +369,7 @@ Expected Response:
 {
   "message": "Deletion request submitted"
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Deactivate Itinerary
 Route: http://localhost:4000/api/tour_guide_itinerary/:id/deactivate
 Request Method: PUT
@@ -380,7 +380,7 @@ Expected Response:
 {
   "message": "Itinerary deactivated successfully."
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Accept Terms
 Route: http://localhost:4000/api/tour_guide_profile/accept-terms/:id
 Request Method: PUT
@@ -391,7 +391,7 @@ Expected Response:
 {
   "msg": "Terms accepted successfully"
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Rate and Comment on a Tour Guide
 Route: http://localhost:4000/reviews/rateTourGuide
 Request Method: POST
@@ -415,7 +415,7 @@ Expected Response:
         "date": "2024-12-08T00:23:59.226Z"
     }
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Rate and Comment on an Itinerary
 Route: http://localhost:4000/reviews/rateItinerary
 Request Method: POST
@@ -469,7 +469,7 @@ Expected Response:
         "comment": "very good"
     }
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get Previous Itineraries
 Route: http://localhost:4000/api/tour_guide_itinerary/previous
 Request Method: GET
@@ -514,7 +514,7 @@ Expected Response:
         "flagged": true,
         "__v": 0
     }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get All Itineraries
 Route: http://localhost:4000/api/tour_guide_itinerary/all
 Request Method: GET
@@ -558,7 +558,7 @@ Expected Response:
         "__v": 1,
         "comment": "very good"
     }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get Upcoming Itineraries
 Route: http://localhost:4000/api/tour_guide_itinerary/upcoming
 Request Method: GET
@@ -591,7 +591,7 @@ Expected Response:
         "flagged": true,
         "__v": 0
     }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Get Loyalty Points for a User
 Route: http://localhost:4000/users/loyalty-points/:userId
 Request Method: GET
@@ -602,7 +602,7 @@ Expected Response:
 {
     "loyaltyPoints": 250019312.5
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
 Title: Book a Ticket for an Itinerary
 Route: http://localhost:4000/ticket/book
 Request Method: POST
@@ -633,6 +633,141 @@ Expected Response:
   },
   "loyaltyPoints": "tourist_loyalty_points"
 }
-------------------------------------------
+-------------------------------------------------------------------------------------------
+Title: User Login
+Route: http://localhost:4000/api/auth/
+Request Method: POST
+Request:
+Body Parameters:
+{
+  "username": "user_username",
+  "password": "user_password"
+}
+Expected Response:
+{
+  "token": "jwt_token_here",
+  "role": "user_role",
+  "userId": "user_id"
+}
+-------------------------------------------------------------------------------------------
+Title: Fetch Sales Records for a Tour Guide
+Route: http://localhost:4000/api/
+Request Method: GET
+Query Parameters:
+tourGuideId: 674cfa7ea54a6ecc374e2ea9
+Expected Response:
+{
+    "message": "Sales records retrieved successfully",
+    "sales": [
+        {
+            "_id": "674dc4eb4526b9cae9d05cb8",
+            "tourGuideId": "674cfa7ea54a6ecc374e2ea9",
+            "itineraryId": {
+                "_id": "674cfaefa54a6ecc374e2eb4",
+                "locations": "India",
+                "price": 150,
+                "availableDates": [
+                    "2025-03-01T00:00:00.000Z"
+                ]
+            },
+            "touristId": {
+                "_id": "674d0772a54a6ecc374e2f35",
+                "username": "didi",
+                "email": "didi@gmail"
+            },
+            "amount": 150,
+            "date": "2024-12-02T14:32:11.458Z",
+            "__v": 0
+        },
+    ]
+}
+-------------------------------------------------------------------------------------------
+Title: Fetch Tourists Who Booked a Tour Guide's Itinerary
+Route: http://localhost:4000/api/report/
+Request Method: GET
+Query Parameters:
+tourGuideId: 674cfa7ea54a6ecc374e2ea9
+Expected Response:
+{
+    "message": "Tourists who booked the itinerary",
+    "touristDetails": [
+        {
+            "touristName": "didi",
+            "itineraryLocations": "India",
+            "itineraryDate": [
+                "2025-03-01T00:00:00.000Z"
+            ]
+        },
+    ] 
+}
+-------------------------------------------------------------------------------------------
+Title: Flag or Unflag an Itinerary
+Route: http://localhost:4000/api/itineraries/:id/flag
+Request Method: PATCH
+Path Parameters 
+id: 67324673bd5e0b9fdcdba05c
+Expected Response:
+{
+  "message": "Itinerary flagged successfully"
+}
+Notification: 
+{
+  "userId": "tourGuideId",
+  "message": "Your itinerary 'Itinerary Title' has been flagged.",
+  "itineraryId": "itineraryId"
+}
+Email:
+{
+    Subject: Itinerary has been Flagged
+
+    Dear Tour Guide Name,
+
+    Your itinerary titled "Itinerary Title" has been flagged.  
+    Please review it.
+
+    Sincerely,  
+    Explora Team
+}
+-------------------------------------------------------------------------------------------
+itle: Fetch Notifications for a User
+Route: (http://localhost:4000/api/notifications/notifications)
+Request Method: GET
+Request:
+Query Parameters:
+{
+  "userId": "string" 
+}
+Expected Response:
+[
+  {
+    "_id": "notification_id",
+    "userId": "user_id",
+    "message": "Notification message",
+    "createdAt": "2024-06-08T12:00:00Z"
+  }
+]
+-------------------------------------------------------------------------------------------
+Title: Mark Notification as Read
+Route: http://localhost:4000/api/notifications/:id/read
+Request Method: PATCH
+Request:
+URL Parameters:
+{
+  "id": "string" // Notification ID
+}
+Expected Response:
+{
+  "message": "Notification marked as read.",
+  "notification": {
+    "_id": "664ff3b4cde92f0012a7ab3c",
+    "userId": "664a6b21cde92f0012a7a001",
+    "message": "Your itinerary has been flagged.",
+    "read": true,
+    "createdAt": "2024-06-01T08:00:00.000Z",
+    "updatedAt": "2024-06-01T09:00:00.000Z"
+  }
+}
+-------------------------------------------------------------------------------------------
+
 
 
