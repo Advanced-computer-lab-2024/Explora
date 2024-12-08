@@ -110,21 +110,27 @@ const HotelBooking = () => {
 
 
   // Handle credit card payment
-  const handleCreditCardPayment = async () => {
-    try {
-      // Create a Stripe Checkout session
-      const response = await axios.post("http://localhost:4000/stripe/create-checkout-session", {
-        itemName: selectedItem.name,
-        itemPrice: selectedItem.price,
-      });
+// Handle credit card payment
+const handleCreditCardPayment = async () => {
+  try {
+    const frontendUrl = window.location.origin;
+    console.log("Frontend URL:", frontendUrl); // Log it for debugging
+    // Send request to the backend to create a Stripe Checkout session
+    const response = await axios.post("http://localhost:4000/hotels/bookStripe", {
+      touristId,
+      searchId,
+      hotelId,
+      frontendUrl,
+      promoCode: enteredPromocodeCredit, // Pass the URL to the backend
+    });
 
-      const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
-      window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
-    } catch (error) {
-      console.error("Error creating Stripe session:", error);
-      alert("Failed to redirect to Stripe. Please try again.");
-    }
-  };
+    const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
+    window.location.href = sessionUrl; // Redirect the user to Stripe Checkout
+  } catch (error) {
+    console.error("Error creating Stripe session:", error);
+    alert("Failed to redirect to Stripe. Please try again.");
+  }
+};
 
   return (
     <div>

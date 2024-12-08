@@ -111,7 +111,10 @@ import PaymentFailure from './components/PaymentFailure';
 import OrderList from './components/OrdersList.jsx';
 import HomeTest from "./components/HomeTest.jsx"
 import ProductModal from './components/ProductModal.jsx';
-
+import Sales from './components/Tour_Guide_Sales.jsx';
+import Viewing from './components/NoUsed';
+import Notification from './components/FlagNotifications';
+import { ToastContainer } from 'react-toastify';
 function App() {
 
   return (
@@ -225,6 +228,9 @@ function App() {
         <Route  path="/order_list" element={<OrderList />} />
         <Route path="/test" element={<Test />} />
         <Route path="/product-modal" element={<ProductModal />} />
+                <Route path="/sales" element={<Sales />} />
+        <Route path="/view-number-of-tourists" element={<Viewing />} />
+        <Route path="/flag-notification" element={<Notification />} />
 
 
         </Routes>

@@ -676,4 +676,122 @@ router.get('/', async (req, res) => {
     }
   });  
 
+  // http://localhost:4000/api/activity/bookStripe
+router.post('/bookStripe', async (req, res) => {
+    const { touristId, activityId, frontendUrl, promoCode } = req.body;
+
+    try {
+        // Find the tourist user
+        const tourist = await User.findById(touristId);
+        if (!tourist || tourist.role !== 'Tourist') {
+            return res.status(400).json({ message: 'Invalid tourist user' });
+        }
+        const touristEmail = tourist.email; // Get the tourist's email dynamically
+
+        // Find the activity
+        const activity = await Activity.findById(activityId);
+        if (!activity || activity.isDeleted || !activity.bookingOpen) {
+            return res.status(404).json({ message: 'Activity not found or not open for booking' });
+        }
+
+        // Check if the tourist already booked the activity (optional logic)
+        const existingBooking = await BookedActivity.findOne({ tourist: touristId, activity: activityId });
+        if (existingBooking) {
+            return res.status(400).json({ message: 'You have already booked this activity' });
+        }
+
+        // Calculate the total price
+        let totalPrice = activity.price;
+
+        // Check for promo code and apply discount if valid
+        if (promoCode) {
+            const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+            if (!promoCodeRecord) {
+                return res.status(400).json({ message: 'Invalid or expired promo code' });
+            }
+
+            // Apply the discount
+            const discountAmount = promoCodeRecord.discount * totalPrice;
+            totalPrice -= discountAmount;
+
+            // Ensure discounted price is valid
+            if (totalPrice < 0) {
+                return res.status(400).json({ message: 'Discounted price is invalid' });
+            }
+
+            // Delete the promo code since it's used
+            await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+        }
+
+        // Create a payment intent with Stripe
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: `${activity.name}`, // Fixed string interpolation
+                            description: `${activity.location}`, // Fixed string interpolation
+                        },
+                        unit_amount: Math.round(totalPrice * 100), // Converted to cents
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `${frontendUrl}/UpcomingBookedEvents?session_id={CHECKOUT_SESSION_ID}&touristId=${touristId}&activityId=${activityId}`, // Fixed string interpolation and URL closing
+            cancel_url: `${frontendUrl}/UpcomingBookedEvents`, // Fixed URL closing
+            metadata: {
+                touristId,
+                activityId,
+                activityName: activity.name,
+                location: activity.location,
+            },
+        });
+
+        // Send the session URL back to frontend to redirect user
+        res.status(200).json({ url: session.url });
+
+        // Immediately book the activity without verifying the payment
+        const bookedActivity = new BookedActivity({
+            tourist: tourist._id,
+            activity: activity._id,
+            name: activity.name,
+            date: activity.date,
+            time: activity.time,
+            rating: activity.rating,
+            location: activity.location,
+            price: totalPrice,
+            category: activity.category,
+            tags: activity.tags,
+            paymentIntentId: session.id, // Store the Stripe session ID for reference
+        });
+
+        // Save the booked activity
+        const savedBooking = await bookedActivity.save();
+
+        // Send a booking receipt email to the tourist
+        const mailOptions = {
+            from: 'explora.donotreply@gmail.com', // Sender address
+            to: touristEmail, // Dynamic email based on the tourist's record
+            subject: 'Activity Booking Receipt',
+            text: `Dear ${tourist.username},\n\nYour activity has been successfully booked!\n\nDetails:\n- Activity Name: ${activity.name}\n- Date: ${activity.date}\n- Time: ${activity.time}\n- Location: ${activity.location}\n- Price: ${totalPrice} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`, // Fixed string interpolation
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);
+            } else {
+                console.log('Email sent:', info.response);
+            }
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error creating booking', error: err.message });
+    }
+});
+
 module.exports = router;

@@ -121,7 +121,8 @@ const FlightBooking = () => {
         touristId,
         searchId,
         flightId,
-        frontendUrl // Pass the URL to the backend
+        frontendUrl,
+        promoCode: enteredPromocodeCredit, // Pass the URL to the backend
       });
   
       const sessionUrl = response.data.url; // URL to redirect to Stripe Checkout
@@ -131,7 +132,6 @@ const FlightBooking = () => {
       alert("Failed to redirect to Stripe. Please try again.");
     }
   };
-
 
 
   return (

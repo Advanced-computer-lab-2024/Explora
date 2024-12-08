@@ -1133,4 +1133,177 @@ router.patch('/:id/flag', async (req, res) => {
   }
 });
 
+// http://localhost:4000/api/tour_guide_itinerary/bookStripe
+router.post('/bookStripe', async (req, res) => {
+  const { touristId, itineraryId, frontendUrl, promoCode } = req.body;
+
+  try {
+    console.log("Received request body:", req.body); // Log the entire request body for debugging
+
+    if (!frontendUrl) {
+      console.log("Frontend URL is missing");
+      return res.status(400).json({ message: 'Frontend URL is required' });
+    }
+
+    // Validate the tourist
+    const tourist = await User.findById(touristId);
+    if (!tourist) {
+      console.log("Tourist not found");
+      return res.status(400).json({ message: 'Tourist not found' });
+    }
+    if (tourist.role !== 'Tourist') {
+      console.log("Invalid tourist user");
+      return res.status(400).json({ message: 'Invalid tourist user' });
+    }
+    const touristEmail = tourist.email; // Get the tourist's email dynamically
+
+    // Validate the itinerary
+    const itinerary = await Itinerary.findById(itineraryId);
+    if (!itinerary) {
+      console.log("Itinerary not found");
+      return res.status(404).json({ message: 'Itinerary not found' });
+    }
+    if (itinerary.isDeleted || !itinerary.isActive) {
+      console.log("Itinerary not available for booking");
+      return res.status(400).json({ message: 'Itinerary not available for booking' });
+    }
+
+    // Check if the tourist already booked the itinerary (optional logic)
+    const existingBooking = await BookedItinerary.findOne({ tourist: touristId, itinerary: itineraryId });
+    if (existingBooking) {
+      console.log("Itinerary already booked");
+      return res.status(400).json({ message: 'You have already booked this itinerary' });
+    }
+
+    // Initialize totalPrice with itinerary price
+    let totalPrice = itinerary.price;
+    if (promoCode) {
+      const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+
+      if (!promoCodeRecord) {
+        console.log("Invalid or expired promo code");
+        return res.status(400).json({ message: 'Invalid or expired promo code' });
+      }
+
+      // Apply discount
+      const discountAmount = promoCodeRecord.discount * totalPrice;
+      totalPrice -= discountAmount;
+
+      // Ensure discounted price is valid
+      if (totalPrice < 0) {
+        console.log("Discounted price is invalid");
+        return res.status(400).json({ message: 'Discounted price is invalid' });
+      }
+
+      // Delete the promo code since it's used
+      await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+    }
+
+    // Calculate loyalty points
+    let loyaltyPoints;
+    if (tourist.loyaltyLevel === 1) {
+      loyaltyPoints = totalPrice * 0.5;
+    } else if (tourist.loyaltyLevel === 2) {
+      loyaltyPoints = totalPrice * 1;
+    } else {
+      loyaltyPoints = totalPrice * 1.5;
+    }
+
+    // Create a payment intent with Stripe
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',
+            product_data: {
+              name: `Itinerary: ${itinerary.tourGuideName}'s Tour`,
+              // description: `${itinerary.locations[0]}`,
+            },
+            unit_amount: Math.round(totalPrice * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `${frontendUrl}/UpcomingBookedEvents?session_id={CHECKOUT_SESSION_ID}&touristId=${touristId}&itineraryId=${itineraryId}`, // Fixed success URL format
+      cancel_url: `${frontendUrl}/UpcomingBookedEvents`, // Redirect to the same URL for cancellation
+      metadata: {
+        touristId,
+        itineraryId,
+        tourGuideName: itinerary.tourGuideName,
+        // locations: itinerary.locations.join[0],
+      },
+    });
+
+    // Send the session URL back to frontend to redirect user
+    res.status(200).json({ url: session.url });
+
+    // Immediately book the itinerary without verifying the payment
+    const bookedItinerary = new BookedItinerary({
+      tourGuideId: itinerary.tourGuideId, // Get the tour guide from the itinerary
+      itinerary: itinerary._id,
+      tourist: tourist._id,
+      tourGuideName: itinerary.tourGuideName,
+      activities: itinerary.activities,
+      locations: itinerary.locations,
+      timeline: itinerary.timeline,
+      duration: itinerary.duration,
+      language: itinerary.language,
+      price: totalPrice,
+      availableDates: itinerary.availableDates[0], // Use the first available date
+      pickupLocation: itinerary.pickupLocation,
+      dropoffLocation: itinerary.dropoffLocation,
+      tags: itinerary.tags,
+      rating: itinerary.rating,
+      paymentIntentId: session.id, // Store the Stripe session ID for reference
+    });
+
+    // Save the booked itinerary
+    const savedBooking = await bookedItinerary.save();
+    const sale = new Sales({
+      tourGuideId: itinerary.tourGuideId, // Get the tour guide from the itinerary
+      itineraryId: itinerary._id,
+      touristId: tourist._id,
+      amount: totalPrice,
+    });
+
+    await sale.save(); // Save the sales record
+    itinerary.hasBookings = true;
+    await itinerary.save();
+    tourist.loyaltyPoints += loyaltyPoints;
+    tourist.loyaltyLevel =
+      tourist.loyaltyPoints > 500000
+        ? 3
+        : tourist.loyaltyPoints > 100000
+        ? 2
+        : 1;
+    await tourist.save();
+
+    console.log("Booking details:", savedBooking);
+    console.log("Sale details:", sale);
+    console.log("Itinerary updated:", itinerary);
+
+    // Send a booking receipt email
+    const mailOptions = {
+      from: 'explora.donotreply@gmail.com',
+      to: touristEmail,
+      subject: 'Itinerary Booking Receipt',
+      text: `Dear ${tourist.username},\n\nYour itinerary has been successfully booked!\n\nDetails:\n- Itinerary Name: ${itinerary.tourGuideName}'s Tour\n- Locations: ${itinerary.locations}\n- Duration: ${itinerary.duration} days\n- Price: ${totalPrice} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Error creating booking', error: err.message });
+  }
+});
+
 module.exports = router;
