@@ -10,7 +10,7 @@ const nodemailer = require('nodemailer');
 const Notifications = require('../models/Notifications'); // Import Notification model
 const TourGuide = require('../models/Tour_Guide_Profile');
 const Book = require('../models/Book');
-
+const Sales = require('../models/Tour_Guide_Sales');
 // Set the socket.io instance after a successful connection
 const setIo = (_io) => {
   io = _io;
@@ -262,7 +262,6 @@ router.get('/bookmark/:touristId', async (req, res) => {
   }
 });
 
-// http://localhost:4000/api/tour_guide_itinerary/bookWallet
 router.post('/bookWallet', async (req, res) => {
   const { touristId, itineraryId, promoCode } = req.body;
 
@@ -272,7 +271,7 @@ router.post('/bookWallet', async (req, res) => {
       if (!tourist || tourist.role !== 'Tourist') {
           return res.status(400).json({ message: 'Invalid tourist user' });
       }
-      const touristEmail = tourist.email; // Get the tourist's email dynamically
+      const touristEmail = tourist.email;
 
       // Validate the itinerary
       const itinerary = await Itinerary.findById(itineraryId);
@@ -280,47 +279,48 @@ router.post('/bookWallet', async (req, res) => {
           return res.status(404).json({ message: 'Itinerary not found or not available for booking' });
       }
 
-      // Check if the tourist already booked the itinerary (optional logic)
-      const existingBooking = await BookedItinerary.findOne({ tourist: touristId, itinerary: itineraryId });
-      if (existingBooking) {
-          return res.status(400).json({ message: 'You have already booked this itinerary' });
-      }
-
-      // Initialize totalPrice with itinerary price
+      // Promo code logic
       let totalPrice = itinerary.price;
-
-      // Apply promo code if provided
       if (promoCode) {
-          const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+        const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+        if (!promoCodeRecord) {
+            return res.status(400).json({ message: 'Invalid or expired promo code' });
+        }
+        const discountAmount = promoCodeRecord.discount * totalPrice;
+        totalPrice -= discountAmount;
 
-          if (!promoCodeRecord) {
-              return res.status(400).json({ message: 'Invalid or expired promo code' });
-          }
-        
-          // Apply discount
-          const discountAmount = promoCodeRecord.discount * totalPrice;
-          totalPrice -= discountAmount;
-
-          // Ensure discounted price is valid
-          if (totalPrice < 0) {
-              return res.status(400).json({ message: 'Discounted price is invalid' });
-          }
-
-          // Delete the promo code since it's used
-          await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
+        if (totalPrice < 0) {
+            return res.status(400).json({ message: 'Discounted price is invalid' });
+        }
+        await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
       }
 
-      // Check if the tourist has enough funds in their wallet
+      // Loyalty points calculation
+      let loyaltyPoints;
+      if (tourist.loyaltyLevel === 1) {
+          loyaltyPoints = totalPrice * 0.5;
+      } else if (tourist.loyaltyLevel === 2) {
+          loyaltyPoints = totalPrice * 1;
+      } else {
+          loyaltyPoints = totalPrice * 1.5;
+      }
+
+      // Check if the tourist has enough funds
       if (tourist.wallet < totalPrice) {
           return res.status(400).json({ message: 'Insufficient funds in wallet' });
       }
 
-      // Deduct the price from wallet
+      // Deduct from wallet and update loyalty points
       tourist.wallet -= totalPrice;
-      await tourist.save(); // Save updated wallet balance
+      tourist.loyaltyPoints += loyaltyPoints;
+      tourist.loyaltyLevel = tourist.loyaltyLevel; // Use the already set loyaltyLevel from the tourist instance
 
-      // Create a new booked itinerary
+      // Save the tourist data
+      await tourist.save();
+
+      // Create the booking
       const bookedItinerary = new BookedItinerary({
+          tourGuideId: itinerary.tourGuideId,
           itinerary: itinerary._id,
           tourist: tourist._id,
           tourGuideName: itinerary.tourGuideName,
@@ -337,10 +337,24 @@ router.post('/bookWallet', async (req, res) => {
           rating: itinerary.rating,
       });
 
-      // Save the booked itinerary
+      // Save the booking
       const savedBooking = await bookedItinerary.save();
 
-      // Send a booking receipt email
+      // Create sales record
+      const sale = new Sales({
+          tourGuideId: itinerary.tourGuideId,
+          itineraryId: itinerary._id,
+          touristId: tourist._id,
+          amount: totalPrice,
+      });
+
+      await sale.save();
+
+      // Update itinerary status
+      itinerary.hasBookings = true;
+      await itinerary.save();
+
+      // Send booking receipt email
       const mailOptions = {
           from: 'explora.donotreply@gmail.com',
           to: touristEmail,
@@ -356,13 +370,19 @@ router.post('/bookWallet', async (req, res) => {
           }
       });
 
-      res.status(201).json(savedBooking);
+      // Return success response
+      res.status(201).json({
+          savedBooking, 
+          message: 'Booking and sale recorded successfully',
+          sale,
+          loyaltyPoints: tourist.loyaltyPoints,
+      });
+
   } catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Error creating booking', error: err.message });
   }
 });
-
 
 //http://localhost:4000/api/tour_guide_itinerary/testdelete
 router.delete('/testdelete', async (req, res) => {

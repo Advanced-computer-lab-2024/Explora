@@ -53,16 +53,20 @@ const TourGuideSales = () => {
       });
     }
 
-    // Filter by date range (start and end dates)
-    const { startDate, endDate } = filterByDateRange;
-    if (startDate && endDate) {
-      filtered = filtered.filter((sale) => {
-        const saleDate = new Date(sale.date);
-        const formattedStartDate = new Date(startDate);
-        const formattedEndDate = new Date(endDate);
-        return saleDate >= formattedStartDate && saleDate <= formattedEndDate;
-      });
-    }
+// Filter by date range (start and end dates)
+const { startDate, endDate } = filterByDateRange;
+if (startDate && endDate) {
+  filtered = filtered.filter((sale) => {
+    const saleDate = new Date(sale.date);
+    const formattedStartDate = new Date(startDate);
+    let formattedEndDate = new Date(endDate);
+    
+    // Set the time to the end of the day (23:59:59.999) to include all sales on the endDate
+    formattedEndDate.setHours(23, 59, 59, 999);
+
+    return saleDate >= formattedStartDate && saleDate <= formattedEndDate;
+  });
+}
 
     // Filter by Location
     if (location) {

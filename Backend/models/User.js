@@ -19,7 +19,7 @@ const userSchema = new Schema({
     },
     loyaltyLevel: {
         type: Number,
-        default: 0, // Initializes level to 0
+        default: 1, // Initializes level to 0
     },
     role: { 
         type: String,

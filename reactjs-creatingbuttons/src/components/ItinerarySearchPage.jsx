@@ -27,7 +27,7 @@ const ItinerarySearchPage = () => {
     useEffect(() => {
         const fetchItineraries = async () => {
             try {
-                const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/');
+                const response = await axios.get('http://localhost:4000/api/tour_guide_itinerary/all');
                 console.log(response.data);  // Add a console log here to inspect the data
                 const itins = response.data.map(itinerary => ({
                     id: itinerary._id,
@@ -78,8 +78,11 @@ const ItinerarySearchPage = () => {
     const filteredItineraries = itineraries.filter((itinerary) => {
         const matchesTags = selectedTags.length === 0 || selectedTags.every(tag => itinerary.tags.includes(tag.value));
         const matchesLanguage = !selectedLanguage || itinerary.language.toLowerCase() === selectedLanguage.toLowerCase();
-        const matchesBudget = itinerary.price <= selectedBudget;
-        const matchesDate = !selectedDate || itinerary.availableDates.includes(selectedDate);
+        const matchesBudget = selectedBudget === null || itinerary.price <= selectedBudget;
+        const matchesDate = !selectedDate || itinerary.availableDates.some(date => {
+            const availableDate = new Date(date).toISOString().split('T')[0]; // Convert to YYYY-MM-DD
+            return availableDate === selectedDate;
+        });
         const matchesPreferences = selectedPreferences.length === 0 || selectedPreferences.some(pref =>
             itinerary.tags.includes(pref.value)
         );
@@ -200,18 +203,22 @@ const ItinerarySearchPage = () => {
             <div style={styles.resultsContainer}>
                 <h3>Itineraries:</h3>
                 <ul style={styles.resultsList}>
-    {sortedItineraries.map((itinerary) => (
-        <li key={itinerary.id} style={styles.resultItem}>
-            <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
-                {selectedCurrency} {convertPrice(itinerary.price).toFixed(2)} - (Rating: {itinerary.rating}) - Date: {itinerary.availableDates.join(', ')}
-            </Link>
-            <div style={styles.additionalInfo}>
-                <p>Language: {itinerary.language}</p>
-                <p>Tags: {itinerary.tags.join(', ')}</p>
-            </div>
-        </li>
-    ))}
-</ul>
+                    {sortedItineraries.length === 0 ? (
+                        <p>No itineraries found.</p>
+                    ) : (
+                        sortedItineraries.map((itinerary) => (
+                            <li key={itinerary.id} style={styles.resultItem}>
+                                <Link to={`/itinerary/${itinerary.id}`} style={styles.resultLink}>
+                                    {selectedCurrency} {convertPrice(itinerary.price).toFixed(2)} - (Rating: {itinerary.rating}) - Date: {itinerary.availableDates.join(', ')}
+                                </Link>
+                                <div style={styles.additionalInfo}>
+                                    <p>Language: {itinerary.language}</p>
+                                    <p>Tags: {itinerary.tags.join(', ')}</p>
+                                </div>
+                            </li>
+                        ))
+                    )}
+                </ul>
 
                 {/* View Upcoming Itineraries Button */}
                 <div style={styles.viewButtonContainer}>
@@ -223,7 +230,6 @@ const ItinerarySearchPage = () => {
         </div>
     );
 };
-
 
 const styles = {
     pageContainer: {
