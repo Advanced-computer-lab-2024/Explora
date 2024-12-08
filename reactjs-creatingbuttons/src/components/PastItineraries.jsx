@@ -1,5 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios
+import logo from '../assets/cropped_image.png';
+import { useNavigate } from 'react-router-dom';
+const buttonStyle = {
+  backgroundColor: '#008080',
+  color: 'white',
+  border: 'none',
+  padding: '10px 20px',
+  width: '100%',
+  textAlign: 'center',
+  cursor: 'pointer'
+};
 
 const PastItineraries = () => {
   const [places, setPlaces] = useState([]);
@@ -10,7 +21,21 @@ const PastItineraries = () => {
   const [guideRatings, setGuideRatings] = useState({});
   const [itineraryComments, setItineraryComments] = useState({});
   const [guideComments, setGuideComments] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [isEditable, setIsEditable] = useState(false);
+  const navigate = useNavigate();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isHistoryOptionsVisible, setIsHistoryOptionsVisible] = useState(false);
+  const [showPromoModal, setShowPromoModal] = useState(false);
 
+  const toggleDropdown = () => setIsDropdownOpen(prev => !prev);
+  const handleMouseEnterHistory = () => setIsHistoryOptionsVisible(true);
+  const handleMouseLeaveHistory = () => setTimeout(() => setIsHistoryOptionsVisible(false), 900);
+  const handleClosePromoModal = () => setShowPromoModal(false);
+
+  useEffect(() => {
+      setShowPromoModal(true);
+    }, []);
   const userId = localStorage.getItem('userId'); // Assuming user ID is stored in localStorage
 
   useEffect(() => {
@@ -175,8 +200,187 @@ const PastItineraries = () => {
   };
     
   return (
+    <div>
+           <nav
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          padding: '1px 5px',
+          backgroundColor: '#008080',
+          color: 'white',
+          position: 'fixed',
+          top: 0,
+          width: '100%',
+          zIndex: 1000,
+          justifyContent: 'space-between',
+        }}
+      >
+        <img src={logo} alt="Logo" style={{ height: '80px', marginRight: '10px' }} />
+
+        {/* Navigation Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <a href="/tourist-home" style={{ color: 'white', textDecoration: 'none' }}>Home</a>
+          <a href="/UpcomingActivities" style={{ color: 'white', textDecoration: 'none' }}>Activities</a>
+          <a href="/book-flight" style={{ color: 'white', textDecoration: 'none' }}>Flights</a>
+          <a href="/book-hotel" style={{ color: 'white', textDecoration: 'none' }}>Hotels</a>
+          <a href="/UpcomingItineraries" style={{ color: 'white', textDecoration: 'none' }}>Itineraries</a>
+          <a href="/UpcomingBookedEvents" style={{ color: 'white', textDecoration: 'none' }}>Upcoming Events</a>
+
+          <a href="/product-list-tourist" style={{ color: 'white', textDecoration: 'none' }}>Products</a>
+          <a href="/Notifications" style={{ color: 'white', textDecoration: 'none' }}>Notifications</a>
+
+
+        </div>
+
+        {/* SVG Icon */}
+        <div style={{ marginLeft: 'auto', marginRight: '60px' }}>
+          <svg
+            onClick={toggleDropdown}
+            xmlns="http://www.w3.org/2000/svg"
+            width="54"
+            height="54"
+            viewBox="0 0 24 24"
+            style={{ cursor: 'pointer', color: 'white' }}
+          >
+            <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm0 22c-3.123 0-5.914-1.441-7.749-3.69.259-.588.783-.995 1.867-1.246 2.244-.518 4.459-.981 3.393-2.945-3.155-5.82-.899-9.119 2.489-9.119 3.322 0 5.634 3.177 2.489 9.119-1.035 1.952 1.1 2.416 3.393 2.945 1.082.25 1.61.655 1.871 1.241-1.836 2.253-4.628 3.695-7.753 3.695z" fill="white" />
+          </svg>
+          {/* Dropdown Menu */}
+          {isDropdownOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '80px',
+                right: '0',
+                backgroundColor: '#008080',
+                color: 'white',
+                borderRadius: '5px',
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                width: '200px',
+                padding: '10px 0',
+                zIndex: 1000,
+              }}
+              onMouseEnter={handleMouseEnterHistory}
+              onMouseLeave={handleMouseLeaveHistory}
+            >
+              <button
+                onClick={() => navigate('/ProfileDetailsPage')}
+                style={buttonStyle}
+              >
+                Profile
+              </button>
+              <a
+                href="/history"
+                style={{
+                  color: 'white',
+                  textDecoration: 'none',
+                  textAlign: 'center',
+                  display: 'block',
+                }}
+              >
+                History
+              </a>
+
+              <button
+                onClick={() => navigate('/cart')}
+                style={buttonStyle}
+              >
+                Cart
+              </button>
+              <button
+                onClick={() => navigate('/')}
+                style={buttonStyle}
+              >
+                Log Out
+              </button>
+              <button
+                onClick={() => navigate('/file-complaint')}
+                style={buttonStyle}
+              >
+                File Complaint
+              </button>
+              <button
+                onClick={() => navigate('/change-password')}
+                style={buttonStyle}
+              >
+                Change Password
+              </button>
+              <button
+                onClick={() => navigate('/Bookmarks')}
+                style={buttonStyle}
+              >
+                Bookmarks
+              </button>
+              <button
+                onClick={() => navigate('/my-promo-codes')}
+                style={buttonStyle}
+              >
+                My Promo Codes
+              </button>
+              <button
+                onClick={() => navigate('/my-promo-codes')}
+                style={buttonStyle}
+              >
+                Current Orders
+              </button>
+
+              {isHistoryOptionsVisible && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '80px',
+                    right: '220px',
+                    backgroundColor: '#008080',
+                    color: 'white',
+                    borderRadius: '5px',
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+                    width: '200px',
+                    padding: '10px 0',
+                    zIndex: 1000,
+                  }}
+                >
+                  <button
+                    onClick={() => navigate('/tourist-previous-activities')}
+                    style={buttonStyle}
+                  >
+                    Past Activities
+                  </button>
+                  <button
+                    onClick={() => navigate('/tourist-past-itineraries')}
+                    style={buttonStyle}
+                  >
+                    Past Itineraries
+                  </button>
+                  <button
+                    onClick={() => navigate('/past-orders')}
+                    style={buttonStyle}
+                  >
+                    Past Orders
+                  </button>
+                  <button
+                    onClick={() => navigate('/view-booked-transportations')}
+                    style={buttonStyle}
+                  >
+                    Booked Transportations
+                  </button>
+                  <button
+                    onClick={() => navigate('/PastBookedEvents')}
+                    style={buttonStyle}
+                  >
+                    Booked Events
+                  </button>
+
+                  
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </nav>
+
     <div className="UpcomingItineraries">
-      <h1 className="header">Previous Itineraries</h1>
+
+    <div style={{ marginTop: '80px' }}>
+  <h1 className="header">Previous Itineraries</h1>
       <div className="activities-list">
         {places.map((place) => (
           <div key={place._id} className="activity-card">
@@ -258,25 +462,24 @@ const PastItineraries = () => {
             </div>
 
             <div className="share-buttons">
-              <button className="share-button" onClick={() => shareLink(place)}>
+            <button className="share-button" onClick={() => shareLink(place)}>
                 {/* Custom SVG Icon for Share Link */}
                 <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24">
-                  <path d="M14.851 11.923c-.179-.641-.521-1.246-1.025-1.749-1.562-1.562-4.095-1.563-5.657 0l-4.998 4.998c-1.562 1.563-1.563 4.095 0 5.657 1.562 1.563 4.096 1.561 5.656 0l3.842-3.841.333.009c.404 0 .802-.04 1.189-.117l-4.657 4.656c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-1.952-1.951-1.952-5.12 0-7.071l4.998-4.998c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464.493.493.861 1.063 1.105 1.672l-.787.784zm-5.703.147c.178.643.521 1.25 1.026 1.756 1.562 1.563 4.096 1.561 5.656 0l4.999-4.998c1.563-1.562 1.563-4.095 0-5.657-1.563-1.563-4.096-1.561-5.657 0l-4.998 4.998c-.183.182-.347.375-.491.575-.436.622-.733 1.305-.907 2.01-.208.632-.389 1.269-.557 1.906zm-.143 1.436c.207-.662.465-1.308.771-1.926.102-.222.208-.448.314-.672.65-.951 1.429-1.688 2.267-2.511 1.155-.911 2.366-1.552 3.743-2.242 1.378-.665 2.845-.85 4.271-.607zm5.574 5.563c-1.279-.976-.97-.025-.532.485.153-.62-.384-.937-.708-1.418z"/>
-                </svg>
-                Share Link
+                  <path d="M14.851 11.923c-.179-.641-.521-1.246-1.025-1.749-1.562-1.562-4.095-1.563-5.657 0l-4.998 4.998c-1.562 1.563-1.563 4.095 0 5.657 1.562 1.563 4.096 1.561 5.656 0l3.842-3.841.333.009c.404 0 .802-.04 1.189-.117l-4.657 4.656c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-1.952-1.951-1.952-5.12 0-7.071l4.998-4.998c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464.493.493.861 1.063 1.105 1.672l-.787.784zm-5.703.147c.178.643.521 1.25 1.026 1.756 1.562 1.563 4.096 1.561 5.656 0l4.999-4.998c1.563-1.562 1.563-4.095 0-5.657-1.562-1.562-4.095-1.563-5.657 0l-3.841 3.841-.333-.009c-.404 0-.802.04-1.189.117l4.656-4.656c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464 1.951 1.951 1.951 5.119 0 7.071l-4.999 4.998c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-.494-.495-.863-1.067-1.107-1.678l.788-.785z"/>
+                </svg> Share Link
               </button>
-
               <button className="share-button" onClick={() => shareEmail(place)}>
-                {/* Custom SVG Icon for Email */}
-                <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24">
-                  <path d="M20.995 2.563l-8.999 8.999c-.295.295-.658.439-1.022.439s-.727-.145-1.022-.439l-9-8.999a2.392 2.392 0 0 0-3.389 3.389l8.999 8.999c.295.295.658.439 1.022.439s.727-.145 1.022-.439l8.999-8.999c.294-.294.438-.656.438-1.022s-.145-.728-.438-1.022a2.392 2.392 0 0 0-3.389-3.389z"/>
-                </svg>
-                Share via Email
+                {/* Custom SVG Icon for Share by Email */}
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 12.713l-11.985-9.713h23.97l-11.985 9.713zm0 2.574l-12-9.725v15.438h24v-15.438l-12 9.725z"/>
+                </svg> Share by Email
               </button>
             </div>
           </div>
         ))}
       </div>
+    </div>
+    </div>
     </div>
   );
 };

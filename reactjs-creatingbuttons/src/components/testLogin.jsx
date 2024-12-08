@@ -172,7 +172,7 @@ const LoginForm = () => {
         .login-button {
           width: 100%;
           padding: 12px;
-          background-color: #4e8ff7;
+          background-color: #008080;
           color: white;
           border: none;
           border-radius: 5px;
@@ -199,7 +199,7 @@ const LoginForm = () => {
         }
 
         .login-form-links a {
-          color: #4e8ff7;
+          color: #008080;
           text-decoration: none;
         }
 
