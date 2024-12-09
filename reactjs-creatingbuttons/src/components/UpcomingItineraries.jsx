@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const UpcomingItineraries = () => {
   const [itins, setItins] = useState([]);
@@ -19,6 +20,7 @@ const UpcomingItineraries = () => {
   const [enteredPromocode, setEnteredPromocode] = useState('');
   const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -230,8 +232,27 @@ const UpcomingItineraries = () => {
   
   return (
     <div className="UpcomingItineraries">
+            {/* Back Button */}
+            <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          Back
+        </button>
+      </div>
+
       <h1 className="header">Upcoming Itineraries</h1>
       <div className="activities-list">
+        
       {itins.map((itin) => (
   <div key={itin._id} className="activity-card">
     <h2 className="activity-name">{itin.locations}</h2>

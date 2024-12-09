@@ -1,3 +1,4 @@
+// Import necessary components and styles
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -5,19 +6,20 @@ import LineChart from './LineChart'; // Line chart component
 import './SalesReport.module.css'; // Styles for the report
 
 const TourGuideSales = () => {
+  // State declarations
   const [sales, setSales] = useState([]);
   const [filteredSales, setFilteredSales] = useState([]);
   const [totalRevenue, setTotalRevenue] = useState(0);
   const [filterByMonth, setFilterByMonth] = useState('');
   const [filterByDateRange, setFilterByDateRange] = useState({ startDate: '', endDate: '' });
-  const [location, setLocation] = useState(''); // Added location filter state
+  const [location, setLocation] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const userId = localStorage.getItem('userId'); // Assuming user ID is stored in localStorage
+  const userId = localStorage.getItem('userId');
   const navigate = useNavigate();
 
-  // Fetch sales data for the logged-in tour guide
+  // Fetch sales data
   useEffect(() => {
     if (!userId) {
       setError('User ID is not available. Please log in.');
@@ -42,9 +44,10 @@ const TourGuideSales = () => {
     }
   }, [userId]);
 
-  // Filter sales by month (using YYYY-MM format)
+  // Filter sales data
   const filterSalesByMonth = () => {
     let filtered = sales;
+
     if (filterByMonth) {
       filtered = filtered.filter((sale) => {
         const saleDate = new Date(sale.date);
@@ -53,59 +56,29 @@ const TourGuideSales = () => {
       });
     }
 
-// Filter by date range (start and end dates)
-const { startDate, endDate } = filterByDateRange;
-if (startDate && endDate) {
-  filtered = filtered.filter((sale) => {
-    const saleDate = new Date(sale.date);
-    const formattedStartDate = new Date(startDate);
-    let formattedEndDate = new Date(endDate);
-    
-    // Set the time to the end of the day (23:59:59.999) to include all sales on the endDate
-    formattedEndDate.setHours(23, 59, 59, 999);
-
-    return saleDate >= formattedStartDate && saleDate <= formattedEndDate;
-  });
-}
-
-    // Filter by Location
-    if (location) {
+    const { startDate, endDate } = filterByDateRange;
+    if (startDate && endDate) {
       filtered = filtered.filter((sale) => {
-        const itineraryLocation = sale.itineraryId.locations.toLowerCase();
-        return itineraryLocation.includes(location.toLowerCase());
+        const saleDate = new Date(sale.date);
+        const formattedStartDate = new Date(startDate);
+        let formattedEndDate = new Date(endDate);
+        formattedEndDate.setHours(23, 59, 59, 999);
+
+        return saleDate >= formattedStartDate && saleDate <= formattedEndDate;
       });
     }
 
-    // Calculate total revenue after filtering
+    if (location) {
+      filtered = filtered.filter((sale) =>
+        sale.itineraryId.locations.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+
     setFilteredSales(filtered);
     setTotalRevenue(filtered.reduce((sum, sale) => sum + sale.amount, 0));
   };
 
-  // Handle change for month filter
-  const handleMonthChange = (e) => {
-    setFilterByMonth(e.target.value);
-  };
-
-  // Handle change for date range filters
-  const handleDateRangeChange = (e) => {
-    const { name, value } = e.target;
-    setFilterByDateRange((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  // Handle change for location filter
-  const handleLocationChange = (e) => {
-    setLocation(e.target.value);
-  };
-
-  // Handle the filter apply action
-  const applyFilters = () => {
-    filterSalesByMonth();
-  };
-
-  // Clear all filters
+  const applyFilters = () => filterSalesByMonth();
   const clearFilters = () => {
     setFilterByMonth('');
     setFilterByDateRange({ startDate: '', endDate: '' });
@@ -119,30 +92,47 @@ if (startDate && endDate) {
 
   return (
     <div className="sales-report">
+      {/* Back Button */}
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          Back
+        </button>
+      </div>
+
+      {/* Dashboard Title */}
       <h2>Dashboard</h2>
 
       {/* Line Chart Section */}
-      <div className="chart-container">
+      <div className="chart-container" style={{ marginTop: '20px' }}>
         <LineChart salesData={filteredSales} filterBy="month" />
       </div>
 
-      <h2>Total Revenue: ${totalRevenue.toFixed(2)}</h2>
+      {/* Total Revenue */}
+      <h2 style={{ marginTop: '20px' }}>Total Revenue: ${totalRevenue.toFixed(2)}</h2>
 
-      {/* Filter Section */}
+      {/* Filters */}
       <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', marginBottom: '20px' }}>
-        {/* Month Filter */}
         <div>
           <label htmlFor="month">Select Month:</label>
           <input
             type="month"
             id="month"
             value={filterByMonth}
-            onChange={handleMonthChange}
+            onChange={(e) => setFilterByMonth(e.target.value)}
             style={{ padding: '8px', fontSize: '14px' }}
           />
         </div>
-
-        {/* Date Range Filter */}
         <div>
           <label htmlFor="startDate">Start Date:</label>
           <input
@@ -150,12 +140,10 @@ if (startDate && endDate) {
             id="startDate"
             name="startDate"
             value={filterByDateRange.startDate}
-            onChange={handleDateRangeChange}
+            onChange={(e) => setFilterByDateRange({ ...filterByDateRange, startDate: e.target.value })}
             style={{ padding: '8px', fontSize: '14px' }}
-            placeholder="MM-DD-YYYY"
           />
         </div>
-
         <div>
           <label htmlFor="endDate">End Date:</label>
           <input
@@ -163,26 +151,20 @@ if (startDate && endDate) {
             id="endDate"
             name="endDate"
             value={filterByDateRange.endDate}
-            onChange={handleDateRangeChange}
+            onChange={(e) => setFilterByDateRange({ ...filterByDateRange, endDate: e.target.value })}
             style={{ padding: '8px', fontSize: '14px' }}
-            placeholder="MM-DD-YYYY"
           />
         </div>
-
-        {/* Location Filter */}
         <div>
           <label htmlFor="location">Title:</label>
           <input
             type="text"
             id="location"
             value={location}
-            onChange={handleLocationChange}
+            onChange={(e) => setLocation(e.target.value)}
             style={{ padding: '8px', fontSize: '14px' }}
-            placeholder="Enter location"
           />
         </div>
-
-        {/* Apply Filters Button */}
         <button
           onClick={applyFilters}
           style={{
@@ -195,8 +177,6 @@ if (startDate && endDate) {
         >
           Apply Filters
         </button>
-
-        {/* Clear Filters Button */}
         <button
           onClick={clearFilters}
           style={{

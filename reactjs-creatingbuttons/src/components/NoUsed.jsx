@@ -118,6 +118,23 @@ const TouristReport = () => {
   return (
     <div className="sales-report">
       <h2 style={{ textAlign: 'center' }}>Tourist Dashboard</h2>
+      {/* Back Button */}
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          Back
+        </button>
+      </div>
 
       {/* Line Chart Section */}
       <div className="chart-container" style={{ marginBottom: '40px' }}>

@@ -81,7 +81,9 @@ const handleViewUpcomingBookedEventsClick = () => {
   const handleViewNotificationsClick = () => {
       navigate('/Notifications');
   }; 
-
+  const handleViewOrdersClick = () => {
+    navigate('/order_list');
+}; 
 
   
  
@@ -245,6 +247,7 @@ const handleViewUpcomingBookedEventsClick = () => {
               >
                 Current Orders
               </button>
+              
 
               {isHistoryOptionsVisible && (
                 <div
@@ -290,6 +293,12 @@ const handleViewUpcomingBookedEventsClick = () => {
                     style={buttonStyle}
                   >
                     Booked Events
+                  </button>
+                  <button
+                    onClick={() => navigate('/order_list')}
+                    style={buttonStyle}
+                  >
+                    View Orders
                   </button>
 
                   
@@ -392,6 +401,8 @@ const handleViewUpcomingBookedEventsClick = () => {
 Bookmarked Events</button>
         <button onClick={handleViewNotificationsClick}>   <FontAwesomeIcon icon={faBell} style={{ marginRight: '8px' }} />
 View Notifications</button>
+<button onClick={handleViewOrdersClick}> <FontAwesomeIcon icon={faReceipt}/>
+ View All My Orders</button>
 
       </div>
 

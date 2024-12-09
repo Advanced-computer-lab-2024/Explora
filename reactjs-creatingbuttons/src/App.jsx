@@ -119,6 +119,12 @@ import { ToastContainer } from 'react-toastify';
 import UpcomingBooked from './components/UpcomingBookedEvents.jsx';
 import Past from './components/PastBookedEvents';
 import PromoCode from './components/MyPromoCodes.jsx';
+import SellerSales from './components/SellerSales.jsx';
+import Noused2 from './components/Noused2.jsx';
+import Anotification from './components/Anotification.jsx';
+import Anotification2 from './components/Anotification2.jsx';
+import AdvertiserReport from './components/AdvertiserReport.jsx';
+
 function App() {
 
   return (
@@ -239,8 +245,11 @@ function App() {
         <Route path="/UpcomingBookedEvents" element={<UpcomingBooked />} />
         <Route path="/PastBookedEvents" element={<Past />} />
         <Route path="/my-promo-codes" element={<PromoCode />} />
-        
-
+        <Route path="/seller-sales" element={<SellerSales />} />
+        <Route path="/noused2" element={<Noused2 />} />
+        <Route path="/anotification" element={<Anotification />} />
+        <Route path="/anotification2" element={<Anotification2 />} />
+        <Route path="/advertiser-report" element={<AdvertiserReport />} />
         </Routes>
       </Router>
     </main>

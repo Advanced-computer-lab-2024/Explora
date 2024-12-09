@@ -51,10 +51,9 @@ const TouristProfile = () => {
       </Link>
       {/* New button for View Cart */}
       <Link to="/view-cart">
-       <button style={buttonStyle}>View Cart</button>
+        <button style={buttonStyle}>View Cart</button>
       </Link>
 
-    
       {/* Dropdown Button for Booking */}
       <BookDropdown />
     </div>
@@ -80,7 +79,17 @@ const BookDropdown = () => {
   };
 
   return (
-    <div style={{ position: 'relative', display: 'inline-block', marginTop: '10px' }}>
+    <div style={{ position: 'relative', display: 'inline-block', marginTop: '40px' }}>
+      {/* Back Button positioned at top-left */}
+      <div style={backButtonContainerStyle}>
+        <button
+          onClick={() => navigate(-1)}
+          style={backButtonStyle}
+        >
+          Back
+        </button>
+      </div>
+
       <button onClick={toggleDropdown} style={buttonStyle}>
         Book ▼
       </button>
@@ -100,9 +109,9 @@ const BookDropdown = () => {
   );
 };
 
-// Add some basic button styling
+// Button and dropdown styles
 const buttonStyle = {
-  margin: '0 10px',
+  margin: '20px 10px',
   padding: '10px 20px',
   fontSize: '16px',
   cursor: 'pointer',
@@ -134,5 +143,22 @@ const dropdownItemStyle = {
   textAlign: 'left',
 };
 
-export default TouristProfile;
+// Style for the fixed back button container at top-left
+const backButtonContainerStyle = {
+  position: 'fixed',
+  top: '60px',  // Increased the value to move it lower
+  left: '20px',
+  zIndex: '1000', // Ensure it stays on top of other elements
+};
 
+const backButtonStyle = {
+  backgroundColor: '#008080',
+  color: 'white',
+  border: 'none',
+  padding: '10px 15px',
+  borderRadius: '5px',
+  fontSize: '14px',
+  cursor: 'pointer',
+};
+
+export default TouristProfile;

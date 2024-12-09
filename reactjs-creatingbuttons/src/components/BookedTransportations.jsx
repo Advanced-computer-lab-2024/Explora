@@ -38,7 +38,7 @@ export default function BookedTransportations() {
         {bookedTransportations.length > 0 ? (
           bookedTransportations.map((transportation) => {
             // Destructure the transportation object
-            const { transportation: details } = transportation;
+            const { transportation: details, totalPrice } = transportation;
             const formattedDate = details.date ? new Date(details.date).toLocaleDateString() : 'Date not available';
             
             return (
@@ -46,9 +46,7 @@ export default function BookedTransportations() {
                 <h2 className="activity-name">{details.method}</h2>
                 <p className="activity-date">From: {details.origin} To: {details.destination}</p>
                 <p className="activity-price">Date: {formattedDate}</p>
-                <p className="activity-rating">Price: {details.currency} {details.price}</p>
-                
-               
+                <p className="activity-rating">Total Price: {details.currency} {totalPrice}</p>
               </div>
             );
           })

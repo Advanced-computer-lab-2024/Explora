@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import OrderDetails from './OrderDetails '; // Make sure there's no extra space here
+import { useNavigate } from 'react-router-dom';
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [error, setError] = useState(null);
-  //const touristId = "67322cdfa472e2e7d22de84a";
+  const navigate = useNavigate(); // Initialize navigate
   const touristId = localStorage.getItem('userId') || '';
 
   useEffect(() => {
@@ -14,60 +15,79 @@ const OrderList = () => {
   }, []);
 
   const fetchOrders = async () => {
-    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
-
-      if (!touristId) {
-        setMessage('User not logged in. Please log in first.');
-        return;
-      }
+    if (!touristId) {
+      setError('User not logged in. Please log in first.');
+      return;
+    }
     try {
       const response = await axios.get(`http://localhost:4000/orders/${touristId}`);
-      console.log(response.data); // Check the structure of response
+      console.log(response.data);
 
       if (response.data && Array.isArray(response.data.orders)) {
-        setOrders(response.data.orders); // Update state with orders
+        setOrders(response.data.orders);
       } else {
         setError('No orders found for this tourist.');
       }
     } catch (err) {
-      setError("Failed to load orders.");
+      setError('Failed to load orders.');
       console.error('Error fetching orders:', err);
     }
   };
 
   const cancelOrder = async (orderId) => {
-    const touristId = localStorage.getItem('userId');  // Dynamically get userId from localStorage
-
-      if (!touristId) {
-        setMessage('User not logged in. Please log in first.');
-        return;
-      }
+    if (!touristId) {
+      setError('User not logged in. Please log in first.');
+      return;
+    }
     try {
       await axios.put(`http://localhost:4000/orders/cancel/${orderId}`);
-      fetchOrders(); // Re-fetch orders to update the list
+      fetchOrders();
     } catch (err) {
-      setError("Failed to cancel the order.");
+      setError('Failed to cancel the order.');
       console.error('Error canceling order:', err);
     }
   };
 
   const viewOrderDetails = (order) => {
-    console.log('Selected Order:', order); // Debugging the selected order
+    console.log('Selected Order:', order);
     setSelectedOrder(order);
   };
 
   return (
-    <div>
-      <h1>Orders</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      <ul>
+    <div style={styles.container}>
+      <h1 style={styles.header}>Orders</h1>
+      {error && <p style={styles.error}>{error}</p>}
+      
+      {/* Back Button */}
+      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-start' }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+          }}
+        >
+          Back
+        </button>
+      </div>
+
+      <ul style={styles.orderList}>
         {(orders || []).map((order) => (
-          <li key={order._id}>
+          <li key={order._id} style={styles.orderItem}>
+            <p><strong>Order ID:</strong> {order._id}</p>
+            <p><strong>Total Price:</strong> ${order.totalPrice.toFixed(2)}</p>
             <p><strong>Status:</strong> {order.orderStatus}</p>
-            <button onClick={() => viewOrderDetails(order)}>View Details</button>
-            {order.orderStatus !== 'delivered' && (
-              <button onClick={() => cancelOrder(order._id)}>Cancel</button>
-            )}
+            <div style={styles.buttonGroup}>
+              <button style={styles.button} onClick={() => viewOrderDetails(order)}>View Details</button>
+              {order.orderStatus !== 'delivered' && (
+                <button style={{ ...styles.button, ...styles.cancelButton }} onClick={() => cancelOrder(order._id)}>Cancel</button>
+              )}
+            </div>
           </li>
         ))}
       </ul>
@@ -77,6 +97,55 @@ const OrderList = () => {
       )}
     </div>
   );
+};
+
+const styles = {
+  container: {
+    fontFamily: 'Arial, sans-serif',
+    margin: '20px',
+    padding: '20px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  },
+  header: {
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: '20px',
+  },
+  error: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: '10px',
+  },
+  orderList: {
+    listStyleType: 'none',
+    padding: 0,
+  },
+  orderItem: {
+    padding: '15px',
+    marginBottom: '10px',
+    backgroundColor: '#fff',
+    border: '1px solid #ddd',
+    borderRadius: '5px',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+  },
+  buttonGroup: {
+    marginTop: '10px',
+  },
+  button: {
+    padding: '10px 15px',
+    margin: '5px',
+    backgroundColor: '#28a745',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+  },
 };
 
 export default OrderList;

@@ -180,6 +180,19 @@ cron.schedule('44 21 * * *', () => {
     createTouristPromoCodesAutomatically(); // No need to pass `io` anymore
 });
 
+const deleteExpiredCodes = async () => {
+    try {
+        const today = new Date();
+        const result = await TouristPromoCode.deleteMany({ expiryDate: { $lt: today } });
+        console.log(`Deleted ${result.deletedCount} expired promo codes.`);
+    } catch (error) {
+        console.error('Error deleting expired promo codes:', error);
+    }
+};
+
+cron.schedule('33 03 * * *', () => {
+    deleteExpiredCodes();
+})
 
 // Export the router
 module.exports = router;
