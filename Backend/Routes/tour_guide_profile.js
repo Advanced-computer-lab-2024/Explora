@@ -10,6 +10,9 @@ const bcrypt = require('bcrypt');
 const {generateToken} = require('../middleware/AuthMiddleware');
 const jwt = require('jsonwebtoken');
 const { profile } = require('console');
+const Bookings = require('../models/Book');
+const Tourist = require('../models/touristModel');
+const Book = require('../models/Book');
 
 // create json web token
 const maxAge = 3 * 24 * 60 * 60;
@@ -292,6 +295,54 @@ router.put('/comment/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/reports/tourists/:tourGuideId', async (req, res) => {
+  const { tourGuideId } = req.params;
+
+  // Validate tourGuideId
+  if (!mongoose.Types.ObjectId.isValid(tourGuideId)) {
+      return res.status(400).json({ message: "Invalid tourGuideId format" });
+  }
+
+  try {
+      // Log the tourGuideId for debugging
+      console.log("Received tourGuideId:", tourGuideId);
+
+      // Aggregate total tourists for itineraries by the guide
+      const report = await Tourist.aggregate([
+          {
+              $lookup: {
+                  from: 'itineraries', // Ensure this matches your collection name
+                  localField: 'tours', // Assuming the 'tours' field references itineraries
+                  foreignField: '_id',
+                  as: 'itineraryDetails',
+              },
+          },
+          { $unwind: '$itineraryDetails' }, // Unwind the itineraryDetails to access individual itinerary
+          {
+              $match: {
+                  'itineraryDetails.tourGuideId': new mongoose.Types.ObjectId(tourGuideId),
+              },
+          },
+          {
+              $group: {
+                  _id: '$itineraryDetails._id', // Group by itinerary ID
+                  itineraryName: { $first: '$itineraryDetails.name' }, // Assuming 'name' is the itinerary name field
+                  totalTourists: { $sum: 1 }, // Count the number of tourists for this itinerary
+              },
+          },
+          {
+              $sort: { itineraryName: 1 }, // Sort by itinerary name (optional)
+          }
+      ]);
+
+      // Send the aggregated result as JSON
+      res.status(200).json(report);
+  } catch (error) {
+      console.error("Error in generating report:", error.message);
+      res.status(500).json({ message: 'Error generating report', error: error.message });
   }
 });
 

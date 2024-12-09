@@ -23,17 +23,7 @@ const AdvActivity1 = () => {
       >
         Create Activity
       </button>
-      <button
-        style={{
-          width: '250px',
-          height: '60px',
-          margin: '10px',
-          fontSize: '16px',
-        }}
-        onClick={() => navigate('/list')}
-      >
-        View Activities
-      </button>
+    
     </header>
   );
 };

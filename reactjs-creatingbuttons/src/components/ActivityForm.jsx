@@ -13,7 +13,6 @@ const ActivityForm = () => {
         discount: '',
         bookingOpen: false,
     });
-    const id = "6703f74592c1cac4108a7481";
 
     const [categories, setCategories] = useState([]);
     const [tags, setTags] = useState([]);
@@ -58,9 +57,17 @@ const ActivityForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const advertiserId = localStorage.getItem('userId');
+        if (!advertiserId) {
+            setMessage('Advertiser ID is missing. Please log in first.');
+            return;
+        }
+
         try {
             // Prepare the data
             const data = {
+                advertiserId,
                 name: formData.name,
                 date: formData.date,
                 time: formData.time,
@@ -76,7 +83,7 @@ const ActivityForm = () => {
             console.log('Data to be sent to server:', data);
 
             // Send data to the backend
-            const response = await axios.post(`http://localhost:4000/Activity/create/${id}`, data, {
+            const response = await axios.post(`http://localhost:4000/Activity/create/${advertiserId}`, data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

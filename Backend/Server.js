@@ -3,6 +3,9 @@ require('dotenv').config();
 
 const express = require("express");
 const path = require('path');
+const http = require('http');
+const socketIo = require('socket.io');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { authenticateUser } = require('./middleware/AuthMiddleware');
@@ -30,12 +33,24 @@ const transBookRoutes = require('./Routes/transportationBook'); // Adjust the pa
 const flightRoutes = require('./Routes/flightRoutes'); // Adjust the path as needed
 const hotelRoutes = require('./Routes/hotelRoutes');
 const complaintsRoute = require('./Routes/ComplaintsRoutes');
-
+const salesRoutes = require('./Routes/tour_guide_sales');
+const notificationsRoute = require('./Routes/notification');
+const bookingTicket = require('./Routes/book');
+const touristReport = require('./Routes/tour_guide_tourist');
+const touristReport2 = require('./Routes/advertiser_tourist');
+const bookingTicket2 = require('./Routes/book2');
+const salesx = require('./Routes/advertiser_sales');
+const purchase = require('./Routes/purchase');
+const sellersales = require('./Routes/seller_sales');
+const anotificationRoute = require('./Routes/anotification');
+const sellnot = require('./Routes/anotification2');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
 
 // Express application
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server); // Set up socket.io
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
@@ -73,7 +88,24 @@ app.use('/flights', flightRoutes);   // For managing profiles
 app.use('/hotels', hotelRoutes);
 app.use('/complaints',complaintsRoute);
 app.use('/Activity', AdvertiserActivityRoutes);
-
+app.use('/api', salesRoutes);
+app.use('/api/notifications', notificationsRoute);  // Mount the route
+app.use('/ticket', bookingTicket);
+app.use('/api/report', touristReport);
+app.use('/api/report2', touristReport2);
+app.use('/ticketact', bookingTicket2);
+app.use('/api', salesx);
+app.use('/buy', purchase);
+app.use('/api', sellersales);
+app.use('/api/anotifications', anotificationRoute);
+app.use('/api/anotifications2', sellnot);
+// Handle socket connection
+io.on('connection', (socket) => {
+  console.log('A user connected');
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
 
 //connect to MongoDB
 console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded

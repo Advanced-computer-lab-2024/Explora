@@ -4,6 +4,17 @@ const router = express.Router();
 const Itinerary = require('../models/Tour_Guide_Itinerary');
 const jwt = require('jsonwebtoken');
 const { checkAdmin } = require('../middleware/AuthMiddleware');
+const socket = require('socket.io-client');
+let io; // The Socket.IO instance
+const nodemailer = require('nodemailer');
+const Notification = require('../models/Notification'); // Import Notification model
+const TourGuide = require('../models/Tour_Guide_Profile');
+const Book = require('../models/Book');
+
+// Set the socket.io instance after a successful connection
+const setIo = (_io) => {
+  io = _io;
+};
 
 // Middleware to verify JWT and get the user from token
 const auth = (req, res, next) => {
@@ -18,8 +29,6 @@ const auth = (req, res, next) => {
     res.status(401).json({ msg: 'Token is not valid' });
   }
 };
-
-
 
 // Sort itineraries by price (high to low or low to high)
 router.get('/sortprice', async (req, res) => {
@@ -147,7 +156,7 @@ router.get('/search', async (req, res) => {
 });
 
 // GET all itineraries
-router.get('/', async (req, res) => {
+router.get('/all', async (req, res) => {
     try {
         const itineraries = await Itinerary.find();
         res.json(itineraries);
@@ -158,10 +167,10 @@ router.get('/', async (req, res) => {
 });
 
 // Example: Fetch itineraries for tourists/guests
-router.get('/', async (req, res) => {
+router.get('/flag', async (req, res) => {
   try {
     // Get itineraries excluding flagged ones
-    const itineraries = await TourGuideItinerary.find({ flagged: false });
+    const itineraries = await Itinerary.find({ flagged: false });
     
     res.status(200).json(itineraries);
   } catch (error) {
@@ -190,6 +199,7 @@ router.get('/tag/:tag', async (req, res) => {
 router.post('/', async (req, res) => {
   const {
     tourGuideName,
+    tourGuideId, // Received from the frontend
     activities,
     locations,
     timeline,
@@ -201,13 +211,14 @@ router.post('/', async (req, res) => {
     accessibility,
     pickupLocation,
     dropoffLocation,
-    hasBookings, 
-    tags
+    hasBookings,
+    tags,
   } = req.body;
 
   try {
     const newItinerary = new Itinerary({
       tourGuideName,
+      tourGuideId,
       activities,
       locations,
       timeline,
@@ -219,18 +230,17 @@ router.post('/', async (req, res) => {
       accessibility,
       pickupLocation,
       dropoffLocation,
-      hasBookings, 
-      tags
+      hasBookings,
+      tags,
     });
 
     await newItinerary.save();
-    res.status(201).json(newItinerary); // Return created status
+    res.status(201).json(newItinerary);
   } catch (error) {
     console.error('Error creating itinerary:', error);
     res.status(500).send('Server create error');
   }
 });
-
 
 router.get('/filter', async (req, res) => {
   const { price, date, tags, language } = req.query;
@@ -283,6 +293,35 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.get('/', async (req, res) => {
+  // Get tourGuideId from query parameters
+  const { tourGuideId } = req.query;
+
+  // Check if tourGuideId exists in the query
+  if (!tourGuideId) {
+    return res.status(400).json({ msg: 'Tour guide ID is required' });
+  }
+
+  // Validate the ObjectId format
+  if (!mongoose.Types.ObjectId.isValid(tourGuideId)) {
+    return res.status(400).json({ msg: 'Invalid tour guide ID format' });
+  }
+
+  try {
+    // Query the itineraries created by the specified tour guide using 'tourGuideId'
+    const itineraries = await Itinerary.find({ tourGuideId: tourGuideId });
+
+    // Check if any itineraries were found
+    if (!itineraries || itineraries.length === 0) {
+      return res.status(404).json({ msg: 'No itineraries found for this tour guide' });
+    }
+
+    // Return the itineraries
+    res.json(itineraries);
+  } catch (error) {
+    res.status(500).json({ msg: 'Error fetching itineraries', error: error.message });
+  }
+});
 
 // Update an itinerary
 router.put('/:id', async (req, res) => {
@@ -459,12 +498,25 @@ router.put('/comment/:id', async (req, res) => {
   }
 });
 
+// Create a transporter for sending emails (ensure you use app-specific passwords if required)
+const transporter = nodemailer.createTransport({
+  service: 'Gmail', // Using Gmail as the email service
+  auth: {
+    user: 'explora.donotreply@gmail.com',
+    pass: 'goiz pldj kpjy clsh' // Use app-specific password if required
+  },
+  tls: {
+    rejectUnauthorized: false, // This will allow self-signed certificates
+  }
+});
+
 // Flagging and unflagging the itinerary
 router.patch('/:id/flag', async (req, res) => {
   const { id } = req.params;
+
   try {
-    // Find itinerary by ID
-    const itinerary = await Itinerary.findById(id);
+    // Find itinerary by ID and populate the tourGuideId field
+    const itinerary = await Itinerary.findById(id).populate('tourGuideId');
     if (!itinerary) {
       return res.status(404).json({ message: 'Itinerary not found' });
     }
@@ -472,8 +524,37 @@ router.patch('/:id/flag', async (req, res) => {
     // Toggle the flagged status
     itinerary.flagged = !itinerary.flagged;
     await itinerary.save();
-    
+
+    // If the itinerary has been flagged, notify the tour guide
+    if (itinerary.flagged) {
+      // Create a notification for the itinerary owner (tour guide)
+      await Notification.create({
+        userId: itinerary.tourGuideId._id, // Assuming 'tourGuideId' points to a User
+        message: `Your itinerary "${itinerary.locations}" has been flagged.`,
+        itineraryId: id,
+      });
+
+      // Send email notification to the itinerary owner
+      const mailOptions = {
+        from: 'explora.donotreply@gmail.com',
+        to: itinerary.tourGuideId.email, // Use the populated email from the tour guide
+        subject: 'Itinerary has been Flagged',
+        text: `Dear ${itinerary.tourGuideName},\n\nYour itinerary titled "${itinerary.locations}" has been flagged.\nPlease review it.`,
+      };
+
+      // Send the email
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+    }
+
+    // Respond with a success message
     res.status(200).json({ message: `Itinerary ${itinerary.flagged ? 'flagged' : 'unflagged'} successfully` });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

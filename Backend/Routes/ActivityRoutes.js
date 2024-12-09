@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const {
     createActivity,
     filterActivities,
@@ -12,6 +13,7 @@ const {
     sortActivitiesByPrice,
     sortActivitiesByRating,
 } = require('../controllers/activityController'); // Import the activity controller
+const Activity = require("../models/Activity");
 
 
 // Create an activity

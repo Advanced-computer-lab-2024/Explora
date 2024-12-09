@@ -15,6 +15,11 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ msg: 'Invalid username' });
         }
 
+        // Check if the user is rejected (if status is rejected, they cannot login)
+        if (user.status === 'Rejected') {
+            return res.status(400).json({ msg: 'Your account has been rejected. You cannot log in.' });
+        }
+
         // Compare the provided password with the stored hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -36,7 +41,11 @@ router.post('/', async (req, res) => {
             { expiresIn: '100h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, role: user.role });
+                res.json({
+                    token,
+                    role: user.role,
+                    userId: user._id  // Send userId in the response
+                });
             }
         );
 

@@ -1,4 +1,3 @@
-// ProductCardTourist.jsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -10,6 +9,9 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [message, setMessage] = useState('');
     const [userRating, setUserRating] = useState(0); // State for user's selected rating
     const [userReview, setUserReview] = useState(''); // State for review text
+    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token');
+  
 
     // Handle the edit button click
     const handleEditClick = () => {
@@ -45,6 +47,43 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
         }
     };
 
+    // Function to handle the buy product action
+    const handleBuyProduct = () => {
+        const quantity = 1; // Default quantity set to 1
+        
+        fetch('http://localhost:4000/buy/purchase', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userId: localStorage.getItem('userId'), // Retrieve userId from localStorage
+                productId: product._id, // Use product._id directly
+                quantity, // Quantity of the product
+            }),
+        })
+        .then((response) => {
+            if (!response.ok) {
+                return response.json().then((error) => {
+                    throw new Error(error.message || 'Failed to purchase product');
+                });
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log('Purchase successful:', data);
+            alert(`Product "${product.name}" has been successfully purchased!`);
+            
+            // Optionally update the product quantity locally
+           
+        })
+        .catch((error) => {
+            console.error('Error buying product:', error);
+            alert('Error buying product: ' + error.message);
+        });
+    };
+    
+    
     // Separate function to submit a rating
     const handleRatingSubmit = async () => {
         if (userRating === 0) {
@@ -86,8 +125,6 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
             const reviewData = {
                 user: '672404b5711f4330c4103753', // Replace with logged-in user's info if available
                 comment: userReview,
-                // Optionally include a rating if your UI allows it
-                // rating: userRatingForReview
             };
 
             const response = await axios.post(`http://localhost:4000/Products/addReview/${product._id}`, reviewData);
@@ -214,6 +251,11 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                     ))
                 )}
             </div>
+
+            {/* Add Buy Button */}
+            <button onClick={handleBuyProduct} className="buy-button">
+                Buy Product
+            </button>
         </div>
     );
 };

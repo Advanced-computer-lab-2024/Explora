@@ -16,6 +16,7 @@ const { registerUser,
         viewRequests,
         filterByStatus,
         changePassword,
+        updateLoyaltyPoints,
         deleteUser
     } = require('../controllers/userController'); // Import the controller
 
@@ -40,6 +41,6 @@ router.get('/Tax/:id', downloadTaxFile )
 router.put('/updateStatus/:id', updateStatus);
 router.post('/change-password', changePassword); // New route for changing password
 router.delete('/:id', deleteUser); // New route for deleting user
-
+router.put('/', updateLoyaltyPoints);
 
 module.exports = router;

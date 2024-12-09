@@ -3,41 +3,40 @@
 const express = require('express');
 const router = express.Router();
 const Activity = require('../models/Activity');
+const Notification = require('../models/Anotification');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 const ActivityCategory = require('../models/ActivityCategory'); // Import your ActivityCategory model
 const PrefrenceTag = require('../models/PrefrenceTag');
 const mongoose = require('mongoose');
 
 // Create an activity
 router.post('/create/:categoryName', async (req, res) => {
-    // Extract the category name from request parameters
     const { categoryName } = req.params;
+    const { advertiserId, name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
 
-    // Extract other activity details from the request body
-    const { name, date, time, rating, location, price, tags, specialDiscounts, bookingOpen } = req.body;
-    const advertiserId = req.user.id; 
+    if (!advertiserId) {
+        return res.status(400).json({ message: 'Advertiser ID is required.' });
+    }
 
     try {
-        const activity = await Activity.findOne({ name, date, time, location });
-        if (activity) {
+        const activityExists = await Activity.findOne({ name, date, time, location });
+        if (activityExists) {
             return res.status(400).json({ message: 'Activity already exists.' });
         }
-        // Find the category by name
-        const category = await ActivityCategory.findOne({ activityType: categoryName });
 
-        // If the category is not found, return an error
+        const category = await ActivityCategory.findOne({ activityType: categoryName });
         if (!category) {
             return res.status(404).json({ message: 'Category not found.' });
         }
 
         const prefTags = await PrefrenceTag.find({ tag: { $in: tags } });
-
-
         if (prefTags.length !== tags.length) {
             return res.status(400).json({ message: 'One or more tags are invalid.' });
         }
 
-        // Create a new activity instance
         const newActivity = new Activity({
+            advertiserId, // Set the advertiser ID from request body
             name,
             date,
             time,
@@ -45,7 +44,7 @@ router.post('/create/:categoryName', async (req, res) => {
             location,
             price,
             category: category._id,
-            tags: prefTags.map(tag => tag._id), 
+            tags: prefTags.map(tag => tag._id),
             specialDiscounts,
             bookingOpen,
         });
@@ -166,6 +165,23 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Route to get activities by advertiser ID
+router.get('/act/:advertiserId', async (req, res) => {
+  try {
+    const advertiserId = req.params.advertiserId;
+
+    // Find all activities associated with the advertiser
+    const activities = await Activity.find({ 
+      advertiserId,
+      isDeleted: false, // Exclude deleted activities
+    }).populate('category tags');
+
+    res.status(200).json(activities);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching activities.' });
+  }
+});
 
 // Update an activity
 router.put('/:id', async (req, res) => {
@@ -301,33 +317,67 @@ router.get('/', async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 });
-
+const transporter = nodemailer.createTransport({
+    service: 'Gmail', // Using Gmail as the email service
+    auth: {
+      user: 'explora.donotreply@gmail.com',
+      pass: 'goiz pldj kpjy clsh' // Use app-specific password if required
+    },
+    tls: {
+      rejectUnauthorized: false, // This will allow self-signed certificates
+    }
+  });
 // Flagging and unflagging the activity
 router.patch('/:id/flag', async (req, res) => {
-    try {
-      const activityId = req.params.id;
-      
-      // Find the activity first to check existence and current flag status
-      const activity = await Activity.findById(activityId);
+    const { id } = req.params;
   
+    try {
+      // Find itinerary by ID and populate the tourGuideId field
+      const activity = await Activity.findById(id).populate('advertiserId');
       if (!activity) {
-        return res.status(404).json({ message: 'Activity not found' });
+        return res.status(404).json({ message: 'act not found' });
       }
   
-      // Toggle flagged status
-      const updatedActivity = await Activity.findByIdAndUpdate(
-        activityId,
-        { flagged: !activity.flagged },
-        { new: true, runValidators: false }
-      );
+      // Toggle the flagged status
+      activity.flagged = !activity.flagged;
+      await activity.save();
   
-      res.json({ message: 'Flag status updated successfully', activity: updatedActivity });
-    } catch (err) {
-      console.error('Error updating flag status:', err);
-      res.status(500).json({ message: 'Failed to update flag status' });
+      // If the itinerary has been flagged, notify the tour guide
+      if (activity.flagged) {
+        // Create a notification for the itinerary owner (tour guide)
+        await Notification.create({
+          userId: activity.advertiserId._id, // Assuming 'tourGuideId' points to a User
+          message: `Your activity "${activity.location}" has been flagged.`,
+          activityId: id,
+        });
+  
+        // Send email notification to the itinerary owner
+        const mailOptions = {
+          from: 'explora.donotreply@gmail.com',
+          to: activity.advertiserId.email, // Use the populated email from the tour guide
+          subject: 'Activity has been Flagged',
+          text: `Dear advertiser,\n\nYour itinerary titled "${activity.location}" has been flagged.\nPlease review it.`,
+        };
+  
+        // Send the email
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+          } else {
+            console.log('Email sent:', info.response);
+          }
+        });
+      }
+  
+      // Respond with a success message
+      res.status(200).json({ message: `Activity ${activity.flagged ? 'flagged' : 'unflagged'} successfully` });
+  
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   });
   
+
 // Example: Fetch activities for tourists/guests
 router.get('/', async (req, res) => {
     try {
