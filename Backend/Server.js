@@ -47,7 +47,7 @@ const advertiserTourist = require('./Routes/advertiser_tourist');  // Import Adv
 const anotification = require('./Routes/anotification');  // Import Anotification route
 const anotification2 = require('./Routes/anotification2');  // Import Anotification2 route
 const book2 = require('./Routes/book2');  // Import Book2 route
-//const purchase = require('./Routes/purchase');  // Import Purchase route
+const purchase = require('./Routes/purchase');  // Import Purchase route
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false); // Disable strict query
 
@@ -106,7 +106,7 @@ app.use('/api/advertiser_tourist', advertiserTourist);  // Register the Advertis
 app.use('/api/anotification', anotification);  // Register the Anotification route
 app.use('/api/anotification2', anotification2);  // Register the Anotification2 route
 app.use('/api/ticketact', book2);  // Register the Book2 route
-//app.use('/api/buy', purchase);  // Register the Purchase route
+app.use('/api/buy', purchase);  // Register the Purchase route
 app.use('/promoCode', promoCodeRoutes);
 
 // Handle socket connection

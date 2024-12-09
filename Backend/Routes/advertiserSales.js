@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
   try {
     const sales = await AdvertiserSale.find({ advertiserId })
       .populate('touristId', 'username email')  // Populate tourist information
-      .populate('activityId', 'title description price')  // Populate activity details
+      .populate('activityId', 'name description price')  // Populate activity details
      
 
     if (sales.length === 0) {

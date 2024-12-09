@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; // Import axios
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 
 
 const UpcomingActivities = () => {
@@ -23,6 +24,7 @@ const UpcomingActivities = () => {
   const [enteredPromocode, setEnteredPromocode] = useState('');
   const [enteredPromocodeCredit, setEnteredPromocodeCredit] = useState('');
  const [errorMessage, setErrorMessage] = useState('');
+ const navigate = useNavigate();
  const [loading, setLoading] = useState(true); // Loading state
   useEffect(() => {
     const savedPoints = localStorage.getItem('loyaltyPoints');
@@ -279,6 +281,24 @@ if (error) return <div>Error: {error}</div>;
  
   return (
     <div className="upcoming-activities">
+            <button
+        onClick={() => navigate(-1)} // Use navigate to go back
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Go Back
+      </button>
+
       <h1 className="header">Upcoming Activities</h1>
       <div className="activities-list">
         {places.map((place) => (

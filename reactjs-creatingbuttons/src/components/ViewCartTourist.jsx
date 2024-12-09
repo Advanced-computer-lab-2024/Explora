@@ -106,9 +106,28 @@ const ViewCartTourist = () => {
 
   return (
     <div style={styles.container}>
+            <button
+        onClick={() => navigate(-1)} // Use navigate to go back
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Go Back
+      </button>
+
       <h2 style={styles.heading}>Your Cart</h2>
       {cartItems.length > 0 ? (
         <div style={styles.cartItems}>
+          
           {cartItems.map((item) => {
             const imageUrl = "http://localhost:4000/" + item.productId.image;
             return (
