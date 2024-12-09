@@ -19,6 +19,8 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
     const [isInWishlist, setIsInWishlist] = useState(false); // Wishlist state
     const [showModal, setShowModal] = useState(false); // State for modal visibility
     const [heartIcon, setHeartIcon] = useState(faHeart); // Initial heart icon color
+    const imageUrl = product.image.startsWith('http') ? product.image : `http://localhost:4000/${product.image}`;
+
     const heartIconStyle = {
         transition: 'color 0.3s ease', // Smooth transition for color change
         color: isInWishlist ? 'red' : 'black' // Red heart when in wishlist, black when not
@@ -250,8 +252,7 @@ const ProductCardTourist = ({ product, products, setProducts }) => {
                     }
                 `}
             </style>
-            <img src={product.image} alt={product.name} className="product-image" />
-            
+            <img src={imageUrl} alt={product.name} className="product-image" />
             {isEditing ? (
                 <>
                     <input

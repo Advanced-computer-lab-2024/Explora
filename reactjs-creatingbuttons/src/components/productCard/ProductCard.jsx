@@ -10,7 +10,7 @@ const ProductCard = ({ product, onArchive }) => {
     const [editedDescription, setEditedDescription] = useState(product.description);
     const [message, setMessage] = useState('');
     const [products, setProducts] = useState([]);
-
+    const imageUrl = product.image.startsWith('http') ? product.image : `http://localhost:4000/${product.image}`;
     // Handle the edit button click
     const handleEditClick = () => {
         setIsEditing(true);
@@ -78,7 +78,7 @@ const ProductCard = ({ product, onArchive }) => {
 
     return (
         <div className="product-card">
-            <img src={product.image} alt={product.name} className="product-image" />
+            <img src={imageUrl} alt={product.name} className="product-image" />
 
             {isEditing ? (
                 <>

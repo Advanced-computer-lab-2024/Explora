@@ -11,9 +11,7 @@ import { Link } from 'react-router-dom';
 import logo from '../assets/cropped_image.png';
 import { faReceipt } from '@fortawesome/free-solid-svg-icons';
 import { faBookmark , faBell} from '@fortawesome/free-solid-svg-icons';
-import { useState , useEffect } from 'react';
-
-
+import { useEffect, useState } from 'react';
 
 
 export default function Touristhome() {
