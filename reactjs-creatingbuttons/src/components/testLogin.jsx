@@ -91,7 +91,7 @@ const LoginForm = () => {
 
         <div className="login-form-links">
           <p>
-            <Link to="/change-password">Forgot password?</Link>
+            <Link to="/forget_password">Forgot password?</Link>
           </p>
           <p>
             <Link to="/guest-home" className="link">Continue as a guest</Link>

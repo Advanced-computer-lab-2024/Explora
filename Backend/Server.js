@@ -104,6 +104,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 });
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 //connect to MongoDB
 console.log('Mongo URI:', process.env.MONGO_URI); // Log the URI to check if it is correctly loaded
