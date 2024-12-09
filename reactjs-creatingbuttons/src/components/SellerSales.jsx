@@ -33,7 +33,7 @@ const SellerSales = () => {
         setFilteredSales(sales || []);
         setTotalRevenue(sales.reduce((sum, sale) => sum + sale.amount, 0));
       } catch (err) {
-        setError('Failed to fetch sales data.');
+        setError('No sales');
       } finally {
         setLoading(false);
       }

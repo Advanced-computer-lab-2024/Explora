@@ -13,6 +13,7 @@ const stripe = require('stripe')(process.env.STRIPE_API_SECRET);
 const cron = require('node-cron');
 const moment = require('moment');
 const Notification = require('../models/notification');
+const Sales = require('../models/Advertiser_Sales');
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // Or another email service
     auth: {
@@ -276,6 +277,7 @@ router.get('/bookedActivities/:id', async (req, res) => {
 });
 
 //http://localhost:4000/api/activity/bookWallet
+// http://localhost:4000/api/activity/bookWallet
 router.post('/bookWallet', async (req, res) => {
     const { touristId, activityId, promoCode } = req.body;
 
@@ -323,14 +325,18 @@ router.post('/bookWallet', async (req, res) => {
             await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
         }
 
-        // Check if the tourist has enough balance in their wallet
         if (tourist.wallet < totalPrice) {
             return res.status(400).json({ message: 'Insufficient funds in wallet' });
         }
 
-        // Deduct the price from the tourist's wallet
-        tourist.wallet -= totalPrice;
-        await tourist.save(); // Save the updated tourist to the database
+        let loyaltyPoints;
+        if (tourist.loyaltyLevel === 1) {
+            loyaltyPoints = totalPrice * 0.5;
+        } else if (tourist.loyaltyLevel === 2) {
+            loyaltyPoints = totalPrice * 1;
+        } else {
+            loyaltyPoints = totalPrice * 1.5;
+        }
 
         // Create a new booked activity
         const bookedActivity = new BookedActivity({
@@ -344,10 +350,34 @@ router.post('/bookWallet', async (req, res) => {
             price: totalPrice,
             category: activity.category,
             tags: activity.tags,
+            advertiserId: activity.advertiserId, // Set the advertiserId from the activity
         });
+
+        const sale = new Sales({
+            advertiserId: activity.advertiserId, // Get the advertiser from the activity
+            activityId: activity._id,
+            touristId: tourist._id,
+            amount: totalPrice,
+        });
+
+        console.log('Sales entry created:', sale);
+        console.log('loyaltyPoints:', tourist.loyaltyPoints);
+        await sale.save(); // Save the sales record
 
         // Save the booked activity
         const savedBooking = await bookedActivity.save();
+
+        // Update the tourist's wallet and loyalty points
+        tourist.wallet -= totalPrice;
+        tourist.loyaltyPoints += loyaltyPoints;
+        tourist.loyaltyLevel =
+            tourist.loyaltyPoints > 500000
+                ? 3
+                : tourist.loyaltyPoints > 100000
+                ? 2
+                : 1;
+
+        await tourist.save();
 
         // Send a booking receipt email to the tourist
         const mailOptions = {
@@ -365,7 +395,14 @@ router.post('/bookWallet', async (req, res) => {
             }
         });
 
-        res.status(201).json(savedBooking);
+        res.status(201).json({
+            savedBooking,
+            message: 'Booking and sale recorded successfully',
+            bookedActivity,
+            sale,
+            loyaltyPoints: tourist.loyaltyPoints,
+        });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error creating booking', error: err.message });
@@ -676,7 +713,7 @@ router.get('/', async (req, res) => {
     }
   });  
 
-  // http://localhost:4000/api/activity/bookStripe
+//http://localhost:4000/api/activity/bookStripe
 router.post('/bookStripe', async (req, res) => {
     const { touristId, activityId, frontendUrl, promoCode } = req.body;
 
@@ -724,6 +761,16 @@ router.post('/bookStripe', async (req, res) => {
             await TouristPromoCode.deleteOne({ tourist: touristId, code: promoCode });
         }
 
+        // Calculate loyalty points based on the tourist's loyalty level
+        let loyaltyPoints;
+        if (tourist.loyaltyLevel === 1) {
+            loyaltyPoints = totalPrice * 0.5;
+        } else if (tourist.loyaltyLevel === 2) {
+            loyaltyPoints = totalPrice * 1;
+        } else {
+            loyaltyPoints = totalPrice * 1.5;
+        }
+
         // Create a payment intent with Stripe
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
@@ -732,17 +779,17 @@ router.post('/bookStripe', async (req, res) => {
                     price_data: {
                         currency: 'usd',
                         product_data: {
-                            name: `${activity.name}`, // Fixed string interpolation
-                            description: `${activity.location}`, // Fixed string interpolation
+                            name: `${activity.name}`,
+                            description: `${activity.location}`,
                         },
-                        unit_amount: Math.round(totalPrice * 100), // Converted to cents
+                        unit_amount: Math.round(totalPrice * 100),
                     },
                     quantity: 1,
                 },
             ],
             mode: 'payment',
-            success_url: `${frontendUrl}/UpcomingBookedEvents?session_id={CHECKOUT_SESSION_ID}&touristId=${touristId}&activityId=${activityId}`, // Fixed string interpolation and URL closing
-            cancel_url: `${frontendUrl}/UpcomingBookedEvents`, // Fixed URL closing
+            success_url: `${frontendUrl}/UpcomingBookedEvents?session_id={CHECKOUT_SESSION_ID}&touristId=${touristId}&activityId=${activityId}`, // Including session ID and other details in URL
+            cancel_url: `${frontendUrl}/UpcomingBookedEvents`, // Redirect to the same URL for cancellation
             metadata: {
                 touristId,
                 activityId,
@@ -766,18 +813,51 @@ router.post('/bookStripe', async (req, res) => {
             price: totalPrice,
             category: activity.category,
             tags: activity.tags,
-            paymentIntentId: session.id, // Store the Stripe session ID for reference
+            paymentIntentId: session.id,
+            advertiserId: activity.advertiserId, // Set the advertiserId from the activity
         });
+
+        const sale = new Sales({
+            advertiserId: activity.advertiserId, // Get the advertiser from the activity
+            activityId: activity._id,
+            touristId: tourist._id,
+            amount: totalPrice,
+        });
+        await sale.save(); // Save the sales record
+        tourist.loyaltyPoints += loyaltyPoints;
+        tourist.loyaltyLevel =
+          tourist.loyaltyPoints > 500000
+            ? 3
+            : tourist.loyaltyPoints > 100000
+            ? 2
+            : 1;
+        await tourist.save();
+    
+        console.log('Sales entry created:', sale);
+        console.log('loyaltyPoints:', loyaltyPoints);
+        await sale.save(); // Save the sales record
 
         // Save the booked activity
         const savedBooking = await bookedActivity.save();
+        
+        // Update tourist's wallet and loyalty points
+        tourist.wallet -= totalPrice;
+        tourist.loyaltyPoints += loyaltyPoints;
+        tourist.loyaltyLevel =
+            tourist.loyaltyPoints > 500000
+                ? 3
+                : tourist.loyaltyPoints > 100000
+                ? 2
+                : 1;
+
+        await tourist.save();
 
         // Send a booking receipt email to the tourist
         const mailOptions = {
             from: 'explora.donotreply@gmail.com', // Sender address
             to: touristEmail, // Dynamic email based on the tourist's record
             subject: 'Activity Booking Receipt',
-            text: `Dear ${tourist.username},\n\nYour activity has been successfully booked!\n\nDetails:\n- Activity Name: ${activity.name}\n- Date: ${activity.date}\n- Time: ${activity.time}\n- Location: ${activity.location}\n- Price: ${totalPrice} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`, // Fixed string interpolation
+            text: `Dear ${tourist.username},\n\nYour activity has been successfully booked!\n\nDetails:\n- Activity Name: ${activity.name}\n- Date: ${activity.date}\n- Time: ${activity.time}\n- Location: ${activity.location}\n- Price: ${totalPrice} USD\n\nThank you for booking with us!\n\nBest regards,\nExplora`
         };
 
         transporter.sendMail(mailOptions, (error, info) => {

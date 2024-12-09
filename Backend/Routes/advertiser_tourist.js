@@ -4,36 +4,36 @@ const Sales = require('../models/Advertiser_Sales');  // Ensure this is the corr
 const Activity = require('../models/Activity');  // Import the correct itinerary model
 const Tourist = require('../models/touristModel');  // Assuming you have a Tourist model
 
-// GET route to fetch tourists who booked a specific tour guide's itinerary
+// GET route to fetch tourists who booked a specific advertiser's itinerary
 router.get('/', async (req, res) => {
-  const { advertiserId } = req.query;  // Get tourGuideId from query parameters
+  const { advertiserId } = req.query;  // Get advertiserId from query parameters
 
   if (!advertiserId) {
     return res.status(400).json({ message: 'advertiserId is required in query parameters.' });
   }
 
   try {
-    // Fetch sales for the specific tour guide
+    // Fetch sales for the specific advertiser
     const sales = await Sales.find({ advertiserId })
       .populate('touristId', 'username email')  // Populate tourist details (name and email)
-      .populate('activityId', 'location date')  // Populate itinerary details
+      .populate('activityId', 'location date')  // Populate activity details
       .exec();
 
     if (sales.length === 0) {
       return res.status(404).json({ message: 'No bookings found for this advertiser.' });
     }
 
-    // Extract the tourist names and itinerary details from the sales records
+    // Extract details, including bookingDate
     const touristDetails = sales.map((sale) => ({
       touristName: sale.touristId.username,
       touristEmail: sale.touristId.email,
-      itineraryLocations: sale.activityId.location,  // Itinerary location
-      itineraryDate: sale.activityId.date,  // Itinerary available dates
+      activityLocations: sale.activityId.location, // Activity location
+      bookingDate: sale.date,               // Date of booking
     }));
 
     res.status(200).json({ message: 'Tourists who booked the activity', touristDetails });
   } catch (err) {
-    console.error('Error fetching tourists who booked :', err.message);
+    console.error('Error fetching tourists who booked:', err.message);
     res.status(500).json({ message: 'Error fetching tourists', error: err.message });
   }
 });

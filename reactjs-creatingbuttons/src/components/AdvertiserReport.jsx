@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import LineChart from './LineChart'; // Line chart component
+import './SalesReport.module.css'; // Styles for the report
 
 const AdvertiserReport = () => {
   const [sales, setSales] = useState([]);
@@ -29,7 +31,7 @@ const AdvertiserReport = () => {
     if (userId) {
       const fetchSalesData = async () => {
         try {
-          const response = await axios.get('http://localhost:4000/api/sal', {
+          const response = await axios.get('http://localhost:4000/api/sales/', {
             params: { advertiserId: userId },
           });
           const { sales } = response.data;
@@ -122,6 +124,12 @@ const AdvertiserReport = () => {
       >
         Go Back
       </button>
+      {/* Line Chart Section */}
+      <div className="chart-container" style={{ marginTop: '20px' }}>
+        <LineChart salesData={filteredSales} filterBy="month" />
+      </div>
+
+      <h2>Total Revenue: ${totalRevenue.toFixed(2)}</h2>
 
       <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '20px' }}>
         <input
@@ -179,8 +187,6 @@ const AdvertiserReport = () => {
           Clear All Filters
         </button>
       </div>
-
-      <h2>Total Revenue: ${totalRevenue.toFixed(2)}</h2>
 
       {filteredSales.length === 0 ? (
         <p>No sales data found.</p>

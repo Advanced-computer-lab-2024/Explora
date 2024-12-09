@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './NoUsed.css';  // Import the CSS file for styling
+import './NoUsed.css'; // Import the CSS file for styling
+import TouristLineChart from './TouristLineChart'; // Import the new chart
 
 const TouristReport2 = () => {
   const [tourists, setTourists] = useState([]);
@@ -27,15 +28,15 @@ const TouristReport2 = () => {
     if (userId) {
       const fetchTouristData = async () => {
         try {
-          const response = await axios.get('http://localhost:4000/api/report2/', {
+          const response = await axios.get('http://localhost:4000/api/advertiser_tourist/', {
             params: { advertiserId: userId },
           });
 
-          const { touristDetails } = response.data;  // Updated to match the API response structure
+          const { touristDetails } = response.data; // Updated to match the API response structure
 
           setTourists(touristDetails || []);
           setFilteredTourists(touristDetails || []);
-          setTotalTourists(touristDetails.length || 0);  // Set the total number of tourists
+          setTotalTourists(touristDetails.length || 0); // Set the total number of tourists
         } catch (err) {
           setError('Failed to fetch tourist data.');
         } finally {
@@ -46,31 +47,46 @@ const TouristReport2 = () => {
     }
   }, [userId]);
 
+  // Prepare data for the TouristLineChart
+  const prepareChartData = () => {
+    const dataMap = {};
+
+    // Aggregate the number of tourists by date
+    filteredTourists.forEach((tourist) => {
+      const date = new Date(tourist.bookingDate).toLocaleDateString();
+      dataMap[date] = (dataMap[date] || 0) + 1;
+    });
+
+    // Convert to an array format suitable for the chart
+    return Object.entries(dataMap).map(([date, count]) => ({ date, count }));
+  };
+
+  const chartData = prepareChartData();
+
   // Filter tourists by selected month
   const filterTouristsByMonth = () => {
     let filtered = tourists;
 
     if (month) {
-      const [selectedYear, selectedMonth] = month.split('-'); // Extract year and month from the input (format: YYYY-MM)
+      const [selectedYear, selectedMonth] = month.split('-');
       filtered = filtered.filter((tourist) => {
-        const tourDate = new Date(tourist.itineraryDate); // Assuming each tourist has a `itineraryDate` field
+        const tourDate = new Date(tourist.bookingDate);
         const tourYear = tourDate.getFullYear();
-        const tourMonth = tourDate.getMonth() + 1; // getMonth() returns 0-based months (0 for January, 11 for December)
+        const tourMonth = tourDate.getMonth() + 1;
 
         return tourYear === parseInt(selectedYear) && tourMonth === parseInt(selectedMonth);
       });
     }
 
-    // Update the filtered tourists and total count
     setFilteredTourists(filtered);
-    setTotalTourists(filtered.length);  // Update total tourists count
+    setTotalTourists(filtered.length);
   };
 
-  // Clear all filters and show all tourists
+  // Clear all filters
   const clearFilters = () => {
     setMonth('');
-    setFilteredTourists(tourists); // Reset the filtered tourists to show all
-    setTotalTourists(tourists.length); // Recalculate total tourists
+    setFilteredTourists(tourists);
+    setTotalTourists(tourists.length);
   };
 
   if (loading) return <div className="loading">Loading...</div>;
@@ -80,13 +96,16 @@ const TouristReport2 = () => {
     <div className="report-container">
       <h1 className="report-title">Tourist Report</h1>
 
-      <button
-        onClick={() => navigate(-1)}
-        className="back-button"
-      >
+      <button onClick={() => navigate(-1)} className="back-button">
         Go Back
       </button>
 
+      {/* Line Chart Section */}
+      <div className="chart-container" style={{ marginBottom: '40px' }}>
+        <TouristLineChart data={chartData} />
+      </div>
+
+      {/* Filters */}
       <div className="filter-container">
         <input
           type="month"
@@ -94,22 +113,17 @@ const TouristReport2 = () => {
           onChange={(e) => setMonth(e.target.value)}
           className="month-input"
         />
-        <button
-          onClick={filterTouristsByMonth}
-          className="apply-filter-btn"
-        >
+        <button onClick={filterTouristsByMonth} className="apply-filter-btn">
           Apply Filter
         </button>
-        <button
-          onClick={clearFilters}
-          className="clear-filters-btn"
-        >
+        <button onClick={clearFilters} className="clear-filters-btn">
           Clear All Filters
         </button>
       </div>
 
-      <h2 className="total-tourists">Total Tourists: {totalTourists}</h2>  {/* Display total number of tourists */}
+      <h2 className="total-tourists">Total Tourists: {totalTourists}</h2>
 
+      {/* Tourist Table */}
       {filteredTourists.length === 0 ? (
         <p className="no-tourists">No tourists found.</p>
       ) : (
@@ -117,16 +131,20 @@ const TouristReport2 = () => {
           <thead>
             <tr>
               <th>Tourist Name</th>
-              <th>Activity Title</th>
-              <th>Activity Date</th>  {/* Added column for itinerary date */}
+              <th>Activity Date</th>
             </tr>
           </thead>
           <tbody>
             {filteredTourists.map((tourist, index) => (
               <tr key={index}>
-                <td>{tourist.touristName}</td>  {/* Display tourist's name */}
-                <td>{tourist.itineraryLocations}</td>  {/* Display itinerary locations (assuming it's an array) */}
-                <td>{new Date(tourist.itineraryDate).toLocaleDateString()}</td>  {/* Display formatted itinerary date */}
+                <td style={{ padding: '10px', textAlign: 'center' }}>
+                  {tourist.touristName || 'No Name'}
+                </td>
+                <td style={{ padding: '10px', textAlign: 'center' }}>
+                  {tourist.bookingDate
+                    ? new Date(tourist.bookingDate).toLocaleDateString()
+                    : 'No Date Available'}
+                </td>
               </tr>
             ))}
           </tbody>

@@ -88,7 +88,7 @@ const ItineraryList = () => {
       const newStatus = !isFlagged;
 
       await axios.patch(
-        `http://localhost:4000/api/activity/${activityId}/flag`,
+        `http://localhost:4000/Activity/${activityId}/flag2`,
         {},
         {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` },
@@ -274,7 +274,7 @@ Add Admin                  </button>
             <li key={itinerary._id} className="item">
               <h3>{itinerary.title}</h3>
               <p>{itinerary.description}</p>
-              <p><strong>Locations:</strong> {itinerary.locations}</p>
+              <p><strong>Name:</strong> {itinerary.locations}</p>
               <p><strong>Duration:</strong> {itinerary.duration} days</p>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{ marginRight: '10px', fontWeight: 'bold' }}>Flag Status:</span>
@@ -306,7 +306,7 @@ Add Admin                  </button>
         <ul>
           {activities.map(activity => (
             <li key={activity._id} className="item">
-              <h3>{activity.title}</h3>
+              <h3>{activity.name}</h3>
               <p>{activity.description}</p>
               <p><strong>Location:</strong> {activity.location}</p>
               <p><strong>Date:</strong> {activity.date}</p>
