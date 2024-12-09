@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ActivityList2 = () => {
     const [activities, setActivities] = useState([]);
     const [categories, setCategories] = useState([]);  // For categories
-    const [tags, setTags] = useState([]);  // For tags
+    const [tags, setTags] = useState([]);
+    const navigate = useNavigate();
+    // For tags
     const [editingActivity, setEditingActivity] = useState(null);
     const [selectedActivity, setSelectedActivity] = useState(null); // New state for selected activity
     const [formData, setFormData] = useState({
@@ -160,6 +163,27 @@ const ActivityList2 = () => {
     };
 
     return (
+        <div style={{ marginLeft: '80px' }}>
+        <div>
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'fixed',
+            top: '10px',
+            left: '10px',
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            zIndex: 1100,
+          }}
+        >
+          Back
+        </button>
         <div>
             <h3>Activity List</h3>
             <ul>
@@ -297,6 +321,8 @@ const ActivityList2 = () => {
                     </form>
                 </div>
             )}
+        </div>
+        </div>
         </div>
     );
 };

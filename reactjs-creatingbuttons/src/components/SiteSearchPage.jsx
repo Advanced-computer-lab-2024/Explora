@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SiteSearchPage = () => {
     // State to manage the search input, category, and additional filters
@@ -7,6 +8,8 @@ const SiteSearchPage = () => {
     const [selectedPreferences, setSelectedPreferences] = useState([]);
     const [selectedPrice, setSelectedPrice] = useState(100); // Default max price
     const [sortOrder, setSortOrder] = useState('none');
+    const navigate = useNavigate();
+
 
     // Dummy data with ratings, price, date, and preferences
     const [places, setPlaces] = useState([]);

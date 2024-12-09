@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../productCard/ProductCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBoxArchive, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 const ProductList = () => {
@@ -13,6 +15,7 @@ const ProductList = () => {
     const [filterStatus, setFilterStatus] = useState('all'); // Track selected filter status
 
     const navigate = useNavigate();
+
 
     // Fetch products based on sellerId from localStorage
     const fetchAllProducts = async () => {
@@ -153,6 +156,26 @@ const ProductList = () => {
     };
 
     return (
+        <div>
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'fixed',
+            top: '10px',
+            left: '10px',
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            zIndex: 1100,
+          }}
+        >
+          Back
+        </button>
         <div className="product-list">
             <h1>Available Products</h1>
 
@@ -186,20 +209,24 @@ const ProductList = () => {
                 </label>
             </div>
 
-            <div className="add-product-btn">
-                <button onClick={handleAddProductClick}>
-                    <i className="fa-solid fa-plus"></i>
-                </button>
-                <Link
-                    to={{
-                        pathname: "/archived-products",
-                        state: { archivedProducts } // Passing archived products to ArchivedProducts
-                    }}
-                    className="archive-link"
-                >
-                                 View Archived Products
-                </Link>
-            </div>
+            <div className="add-product-btn" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+  {/* Add Product Button */}
+  <button onClick={handleAddProductClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+    <FontAwesomeIcon icon={faPlus} style={{ fontSize: '24px', color: '#008080' }} />
+  </button>
+
+  {/* Archived Products Link */}
+  <Link
+    to={{
+      pathname: "/archived-products",
+      state: { archivedProducts }, // Passing archived products to ArchivedProducts
+    }}
+    className="archive-link"
+    style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#008080' }}
+  >
+    <FontAwesomeIcon icon={faBoxArchive} style={{ fontSize: '24px' }} />
+  </Link>
+</div>
 
             <div className="sort-filter">
                 <label>
@@ -240,6 +267,7 @@ const ProductList = () => {
                     <p>No products found.</p>
                 )}
             </div>
+        </div>
         </div>
     );
 };

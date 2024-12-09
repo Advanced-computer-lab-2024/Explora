@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import Select from 'react-select';
+import { useNavigate } from 'react-router-dom';
 
 const preferencesOptions = [
     { value: 'historic', label: 'Historic Areas' },
@@ -22,6 +23,8 @@ const ActivitySearchPage = () => {
     const [selectedCurrency, setSelectedCurrency] = useState('USD');
     const [exchangeRates, setExchangeRates] = useState({});
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchActivities = async () => {
