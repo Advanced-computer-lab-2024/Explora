@@ -114,7 +114,7 @@ const UpcomingActivities = () => {
   };
 
   const shareLink = (place) => {
-    const link = `http://localhost:4000/api/activity/${place._id}`;
+    const link = `http://localhost:5173/UpcomingActivities`;
     navigator.clipboard.writeText(link)
       .then(() => setMessage('Link copied to clipboard!'))
       .catch(() => setMessage('Failed to copy link.'));

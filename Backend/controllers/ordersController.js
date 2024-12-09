@@ -134,75 +134,64 @@ const processPayment = async (req, res) => {
 
 
   const checkoutAndPay = async (req, res) => {
-    const { userId, addressId, frontendUrl, paymentMethod, promoCode } = req.body; // Added paymentMethod parameter
-    console.log('Received request:', req.body); // Log the incoming request body to see the data sent from the frontend
+    const { userId, addressId, frontendUrl, paymentMethod, promoCode } = req.body;
 
     try {
-        // Validate the required parameters
         if (!frontendUrl) {
             return res.status(400).json({ message: "Frontend URL is required" });
         }
 
-        // Validate the user
         const user = await Tourist.findById(userId);
         if (!user) {
             return res.status(400).json({ message: "Invalid user" });
         }
 
-        // Fetch the cart to get all items and the total price
         const cart = await Cart.findOne({ user: userId });
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ message: "Your cart is empty" });
         }
-        let totalPrice = cart.totalPrice; // Or calculate the price manually if needed
 
+        let totalPrice = cart.totalPrice;
 
-        // Fetch product details for the items in the cart
         const productIds = cart.items.map(item => item.productId);
         const products = await Product.find({ _id: { $in: productIds } });
 
-        // Fetch the address details using the addressId
         const address = await Address.findById(addressId);
         if (!address) {
             return res.status(404).json({ message: 'Address not found' });
         }
+
         if (promoCode) {
-          const promoCodeRecord = await TouristPromoCode.findOne({ tourist: touristId, code: promoCode });
+            const promoCodeRecord = await TouristPromoCode.findOne({ tourist: userId, code: promoCode });
+            if (!promoCodeRecord) {
+                return res.status(400).json({ message: 'Invalid or expired promo code' });
+            }
 
-          if (!promoCodeRecord) {
-              return res.status(400).json({ message: 'Invalid or expired promo code' });
-          }
+            const discountAmount = promoCodeRecord.discount * totalPrice;
+            totalPrice -= discountAmount;
 
-          // Apply the discount
-          const discountAmount = promoCodeRecord.discount * totalPrice;
-          totalPrice -= discountAmount;
-          // Ensure discounted price is valid
-          if (totalPrice < 0) {
-            return res.status(400).json({ message: 'Discounted price is invalid' });
+            if (totalPrice < 0) {
+                return res.status(400).json({ message: 'Discounted price is invalid' });
+            }
+
+            await TouristPromoCode.deleteOne({ tourist: userId, code: promoCode });
         }
 
-        // Delete the promo code since it's used
-        await TouristPromoCode.deleteOne({ tourist: userId, code: promoCode });
-      };
-
-        // Create the order with the address reference
         const order = new Orders({
             userId: userId,
             products: cart.items.map(item => ({
                 productId: item.productId,
                 quantity: item.quantity,
             })),
-            totalPrice: totalPrice, // Or calculate the total price manually
+            totalPrice: totalPrice,
             orderStatus: 'pending',
             deliveryAddress: addressId,
             paymentMethod: paymentMethod,
         });
 
-        // Save the order
         await order.save();
 
-        
-        // Handle the payment method
+        // Payment method handling
         if (paymentMethod === 'credit_card') {
             const lineItems = cart.items.map(item => {
                 const product = products.find(p => p._id.toString() === item.productId.toString());
@@ -216,69 +205,95 @@ const processPayment = async (req, res) => {
                             name: product.name,
                             description: product.description,
                         },
-                        unit_amount: product.price * 100, // Convert to cents
+                        unit_amount: product.price * 100,
                     },
                     quantity: item.quantity,
                 };
             });
 
-            // Create a Stripe session
             const session = await stripe.checkout.sessions.create({
-              payment_method_types: ['card'],
-              line_items: lineItems,
-              mode: 'payment',
-              success_url: `${frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-              cancel_url: `${frontendUrl}/payment-failure`,
-              metadata: {
-                  userId: userId.toString(),
-                  orderId: order._id.toString(), // Convert ObjectId to string
-              },
-          });
-            // // Optionally, clear the cart after checkout
+                payment_method_types: ['card'],
+                line_items: lineItems,
+                mode: 'payment',
+                success_url: `${frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+                cancel_url: `${frontendUrl}/payment-failure`,
+                metadata: {
+                    userId: userId.toString(),
+                    orderId: order._id.toString(),
+                },
+            });
+
+            // Update product quantities
+            for (let item of cart.items) {
+                const product = await Product.findById(item.productId);
+                if (product) {
+                    product.quantity -= item.quantity;
+                    product.sales += item.quantity;
+                    await product.save();
+                }
+            }
+
+            // Clear the cart
             cart.items = [];
             cart.totalPrice = 0;
             await cart.save();
 
-            // Send the session URL back to frontend to redirect user
             return res.status(200).json({ url: session.url });
         } else if (paymentMethod === 'wallet') {
-            // Check if the user has sufficient wallet balance
             if (user.wallet < order.totalPrice) {
-              console.log('Wallet does not have enough money');
                 return res.status(400).json({ message: 'Insufficient wallet balance' });
             }
 
-            // Deduct the total price from the wallet
             user.wallet -= order.totalPrice;
             await user.save();
 
-            // Update the order status to 'paid'
             order.orderStatus = 'paid';
             await order.save();
 
-            // Optionally, clear the cart after checkout
+            // Update product quantities
+            for (let item of cart.items) {
+                const product = await Product.findById(item.productId);
+                if (product) {
+                    product.quantity -= item.quantity;
+                    product.sales += item.quantity;
+                    await product.save();
+                }
+            }
+
+            // Clear the cart
             cart.items = [];
             cart.totalPrice = 0;
             await cart.save();
-
 
             return res.status(200).json({ message: 'Order placed successfully, paid using wallet', order });
         } else {
-            // Handle non-card payment methods (e.g., COD or manual processing)
-            order.orderStatus = 'pending'; // Keep as pending until manually processed
+            // For COD or other payment methods
+            order.orderStatus = 'pending';
             await order.save();
-              // Optionally, clear the cart after checkout
+
+            // Update product quantities
+            for (let item of cart.items) {
+                const product = await Product.findById(item.productId);
+                if (product) {
+                    product.quantity -= item.quantity;
+                    product.sales += item.quantity;
+                    await product.save();
+                }
+            }
+
+            // Clear the cart
             cart.items = [];
             cart.totalPrice = 0;
             await cart.save();
-            return res.status(200).json({ message: 'Order placed successfully, pending payment verification', order });
 
+            return res.status(200).json({ message: 'Order placed successfully, pending payment verification', order });
         }
     } catch (err) {
         console.error("Error during checkout and payment:", err);
         res.status(500).json({ message: "Error during checkout and payment", error: err.message });
     }
 };
+
 
 const viewOrders = async (req, res) => {
   try {
@@ -332,6 +347,7 @@ const cancelOrder = async (req, res) => {
     if (!orderId) {
       return res.status(400).json({ message: "Order ID is required" });
     }
+
     // Update order status to 'cancelled'
     const order = await Orders.findByIdAndUpdate(orderId, { orderStatus: 'cancelled' }, { new: true });
     if (!order) {
@@ -349,12 +365,23 @@ const cancelOrder = async (req, res) => {
       }
     }
 
+    // Reverse product quantity and sales changes
+    for (const item of order.products) {
+      const product = await Product.findById(item.productId);
+      if (product) {
+        product.quantity += item.quantity; // Re-add the canceled quantity to the product stock
+        product.sales = Math.max(product.sales - item.quantity, 0); // Reduce sales (ensure it doesn't go below 0)
+        await product.save();
+      }
+    }
+
     res.status(200).json({ message: "Order cancelled successfully", order });
   } catch (err) {
     console.error("Error cancelling order:", err);
     res.status(500).json({ message: "Error cancelling order", error: err.message });
   }
 };
+
 
 const viewAllOrders = async (req, res) => {
   try{

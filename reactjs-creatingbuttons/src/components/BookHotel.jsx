@@ -94,6 +94,7 @@ const HotelBooking = () => {
       setErrorMessage('');
       setBookedHotels([...bookedHotels, response.data.bookingDetails]);
       setSelectedHotel(null);
+      alert('Hotel booked successfully!');
     } catch (error) {
       console.error('Error booking wallet:', error);
       setErrorMessage(error.response?.data?.message || 'Error booking hotel');

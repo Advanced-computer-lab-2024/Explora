@@ -116,6 +116,7 @@ import Sales from './components/Tour_Guide_Sales.jsx';
 import Viewing from './components/NoUsed';
 import Notification from './components/FlagNotifications';
 import { ToastContainer } from 'react-toastify';
+import UpcomingBooked from './components/UpcomingBookedEvents.jsx';
 function App() {
 
   return (
@@ -233,6 +234,7 @@ function App() {
                 <Route path="/sales" element={<Sales />} />
         <Route path="/view-number-of-tourists" element={<Viewing />} />
         <Route path="/flag-notification" element={<Notification />} />
+        <Route path="/UpcomingBookedEvents" element={<UpcomingBooked />} />
 
 
         </Routes>

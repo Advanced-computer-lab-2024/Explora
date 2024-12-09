@@ -393,7 +393,6 @@ const PastItineraries = () => {
             </p>
 
             <p className="tour-guide-name">Tour Guide: {place.tourGuideName ? place.tourGuideName : 'N/A'}</p>
-            <p className="tour-guide-id">Tour Guide: {place.tourGuideId ? place.tourGuideId : 'N/A'}</p>
             
             <div className="rating-container">
               <span>Rate this activity: </span>

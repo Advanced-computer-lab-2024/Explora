@@ -391,9 +391,6 @@ const FlightBooking = () => {
           <p>Last Ticketing Date: {flight.lastTicketingDate}</p>
           <p>Duration: {flight.duration}</p>
           <p>Price: {flight.price} USD - Booked</p>
-          <button onClick={() => handleCancelBooking(flight.id)} style={buttonStyle}>
-            Cancel Booking
-          </button>
         </li>
       ))}
     </div>
