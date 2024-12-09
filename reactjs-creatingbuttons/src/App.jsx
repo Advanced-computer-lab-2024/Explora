@@ -11,6 +11,7 @@ import TagManager from './components/TagManager.jsx';
 import TagForm from './components/TagForm.jsx';
 import TagList from './components/TagList.jsx';
 import ProductList from './components/productList/ProductList.jsx';
+import ProductListSeller from './components/productList/ProductListSeller.jsx';
 import MiddleForm from './components/MiddleForm.jsx';
 import LoginForm from './components/LoginForm.jsx';
 import SignupTourist from './components/SignupTourist.jsx';
@@ -132,6 +133,7 @@ function App() {
           <Route path="/category-manager" element={<CategoryManager />} /> {/* Add this route */}
           <Route path="/tag-manager" element={<TagManager />} /> {/* Add this route */}
           <Route path="/product-list" element={<ProductList />} />  {/* Route for ProductList */}
+          <Route path="/product-list-seller" element={<ProductListSeller />} />  {/* Route for ProductList */}
           <Route path="/add-product" element={<AddProduct />} />  {/* Route for AddProduct */}
           <Route path="/to-do" element={<TodoInput />} />  {/* Route for TodoInput */}
           <Route path="/middle" element={<MiddleForm />} />

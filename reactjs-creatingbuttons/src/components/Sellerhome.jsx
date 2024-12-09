@@ -288,7 +288,7 @@ export default function Touristhome() {
   <button onClick={() => navigate('/update-seller')}>
   <FontAwesomeIcon icon={faPenToSquare} style={{ marginRight: '8px' }} /> Update my profile
 </button>
-<button onClick={() => navigate('/product-list')}>
+<button onClick={() => navigate('/product-list-seller')}>
   <FontAwesomeIcon icon={faShop} style={{ marginRight: '8px' }} /> View Products
 </button>
 <button onClick={() => navigate('/request-account-deletion')}>
