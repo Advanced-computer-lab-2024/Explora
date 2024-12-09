@@ -82,10 +82,7 @@ const handleViewUpcomingBookedEventsClick = () => {
       navigate('/Notifications');
   }; 
 
-  const handleViewMyPromoCodesClick = () => {
-    navigate('/my-promo-codes');
-  };
-  
+
   
  
   // New handler for viewing all booked transportations
@@ -395,7 +392,6 @@ const handleViewUpcomingBookedEventsClick = () => {
 Bookmarked Events</button>
         <button onClick={handleViewNotificationsClick}>   <FontAwesomeIcon icon={faBell} style={{ marginRight: '8px' }} />
 View Notifications</button>
-        <button onClick={handleViewMyPromoCodesClick}> <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24"><path d="M10.605 0h-10.605v10.609l13.391 13.391 10.609-10.604-13.395-13.396zm-7.02 6.415c-.781-.783-.781-2.048 0-2.829.782-.782 2.048-.781 2.829-.001.782.783.781 2.047 0 2.829-.781.781-2.046.781-2.829.001zm3.101 4.514l4.243-4.243.707.707-4.243 4.243-.707-.707zm1.414 1.414l4.243-4.243.354.354-4.243 4.243-.354-.354zm1.061 1.061l4.243-4.243 1.061 1.061-4.243 4.243-1.061-1.061zm1.768 1.768l4.243-4.243.354.354-4.243 4.243-.354-.354zm1.767 1.767l-.707-.707 4.243-4.243.707.707-4.243 4.243zm.708.707l4.242-4.242.354.354-4.242 4.242-.354-.354z"/></svg>View My Promo Codes</button>
 
       </div>
 
