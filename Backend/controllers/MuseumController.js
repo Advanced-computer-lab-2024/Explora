@@ -7,6 +7,7 @@ const createMuseum = async (req, res) => {
         await museum.save();
         res.status(201).json(museum);
     } catch (error) {
+        console.error("Error creating museum:", error); // Print the error to the console
         res.status(400).json({ message: error.message });
     }
 };

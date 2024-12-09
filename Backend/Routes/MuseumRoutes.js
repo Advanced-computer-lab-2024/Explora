@@ -14,7 +14,6 @@ const {
 
 router.get('/museums/filter', filterMuseums);
 router.post('/', createMuseum);
-//https://localhost:4000/api/museums/museums
 router.get('/museums', getAllMuseums);
 router.get('/:name', getMuseumByName);
 router.put('/:id', updateMuseumById);  // Use '_id' instead of 'name'
