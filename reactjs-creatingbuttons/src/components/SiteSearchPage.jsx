@@ -47,6 +47,26 @@ const SiteSearchPage = () => {
     
     return (
         <div>
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'fixed',
+            top: '10px',
+            left: '10px',
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            zIndex: 1100,
+          }}
+        >
+          Back
+        </button>
+        <div>
             <h2>Site Search Page</h2>
 
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '15px', padding: '20px', 
@@ -90,6 +110,7 @@ const SiteSearchPage = () => {
                     <p>No results found</p>
                 )}
             </div>
+        </div>
         </div>
     );
 };

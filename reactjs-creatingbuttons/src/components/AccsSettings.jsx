@@ -2,8 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Touristhome.css'; // Import the CSS
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeadset, faUsers } from '@fortawesome/free-solid-svg-icons';
+import { faHeadset } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import {
+  faUserMinus,
+  faUserPlus,
+  faBinoculars,
+  faHeart,
+  faBagShopping,
+  faFile,
+  faShop,
+  faExclamation,
+  faUsers,
+  faFlag,
+  faPercent,
+  faChartLine,
+} from '@fortawesome/free-solid-svg-icons';
 import logo from '../assets/cropped_image.png';
 const buttonStyle = {
   backgroundColor: '#008080',
@@ -330,18 +344,30 @@ Add Admin                  </button>
 
       {/* Button Container */}
       <div className="button-container">
-        <button onClick={handleDeleteClick}>Delete / De-Activate Your Account</button>
-        <button onClick={handleAddTourismGovernorClick}>Add Tourism Governor to the System</button>
-        <button onClick={handleAddAdminClick}>Add Another Admin to the System</button>
-        <button onClick={handleActivityManagementClick}>Activity Management System</button>
-        <button onClick={handleTagManagementClick}>Preference Tag Management System</button>
-        <button onClick={handleViewProductsClick}>View Products</button>
-        <button onClick={handleViewUploadedDocumentsClick}>View Uploaded Documents</button>
-        <button onClick={handleComplaintsClick}>View Complaints</button>
-        <button onClick={handleDeleteRequestsClick}>View Delete Requests</button>
-        <button onClick={handleFlagEventClick}>Flag Event</button>
-        <button onClick={handleCreatePromoCodeClick}>Create Promo Code</button>
-        <button onClick={handleSalesReportClick}>Sales Report</button>
+        <button onClick={handleDeleteClick}>       <FontAwesomeIcon icon={faUsers} />
+Delete / De-Activate Your Account</button>
+        <button onClick={handleAddTourismGovernorClick}>       <FontAwesomeIcon icon={faUserPlus} />
+Add Tourism Governor to the System</button>
+        <button onClick={handleAddAdminClick}>       <FontAwesomeIcon icon={faUserPlus} />
+Add Another Admin to the System</button>
+        <button onClick={handleActivityManagementClick}>       <FontAwesomeIcon icon={faBinoculars} />
+Activity Management System</button>
+        <button onClick={handleTagManagementClick}>       <FontAwesomeIcon icon={faHeart} />
+Preference Tag Management System</button>
+        <button onClick={handleViewProductsClick}>       <FontAwesomeIcon icon={faShop} />
+View Products</button>
+        <button onClick={handleViewUploadedDocumentsClick}>       <FontAwesomeIcon icon={faFile} />
+View Uploaded Documents</button>
+        <button onClick={handleComplaintsClick}>       <FontAwesomeIcon icon={faExclamation} />
+View Complaints</button>
+        <button onClick={handleDeleteRequestsClick}>       <FontAwesomeIcon icon={faUserMinus} />
+View Delete Requests</button>
+        <button onClick={handleFlagEventClick}>       <FontAwesomeIcon icon={faFlag} />
+Flag Event</button>
+        <button onClick={handleCreatePromoCodeClick}>       <FontAwesomeIcon icon={faPercent} />
+Create Promo Code</button>
+        <button onClick={handleSalesReportClick}>       <FontAwesomeIcon icon={faChartLine} />
+Sales Report</button>
       </div>
 
       {/* Testimonials Section */}
