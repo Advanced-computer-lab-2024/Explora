@@ -12,7 +12,7 @@ function Anotification() {
     const fetchNotifications = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:4000/api/anotifications/anotifications?userId=${userId}`,
+          `http://localhost:4000/api/anotification/anotifications?userId=${userId}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
