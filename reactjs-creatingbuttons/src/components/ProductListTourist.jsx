@@ -86,7 +86,24 @@ const ProductList = () => {
 
     return (
         <div className="product-list">
-    
+          <button
+        onClick={() => navigate(-1)}
+        style={{
+          position: 'absolute',
+          top: '10px',
+          left: '20px',
+          padding: '5px 10px',
+          fontSize: '16px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Go Back
+      </button>
+
             <h1>Available Products</h1>
             <input
                 type="text"

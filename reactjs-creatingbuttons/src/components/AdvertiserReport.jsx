@@ -34,10 +34,10 @@ const AdvertiserReport = () => {
           const response = await axios.get('http://localhost:4000/api/sales/', {
             params: { advertiserId: userId },
           });
-          const { sales } = response.data;
+          const { sales, totalRevenue } = response.data;
           setSales(sales || []);
           setFilteredSales(sales || []);
-          setTotalRevenue(sales.reduce((sum, sale) => sum + sale.amount, 0)); // Calculate total revenue
+          setTotalRevenue(totalRevenue || 0); // Calculate total revenue
         } catch (err) {
           setError('Failed to fetch sales data.');
         } finally {
@@ -54,43 +54,45 @@ const AdvertiserReport = () => {
   
     // Filter by Activity ID
     if (activityId) {
-      filtered = filtered.filter((sale) => sale.activityId._id === activityId);
+      filtered = filtered.filter((sale) => sale.activityId && sale.activityId._id === activityId);
     }
   
     // Filter by Specific Date (Exact Match)
     if (specificDate) {
-      const selectedDate = new Date(specificDate); // Convert to Date object
+      const selectedDate = new Date(specificDate);
       filtered = filtered.filter((sale) => {
-        const availableDate = new Date(sale.activityId.date); // Assuming `activityId.date` contains the activity date
-        return availableDate.toDateString() === selectedDate.toDateString(); // Compare only the date part
-      });
-    }      
-
-    // Filter by Month (YYYY-MM format)
-    if (month) {
-      const [selectedYear, selectedMonth] = month.split('-'); // Extract year and month
-      filtered = filtered.filter((sale) => {
-        const availableDate = new Date(sale.activityId.date); // Assuming `activityId.date` contains the activity date
-        const availableYear = availableDate.getFullYear();
-        const availableMonth = availableDate.getMonth() + 1; // getMonth() is zero-based, so add 1
-        
-        return availableYear == selectedYear && availableMonth == selectedMonth;
+        if (!sale.activityId || !sale.date) return false;
+        const availableDate = new Date(sale.date);
+        return availableDate.toDateString() === selectedDate.toDateString();
       });
     }
-    
+  
+    // Filter by Month (YYYY-MM)
+    if (month) {
+      const [selectedYear, selectedMonth] = month.split('-');
+      filtered = filtered.filter((sale) => {
+        if (!sale.activityId || !sale.date) return false;
+        const availableDate = new Date(sale.date);
+        return (
+          availableDate.getFullYear() === parseInt(selectedYear) &&
+          availableDate.getMonth() + 1 === parseInt(selectedMonth)
+        );
+      });
+    }
+  
     // Filter by Location (case insensitive)
     if (location) {
       filtered = filtered.filter((sale) => {
-        const activityLocation = sale.activityId.location.toLowerCase(); // Assuming location is in `activityId.location`
+        const activityLocation = sale.activityId?.name?.toLowerCase() || '';
         return activityLocation.includes(location.toLowerCase());
       });
     }
   
-    // Calculate total revenue after filtering
+    // Update state with filtered results
     setFilteredSales(filtered);
-    setTotalRevenue(filtered.reduce((sum, sale) => sum + sale.amount, 0)); // Recalculate total revenue
+    setTotalRevenue(filtered.reduce((sum, sale) => sum + sale.amount, 0));
   };
-
+  
   // Clear all filters and show all sales
   const clearFilters = () => {
     setActivityId('');
@@ -153,7 +155,7 @@ const AdvertiserReport = () => {
         />
         <input
           type="text"
-          placeholder="Location"
+          placeholder="Name"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           style={{ flex: '1 1 200px', padding: '8px', fontSize: '14px' }}
@@ -209,8 +211,7 @@ const AdvertiserReport = () => {
             <tr>
               <th style={{ padding: '10px', width: '20%' }}>Date</th>
               <th style={{ padding: '10px', width: '20%' }}>Amount</th>
-              <th style={{ padding: '30px', width: '30%' }}>Activity ID</th>
-              <th style={{ padding: '10px', width: '20%' }}>Location</th>
+              <th style={{ padding: '10px', width: '20%' }}>Name</th>
               <th style={{ padding: '10px', width: '20%' }}>Tourist</th>
             </tr>
           </thead>
@@ -218,11 +219,10 @@ const AdvertiserReport = () => {
             {filteredSales.map((sale) => (
               <tr key={sale._id}>
                 <td style={{ padding: '10px' }}>
-                  {new Date(sale.activityId.date).toLocaleDateString()}
+                  {new Date(sale.date).toLocaleDateString()}
                 </td>
                 <td style={{ padding: '10px' }}>${sale.amount.toFixed(2)}</td>
-                <td style={{ padding: '10px' }}>{sale.activityId._id}</td>
-                <td style={{ padding: '10px' }}>{sale.activityId.location}</td>
+                <td style={{ padding: '10px' }}>{sale.activityId.name}</td>
                 <td style={{ padding: '10px' }}>{sale.touristId.username}</td>
               </tr>
             ))}

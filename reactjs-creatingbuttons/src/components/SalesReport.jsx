@@ -1,15 +1,54 @@
 import React from "react";
-import LineChart from "./LineChart"; // Import the LineChart component
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook
+import LineChartComponent from "./LineChartt"; // Import the new LineChart component
 import "./SalesReport.module.css"; // Import CSS module for unique styling
 
 const SalesReport = () => {
+  const navigate = useNavigate(); // Initialize the navigate function
+
+  // Example data for the LineChart (replace with actual data from API or props)
+  const chartData = [
+    { name: 'Jan', value: 4000 },
+    { name: 'Feb', value: 3000 },
+    { name: 'Mar', value: 2000 },
+    { name: 'Apr', value: 2780 },
+    { name: 'May', value: 1890 },
+    { name: 'Jun', value: 2390 },
+    { name: 'Jul', value: 3490 }
+  ];
+
+  // Function to navigate back to the previous page
+  const handleBackButtonClick = () => {
+    navigate(-1); // Go back to the previous page in the browser history
+  };
+
   return (
     <div className="sales-report">
       <h2>Dashboard</h2>
 
+      {/* Go Back Button */}
+      <button
+        onClick={() => navigate(-1)} // Use navigate to go back
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#007bff',
+          color: '#fff',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        Go Back
+      </button>
+
+
       {/* Line Chart Section */}
       <div className="chart-container">
-        <LineChart />
+        <LineChartComponent data={chartData} /> {/* Passing chartData as prop */}
       </div>
 
       {/* Total Sales Section */}
