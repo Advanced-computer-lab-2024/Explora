@@ -7,14 +7,16 @@ const OrderList = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [error, setError] = useState(null);
-  const navigate = useNavigate(); // Initialize navigate
   const touristId = localStorage.getItem('userId') || '';
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchOrders();
   }, []);
 
   const fetchOrders = async () => {
+    const touristId = localStorage.getItem('userId');
+
     if (!touristId) {
       setError('User not logged in. Please log in first.');
       return;
@@ -35,6 +37,8 @@ const OrderList = () => {
   };
 
   const cancelOrder = async (orderId) => {
+    const touristId = localStorage.getItem('userId');
+
     if (!touristId) {
       setError('User not logged in. Please log in first.');
       return;
@@ -53,29 +57,15 @@ const OrderList = () => {
     setSelectedOrder(order);
   };
 
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div style={styles.container}>
       <h1 style={styles.header}>Orders</h1>
+      <button style={styles.backButton} onClick={goBack}>Back</button>
       {error && <p style={styles.error}>{error}</p>}
-      
-      {/* Back Button */}
-      <div style={{ marginBottom: '20px', display: 'flex', justifyContent: 'flex-start' }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            backgroundColor: '#008080',
-            color: 'white',
-            border: 'none',
-            padding: '10px 15px',
-            borderRadius: '5px',
-            fontSize: '14px',
-            cursor: 'pointer',
-          }}
-        >
-          Back
-        </button>
-      </div>
-
       <ul style={styles.orderList}>
         {(orders || []).map((order) => (
           <li key={order._id} style={styles.orderItem}>
@@ -84,7 +74,7 @@ const OrderList = () => {
             <p><strong>Status:</strong> {order.orderStatus}</p>
             <div style={styles.buttonGroup}>
               <button style={styles.button} onClick={() => viewOrderDetails(order)}>View Details</button>
-              {order.orderStatus !== 'delivered' && (
+              {order.orderStatus !== 'delivered' && order.orderStatus !== 'cancelled' && (
                 <button style={{ ...styles.button, ...styles.cancelButton }} onClick={() => cancelOrder(order._id)}>Cancel</button>
               )}
             </div>
@@ -113,6 +103,16 @@ const styles = {
     textAlign: 'center',
     marginBottom: '20px',
   },
+  backButton: {
+    marginBottom: '20px',
+    padding: '10px 15px',
+    backgroundColor: '#6c757d',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
   error: {
     color: 'red',
     textAlign: 'center',
@@ -136,7 +136,7 @@ const styles = {
   button: {
     padding: '10px 15px',
     margin: '5px',
-    backgroundColor: '#28a745',
+    backgroundColor: '#007bff',
     color: '#fff',
     border: 'none',
     borderRadius: '5px',
