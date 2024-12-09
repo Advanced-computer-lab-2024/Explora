@@ -241,6 +241,11 @@ const processPayment = async (req, res) => {
                     console.log('Email sent:', info.response);
               }
             });
+            await Notification.create({
+              userId: product.seller._id, // Assuming 'advertiserId' points to a User
+              message: `Your product "${product.name}" is now out of stock.`,
+              prodId: id,
+          })
             }
         }
 
