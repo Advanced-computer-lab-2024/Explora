@@ -288,6 +288,37 @@ router.get('/upcoming', async (req, res) => {
 - Brief Explanation: This API endpoint is used to fetch all itineraries that are available to be booked starting from today. It does so by comparing the availableDates of each itinerary with the current date. If no itineraries are found, it returns a 404 response; otherwise, it returns the list of available itineraries.
 
 - Usage: This code can be used in the part of your application where users can see upcoming tours or trips available for booking, making sure only future itineraries are listed.
+
+## Screenshots
+![PHOTO-2024-12-09-07-09-32 4](https://github.com/user-attachments/assets/5cbb5668-91be-46ae-91c6-4b7fea64c30c)
+![PHOTO-2024-12-09-07-09-33 2](https://github.com/user-attachments/assets/778561d9-3e46-41c7-8996-0f8ebf3c6bf2)
+![PHOTO-2024-12-09-07-09-34 2](https://github.com/user-attachments/assets/dab06e42-8b2e-4dbd-bfba-3c179c30eb5d)
+![PHOTO-2024-12-09-07-09-29](https://github.com/user-attachments/assets/096c23e3-9647-459a-a741-d721d79c4e21)
+![PHOTO-2024-12-09-07-09-36 3](https://github.com/user-attachments/assets/f35a9ec3-c940-442b-9a21-af1a8a0102aa)
+![PHOTO-2024-12-09-07-09-34 3](https://github.com/user-attachments/assets/f50cfcc4-99ed-4e0f-a8fd-ab224607ea1a)
+![PHOTO-2024-12-09-07-09-30 4](https://github.com/user-attachments/assets/bc6a8143-b87d-4f00-911f-2b67fa219e97)
+![PHOTO-2024-12-09-07-09-36 2](https://github.com/user-attachments/assets/1a677a49-671b-4868-8488-73451601ceba)
+![PHOTO-2024-12-09-07-09-36](https://github.com/user-attachments/assets/47c4e21f-953a-423f-a0fe-e249b10eac82)
+![PHOTO-2024-12-09-07-09-31 2](https://github.com/user-attachments/assets/ff8ba476-5be0-4056-bc60-6d69c0d51e35)
+![PHOTO-2024-12-09-07-09-31](https://github.com/user-attachments/assets/c5970f6c-0d10-484a-be3e-cd70c5eed27e)
+![PHOTO-2024-12-09-07-09-35 4](https://github.com/user-attachments/assets/12c8bfae-b8bb-4289-a0ee-fc559efd077f)
+![PHOTO-2024-12-09-07-09-35](https://github.com/user-attachments/assets/1d60d97a-2dd9-4e50-80a8-98a93f84d020)
+![PHOTO-2024-12-09-07-09-35 2](https://github.com/user-attachments/assets/eca80820-3262-4272-8d36-2b060f6c6598)
+![PHOTO-2024-12-09-07-09-32 3](https://github.com/user-attachments/assets/7af36c1d-e1fa-4dbc-9250-0d22cfdc8317)
+![PHOTO-2024-12-09-07-09-33 3](https://github.com/user-attachments/assets/25351554-cc67-49fa-91b4-6be9c1f6f988)
+![PHOTO-2024-12-09-07-09-35 5](https://github.com/user-attachments/assets/01be99ad-d806-4a6e-a4b5-c276e9330383)
+![PHOTO-2024-12-09-07-09-31 3](https://github.com/user-attachments/assets/b3dc577f-4d17-49ae-99bd-960646553ecb)
+![PHOTO-2024-12-09-07-09-34 4](https://github.com/user-attachments/assets/f6bf4d7c-7b4c-4497-a805-1f6d0c69bc01)
+![PHOTO-2024-12-09-07-09-33](https://github.com/user-attachments/assets/527240a9-f4ec-4a96-8d52-4d2272950c55)
+![PHOTO-2024-12-09-07-09-32](https://github.com/user-attachments/assets/25ef065c-8b51-4b82-8a15-b5287d005dfe)
+![PHOTO-2024-12-09-07-09-35 3](https://github.com/user-attachments/assets/da0823d8-77db-449a-b6bd-8925345d71ee)
+![PHOTO-2024-12-09-07-09-34](https://github.com/user-attachments/assets/f961dd85-f4cd-4ee1-b1fe-44e9f8b9d9f5)
+![PHOTO-2024-12-09-07-09-32 2](https://github.com/user-attachments/assets/be5e05f8-791a-44e8-b1c9-27e2fa126b72)
+![PHOTO-2024-12-09-07-09-30 3](https://github.com/user-attachments/assets/6d7aa434-b010-4f7b-9810-d29e84bca9e3)
+![PHOTO-2024-12-09-07-09-30 2](https://github.com/user-attachments/assets/34a722aa-3d82-4541-9e0f-c8c22cdc0718)
+![PHOTO-2024-12-09-07-09-30](https://github.com/user-attachments/assets/7549540f-c77e-4d85-970e-320d28f81b60)
+
+
 ## Installation
 
 - [VS Code](https://code.visualstudio.com/download) - Download the version for your OS
