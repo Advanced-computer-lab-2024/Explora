@@ -41,7 +41,7 @@ const wishListRoute = require('./Routes/WishListRoutes'); // Adjust the path as 
 const cartRoutes = require('./Routes/cartRoutes');
 const ordersRoute = require('./Routes/ordersRoute'); // Adjust the path as needed
 const AddressRoute = require('./Routes/AddressRoutes'); // Adjust the path as needed
-const advertiserSales = require('./Routes/advertiser_sales');  // Import Advertiser Sales route
+const advertiserSales = require('./Routes/advertiserSales');  // Import Advertiser Sales route
 const sellerSales = require('./Routes/seller_sales');  // Import Seller Sales route
 const advertiserTourist = require('./Routes/advertiser_tourist');  // Import Advertiser Tourist route
 const anotification = require('./Routes/anotification');  // Import Anotification route
@@ -100,7 +100,7 @@ app.use('/wishList', wishListRoute);
 app.use('/cart', cartRoutes);
 app.use('/orders', ordersRoute);
 app.use('/addresses',AddressRoute);
-app.use('/api', advertiserSales);  // Register the Advertiser Sales route
+app.use('/api/sales', advertiserSales);  // Register the Advertiser Sales route
 app.use('/api', sellerSales);  // Register the Seller Sales route
 app.use('/api/advertiser_tourist', advertiserTourist);  // Register the Advertiser Tourist route
 app.use('/api/anotification', anotification);  // Register the Anotification route

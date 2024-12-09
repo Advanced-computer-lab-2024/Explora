@@ -14,7 +14,9 @@ import {
   faHotel, 
   faCar, 
   faGripLines, 
+  faChartLine,
   faUserPlus, 
+  faBell,
   faUsers, 
   faUserMinus // Ensure faUserMinus is imported
 } from '@fortawesome/free-solid-svg-icons';
@@ -197,7 +199,20 @@ export default function Touristhome() {
               >
                 Request Account Deletion
               </button>
-              
+              <button
+                onClick={() => navigate('/seller-sales')}
+                style={buttonStyle}
+              >
+Sales Report         
+     </button>
+     <button
+                onClick={() => navigate('/anotification2')}
+                style={buttonStyle}
+              >
+                Notification
+              </button>
+
+
             
 
               {isHistoryOptionsVisible && (
@@ -297,7 +312,15 @@ export default function Touristhome() {
 <button onClick={() => navigate('/change-password')}>
   <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} /> Change My Password
 </button>
+<button
+        onClick={() => navigate('/seller-sales')}
+      >
+                <FontAwesomeIcon icon={faChartLine}/>
 
+        View Sales
+      </button>
+      <button onClick={() => navigate('/anotification2')} >  <FontAwesomeIcon icon={faBell} style={{ marginRight: '8px' }} />
+      View Notifications</button>
 
 
       </div>

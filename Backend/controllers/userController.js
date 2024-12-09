@@ -340,32 +340,29 @@ const deleteUser = async (req, res) => {
 
 // Change user password
 const changePassword = async (req, res) => {
-  const { email, newPassword } = req.body;
-
-  try {
-    // Find the user by username
-    const user = await User.findOne({ email });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    const { username, newPassword } = req.body;
+  
+    try {
+      // Find the user by email
+      const user = await User.findOne({ username: username });
+  
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Hash the new password
+      const salt = await bcrypt.genSalt();
+      const hash = await bcrypt.hash(newPassword, salt);
+  
+      // Update the password in the database with the hashed password
+      user.password = newPassword;  // Use the hashed password here, not the plaintext password
+      await user.save();
+  
+      res.status(200).json({ message: "Password updated successfully" });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-
-    // Verify the current password (hashed password comparison)
-
-    // Hash the new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
-
-    // Update the password in the database
-    user.password = hashedNewPassword;
-    await user.save();
-
-    res.status(200).json({ message: "Password updated successfully" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
+  };
 const sendMail = async (req, res) => {
     try {
         const { email } = req.body;

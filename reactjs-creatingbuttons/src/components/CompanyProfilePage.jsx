@@ -17,6 +17,7 @@ import {
   faUsers, 
   faUserMinus,
   faHeadset,
+  faChartLine,
   faImage
 } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
@@ -194,7 +195,6 @@ export default function Touristhome() {
               >
                 Request Account Deletion
               </button>
-              
             
 
               {isHistoryOptionsVisible && (
@@ -289,7 +289,11 @@ export default function Touristhome() {
         <button onClick={() => navigate('/change-password')}>
           <FontAwesomeIcon icon={faLock} style={{ marginRight: '8px' }} /> Change My Password
         </button>
-      
+        <button onClick={() =>navigate('/advertiser-report')}>   <FontAwesomeIcon icon={faChartLine} style={{ marginRight: '8px' }} />
+              View Sales</button>
+              <button onClick={() =>navigate('/noused2')}>   <FontAwesomeIcon icon={faUsers} style={{ marginRight: '8px' }} />
+              View Tourist</button>
+
       </div>
 
       <div className="testimonials-section">

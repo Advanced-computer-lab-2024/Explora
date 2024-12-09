@@ -29,7 +29,7 @@ const AdvertiserReport = () => {
     if (userId) {
       const fetchSalesData = async () => {
         try {
-          const response = await axios.get('http://localhost:4000/api/sal', {
+          const response = await axios.get('http://localhost:4000/api/sales/', {
             params: { advertiserId: userId },
           });
           const { sales } = response.data;
