@@ -9,6 +9,11 @@ const Payment = require('../models/PaymentModel');
 const bodyParser = require('body-parser'); // For raw body parsing
 const Tourist = require('../models/touristModel');
 const TouristPromoCode = require('../models/touristPromoCode');
+const Purchase = require('../models/Purchase'); // Import the Purchase model
+const Sales = require('../models/Seller_Sales'); // Import the Seller Sales model
+const Notification = require('../models/Anotification2');
+const nodemailer = require('nodemailer');
+const Seller = require('../models/Seller');
 
 
 const checkoutOrder = async (req, res) => {
@@ -131,10 +136,23 @@ const processPayment = async (req, res) => {
     }
   };
   
+  
 
 
   const checkoutAndPay = async (req, res) => {
     const { userId, addressId, frontendUrl, paymentMethod, promoCode } = req.body;
+
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail', // Using Gmail as the email service
+      auth: {
+          user: 'explora.donotreply@gmail.com',
+          pass: 'goiz pldj kpjy clsh', // Use app-specific password
+      },
+      tls: {
+          rejectUnauthorized: false,
+      },
+  });
+  
 
     try {
         if (!frontendUrl) {
@@ -154,7 +172,7 @@ const processPayment = async (req, res) => {
         let totalPrice = cart.totalPrice;
 
         const productIds = cart.items.map(item => item.productId);
-        const products = await Product.find({ _id: { $in: productIds } });
+        const products = await Product.find({ _id: { $in: productIds } }).populate('seller', 'name email');
 
         const address = await Address.findById(addressId);
         if (!address) {
@@ -191,13 +209,45 @@ const processPayment = async (req, res) => {
 
         await order.save();
 
-        // Payment method handling
+        // Update product quantities and sales
+        for (let item of cart.items) {
+            const product = products.find(p => p._id.toString() === item.productId.toString());
+            if (!product) {
+                return res.status(404).json({ message: `Product not found: ${item.productId}` });
+            }
+
+            if (product.quantity < item.quantity) {
+                return res.status(400).json({
+                    message: `Item out of stock: only ${product.quantity} left for "${product.name}"`,
+                });
+            }
+
+            product.quantity -= item.quantity;
+            product.sales += item.quantity;
+
+            await product.save();
+
+            if (product.quantity === 0) {
+              const mailOptions = {
+                from: 'explora.donotreply@gmail.com',
+                to: product.seller.email, // Use populated seller's email
+                subject: 'Product Out of Stock',
+                text: `Dear ${product.seller.username},\n\nYour product titled "${product.name}" is now out of stock.\nPlease review it.\n\nBest regards,\nExplora Team`,
+            };
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error('Error sending email:', error);
+                } else {
+                    console.log('Email sent:', info.response);
+              }
+            });
+            }
+        }
+
+        // Payment Handling
         if (paymentMethod === 'credit_card') {
             const lineItems = cart.items.map(item => {
                 const product = products.find(p => p._id.toString() === item.productId.toString());
-                if (!product) {
-                    throw new Error(`Product not found for ID: ${item.productId}`);
-                }
                 return {
                     price_data: {
                         currency: 'usd',
@@ -223,16 +273,6 @@ const processPayment = async (req, res) => {
                 },
             });
 
-            // Update product quantities
-            for (let item of cart.items) {
-                const product = await Product.findById(item.productId);
-                if (product) {
-                    product.quantity -= item.quantity;
-                    product.sales += item.quantity;
-                    await product.save();
-                }
-            }
-
             // Clear the cart
             cart.items = [];
             cart.totalPrice = 0;
@@ -249,45 +289,18 @@ const processPayment = async (req, res) => {
 
             order.orderStatus = 'paid';
             await order.save();
-
-            // Update product quantities
-            for (let item of cart.items) {
-                const product = await Product.findById(item.productId);
-                if (product) {
-                    product.quantity -= item.quantity;
-                    product.sales += item.quantity;
-                    await product.save();
-                }
-            }
-
-            // Clear the cart
-            cart.items = [];
-            cart.totalPrice = 0;
-            await cart.save();
-
-            return res.status(200).json({ message: 'Order placed successfully, paid using wallet', order });
         } else {
             // For COD or other payment methods
             order.orderStatus = 'pending';
             await order.save();
-
-            // Update product quantities
-            for (let item of cart.items) {
-                const product = await Product.findById(item.productId);
-                if (product) {
-                    product.quantity -= item.quantity;
-                    product.sales += item.quantity;
-                    await product.save();
-                }
-            }
-
-            // Clear the cart
-            cart.items = [];
-            cart.totalPrice = 0;
-            await cart.save();
-
-            return res.status(200).json({ message: 'Order placed successfully, pending payment verification', order });
         }
+
+        // Clear the cart
+        cart.items = [];
+        cart.totalPrice = 0;
+        await cart.save();
+
+        res.status(200).json({ message: 'Order placed successfully', order });
     } catch (err) {
         console.error("Error during checkout and payment:", err);
         res.status(500).json({ message: "Error during checkout and payment", error: err.message });
