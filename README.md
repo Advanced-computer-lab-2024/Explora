@@ -317,7 +317,7 @@ npm run dev
 Click the link that pops up after you run those two, it should look something like this: http://localhost:5173/
 rns the sum.
 
-## [API reference]()
+## [API reference](https://github.com/Advanced-computer-lab-2024/Explora/blob/main/API%20References.md)
 
 Click the above link to see all our API references.
 ## Tests
