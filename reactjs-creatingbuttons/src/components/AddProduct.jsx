@@ -76,6 +76,26 @@ export default function AddProduct() {
 
   return (
     <div>
+    {/* Back Button */}
+    <button
+      onClick={() => navigate(-1)}
+      style={{
+        position: 'fixed',
+        top: '10px',
+        left: '10px',
+        backgroundColor: '#008080',
+        color: 'white',
+        border: 'none',
+        padding: '10px 15px',
+        borderRadius: '5px',
+        fontSize: '14px',
+        cursor: 'pointer',
+        zIndex: 1100,
+      }}
+    >
+      Back
+    </button>
+    <div>
       <h1>Add Product</h1>
       <form onSubmit={handleSubmit}>
         <input
@@ -143,6 +163,7 @@ export default function AddProduct() {
 
         <button type="submit">Add Product</button>
       </form>
+    </div>
     </div>
   );
 }

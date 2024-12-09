@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProductCard from '../productCard/ProductCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBoxArchive, faPlus } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import logo from '../../assets/cropped_image.png';
 const buttonStyle = {
@@ -227,20 +229,24 @@ useEffect(() => {
                 </label>
             </div>
 
-            <div className="add-product-btn">
-                <button onClick={handleAddProductClick}>
-                    <i className="fa-solid fa-plus"></i>
-                </button>
-                <Link
-                to={{
-                    pathname: "/archived-products",
-                    state: { archivedProducts } // Passing archived products to ArchivedProducts
-                }}
-                className="archive-link"
-            >
-                View Archived Products
-            </Link>
-            </div>
+            <div className="add-product-btn" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+  {/* Add Product Button */}
+  <button onClick={handleAddProductClick} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+    <FontAwesomeIcon icon={faPlus} style={{ fontSize: '24px', color: '#008080' }} />
+  </button>
+
+  {/* Archived Products Link */}
+  <Link
+    to={{
+      pathname: "/archived-products",
+      state: { archivedProducts }, // Passing archived products to ArchivedProducts
+    }}
+    className="archive-link"
+    style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: '#008080' }}
+  >
+    <FontAwesomeIcon icon={faBoxArchive} style={{ fontSize: '24px' }} />
+  </Link>
+</div>
 
             <div className="sort-filter">
                 <label>

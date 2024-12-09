@@ -327,6 +327,8 @@ const ProfileDetailsPage = () => {
           )}
         </div>
       </nav>
+      <div style={{ marginTop: '80px' }}>
+</div>
         
         
         <div
@@ -387,21 +389,7 @@ const ProfileDetailsPage = () => {
 
                     {/* Buttons Section */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                        <button
-                            style={{
-                                marginBottom: '20px',
-                                padding: '10px 20px',
-                                background: '#008080',
-                                color: '#ffffff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                cursor: 'pointer',
-                                fontSize: '16px',
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            Redeem Points
-                        </button>
+                     
                         <button
     onClick={() => navigate('/change-password')} // Correctly uses the navigate function
     style={{
