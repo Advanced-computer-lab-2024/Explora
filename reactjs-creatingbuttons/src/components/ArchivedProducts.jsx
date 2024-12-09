@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProductCard from './productCard/ProductCard'; // Ensure correct path to ProductCard
+import { useNavigate } from 'react-router-dom';
 
 const ArchivedProducts = () => {
     const [archivedProducts, setArchivedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
 
     // Fetch archived products when the component mounts
     useEffect(() => {

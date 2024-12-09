@@ -5,6 +5,26 @@ const AdvActivity1 = () => {
   const navigate = useNavigate();
 
   return (
+    <div>
+        {/* Back Button */}
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            position: 'fixed',
+            top: '10px',
+            left: '10px',
+            backgroundColor: '#008080',
+            color: 'white',
+            border: 'none',
+            padding: '10px 15px',
+            borderRadius: '5px',
+            fontSize: '14px',
+            cursor: 'pointer',
+            zIndex: 1100,
+          }}
+        >
+          Back
+        </button>
     <header style={{
       display: 'flex',
       flexDirection: 'column',
@@ -35,6 +55,7 @@ const AdvActivity1 = () => {
         View Activities
       </button>
     </header>
+    </div>
   );
 };
 

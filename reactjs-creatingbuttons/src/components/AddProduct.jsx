@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 export default function AddProduct() {
   const [productName, setProductName] = useState('');
@@ -11,6 +12,8 @@ export default function AddProduct() {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+
 
   const handleProductNameChange = (event) => setProductName(event.target.value);
   const handleProductDetailsChange = (event) => setProductDetails(event.target.value);
@@ -76,6 +79,7 @@ export default function AddProduct() {
 
   return (
     <div>
+      <div style={{ marginLeft: '70px' }}>
     {/* Back Button */}
     <button
       onClick={() => navigate(-1)}
@@ -163,6 +167,7 @@ export default function AddProduct() {
 
         <button type="submit">Add Product</button>
       </form>
+    </div>
     </div>
     </div>
   );

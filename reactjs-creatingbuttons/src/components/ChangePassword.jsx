@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import logo from '../assets/cropped_image.png'; // Make sure to update the path if necessary
 
 const ChangePassword = () => {
+
   const [username, setUsername] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

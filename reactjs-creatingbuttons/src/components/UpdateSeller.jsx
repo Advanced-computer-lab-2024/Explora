@@ -190,7 +190,7 @@ export default function UpdateSeller() {
             required
           />
         </div>
-        <button type="submit">Update Profile</button>
+        <button type="submit" style={{ padding: '10px 20px', cursor: 'pointer', fontSize: '16px', backgroundColor: '#008CBA', color: 'white', border: 'none', borderRadius: '4px' }}>Update Profile</button>
       </form>
     </div>
     </header>

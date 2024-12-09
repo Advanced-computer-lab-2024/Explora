@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Select from 'react-select'; // Ensure this library is installed
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const preferencesOptions = [
     { value: 'historic', label: 'Historic Areas' },
@@ -23,6 +24,8 @@ const ItinerarySearchPage = () => {
     const [selectedCurrency, setSelectedCurrency] = useState('USD'); // Default currency is USD
     const [exchangeRates, setExchangeRates] = useState({});
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchItineraries = async () => {
