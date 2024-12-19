@@ -1,4 +1,3 @@
-[API documentation.postman_collection.json](https://github.com/user-attachments/files/18200760/API.documentation.postman_collection.json)
 # Explora
 
 Explora is a travel booking site which allows the user to find and book hotel, transportation and activities and buy products.
@@ -59,6 +58,116 @@ RESTful API design
 MongoDB database structure
 Node.js modules and package management (npm)
 Authentication techniques (e.g., JWT, password hashing)
+
+## App features
+# Complete Features List for Tourism Application
+
+---
+
+## User Roles
+- **Tourist**
+- **Advertiser**
+- **Tour Guide**
+- **Seller**
+- **Tourism Governor**
+- **Admin**
+
+---
+
+## Authentication and Account Management
+1. **Login**:
+   - All users can log in using a username and password.
+   - Password recovery using OTP sent via email.
+
+---
+
+## Notifications
+2. **System Notifications**:
+   - Receive notifications for flagged events or itineraries (on system and via email).
+   - Notify users of upcoming bookings and events.
+   - Notify users when a product is out of stock (Admins/Sellers).
+   - Tourists receive birthday promo codes.
+3. **Reminder Notifications**:
+   - Reminders for upcoming events booked (on system and via email).
+   - Notifications for interest in events when booking starts.
+
+---
+
+## Reports and Insights
+4. **Sales Reports**:
+   - Admin can view reports for revenue from events, itineraries, and gift shop sales.
+   - Sellers can view revenue reports.
+   - Tour Guides and Advertisers can view revenue reports.
+   - Filters available for activity, itinerary, product, date, or month.
+5. **User Reports**:
+   - Admin can view the total number of users and new users per month.
+   - Tour Guides and Advertisers can view reports on the number of tourists using their itineraries or attending their activities.
+   - Filter user reports by month.
+
+---
+
+## Payment and Wallet
+6. **Payment Options**:
+   - Pay for events or itineraries online via Stripe (credit/debit card) or wallet.
+   - Cash-on-delivery option for product purchases.
+7. **Refunds and Wallet Updates**:
+   - Refunds for canceled events or orders are reflected in the user’s wallet.
+   - View updated wallet balances after payment or refunds.
+8. **Receipts and Transactions**:
+   - Email receipts sent for all payments.
+   - View order and payment history.
+
+---
+
+## Event and Activity Management
+9. **Event Interaction**:
+   - Bookmark events for later.
+   - View saved events.
+   - Request notifications for event bookings.
+10. **Activity Guides**:
+    - View a step-by-step guide for starting a vacation.
+    - Demo features to help users navigate the system.
+
+---
+
+## Product Management
+11. **Wishlist and Cart**:
+    - Save products to a wishlist.
+    - View and manage wishlist items (add to cart, remove).
+    - Add, remove, or modify items in the cart.
+12. **Order Management**:
+    - Checkout with payment options.
+    - Add and manage delivery addresses.
+    - Cancel orders and view refunded amounts in the wallet.
+    - View order details, status, and history.
+
+---
+
+## Promotions and Discounts
+13. **Promo Codes**:
+    - Admins can create promo codes.
+    - Tourists receive birthday promo codes usable across the site.
+    - Apply promo codes during checkout.
+
+---
+
+## Administrative Features
+14. **Admin Notifications**:
+    - Receive alerts for flagged content.
+    - Notify sellers and users of flagged content.
+15. **Revenue Management**:
+    - Admin revenue includes a 10% application rate on online bookings.
+16. **Content Management**:
+    - Admin can monitor flagged events, itineraries, and products.
+
+---
+
+## Additional Features
+17. **System Demo**:
+    - Demo guides to help new users understand the system features.
+
+---
+
 
 
 ## Code Examples
