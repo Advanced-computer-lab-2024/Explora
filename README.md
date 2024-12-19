@@ -1336,7 +1336,7 @@ Embark on your next adventure with Explora – whether you're a tourist, tour gu
 
 Want to contribute? Great!
 
-Send us a email at explora.contribute@gmail.com
+Send us a email at explora.donotreply@gmail.com
 ## Credits
 
 [![License](https://img.shields.io/badge/Apache_2.0-orange)](https://www.apache.org/)  
