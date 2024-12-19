@@ -7,7 +7,7 @@ Explora is a travel booking site which allows the user to find and book hotel, t
 Our motivation was to create an all in one website for all the user's needs, starting from booking the hotels and transportation all the way to buying products, we also wanted to make it as easy as it can be and to give the user the opportunity to give feedback on every experience they had starting from the activities to the products.
 
 ## Build Status
-
+The build is stable besides the following points : 
 - The payment is accepted when you book with stripe as soon as you get redirected to the page before you add any payment details.
 - The change password using otp method doesn't work as expected. 
 - The admin/seller fails to filter sails report.
@@ -1386,10 +1386,6 @@ Send us a email at explora.donotreply@gmail.com
 
 [![License](https://img.shields.io/badge/Apache_2.0-orange)](https://www.apache.org/)  
 
-[![License](https://img.shields.io/badge/Amadeus-darkblue)](https://amadeus.com/en)
-
-[![License](https://img.shields.io/badge/Stripe-lightblue)](https://stripe.com/)
-
 [![License](https://img.shields.io/badge/Postman-orange)](https://www.postman.com/)
 
 [![License](https://img.shields.io/badge/ExchangeRate--API-red)](https://www.exchangerate-api.com/)
@@ -1399,10 +1395,20 @@ Send us a email at explora.donotreply@gmail.com
 [![License](https://img.shields.io/badge/MongoDB_Atlas-green)](https://www.mongodb.com/products/platform/atlas-database)
 
 [![License](https://img.shields.io/badge/Nodemailer-blue)](https://www.nodemailer.com/)
+- [YouTube Channel 1](https://www.youtube.com/channel/UC29ju8bIPH5as8OGnQzwJyA)
+- [YouTube Channel 2](https://www.youtube.com/channel/UCW5YeuERMmlnqo4oq8vwUpg)
+- [YouTube Playlist 1](https://www.youtube.com/playlist?list=PLZlA0Gpn_vH_uZs4vJMIhcinABSTUH2bY)
+- [YouTube Video](https://www.youtube.com/watch?v=fgTGADljAeg)
+- [YouTube Playlist 2](https://www.youtube.com/playlist?list=PLZlA0Gpn_vH_NT5zPVp18nGe_W9LqBDQK)
+- [YouTube Playlist 3](https://www.youtube.com/playlist?list=PLZlA0Gpn_vH8EtggFGERCwMY5u5hOjf-h)
+- [YouTube Video 2](https://youtu.be/hQAHSlTtcmY)
+- [Codedamn Article on React Hooks](https://codedamn.com/news/reactjs/usestate-and-useeffect-hooks)
 
 
 
 
 ## License
+[![License](https://img.shields.io/badge/Amadeus-darkblue)](https://amadeus.com/en)
 
+[![License](https://img.shields.io/badge/Stripe-lightblue)](https://stripe.com/)
 [![License: MIT](https://img.shields.io/badge/MIT-yellow)](https://opensource.org/licenses/MIT)  
