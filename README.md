@@ -94,37 +94,82 @@ Authentication techniques (e.g., JWT, password hashing)
 
 ## Features
 
-- User Authentication: Secure system for user registration and login to ensure account safety.
-- Credit Card and Wallet Payments: Tourists can make payments for services using credit cards or wallets. For product purchases, a cash-on-delivery option is also available.
-- Itinerary Returns: Tourists can cancel their booked activities or itineraries up to two days before the scheduled date.
-- Tour Guide Contributions: Tour guides can add itineraries for users to view and book directly through the system.
-- Advertiser Contributions: Advertisers can list activities for tourists to view and book seamlessly.
-- Tourism Site Management: Governors can add touristic sites for users to explore.
-- Product Sales and Insights: Sellers can add products for tourists to view and buy, with access to a sales graph for tracking performance.
-- Ticket Booking: Simplified process for booking tickets for various transportation modes.
-- Activity Booking: Users can book activities and tours at their destination easily.
-- Payment Integration: Secure and reliable payment gateways for bookings and transactions.
-- Itinerary Management: User-friendly interface for creating, editing, and managing travel itineraries.
-- Activity Scheduling: Convenient scheduling and management of travel activities.
-- Notifications and Emails: Users receive timely notifications and email confirmations for bookings, reminders, and special offers.
-- Search and Filter: Advanced search and filter options to refine travel plans and explore activities.
-- Customer Support: Integrated support for resolving user issues efficiently.
-- User Profiles: Comprehensive management of personal information and travel preferences.
-- Admin Dashboard: Detailed dashboard for administrators to manage users, bookings, and platform content.
-- Currency Converter: Built-in tool to assist with international transactions.
-- Favorites: Bookmark favorite itineraries and activities for easy access.
-- Flight and Hotel Booking: Direct integration with services for booking flights and accommodations.
-- Sharing: Users can share activities and itineraries by link and email.
-- Review and Ratings: Provide feedback and rate travel services or experiences.
-- Responsive Design: Fully optimized for both desktop and mobile devices.
-- Travel Recommendations: Personalized suggestions based on user preferences and history.
-- Loyalty Program: Earn and redeem rewards through a points-based loyalty program.
-- Favorites Management: Explore and manage wishlists or carts for products.
-- Promo Codes and Gifts: Receive rewards and promo codes to enhance user satisfaction.
-- API Integration: Connect with third-party APIs for extended functionality.
-- User-Friendly Interface: Simple and intuitive design for a seamless user experience.
-- Booking History: View past~ bookings and travel itineraries.
-- Upcoming Booking : View upcoming bookings and travel itineraries.
+## Authentication and Account Management
+1. **Login**:
+   - All users can log in using a username and password.
+   - Password recovery using OTP sent via email.
+---
+## Notifications
+2. **System Notifications**:
+   - Receive notifications for flagged events or itineraries (on system and via email).
+   - Notify users of upcoming bookings and events.
+   - Notify users when a product is out of stock (Admins/Sellers).
+   - Tourists receive birthday promo codes.
+3. **Reminder Notifications**:
+   - Reminders for upcoming events booked (on system and via email).
+   - Notifications for interest in events when booking starts.
+---
+## Reports and Insights
+4. **Sales Reports**:
+   - Admin can view reports for revenue from events, itineraries, and gift shop sales.
+   - Sellers can view revenue reports.
+   - Tour Guides and Advertisers can view revenue reports.
+   - Filters available for activity, itinerary, product, date, or month.
+5. **User Reports**:
+   - Admin can view the total number of users and new users per month.
+   - Tour Guides and Advertisers can view reports on the number of tourists using their itineraries or attending their activities.
+   - Filter user reports by month.
+---
+## Payment and Wallet
+6. **Payment Options**:
+   - Pay for events or itineraries online via Stripe (credit/debit card) or wallet.
+   - Cash-on-delivery option for product purchases.
+7. **Refunds and Wallet Updates**:
+   - Refunds for canceled events or orders are reflected in the user’s wallet.
+   - View updated wallet balances after payment or refunds.
+8. **Receipts and Transactions**:
+   - Email receipts sent for all payments.
+   - View order and payment history.
+---
+## Event and Activity Management
+9. **Event Interaction**:
+   - Bookmark events for later.
+   - View saved events.
+   - Request notifications for event bookings.
+10. **Activity Guides**:
+    - View a step-by-step guide for starting a vacation.
+    - Demo features to help users navigate the system.
+---
+## Product Management
+11. **Wishlist and Cart**:
+    - Save products to a wishlist.
+    - View and manage wishlist items (add to cart, remove).
+    - Add, remove, or modify items in the cart.
+12. **Order Management**:
+    - Checkout with payment options.
+    - Add and manage delivery addresses.
+    - Cancel orders and view refunded amounts in the wallet.
+    - View order details, status, and history.
+---
+## Promotions and Discounts
+13. **Promo Codes**:
+    - Admins can create promo codes.
+    - Tourists receive birthday promo codes usable across the site.
+    - Apply promo codes during checkout.
+---
+## Administrative Features
+14. **Admin Notifications**:
+    - Receive alerts for flagged content.
+    - Notify sellers and users of flagged content.
+15. **Revenue Management**:
+    - Admin revenue includes a 10% application rate on online bookings.
+16. **Content Management**:
+    - Admin can monitor flagged events, itineraries, and products.
+---
+## Additional Features
+17. **System Demo**:
+    - Demo guides to help new users understand the system features.
+---
 
 ## Code Examples
 
